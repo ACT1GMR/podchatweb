@@ -2,5 +2,6 @@ import './../_base';
 import AvatarImage from './AvatarImage'
 import AvatarName from './AvatarName'
 import AvatarText from './AvatarText'
+import Avatar from './Avatar'
 
-export {AvatarText, AvatarName, AvatarImage}
+export {Avatar, AvatarText, AvatarName, AvatarImage}

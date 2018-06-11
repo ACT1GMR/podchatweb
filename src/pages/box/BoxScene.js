@@ -1,29 +1,52 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
-import { connect } from "react-redux";
+import {sendMessageService} from '../../actions/SendMessage'
+import {getThreadMessageList} from '../../actions/GetThreadMessageList'
+import {List, ListItem} from '../../../ui_kit/components/list'
+import {connect} from "react-redux";
 import '../../../styles/pages/box/BoxScene.scss'
 
-const mapStateToProps = state => {
-  return { articles: state.articles };
-};
+
 class BoxScene extends Component {
 
   constructor() {
     super();
+    this.state = {messages: null, messageSent: null, threadId: null};
+  }
+
+  componentDidMount(){
+    this.props.dispatch(getThreadMessageList(this.props.threadId));
+  }
+
+  onFromSubmit() {
+    this.props.dispatch(sendMessageService(this.state.messageText, this.props.threadId))
   }
 
   render() {
     return (
-      <div className="list-group list-group-flush">
-        {this.props.articles.map(el => (
-          <li className="list-group-item" key={el.id}>
-            {el.title}
-          </li>
-        ))}
-      </div>
+      <form onSubmit={this.onFromSubmit}>
+        <List>
+          {this.props.articles.map(el => (
+            <ListItem key={el.id}>
+              <Avatar>
+                <AvatarImage src={}></AvatarImage>
+              </Avatar>
+            </ListItem>
+          ))}
+        </List>
+        <input type="text"/>
+        <button type="submit">test</button>
+      </form>
     );
   }
 }
 
-const List = connect(mapStateToProps)(BoxScene);
-export default List;
+
+const mapStateToProps = state => {
+  return {
+    messages: state.messages,
+    messageSent: state.messageSent
+  };
+};
+
+export default connect(mapStateToProps)(BoxScene);
