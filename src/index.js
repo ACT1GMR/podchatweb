@@ -1,8 +1,11 @@
-console.log(`I'm a silly entry point`);
-
-const arr = [1, 2, 3];
-const iAmJavascriptES6 = () => console.log(...arr);
-window.iAmJavascriptES6 = iAmJavascriptES6;
-
-import App from "./App";
-import style from "../styles/main.css";
+import React from "react";
+import { render } from "react-dom";
+import { Provider } from "react-redux";
+import store from "./store/index";
+import Box from "./pages/box";
+render(
+  <Provider store={store}>
+    <Box />
+  </Provider>,
+  document.getElementById("app")
+);
