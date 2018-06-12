@@ -1,7 +1,11 @@
-import SendMessageReducer from './SendMessage';
+import contactReducer from './contactReducer';
+import threadReducer from './threadReducer';
+import messageReducer from './messageReducer';
 
 const rootReducer = {
-  routing: SendMessageReducer
+  contact: contactReducer,
+  thread: threadReducer,
+  message: messageReducer,
 };
 
 export default rootReducer;

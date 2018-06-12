@@ -1,7 +1,8 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
-import {sendMessageService} from '../../actions/SendMessage'
-import {getThreadMessageList} from '../../actions/GetThreadMessageList'
+import {addArticle, sendMessageService} from '../../actions/messageActions'
+import {getThreadMessageListService} from '../../actions/threadActions'
+import {threadActions} from '../../actions/threadActions'
 import {List, ListItem} from '../../../ui_kit/components/list'
 import {connect} from "react-redux";
 import '../../../styles/pages/box/BoxScene.scss'
@@ -15,7 +16,7 @@ class BoxScene extends Component {
   }
 
   componentDidMount(){
-    this.props.dispatch(getThreadMessageList(this.props.threadId));
+    this.props.dispatch(getThreadMessageListService(this.props.threadId));
   }
 
   onFromSubmit() {
@@ -26,10 +27,10 @@ class BoxScene extends Component {
     return (
       <form onSubmit={this.onFromSubmit}>
         <List>
-          {this.props.articles.map(el => (
+          {this.props.messages.map(el => (
             <ListItem key={el.id}>
               <Avatar>
-                <AvatarImage src={}></AvatarImage>
+                <AvatarImage src=""></AvatarImage>
               </Avatar>
             </ListItem>
           ))}
@@ -45,8 +46,10 @@ class BoxScene extends Component {
 const mapStateToProps = state => {
   return {
     messages: state.messages,
-    messageSent: state.messageSent
+    messageSent: state.messageSent,
+    threadId: state.threadId
   };
 };
+
 
 export default connect(mapStateToProps)(BoxScene);

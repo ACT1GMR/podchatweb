@@ -1,8 +1,8 @@
-// src/list/SendMessage.js
+// src/list/messageActions.js
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import uuidv1 from "uuid";
-import { addArticle } from "../../actions/SendMessage";
+import { addArticle } from "../../actions/messageActions";
 import BoxRightNav from "./BoxContactList";
 import BoxScene from "./BoxScene";
 import '../../../styles/pages/box/index.scss';
