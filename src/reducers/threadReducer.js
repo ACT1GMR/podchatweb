@@ -1,7 +1,7 @@
 import {CREATE_THREAD, GET_THREAD_MESSAGE_LIST} from "../constants/actionTypes";
 
-const createThread = (state = {
-  contact: null,
+export const createThreadReducer = (state = {
+  thread: null,
   isFetching: true,
   isFetched: false,
   error: false
@@ -18,7 +18,7 @@ const createThread = (state = {
   }
 };
 
-const getThreadMessageList = (state = {
+export const threadMessageListReducer = (state = {
   messages: [],
   isFetching: true,
   isFetched: false,
@@ -35,6 +35,3 @@ const getThreadMessageList = (state = {
       return state;
   }
 };
-
-export {createThread, getThreadMessageList}
-

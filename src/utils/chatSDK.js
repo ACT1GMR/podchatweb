@@ -3,7 +3,7 @@ export default ({
     e({a: 2});
   },
   getContactList: e=>{
-    e([{a: 2}]);
+    e([{firstName: 'behnam'}]);
   },
   createThread: e=>{
     e({a: 2});

@@ -1,55 +1,52 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
-import {addArticle, sendMessageService} from '../../actions/messageActions'
-import {getThreadMessageListService} from '../../actions/threadActions'
-import {threadActions} from '../../actions/threadActions'
+import {sendMessage} from '../../actions/messageActions'
 import {List, ListItem} from '../../../ui_kit/components/list'
 import {connect} from "react-redux";
 import '../../../styles/pages/box/BoxScene.scss'
+import {Avatar, AvatarText, AvatarImage} from "../../../ui_kit/components/avatar";
+import {Loading, LoadingSpinner} from "../../../ui_kit/components/loading";
 
-
-class BoxScene extends Component {
+@connect(store => {
+  return {
+    threadMessages: store.threadMessages.messages,
+    threadMessagesFetching: store.threadMessages.isFetching,
+    messageSent: store.message.sentMessage
+  };
+})
+export default class BoxScene extends Component {
 
   constructor() {
     super();
-    this.state = {messages: null, messageSent: null, threadId: null};
-  }
-
-  componentDidMount(){
-    this.props.dispatch(getThreadMessageListService(this.props.threadId));
   }
 
   onFromSubmit() {
-    this.props.dispatch(sendMessageService(this.state.messageText, this.props.threadId))
+    this.props.dispatch(sendMessage(this.state.messageText, this.props.threadId))
   }
 
   render() {
-    return (
-      <form onSubmit={this.onFromSubmit}>
+    const {threadMessagesFetching, threadMessages} = this.props;
+    let childElement;
+    if (threadMessagesFetching) {
+      childElement = <Loading><LoadingSpinner/></Loading>
+    } else {
+      childElement =
         <List>
-          {this.props.messages.map(el => (
+          {threadMessages.map(el => (
             <ListItem key={el.id}>
               <Avatar>
                 <AvatarImage src=""></AvatarImage>
+                <AvatarText>{el.message}</AvatarText>
               </Avatar>
             </ListItem>
           ))}
         </List>
-        <input type="text"/>
+    }
+    return (
+      <form onSubmit={this.onFromSubmit}>
+        {childElement}
         <button type="submit">test</button>
       </form>
     );
   }
 }
-
-
-const mapStateToProps = state => {
-  return {
-    messages: state.messages,
-    messageSent: state.messageSent,
-    threadId: state.threadId
-  };
-};
-
-
-export default connect(mapStateToProps)(BoxScene);

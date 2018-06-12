@@ -8,7 +8,7 @@ const initialState = {
 };
 export default (state = initialState, action) => {
   switch (action.type) {
-    case GET_CONTACT_LIST():
+    case GET_CONTACT_LIST("PENDING"):
       return {...state, isFetching: true};
     case GET_CONTACT_LIST("FETCHED"):
       return {...state, isFetching: false, isFetched: true, contacts: action.payload};
