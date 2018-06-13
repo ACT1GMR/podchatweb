@@ -1,16 +1,15 @@
-// src/js/constants/actionTypes.js
-const buildPromiseMessage = (base, type) =>{
+export const buildPromiseMessage = (baseMessage, type) => {
   if(!type) {
-    return base;
+    return baseMessage;
   }
-  if(type === "ERROR") {
-    return `${base}_REJECTED`;
+  if (type === "ERROR") {
+    return `${baseMessage}_REJECTED`;
   }
-  if(type === "FETCHED") {
-    return `${base}_FULFILLED`;
+  if (type === "SUCCESS") {
+    return `${baseMessage}_FULFILLED`;
   }
-  if(type === 'PENDING'){
-    return `${base}_PENDING`;
+  if (type === 'PENDING') {
+    return `${baseMessage}_PENDING`;
   }
 };
 

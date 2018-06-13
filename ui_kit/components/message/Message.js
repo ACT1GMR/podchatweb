@@ -1,8 +1,8 @@
 // src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/avatar/Avatar.scss'
+import '../../styles/modules/message/Message.scss'
 
-export default class Avatar extends Component {
+export default class Message extends Component {
 
   constructor() {
     super();
@@ -10,7 +10,7 @@ export default class Avatar extends Component {
 
   render() {
     return (
-      <div className="Avatar">
+      <div className="Message">
         {this.props.children}
       </div>
     );

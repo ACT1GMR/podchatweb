@@ -1,14 +1,18 @@
 export default ({
-  sendMessage: e=>{
-    e({a: 2});
+  sendMessage: (e, params) => {
+    e({text: params});
   },
-  getContactList: e=>{
-    e([{firstName: 'behnam'}]);
+  getContactList: e => {
+    e([
+      {firstName: 'behnam', lastName: 'salarinia', id: 'ghiO'},
+      {firstName: 'mohammad', lastName: 'bagheri', id: 'ghiO'}
+
+    ]);
   },
-  createThread: e=>{
-    e({a: 2});
+  createThread: e => {
+    e({threadId: 'ahGo'});
   },
-  getThreadMessageList: e=>{
-    e({a: 2});
+  getThreadMessageList: e => {
+    e([{text: "Im testing chat api"}, {text: "Im testing chat api"}, {text: "Im testing chat api"}]);
   },
 })

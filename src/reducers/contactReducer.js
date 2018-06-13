@@ -1,19 +1,19 @@
 import {GET_CONTACT_LIST} from "../constants/actionTypes";
+import {stateMessage, stateObject} from "../utils/serviceStateGenerator";
 
-const initialState = {
+export default (state = {
   contacts: [],
-  isFetching: true,
-  isFetched: false,
+  fetching: false,
+  fetched: false,
   error: false
-};
-export default (state = initialState, action) => {
+}, action) => {
   switch (action.type) {
     case GET_CONTACT_LIST("PENDING"):
-      return {...state, isFetching: true};
-    case GET_CONTACT_LIST("FETCHED"):
-      return {...state, isFetching: false, isFetched: true, contacts: action.payload};
-    case GET_CONTACT_LIST("REJECTED"):
-      return {...state, isFetching: false, isFetched: true, error: action.payload};
+      return {...state, ...stateObject("PENDING")};
+    case GET_CONTACT_LIST("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "contacts")};
+    case GET_CONTACT_LIST("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;
   }

@@ -25,6 +25,6 @@ export default class {
   }
 
   static getThreadMessageList(threadId) {
-    return createPromise('createThread', threadId);
+    return createPromise('getThreadMessageList', threadId);
   }
 }

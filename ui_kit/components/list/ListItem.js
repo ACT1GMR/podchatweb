@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import '../../styles/modules/list/ListItem.scss'
 
-class ListItem extends Component {
+export default class ListItem extends Component {
 
   constructor() {
     super();
@@ -10,11 +10,9 @@ class ListItem extends Component {
 
   render() {
     return (
-      <li className="ListItem ListItem--selection">
+      <li className="ListItem ListItem--selection" onClick={this.props.onClick}>
         {this.props.children}
       </li>
     );
   }
 }
-
-export default ListItem;

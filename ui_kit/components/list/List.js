@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import '../../styles/modules/list/List.scss'
 
-class List extends Component {
+export default class List extends Component {
 
   constructor() {
     super();
@@ -16,5 +16,3 @@ class List extends Component {
     );
   }
 }
-
-export default List;

@@ -3,7 +3,7 @@ import {SEND_MESSAGE} from "../constants/actionTypes";
 
 export const sendMessage = (text, threadId) => {
   return dispatch => dispatch({
-    type: SEND_MESSAGE,
+    type: SEND_MESSAGE(),
     payload: chatSDKWrapper.sendMessage(text, threadId)
   });
 };

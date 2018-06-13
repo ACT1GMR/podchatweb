@@ -1,6 +1,6 @@
 // src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/divider/divider.scss'
+import '../../styles/modules/divider/Divider.scss'
 
 class List extends Component {
 
