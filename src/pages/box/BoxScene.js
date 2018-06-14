@@ -1,6 +1,7 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import classnames from 'classnames'
 
 //strings
 import strings from '../../constants/localization'
@@ -17,6 +18,15 @@ import {Message} from "../../../ui_kit/components/message";
 
 //styling
 import '../../../styles/pages/box/BoxScene.scss'
+import AvatarName from "../../../ui_kit/components/avatar/AvatarName";
+
+const classNames = {
+  boxScene: 'BoxScene',
+  boxSceneForm: 'BoxScene__form',
+  boxSceneInputContainer: 'BoxScene__inputContainer',
+  boxSceneMessageInput: 'BoxScene__messageInput',
+  boxSceneMessageButton: 'BoxScene__messageButton'
+};
 
 @connect(store => {
   return {
@@ -57,34 +67,45 @@ export default class BoxScene extends Component {
   render() {
     const {threadMessagesFetching, threadMessages, threadId} = this.props;
     const {messageText} = this.state;
-    let childElement;
+    let childElement, chatInput;
     if (!threadId) {
       childElement = <Message>{strings.pleaseStartAThreadFirst}</Message>
     } else if (threadMessagesFetching) {
       childElement = <Loading><LoadingSpinner/></Loading>
     } else {
       childElement = (
-        <div>
-          <List>
-            {threadMessages.map(el => (
-              <ListItem key={el.id}>
-                <Avatar>
+        <List>
+          {threadMessages.map(el => (
+            <ListItem key={el.id}>
+              <Avatar left={!el.byMe}>
+                <div>
                   <AvatarImage src=""/>
-                  <AvatarText>{el.text}</AvatarText>
-                </Avatar>
-              </ListItem>
-            ))}
-          </List>
-          <input type="text" onChange={this.onTextChange} value={messageText}/>
-          <button type="submit">test</button>
+                  <AvatarName bottom={true} small={true}>{el.participant.name}</AvatarName>
+                </div>
+                <AvatarText>{el.message}</AvatarText>
+              </Avatar>
+            </ListItem>
+          ))}
+        </List>
+      );
+      chatInput =
+        <div className={classNames.boxSceneInputContainer}>
+          <input className={classNames.boxSceneMessageInput}
+                 type="text"
+                 placeholder={strings.pleaseWriteHere}
+                 onChange={this.onTextChange}
+                 value={messageText}/>
+          <button type="submit" className={classNames.boxSceneMessageButton}> ></button>
         </div>
-      )
     }
     return (
-      <form onSubmit={this.onFormSubmit}>
-        {childElement}
+      <section className={classNames.boxScene}>
+        <form onSubmit={this.onFormSubmit} className={classNames.boxSceneForm}>
+          {childElement}
+          {chatInput}
+        </form>
 
-      </form>
+      </section>
     );
   }
 }

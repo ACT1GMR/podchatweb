@@ -1,7 +1,11 @@
 .ListItem {
+  padding: 10px;
+}
 
+.ListItem--selection {
+  cursor: pointer;
 }
 
 .ListItem--selection:hover {
-  background-color: #ccc;
+  background-color: $color-primary-light;
 }

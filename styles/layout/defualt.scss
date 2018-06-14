@@ -3,3 +3,7 @@ html {
   font-family: $font-family,Tahoma,"DejaVu Sans",helvetica,arial,freesans,sans-serif;
   direction: rtl;
 }
+
+body * {
+  box-sizing: border-box;
+}

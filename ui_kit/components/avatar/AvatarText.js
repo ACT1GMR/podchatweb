@@ -10,7 +10,7 @@ export default class AvatarText extends Component {
 
   render() {
     return (
-      <p className="AvatarName">{this.props.children}</p>
+      <p className="AvatarText">{this.props.children}</p>
     );
   }
 }

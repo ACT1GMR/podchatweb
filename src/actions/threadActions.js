@@ -16,13 +16,3 @@ export const getThreadMessageList = (threadId) => {
     payload: chatSDKWrapper.getThreadMessageList(threadId)
   });
 };
-
-
-export function createThreadAndGetMessages(contactId) {
-  return (dispatch, getState) => {
-    return dispatch(createThread(contactId)).then(() => {
-      const threadId = getState().thread.thread.threadId;
-      return dispatch(getThreadMessageList(threadId));
-    })
-  }
-}

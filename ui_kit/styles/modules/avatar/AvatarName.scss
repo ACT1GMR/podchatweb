@@ -1,3 +1,25 @@
 .AvatarName {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+  color: $color-text;
+  font-weight: $font-weight-bold;
+}
 
+.AvatarName--sm {
+  font-size: $font-size-tiny;
+}
+
+.AvatarName--lg {
+  font-size: $font-size-large;
+}
+
+.AvatarName--bottom {
+  display: block;
+  margin-right: -5px;
+  margin: 3px -5px;
+}
+
+.AvatarName--invert {
+  color: $color-text-invert;
 }

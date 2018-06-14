@@ -16,7 +16,7 @@ module.exports = {
         use: [
           {
             loader: "html-loader",
-            options: { minimize: true }
+            options: {minimize: true}
           }
         ]
       },
@@ -24,9 +24,16 @@ module.exports = {
         test: /\.scss$/,
         use: [
           "style-loader", // creates style nodes from JS strings
-          "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS
-        ]
+          "css-loader",
+          {
+            loader: 'sass-loader',
+            options: {
+              data: '@import "../variables.scss";',
+              includePaths: [__dirname, 'styles']
+            }
+          }
+        ],
+
       }
     ]
   },

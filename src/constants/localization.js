@@ -3,6 +3,7 @@ import LocalizedStrings from 'react-localization';
 let strings = new LocalizedStrings({
   fa: {
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کنید!!",
+    pleaseWriteHere: "اینجا بنویسید...",
     boiledEgg: "Boiled egg",
     softBoiledEgg: "Soft-boiled egg",
     choice: "How to choose the egg"

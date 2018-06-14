@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import uuidv1 from "uuid";
 import { addArticle } from "../../actions/messageActions";
-import BoxRightNav from "./BoxContactList";
+import BoxContactList from "./BoxContactList";
 import BoxScene from "./BoxScene";
 import '../../../styles/pages/box/index.scss';
 
@@ -14,9 +14,7 @@ const mapDispatchToProps = dispatch => {
 };
 
 const classNames = {
-  box: 'Box',
-  boxRightNav: 'Box__rightNav',
-  boxScene: 'Box__scene'
+  box: 'Box'
 };
 
 class ConnectedForm extends Component {
@@ -27,8 +25,8 @@ class ConnectedForm extends Component {
   render() {
     return (
       <div className={classNames.box}>
-        <BoxRightNav className={classNames.boxRightNav}/>
-        <BoxScene className={classNames.boxScene}/>
+        <BoxContactList/>
+        <BoxScene/>
       </div>
     );
   }

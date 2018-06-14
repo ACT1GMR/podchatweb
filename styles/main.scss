@@ -1,15 +1,15 @@
 /*BASE*/
-@import "_base/variables";
-@import '_base/reset.scss';
-@import '_base/normalize.scss';
+@import "variables";
+@import 'base/reset';
+@import 'base/normalize';
 
 
 /*UTILS*/
-@import 'utils/utils.scss';
+@import 'utils/utils';
 
 
 /*THIRD PARTY MODULES*/
 
 
 /*LAYOUT*/
-@import "layout/defualt.scss";
+@import "layout/defualt";
