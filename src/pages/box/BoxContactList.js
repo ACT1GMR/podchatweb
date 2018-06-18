@@ -11,8 +11,8 @@ import {createThread} from "../../actions/threadActions";
 import {addArticle} from "../../actions/messageActions";
 
 //UI components
-import {Avatar, AvatarImage, AvatarName} from '../../../ui_kit/components/avatar'
-import {List, ListItem} from '../../../ui_kit/components/list'
+import Avatar, {AvatarImage, AvatarName} from '../../../ui_kit/components/avatar'
+import List, {ListItem} from '../../../ui_kit/components/list'
 
 //styling
 import '../../../styles/pages/box/BoxContactList.scss'
@@ -29,8 +29,8 @@ const classNames = {
 })
 export default class BoxContactList extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onContactClick.bind(this);
   }
 

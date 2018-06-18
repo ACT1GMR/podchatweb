@@ -1,35 +1,45 @@
-// src/list/messageActions.js
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import uuidv1 from "uuid";
-import { addArticle } from "../../actions/messageActions";
+// src/list/BoxScene.jss
+import React, {Component} from "react";
+import {connect} from "react-redux";
+
+//strings
+import strings from '../../constants/localization'
+
+//actions
+import {setChatInstance} from "../../actions/chatActions";
+
+//components
 import BoxContactList from "./BoxContactList";
 import BoxScene from "./BoxScene";
-import '../../../styles/pages/box/index.scss';
 
-const mapDispatchToProps = dispatch => {
+//styling
+import '../../../styles/pages/box/index.scss'
+
+@connect(store => {
   return {
-    addArticle: article => dispatch(addArticle(article))
+    chatInstance: store.chat.chatSDK
   };
-};
-
-const classNames = {
-  box: 'Box'
-};
-
-class ConnectedForm extends Component {
+})
+export default class Box extends Component {
   constructor() {
     super();
   }
 
+  componentDidMount() {
+    this.props.dispatch(setChatInstance("232"))
+  }
+
   render() {
+    if (!this.props.chatInstance) {
+      return <div className="Box">
+        {strings.boiledEgg}
+      </div>
+    }
     return (
-      <div className={classNames.box}>
+      <div className="Box">
         <BoxContactList/>
         <BoxScene/>
       </div>
     );
   }
 }
-const Form = connect(null, mapDispatchToProps)(ConnectedForm);
-export default Form;

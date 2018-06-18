@@ -7,36 +7,3 @@
   position: relative;
   top: 10%;
 }
-
-.BoxScene__form {
-  display: inline-block;
-  height: calc(100% - 60px);
-  overflow: hidden;
-  overflow-y: auto;
-  width: 100%;
-}
-
-.BoxScene__inputContainer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 20px;
-}
-
-.BoxScene__messageInput {
-  padding: 10px;
-  border: none;
-  width: 100%;
-}
-
-.BoxScene__messageButton {
-  position: absolute;
-  left: 20px;
-  padding: 17px;
-  border: none;
-  color: #555;
-  font-family: monospace;
-  font-weight: bold;
-  line-height: 0;
-}

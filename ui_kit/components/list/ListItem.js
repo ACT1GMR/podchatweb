@@ -6,7 +6,9 @@ import '../../styles/modules/list/ListItem.scss'
 export default class ListItem extends Component {
 
   static defaultProps = {
-    selection: false
+    selection: false,
+    leftTextAlign: false,
+    onClick: null
   };
 
   constructor(props) {
@@ -14,10 +16,10 @@ export default class ListItem extends Component {
   }
 
   render() {
-    let {selection} = this.props;
+    const {selection, leftTextAlign} = this.props;
     const classNames = classnames({"ListItem--selection": selection});
     return (
-      <li className={`ListItem ${classNames}`} onClick={this.props.onClick}>
+      <li className={`ListItem ${classNames}`} onClick={this.props.onClick} >
         {this.props.children}
       </li>
     );

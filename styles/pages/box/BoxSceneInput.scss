@@ -1,0 +1,24 @@
+.BoxSceneInput {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+}
+
+.BoxSceneInput__text {
+  padding: 10px;
+  border: none;
+  width: 100%;
+}
+
+.BoxSceneInput__button {
+  position: absolute;
+  left: 20px;
+  padding: 17px;
+  border: none;
+  color: #555;
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 0;
+}

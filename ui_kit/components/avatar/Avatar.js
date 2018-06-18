@@ -7,7 +7,6 @@ export default class Avatar extends Component {
 
 
   static defaultProps = {
-    left: false
   };
 
   constructor(props) {
@@ -16,7 +15,7 @@ export default class Avatar extends Component {
 
   render() {
     let {left} = this.props;
-    const classNames = classnames({"Avatar--left": left});
+    const classNames = classnames({});
     return (
       <div className={`Avatar ${classNames}`}>
         {this.props.children}
