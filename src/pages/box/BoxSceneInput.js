@@ -11,19 +11,14 @@ import {sendMessage} from '../../actions/messageActions'
 import {getThreadMessageList} from "../../actions/threadActions";
 
 //components
-import List, {ListItem} from '../../../ui_kit/components/list'
-import Avatar, {AvatarText, AvatarImage} from "../../../ui_kit/components/avatar";
-import Loading, {LoadingSpinner} from "../../../ui_kit/components/loading";
-import Message from "../../../ui_kit/components/message";
-import Content from "../../../ui_kit/components/content";
-import Container from "../../../ui_kit/components/container";
 
 //styling
 import '../../../styles/pages/box/BoxSceneInput.scss'
 
 @connect(store => {
   return {
-    messageSent: store.message.sentMessage
+    messageSent: store.message.sentMessage,
+    threadId: store.thread.thread.id
   };
 })
 export default class BoxSceneInput extends Component {
@@ -35,13 +30,6 @@ export default class BoxSceneInput extends Component {
     this.state = {
       messageText: ""
     }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    if (this.props.threadId !== nextProps.threadId) {
-      this.props.dispatch(getThreadMessageList(nextProps.threadId));
-    }
-    return true;
   }
 
   onFormSubmit(evt) {

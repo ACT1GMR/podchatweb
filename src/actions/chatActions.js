@@ -21,11 +21,10 @@ export const setChatInstance = token => {
           payload: e
         });
       },
-      onChatReady() {
+      onChatReady(e) {
         dispatch({
           type: GET_CHAT_INSTANCE("SUCCESS"),
-          payload: chatSDKInstance
-
+          payload: e
         })
       }
     });

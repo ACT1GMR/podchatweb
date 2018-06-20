@@ -18,7 +18,7 @@ import '../../../styles/pages/box/BoxScene.scss'
 
 @connect(store => {
   return {
-    threadId: store.thread.thread.threadId
+    threadId: store.thread.thread.id
   };
 })
 export default class BoxScene extends Component {
@@ -27,18 +27,20 @@ export default class BoxScene extends Component {
     super();
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (this.props.threadId !== nextProps.threadId) {
-      this.props.dispatch(getThreadMessageList(nextProps.threadId));
+  componentDidUpdate(nextProps) {
+    if (this.props.threadId) {
+      this.props.dispatch(getThreadMessageList(this.props.threadId));
     }
-    return true;
   }
 
   render() {
     const {threadId} = this.props;
     if (!threadId) {
-
-      return <section className="BoxScene"><Message>{strings.pleaseStartAThreadFirst}</Message></section>
+      return (
+        <section className="BoxScene">
+          <Message>{strings.pleaseStartAThreadFirst}</Message>
+        </section>
+      );
     }
     return (
       <section className="BoxScene">

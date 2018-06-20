@@ -7,7 +7,7 @@ import strings from '../../constants/localization'
 
 //actions
 import {getContactList} from '../../actions/contactActions'
-import {createThread} from "../../actions/threadActions";
+import {createThread, getThreads, getThreadMessageList} from "../../actions/threadActions";
 import {addArticle} from "../../actions/messageActions";
 
 //UI components
@@ -15,43 +15,44 @@ import Avatar, {AvatarImage, AvatarName} from '../../../ui_kit/components/avatar
 import List, {ListItem} from '../../../ui_kit/components/list'
 
 //styling
-import '../../../styles/pages/box/BoxContactList.scss'
-
-//css classes
-const classNames = {
-  boxContactList: 'BoxContactList'
-};
+import '../../../styles/pages/box/BoxThreads.scss'
 
 @connect(store => {
   return {
-    contacts: store.contact.contacts
+    threads: store.threadList.threads,
+    message: store.message.message,
+    threadId: store.thread.thread.id
   };
 })
-export default class BoxContactList extends Component {
+export default class BoxThreads extends Component {
 
   constructor(props) {
     super(props);
-    this.onContactClick.bind(this);
+    this.onThreadClick.bind(this);
   }
 
   componentDidMount() {
-    this.props.dispatch(getContactList());
+    this.props.dispatch(getThreads());
   }
 
-  onContactClick(contactId) {
-    this.props.dispatch(createThread(contactId));
+  componentDidUpdate() {
+
+  }
+
+  onThreadClick(thread) {
+    this.props.dispatch(createThread(null, thread));
   }
 
   render() {
-    const {contacts} = this.props;
+    const {threads} = this.props;
     return (
-      <section className={classNames.boxContactList}>
+      <section className="BoxThreads">
         <List>
-          {contacts.map(el => (
-            <ListItem key={el.id} onClick={this.onContactClick.bind(this, el.id)} selection={true}>
+          {threads.map(el => (
+            <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true}>
               <Avatar>
                 <AvatarImage/>
-                <AvatarName textInvert={true}>{el.firstName} {el.lastName}</AvatarName>
+                <AvatarName textInvert={true}>{el.title}</AvatarName>
               </Avatar>
             </ListItem>
           ))}

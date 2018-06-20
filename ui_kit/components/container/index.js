@@ -18,7 +18,7 @@ export default class Container extends Component {
     const {inline, leftTextAlign, maxWidth} = this.props;
     const classNames = classnames({"Container--inline": inline, 'u-leftTextAlign': leftTextAlign});
     return (
-      <div className={`Content ${classNames}`} style={{maxWidth: `${maxWidth ? `${maxWidth}%` : 'auto'}`}}>
+      <div className={`Content ${classNames}`} style={{maxWidth: `${maxWidth ? `${maxWidth}` : 'auto'}`}}>
         {this.props.children}
       </div>
     );

@@ -1,4 +1,10 @@
-import {CREATE_THREAD, GET_THREAD_MESSAGE_LIST, SEND_MESSAGE} from "../constants/actionTypes";
+import {
+  CREATE_THREAD,
+  GET_THREAD_MESSAGE_LIST,
+  GET_THREAD_LIST,
+  NEW_THREAD,
+  NEW_MESSAGE
+} from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const createThreadReducer = (state = {
@@ -9,10 +15,30 @@ export const createThreadReducer = (state = {
 }, action) => {
   switch (action.type) {
     case CREATE_THREAD("PENDING"):
-      return {...state, ...stateObject("PENDING")};
-    case CREATE_THREAD("SUCCESS"):
+      return {...state, ...stateObject("PENDING", {}, "thread")};
+    case NEW_THREAD:
+      return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
+    case CREATE_THREAD("CACHE"):
       return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
     case CREATE_THREAD("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadsReducer = (state = {
+  threads: [],
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case GET_THREAD_LIST("PENDING"):
+      return {...state, ...stateObject("PENDING", action.payload)};
+    case GET_THREAD_LIST("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload.reverse(), "threads")};
+    case GET_THREAD_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;
@@ -27,14 +53,26 @@ export const threadMessageListReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
+    case CREATE_THREAD("PENDING"):
+      return {...state, ...stateObject("PENDING", [])};
     case GET_THREAD_MESSAGE_LIST("PENDING"):
-      return {...state,...stateObject("PENDING", action.payload)};
+      return {...state, ...stateObject("PENDING", action.payload)};
     case GET_THREAD_MESSAGE_LIST("SUCCESS"):
-      return {...state, ...stateObject("SUCCESS", action.payload, "messages")};
+      return {...state, ...stateObject("SUCCESS", action.payload.reverse(), "messages")};
     case GET_THREAD_MESSAGE_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
-    case SEND_MESSAGE("SUCCESS"):
+    case NEW_MESSAGE: {
+      const firstMessage = state.messages[0];
+      if (firstMessage) {
+        if (action.payload.threadId !== firstMessage.threadId) {
+          return state;
+        }
+      }
+      if (state.messages.filter(e => e.id === action.payload.id).length) {
+        return state;
+      }
       return {...state, messages: [...state.messages, action.payload]};
+    }
     default:
       return state;
   }

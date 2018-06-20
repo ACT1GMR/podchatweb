@@ -1,4 +1,4 @@
-import {SEND_MESSAGE} from "../constants/actionTypes";
+import {SEND_MESSAGE, NEW_MESSAGE} from "../constants/actionTypes";
 
 export const sendMessage = (text, threadId) => {
   return (dispatch, getState) => {
@@ -11,25 +11,11 @@ export const sendMessage = (text, threadId) => {
   }
 };
 
-export const messageReceived = (text, threadId) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chat.chatSDK;
+export const messageReceived = (message) => {
+  return dispatch => {
     dispatch({
-      type: SEND_MESSAGE(),
-      payload: chatSDK.sendMessage(text, threadId)
-    });
-  }
-};
-
-
-export const threadCreated = (text, threadId) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chat.chatSDK;
-    dispatch({
-      type: SEND_MESSAGE(),
-      payload: chatSDK.sendMessage(text, threadId)
+      type: NEW_MESSAGE,
+      payload: message
     });
   }
 };

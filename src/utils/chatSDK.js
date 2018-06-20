@@ -17,11 +17,7 @@ export default class ChatSDK {
       ssoHost: "172.16.110.76", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
-      // token: "c0866c4cc5274ea7ada6b01575b19d24", // {**REQUIRED**} SSO Token Zamani
-      // token: "afa51d8291dc4072a0831d3a18cb5030", // {**REQUIRED**} SSO Token Barzegar
-      // token: "ed4be26a60c24ed594e266a2181424c5",  //  {**REQUIRED**} SSO Token Abedi
-      //token: "e4f1d5da7b254d9381d0487387eabb0a",  // {**REQUIRED**} SSO Token Felfeli
-      //token: "bebc31c4ead6458c90b607496dae25c6",  // {**REQUIRED**} SSO Token Alexi
+      token: ~navigator.userAgent.indexOf('Firefox') ? "5bbfe95d778c4a2da8c9dfc0d8124c64" : "daae6455d68d480ea7c57f7cf988b956", // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
       connectionCheckTimeout: 90000, // Socket connection live time on server
@@ -37,7 +33,7 @@ export default class ChatSDK {
     };
     this.chatAgent = new PodChat(params);
     this.onNewThread = props.onNewThread;
-    this.onNewThread = props.onMessage;
+    this.onMessage = props.onMessage;
     this.onChatReady = props.onChatReady;
     this._onMessage();
     this._onNewThread();
@@ -46,22 +42,24 @@ export default class ChatSDK {
 
   _onNewThread() {
     this.chatAgent.on("newThread", e => {
-
+      this.onNewThread(e);
     });
   }
 
   _onMessage() {
-    this.chatAgent.on("message", function (msg) {
+    this.chatAgent.on("message", (msg) => {
       const params = {
         messageId: msg.messageId,
         owner: msg.owner
       };
-      callback(params);
+      this.onMessage(msg);
     });
   }
 
   _onChatReady() {
-    this.chatAgent.on("chatReady", e => this.onChatReady(this));
+    this.chatAgent.on("chatReady", e => {
+      this.onChatReady(this)
+    });
   }
 
 
@@ -69,8 +67,7 @@ export default class ChatSDK {
   getContactList(resolve, reject, params) {
     const getContactsParams = {
       count: 50,
-      offset: 0,
-      params
+      offset: 0
     };
     this.chatAgent.getContacts(getContactsParams, function (contactsResult) {
       if (!errorHandling(contactsResult, reject)) {
@@ -82,7 +79,6 @@ export default class ChatSDK {
   @promiseDecorator
   createThread(resolve, reject, params) {
     const createThreadParams = {
-      "title": "Thread Title Sample",
       "type": "NORMAL",
       "invitees":
         [{"id": params, "idType": "TO_BE_USER_CONTACT_ID"}]
@@ -95,30 +91,58 @@ export default class ChatSDK {
     const getThreadHistoryParams = {
       count: 50,
       offset: 0,
-      threadId: null,
-      ...params
+      threadId: params
     };
     this.chatAgent.getThreadHistory(getThreadHistoryParams, function (result) {
       if (!errorHandling(result, reject)) {
+        for(let history of result.result.history) {
+          history.threadId = params;
+        }
         return resolve(result.result.history);
       }
     });
   }
 
   @promiseDecorator
-  sendMessage(resolve, reject, params) {
+  getThreads(resolve, reject) {
+    const getThreadsParams = {
+      count: 50,
+      offset: 0
+    };
+    this.chatAgent.getThreads(getThreadsParams, function (result) {
+      if (!errorHandling(result, reject)) {
+        return resolve(result.result.threads);
+      }
+    });
+  }
+
+  @promiseDecorator
+  sendMessage(resolve, reject, content, threadId) {
     const sendChatParams = {
-      threadId: null,
-      content: null,
-      ...params
+      threadId,
+      content
     };
 
     this.chatAgent.send(sendChatParams, {
       onSent: function (result) {
         if (!errorHandling(result, reject)) {
-          return resolve(result);
+          return resolve({
+            result, ...{
+              message: content, participant: {}
+            }
+          });
         }
       }
     });
   }
+
+  @promiseDecorator
+  getUserInfo(resolve, reject) {
+    this.chatAgent.getUserInfo((result) => {
+      if (!errorHandling(result, reject)) {
+        return resolve(result.result.user);
+      }
+    });
+  }
+
 };

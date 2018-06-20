@@ -7,3 +7,16 @@ export function promiseDecorator(target, name, descriptor) {
   };
   return descriptor;
 }
+
+export function defaultState(defaultState) {
+  return (target, name, descriptor) => {
+    const original = descriptor.value;
+    descriptor.value = function (...args) {
+      if (!args[0]) {
+        args[0] = defaultState;
+      }
+      original.apply(this, [...args, defaultState]);
+    };
+    return descriptor;
+  }
+}

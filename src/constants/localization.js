@@ -4,7 +4,7 @@ let strings = new LocalizedStrings({
   fa: {
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کنید!!",
     pleaseWriteHere: "اینجا بنویسید...",
-    boiledEgg: "Boiled egg",
+    waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت...",
     softBoiledEgg: "Soft-boiled egg",
     choice: "How to choose the egg"
   },

@@ -1,9 +1,14 @@
 export const stateObject = (state, response, payloadKey) => {
+  let object;
   if (state === "PENDING") {
-    return {fetching: true};
+    object = {fetching: true};
+  } else if (state === "REJECTED") {
+    object = {fetching: false, fetched: false, error: response};
+  } else {
+    object = {fetching: false, fetched: true};
   }
-  if (state === "REJECTED") {
-    return {fetching: false, fetched: false, error: response};
+  if (response) {
+    object = {...object, [payloadKey]: response}
   }
-  return {fetching: false, fetched: true, [payloadKey]: response};
+  return object;
 };
