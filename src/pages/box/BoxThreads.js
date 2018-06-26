@@ -17,6 +17,8 @@ import List, {ListItem} from '../../../ui_kit/components/list'
 //styling
 import '../../../styles/pages/box/BoxThreads.scss'
 
+const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
+
 @connect(store => {
   return {
     threads: store.threadList.threads,
@@ -45,13 +47,14 @@ export default class BoxThreads extends Component {
 
   render() {
     const {threads} = this.props;
+    const {defaultAvatar} = consts;
     return (
       <section className="BoxThreads">
         <List>
           {threads.map(el => (
             <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true}>
               <Avatar>
-                <AvatarImage/>
+                <AvatarImage src={el.image ? el.image : defaultAvatar}/>
                 <AvatarName textInvert={true}>{el.title}</AvatarName>
               </Avatar>
             </ListItem>

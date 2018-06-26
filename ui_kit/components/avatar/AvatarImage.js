@@ -8,7 +8,8 @@ export default class AvatarImage extends Component {
   static defaultProps = {
     small: false,
     large: false,
-    xLarge: false
+    xLarge: false,
+    src: null
   };
 
   constructor(props) {
@@ -16,11 +17,12 @@ export default class AvatarImage extends Component {
   }
 
   render() {
-    let {small, large, xLarge} = this.props;
+    let {src, small, large, xLarge} = this.props;
     const sizeClassNames = classnames({'AvatarImage--sm': small, 'AvatarImage--lg': large, 'AvatarImage--xlg': xLarge});
-
     return (
-      <img className={`AvatarImage ${sizeClassNames}`}/>
+      <div className={`AvatarImage ${sizeClassNames}`}>
+        <img src={src} className="AvatarImage__image"/>
+      </div>
     );
   }
 }

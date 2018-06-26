@@ -17,17 +17,17 @@ export default class ChatSDK {
       ssoHost: "172.16.110.76", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
-      token: ~navigator.userAgent.indexOf('Firefox') ? "5bbfe95d778c4a2da8c9dfc0d8124c64" : "daae6455d68d480ea7c57f7cf988b956", // {**REQUIRED**} SSO Token Zamani
+      token: ~navigator.userAgent.indexOf('Firefox') ? "fc602b4caf7742398239d38832e27cf6" : "658dcf43c0434638a6a36ad0fe9d8d3d", // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
       connectionCheckTimeout: 90000, // Socket connection live time on server
       connectionCheckTimeoutThreshold: 20000, // Socket Ping time threshold
-      messageTtl: 5000, // Message time to live
+      messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
-      consoleLogging: {
+      asyncLogging: {
         onFunction: true, // log main actions on console
-        onMessageReceive: true, // log received messages on console
-        onMessageSend: true // log sent messaged on console
+        // onMessageReceive: true, // log received messages on console
+        // onMessageSend: true // log sent messaged on console
       },
       ...props.config
     };
@@ -93,7 +93,7 @@ export default class ChatSDK {
       offset: 0,
       threadId: params
     };
-    this.chatAgent.getThreadHistory(getThreadHistoryParams, function (result) {
+    this.chatAgent.getHistory(getThreadHistoryParams, function (result) {
       if (!errorHandling(result, reject)) {
         for(let history of result.result.history) {
           history.threadId = params;
@@ -123,7 +123,7 @@ export default class ChatSDK {
       content
     };
 
-    this.chatAgent.send(sendChatParams, {
+    this.chatAgent.sendTextMessage(sendChatParams, {
       onSent: function (result) {
         if (!errorHandling(result, reject)) {
           return resolve({
