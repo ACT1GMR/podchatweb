@@ -43,6 +43,10 @@ export default class BoxSceneMessages extends Component {
     }
   }
 
+  onMessageListScroll() {
+
+  }
+
   render() {
     const {threadMessagesFetching, threadMessages, user} = this.props;
     const {defaultAvatar} = consts;
@@ -62,7 +66,7 @@ export default class BoxSceneMessages extends Component {
         return <MdDone size={16} style={{margin: "0 5px"}}/>
       };
       const message = el =>
-        <Container inline={true} maxWidth="50%">
+        <Container inline={true} maxWidth="50%" inSpace={true}>
           <Content hasBackground={true} borderRadius={5}>
             {el.message}
             <ContentFooter>
@@ -72,7 +76,7 @@ export default class BoxSceneMessages extends Component {
           </Content>
         </Container>;
       const avatar = el =>
-        <Container inline={true} maxWidth="50px">
+        <Container inline={true} maxWidth="50px" inSpace={true}>
           <Avatar>
             <AvatarImage src={el.participant.image || defaultAvatar}/>
             <AvatarName bottom={true} small={true}>{el.participant.name}</AvatarName>
@@ -80,10 +84,10 @@ export default class BoxSceneMessages extends Component {
         </Container>;
       return (
         <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode}>
-          <List>
+          <List onScroll={this.onMessageListScroll}>
             {threadMessages.map(el => (
               <ListItem key={el.id}>
-                <Container leftTextAlign={!isByMe(el)}>
+                <Container leftTextAlign={!isByMe(el)} inSpace={true}>
                   {!isByMe(el) ? message(el) : avatar(el)}
                   {!isByMe(el) ? avatar(el) : message(el)}
                 </Container>

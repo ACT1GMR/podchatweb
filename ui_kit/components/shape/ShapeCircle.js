@@ -1,12 +1,11 @@
-// src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/avatar/Avatar.scss'
+import '../../styles/modules/shape/ShapeCircle.scss'
 import classnames from "classnames";
 
-export default class Avatar extends Component {
-
+export default class ShapeCircle extends Component {
 
   static defaultProps = {
+
   };
 
   constructor(props) {
@@ -14,10 +13,10 @@ export default class Avatar extends Component {
   }
 
   render() {
-    let {left} = this.props;
+    const {} = this.props;
     const classNames = classnames({});
     return (
-      <div className={`Avatar ${classNames}`}>
+      <div className={`ShapeCircle ${classNames}`}>
         {this.props.children}
       </div>
     );

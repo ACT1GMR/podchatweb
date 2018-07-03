@@ -47,5 +47,11 @@ module.exports = {
       chunkFilename: "[id].css"
     })
   ],
-  devtool: 'source-map'
+  devtool: 'source-map',
+  node: {
+    //console: false,
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 };

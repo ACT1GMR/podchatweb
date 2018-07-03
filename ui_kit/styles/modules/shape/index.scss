@@ -1,0 +1,37 @@
+.Shape {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-block;
+  text-align: center;
+  line-height: 24px;
+}
+
+.Shape--sm {
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+}
+
+.Shape--lg {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.Shape--xlg {
+  width: 64px;
+  height: 64px;
+  line-height: 64px;
+}
+
+
+.Shape--colorPrimary{
+  background-color: $color-primary;
+  color: $color-text-invert;
+}
+
+.Shape--colorAccent {
+  background-color: $color-accent;
+  color: $color-text-invert;
+}

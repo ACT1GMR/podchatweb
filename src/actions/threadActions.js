@@ -1,10 +1,10 @@
-import {CREATE_THREAD, GET_THREAD_MESSAGE_LIST, GET_THREAD_LIST, NEW_THREAD} from "../constants/actionTypes";
+import {CREATE_THREAD, GET_THREAD_MESSAGE_LIST, GET_THREAD_LIST, GET_THREAD_INFO, NEW_THREAD} from "../constants/actionTypes";
 
 export const createThread = (contactId, thread) => {
   return (dispatch, getState) => {
     if (thread) {
       return dispatch({
-        type: CREATE_THREAD('CACHE'),
+        type: CREATE_THREAD("CACHE"),
         payload: thread
       });
     }
@@ -35,15 +35,6 @@ export const getThreadMessageList = (threadId) => {
     dispatch({
       type: GET_THREAD_MESSAGE_LIST(),
       payload: chatSDK.getThreadMessageList(threadId)
-    });
-  }
-};
-
-export const newThread = (thread) => {
-  return dispatch => {
-    dispatch({
-      type: NEW_THREAD,
-      payload: thread
     });
   }
 };

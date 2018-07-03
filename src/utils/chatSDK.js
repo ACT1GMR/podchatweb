@@ -14,10 +14,10 @@ export default class ChatSDK {
   constructor(props) {
     const params = {
       socketAddress: "ws://172.16.106.26:8003/ws", // {**REQUIRED**} Socket Address
-      ssoHost: "172.16.110.76", // {**REQUIRED**} Socket Address
+      ssoHost: "http://172.16.110.76", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
-      token: ~navigator.userAgent.indexOf('Firefox') ? "fc602b4caf7742398239d38832e27cf6" : "658dcf43c0434638a6a36ad0fe9d8d3d", // {**REQUIRED**} SSO Token Zamani
+      token: ~navigator.userAgent.indexOf('Firefox') ? "e9d71dfa29654766aeddc53fc88d7fd5" : "e79e2e3f81d24a2d98cbab02fcde65ad", // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
       connectionCheckTimeout: 90000, // Socket connection live time on server
@@ -32,27 +32,24 @@ export default class ChatSDK {
       ...props.config
     };
     this.chatAgent = new PodChat(params);
-    this.onNewThread = props.onNewThread;
-    this.onMessage = props.onMessage;
+    this.onThreadEvents = props.onThreadEvents;
+    this.onMessageEvents = props.onMessageEvents;
     this.onChatReady = props.onChatReady;
-    this._onMessage();
-    this._onNewThread();
+    this._onMessageEvents();
+    this._onThreadEvents();
     this._onChatReady();
   }
 
-  _onNewThread() {
-    this.chatAgent.on("newThread", e => {
-      this.onNewThread(e);
+  _onThreadEvents() {
+    this.chatAgent.on("threadEvents", res => {
+      this.onThreadEvents(res.result.thread);
     });
   }
 
-  _onMessage() {
-    this.chatAgent.on("message", (msg) => {
-      const params = {
-        messageId: msg.messageId,
-        owner: msg.owner
-      };
-      this.onMessage(msg);
+  _onMessageEvents() {
+    this.chatAgent.on("messageEvents", (msg) => {
+      this.onMessageEvents(msg.result.message, msg.type);
+      this.chatAgent.seen({messageId: msg.result.message.id, owner: msg.result.message.ownerId});
     });
   }
 
@@ -95,7 +92,7 @@ export default class ChatSDK {
     };
     this.chatAgent.getHistory(getThreadHistoryParams, function (result) {
       if (!errorHandling(result, reject)) {
-        for(let history of result.result.history) {
+        for (let history of result.result.history) {
           history.threadId = params;
         }
         return resolve(result.result.history);
@@ -104,11 +101,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreads(resolve, reject) {
-    const getThreadsParams = {
+  getThreads(resolve, reject, threadIds) {
+    let getThreadsParams = {
       count: 50,
       offset: 0
     };
+    if (threadIds) {
+      getThreadsParams = {...getThreadsParams, threadIds};
+    }
+
     this.chatAgent.getThreads(getThreadsParams, function (result) {
       if (!errorHandling(result, reject)) {
         return resolve(result.result.threads);
@@ -143,6 +144,15 @@ export default class ChatSDK {
         return resolve(result.result.user);
       }
     });
+  }
+
+  @promiseDecorator
+  getThreadInfo(resolve, reject, threadId) {
+    this.getThreads([threadId]).then(result => {
+      if (!errorHandling(result, reject)) {
+        return resolve(result[0]);
+      }
+    })
   }
 
 };

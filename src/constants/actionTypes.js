@@ -25,3 +25,4 @@ export const CREATE_THREAD = buildPromiseMessage.bind(null, "CREATE_THREAD");
 export const GET_USER = buildPromiseMessage.bind(null, "GET_USER");
 export const NEW_MESSAGE = "NEW_MESSAGE";
 export const NEW_THREAD = "NEW_THREAD";
+export const THREAD_CHANGED = "THREAD_CHANGED";

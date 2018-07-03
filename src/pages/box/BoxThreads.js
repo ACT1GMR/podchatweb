@@ -7,15 +7,16 @@ import strings from '../../constants/localization'
 
 //actions
 import {getContactList} from '../../actions/contactActions'
-import {createThread, getThreads, getThreadMessageList} from "../../actions/threadActions";
-import {addArticle} from "../../actions/messageActions";
+import {createThread, getThreads, getThreadMessageList, getThreadInfo} from "../../actions/threadActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName} from '../../../ui_kit/components/avatar'
 import List, {ListItem} from '../../../ui_kit/components/list'
+import Shape, {ShapeCircle} from '../../../ui_kit/components/shape'
 
 //styling
 import '../../../styles/pages/box/BoxThreads.scss'
+import Container from "../../../ui_kit/components/container";
 
 const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
 
@@ -37,10 +38,6 @@ export default class BoxThreads extends Component {
     this.props.dispatch(getThreads());
   }
 
-  componentDidUpdate() {
-
-  }
-
   onThreadClick(thread) {
     this.props.dispatch(createThread(null, thread));
   }
@@ -53,10 +50,18 @@ export default class BoxThreads extends Component {
         <List>
           {threads.map(el => (
             <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true}>
-              <Avatar>
-                <AvatarImage src={el.image ? el.image : defaultAvatar}/>
-                <AvatarName textInvert={true}>{el.title}</AvatarName>
-              </Avatar>
+              <Container relative={true}>
+                <Avatar>
+                  <AvatarImage src={el.image ? el.image : defaultAvatar}/>
+                  <AvatarName textInvert={true}>{el.title}</AvatarName>
+                </Avatar>
+                {el.unreadCount ?
+                  <Container absolute={true} centerLeft={true}>
+                    <Shape cirlce={true} colorAccent={true}>
+                      <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                    </Shape>
+                  </Container> : ""}
+              </Container>
             </ListItem>
           ))}
         </List>
