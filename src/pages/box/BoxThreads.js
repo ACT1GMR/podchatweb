@@ -7,7 +7,7 @@ import strings from '../../constants/localization'
 
 //actions
 import {getContactList} from '../../actions/contactActions'
-import {createThread, getThreads, getThreadMessageList, getThreadInfo} from "../../actions/threadActions";
+import {threadCreat, getThreads, getThreadMessageList, getThreadInfo} from "../../actions/threadActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName} from '../../../ui_kit/components/avatar'
@@ -39,7 +39,7 @@ export default class BoxThreads extends Component {
   }
 
   onThreadClick(thread) {
-    this.props.dispatch(createThread(null, thread));
+    this.props.dispatch(threadCreat(null, thread));
   }
 
   render() {

@@ -1,12 +1,12 @@
 // src/actions/messageActions.js
-import {NEW_THREAD, GET_CHAT_INSTANCE, NEW_MESSAGE, GET_CONTACT_LIST, THREAD_CHANGED} from "../constants/actionTypes";
+import {THREAD_NEW, CHAT_GET_INSTANCE, MESSAGE_NEW, CONTACT_GET_LIST, THREAD_CHANGED} from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const setChatInstance = token => {
   return (dispatch) => {
     dispatch({
-      type: GET_CHAT_INSTANCE(),
+      type: CHAT_GET_INSTANCE(),
       payload: null
     });
     const chatSDKInstance = new ChatSDK({
@@ -24,7 +24,7 @@ export const setChatInstance = token => {
       },
       onChatReady(e) {
         dispatch({
-          type: GET_CHAT_INSTANCE("SUCCESS"),
+          type: CHAT_GET_INSTANCE("SUCCESS"),
           payload: e
         })
       },
@@ -32,13 +32,13 @@ export const setChatInstance = token => {
       //DEPRECATED
       onNewThread: e => {
         dispatch({
-          type: NEW_THREAD,
+          type: THREAD_NEW,
           payload: e
         });
       },
       onMessage: e => {
         dispatch({
-          type: NEW_MESSAGE,
+          type: MESSAGE_NEW,
           payload: e
         });
       }

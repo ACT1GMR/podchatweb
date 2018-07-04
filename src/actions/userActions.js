@@ -1,10 +1,10 @@
 // src/actions/messageActions.js
-import {GET_USER} from "../constants/actionTypes";
+import {USER_GET} from "../constants/actionTypes";
 
 export const getUser = (chatSDK) => {
   return (dispatch) => {
     dispatch({
-      type: GET_USER(),
+      type: USER_GET(),
       payload: chatSDK.getUserInfo()
     });
   }

@@ -17,7 +17,7 @@ export default class ChatSDK {
       ssoHost: "http://172.16.110.76", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
-      token: ~navigator.userAgent.indexOf('Firefox') ? "e9d71dfa29654766aeddc53fc88d7fd5" : "e79e2e3f81d24a2d98cbab02fcde65ad", // {**REQUIRED**} SSO Token Zamani
+      token: ~navigator.userAgent.indexOf('Firefox') ?  "733eb4be73ec44c1a15a52958b9b10e1" : ~navigator.userAgent.indexOf('Edge') ? "7aae7b96e2a844f6bb23398aa38bbb3f" : "498cfcff8a284a0ea424b981338a2b44", // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
       connectionCheckTimeout: 90000, // Socket connection live time on server
@@ -49,7 +49,6 @@ export default class ChatSDK {
   _onMessageEvents() {
     this.chatAgent.on("messageEvents", (msg) => {
       this.onMessageEvents(msg.result.message, msg.type);
-      this.chatAgent.seen({messageId: msg.result.message.id, owner: msg.result.message.ownerId});
     });
   }
 
@@ -133,6 +132,15 @@ export default class ChatSDK {
             }
           });
         }
+      }
+    });
+  }
+
+  @promiseDecorator
+  seenMessage(resolve, reject, messageId, ownerId) {
+    this.chatAgent.seen({messageId, ownerId}, function (result) {
+      if (!errorHandling(result, reject)) {
+        return resolve(result);
       }
     });
   }

@@ -1,17 +1,17 @@
-import {CREATE_THREAD, GET_THREAD_MESSAGE_LIST, GET_THREAD_LIST, GET_THREAD_INFO, NEW_THREAD} from "../constants/actionTypes";
+import {THREAD_CREATE, THREAD_GET_MESSAGE_LIST, THREAD_GET_LIST, GET_THREAD_INFO, THREAD_NEW} from "../constants/actionTypes";
 
-export const createThread = (contactId, thread) => {
+export const threadCreat = (contactId, thread) => {
   return (dispatch, getState) => {
     if (thread) {
       return dispatch({
-        type: CREATE_THREAD("CACHE"),
+        type: THREAD_CREATE("CACHE"),
         payload: thread
       });
     }
     const state = getState();
     const chatSDK = state.chat.chatSDK;
     return dispatch({
-      type: CREATE_THREAD(),
+      type: THREAD_CREATE(),
       payload: chatSDK.createThread(contactId)
     });
   }
@@ -22,7 +22,7 @@ export const getThreads = () => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
     dispatch({
-      type: GET_THREAD_LIST(),
+      type: THREAD_GET_LIST(),
       payload: chatSDK.getThreads()
     });
   }
@@ -33,7 +33,7 @@ export const getThreadMessageList = (threadId) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
     dispatch({
-      type: GET_THREAD_MESSAGE_LIST(),
+      type: THREAD_GET_MESSAGE_LIST(),
       payload: chatSDK.getThreadMessageList(threadId)
     });
   }

@@ -1,5 +1,6 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
+import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 import moment from 'moment';
 import 'moment/locale/fa';
@@ -8,6 +9,11 @@ import {MdDoneAll, MdDone} from 'react-icons/lib/md'
 
 //strings
 import strings from '../../constants/localization';
+
+//actions
+
+import {getThreadMessageList} from "../../actions/threadActions";
+import {messageSeen} from '../../actions/messageActions'
 
 //components
 import List, {ListItem} from '../../../ui_kit/components/list'
@@ -18,7 +24,6 @@ import Container from "../../../ui_kit/components/container";
 
 //styling
 import '../../../styles/pages/box/BoxSceneMessages.scss'
-import {getThreadMessageList} from "../../actions/threadActions";
 
 const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
 
@@ -34,6 +39,17 @@ export default class BoxSceneMessages extends Component {
   constructor(props) {
     super(props);
     this.boxSceneMessagesNode = React.createRef();
+    this.messageListNode = React.createRef();
+    this.onMessageListScroll = this.onMessageListScroll.bind(this);
+  }
+
+  _isMessageByMe(message) {
+    const {user} = this.props;
+    if (user) {
+      if (message) {
+        return message.participant.id === user.id;
+      }
+    }
   }
 
   componentDidUpdate() {
@@ -44,17 +60,21 @@ export default class BoxSceneMessages extends Component {
   }
 
   onMessageListScroll() {
-
+    const {threadMessages} = this.props;
+    const lastMessage = threadMessages[threadMessages.length - 1];
+    if (!lastMessage.seen && !this._isMessageByMe(lastMessage)) {
+      this.props.dispatch(messageSeen(lastMessage));
+    }
   }
 
   render() {
-    const {threadMessagesFetching, threadMessages, user} = this.props;
+    const {threadMessagesFetching, threadMessages} = this.props;
     const {defaultAvatar} = consts;
     if (threadMessagesFetching) {
       return <Loading><LoadingSpinner/></Loading>
     } else {
       const isByMe = (el) => {
-        return el.participant.id === user.id;
+        return this._isMessageByMe(el);
       };
       const seenAction = (el) => {
         if (!isByMe(el)) {
@@ -83,10 +103,10 @@ export default class BoxSceneMessages extends Component {
           </Avatar>
         </Container>;
       return (
-        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode}>
-          <List onScroll={this.onMessageListScroll}>
+        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode} onScroll={this.onMessageListScroll}>
+          <List ref={this.messageListNode}>
             {threadMessages.map(el => (
-              <ListItem key={el.id}>
+              <ListItem key={el.id} data={el}>
                 <Container leftTextAlign={!isByMe(el)} inSpace={true}>
                   {!isByMe(el) ? message(el) : avatar(el)}
                   {!isByMe(el) ? avatar(el) : message(el)}

@@ -1,9 +1,9 @@
 import {
-  CREATE_THREAD,
-  GET_THREAD_MESSAGE_LIST,
-  GET_THREAD_LIST,
-  NEW_THREAD,
-  NEW_MESSAGE, THREAD_CHANGED
+  THREAD_CREATE,
+  THREAD_GET_MESSAGE_LIST,
+  THREAD_GET_LIST,
+  THREAD_NEW,
+  MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -14,11 +14,11 @@ export const createThreadReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
-    case CREATE_THREAD("PENDING"):
+    case THREAD_CREATE("PENDING"):
       return {...state, ...stateObject("PENDING", {}, "thread")};
-    case NEW_THREAD:
+    case THREAD_NEW:
       return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
-    case CREATE_THREAD("CACHE"):
+    case THREAD_CREATE("CACHE"):
       return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
     case THREAD_CHANGED: {
       let updatedThread = action.payload;
@@ -30,7 +30,7 @@ export const createThreadReducer = (state = {
       }
       return state;
     }
-    case CREATE_THREAD("ERROR"):
+    case THREAD_CREATE("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;
@@ -43,11 +43,14 @@ export const threadsReducer = (state = {
   fetched: false,
   error: false
 }, action) => {
+  const sortThreads = (threads) => {
+    return threads.sort((a, b)=>b.time - a.time)
+  };
   switch (action.type) {
-    case GET_THREAD_LIST("PENDING"):
+    case THREAD_GET_LIST("PENDING"):
       return {...state, ...stateObject("PENDING", action.payload)};
-    case GET_THREAD_LIST("SUCCESS"):
-      return {...state, ...stateObject("SUCCESS", action.payload.reverse(), "threads")};
+    case THREAD_GET_LIST("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", sortThreads(action.payload), "threads")};
     case THREAD_CHANGED: {
       let updatedThread = action.payload;
       let threads = [...state.threads];
@@ -57,9 +60,9 @@ export const threadsReducer = (state = {
       } else {
         threads.push(updatedThread);
       }
-      return {...state, ...stateObject("SUCCESS", threads, "threads")};
+      return {...state, ...stateObject("SUCCESS", sortThreads(threads), "threads")};
     }
-    case GET_THREAD_LIST("ERROR"):
+    case THREAD_GET_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;
@@ -73,26 +76,44 @@ export const threadMessageListReducer = (state = {
   fetched: false,
   error: false
 }, action) => {
+  const checkForCurrentThread = () => {
+    const firstMessage = state.messages[0];
+    if (firstMessage) {
+      if (action.payload.threadId === firstMessage.threadId) {
+        return true;
+      }
+    }
+  };
   switch (action.type) {
-    case CREATE_THREAD("PENDING"):
+    case THREAD_CREATE("PENDING"):
       return {...state, ...stateObject("PENDING", [])};
-    case GET_THREAD_MESSAGE_LIST("PENDING"):
+    case THREAD_GET_MESSAGE_LIST("PENDING"):
       return {...state, ...stateObject("PENDING", action.payload)};
-    case GET_THREAD_MESSAGE_LIST("SUCCESS"):
+    case THREAD_GET_MESSAGE_LIST("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload.reverse(), "messages")};
-    case GET_THREAD_MESSAGE_LIST("ERROR"):
+    case THREAD_GET_MESSAGE_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
-    case NEW_MESSAGE: {
-      const firstMessage = state.messages[0];
-      if (firstMessage) {
-        if (action.payload.threadId !== firstMessage.threadId) {
-          return state;
-        }
+    case MESSAGE_NEW: {
+      if (!checkForCurrentThread()) {
+        return state;
       }
       if (state.messages.filter(e => e.id === action.payload.id).length) {
         return state;
       }
       return {...state, messages: [...state.messages, action.payload]};
+    }
+    case MESSAGE_SEEN: {
+      if (!checkForCurrentThread()) {
+        return state;
+      }
+      let updatedMessage = action.payload;
+      let messages = [...state.messages];
+      let index = messages.findIndex(message => message.id === updatedMessage.id);
+      if (!~index) {
+        return state;
+      }
+      messages[index] = updatedMessage;
+      return {...state, ...stateObject("SUCCESS", messages, "messages")};
     }
     default:
       return state;
