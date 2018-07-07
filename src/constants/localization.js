@@ -4,7 +4,8 @@ let strings = new LocalizedStrings({
   fa: {
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کنید!!",
     pleaseWriteHere: "اینجا بنویسید...",
-    waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت...",
+    waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
+    waitingForMessageFetching: "در حالت دریافت پیامها",
     softBoiledEgg: "Soft-boiled egg",
     choice: "How to choose the egg"
   },

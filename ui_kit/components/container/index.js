@@ -8,6 +8,7 @@ export default class Container extends Component {
     maxWidth: false,
     inline: false,
     leftTextAlign: false,
+    centerTextAlign: false,
     relative: false,
     absolute: false,
     centerLeft: false,
@@ -27,7 +28,7 @@ export default class Container extends Component {
   }
 
   render() {
-    const {inline, leftTextAlign, maxWidth, relative, absolute, centerLeft, centerRight, center, bottomRight, bottomLeft, bottomCenter, topRight, topLeft, topCenter, inSpace} = this.props;
+    const {inline, leftTextAlign, centerTextAlign, maxWidth, relative, absolute, centerLeft, centerRight, center, bottomRight, bottomLeft, bottomCenter, topRight, topLeft, topCenter, inSpace} = this.props;
     const classNames = classnames({
       "Container--inline": inline,
       "Container--relative": relative,
@@ -42,7 +43,8 @@ export default class Container extends Component {
       "Container--topLeft": topLeft,
       "Container--topCenter": topCenter,
       "Container--inSpace": inSpace,
-      'u-leftTextAlign': leftTextAlign
+      'u-leftTextAlign': leftTextAlign,
+      'u-centerTextAlign': centerTextAlign
     });
     return (
       <div className={`Container ${classNames}`} style={{maxWidth: `${maxWidth ? `${maxWidth}` : 'auto'}`}}>

@@ -11,7 +11,7 @@ export const sendMessage = (text, threadId) => {
   }
 };
 
-export const messageReceived = (message) => {
+export const messageNew = (message) => {
   return dispatch => {
     dispatch({
       type: MESSAGE_NEW,

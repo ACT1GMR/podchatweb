@@ -18,12 +18,14 @@ import {messageSeen} from '../../actions/messageActions'
 //components
 import List, {ListItem} from '../../../ui_kit/components/list'
 import Avatar, {AvatarImage, AvatarName} from "../../../ui_kit/components/avatar";
-import Loading, {LoadingSpinner} from "../../../ui_kit/components/loading";
+import Loading, {LoadingBlinkDots} from "../../../ui_kit/components/loading";
 import Content, {ContentFooter} from "../../../ui_kit/components/content";
 import Container from "../../../ui_kit/components/container";
+import Message from "../../../ui_kit/components/message";
 
 //styling
 import '../../../styles/pages/box/BoxSceneMessages.scss'
+
 
 const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
 
@@ -40,7 +42,7 @@ export default class BoxSceneMessages extends Component {
     super(props);
     this.boxSceneMessagesNode = React.createRef();
     this.messageListNode = React.createRef();
-    this.onMessageListScroll = this.onMessageListScroll.bind(this);
+    this.seenMessages = [];
   }
 
   _isMessageByMe(message) {
@@ -56,14 +58,14 @@ export default class BoxSceneMessages extends Component {
     let boxSceneMessages = this.boxSceneMessagesNode.current;
     if (boxSceneMessages) {
       boxSceneMessages.scrollTop = boxSceneMessages.scrollHeight;
-    }
-  }
-
-  onMessageListScroll() {
-    const {threadMessages} = this.props;
-    const lastMessage = threadMessages[threadMessages.length - 1];
-    if (!lastMessage.seen && !this._isMessageByMe(lastMessage)) {
-      this.props.dispatch(messageSeen(lastMessage));
+      const {threadMessages} = this.props;
+      const lastMessage = threadMessages[threadMessages.length - 1];
+      if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
+        if (!lastMessage.seen && !this._isMessageByMe(lastMessage)) {
+          this.seenMessages.push(lastMessage.uniqueId);
+          this.props.dispatch(messageSeen(lastMessage));
+        }
+      }
     }
   }
 
@@ -71,7 +73,12 @@ export default class BoxSceneMessages extends Component {
     const {threadMessagesFetching, threadMessages} = this.props;
     const {defaultAvatar} = consts;
     if (threadMessagesFetching) {
-      return <Loading><LoadingSpinner/></Loading>
+      return (
+        <Container center={true}>
+          <Message large={true}>{strings.waitingForMessageFetching}</Message>
+          <Loading><LoadingBlinkDots/></Loading>
+        </Container>
+      )
     } else {
       const isByMe = (el) => {
         return this._isMessageByMe(el);
@@ -103,7 +110,7 @@ export default class BoxSceneMessages extends Component {
           </Avatar>
         </Container>;
       return (
-        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode} onScroll={this.onMessageListScroll}>
+        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode}>
           <List ref={this.messageListNode}>
             {threadMessages.map(el => (
               <ListItem key={el.id} data={el}>

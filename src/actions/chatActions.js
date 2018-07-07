@@ -27,20 +27,6 @@ export const setChatInstance = token => {
           type: CHAT_GET_INSTANCE("SUCCESS"),
           payload: e
         })
-      },
-
-      //DEPRECATED
-      onNewThread: e => {
-        dispatch({
-          type: THREAD_NEW,
-          payload: e
-        });
-      },
-      onMessage: e => {
-        dispatch({
-          type: MESSAGE_NEW,
-          payload: e
-        });
       }
     });
   }
