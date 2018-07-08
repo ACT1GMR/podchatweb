@@ -17,7 +17,7 @@ export default class ChatSDK {
       ssoHost: "http://172.16.110.76", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
-      token: ~navigator.userAgent.indexOf('Firefox') ? "c94fe5be749343b0904f7348349e8ec6" : "fe159cfbce4840fc85b2acf1950813b5", // {**REQUIRED**} SSO Token Zamani
+      token: ~navigator.userAgent.indexOf('Firefox') ? "d7fb814e8af5418abaffc7c97aba7e3d" : "989e90e4b6914b09b1fa333580a24217", // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
       connectionCheckTimeout: 90000, // Socket connection live time on server
@@ -54,7 +54,7 @@ export default class ChatSDK {
 
   _onChatReady() {
     this.chatAgent.on("chatReady", e => {
-      this.onChatReady(this)
+      this.onChatReady(this);
     });
   }
 

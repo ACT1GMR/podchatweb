@@ -62,6 +62,10 @@ export default class BoxSceneMessages extends Component {
       const current = this.boxSceneMessagesNode.current;
       const scrollHeight = current.scrollHeight;
       const scrollTop = current.scrollTop;
+      if (scrollTop > this.position) {
+        return this.position = scrollTop;
+      }
+      this.position = scrollTop;
       if (scrollTop <= (scrollHeight / 3)) {
         if (!threadMessagesPartialFetching) {
           this.props.dispatch(getThreadMessageList(threadMessages[0].threadId, (threadMessages.length / 50) * 50));
