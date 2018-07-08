@@ -7,7 +7,7 @@ import strings from '../../constants/localization'
 
 //actions
 import {getContactList} from '../../actions/contactActions'
-import {threadCreat, getThreads, getThreadMessageList, getThreadInfo} from "../../actions/threadActions";
+import {threadCreate, getThreads, getThreadMessageList, getThreadInfo} from "../../actions/threadActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName} from '../../../ui_kit/components/avatar'
@@ -33,6 +33,7 @@ export default class BoxThreads extends Component {
   constructor(props) {
     super(props);
     this.onThreadClick.bind(this);
+    this.state = {activeThread: null};
   }
 
   componentDidMount() {
@@ -44,11 +45,15 @@ export default class BoxThreads extends Component {
   }
 
   onThreadClick(thread) {
-    this.props.dispatch(threadCreat(null, thread));
+    this.props.dispatch(threadCreate(null, thread));
+    this.setState({
+      activeThread: thread.id
+    })
   }
 
   render() {
-    let {threads} = this.props;
+    const {threads} = this.props;
+    const {activeThread} = this.state;
     const {defaultAvatar} = consts;
     if (!threads.length) {
       return (
@@ -61,13 +66,13 @@ export default class BoxThreads extends Component {
         <section className="BoxThreads">
           <List>
             {threads.map(el => (
-              <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true}>
+              <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true} active={activeThread === el.id}>
                 <Container relative={true}>
                   <Avatar>
                     <AvatarImage src={el.image ? el.image : defaultAvatar}/>
                     <AvatarName textInvert={true}>{el.title}</AvatarName>
                   </Avatar>
-                  {el.unreadCount ?
+                  {el.unreadCount && activeThread !== el.id ?
                     <Container absolute={true} centerLeft={true}>
                       <Shape cirlce={true} colorAccent={true}>
                         <ShapeCircle>{el.unreadCount}</ShapeCircle>

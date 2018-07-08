@@ -6,6 +6,7 @@ let strings = new LocalizedStrings({
     pleaseWriteHere: "اینجا بنویسید...",
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
     waitingForMessageFetching: "در حالت دریافت پیامها",
+    thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     softBoiledEgg: "Soft-boiled egg",
     choice: "How to choose the egg"
   },

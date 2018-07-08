@@ -23,6 +23,7 @@ export const MESSAGE_SEND = buildPromiseMessage.bind(null, "MESSAGE_SEND");
 export const MESSAGE_NEW = "MESSAGE_NEW";
 export const MESSAGE_SEEN = "MESSAGE_SEEN";
 export const THREAD_GET_MESSAGE_LIST = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST");
+export const THREAD_GET_MESSAGE_LIST_PARTIAL = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_PARTIAL");
 export const THREAD_CREATE = buildPromiseMessage.bind(null, "THREAD_CREATE");
 export const THREAD_GET_LIST = buildPromiseMessage.bind(null, "THREAD_GET_LIST");
 export const THREAD_NEW = "THREAD_NEW";

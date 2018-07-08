@@ -35,6 +35,21 @@
   animation-delay: .4s;
 }
 
-.LoadingBlinkDots--Invert .LoadingBlinkDots__Dot {
+.LoadingBlinkDots--invert .LoadingBlinkDots__Dot {
   background-color: $color-text-invert;
+}
+
+.LoadingBlinkDots--sm .LoadingBlinkDots__Dot {
+  width: 5px;
+  height: 5px;
+}
+
+.LoadingBlinkDots--lg .LoadingBlinkDots__Dot {
+  width: 12px;
+  height: 12px;
+}
+
+.LoadingBlinkDots--xlg .LoadingBlinkDots__Dot {
+  width: 15px;
+  height: 15px;
 }

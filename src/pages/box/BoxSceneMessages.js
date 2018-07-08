@@ -5,13 +5,13 @@ import {connect} from "react-redux";
 import moment from 'moment';
 import 'moment/locale/fa';
 import date from "../../utils/date";
-import {MdDoneAll, MdDone} from 'react-icons/lib/md'
+import {MdDoneAll, MdDone, MdChatBubbleOutline} from 'react-icons/lib/md';
+import PersianDate from "persian-date";
 
 //strings
 import strings from '../../constants/localization';
 
 //actions
-
 import {getThreadMessageList} from "../../actions/threadActions";
 import {messageSeen} from '../../actions/messageActions'
 
@@ -26,13 +26,14 @@ import Message from "../../../ui_kit/components/message";
 //styling
 import '../../../styles/pages/box/BoxSceneMessages.scss'
 
-
 const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
 
 @connect(store => {
   return {
+    threadMessagesHasNext: store.threadMessages.hasNext,
     threadMessages: store.threadMessages.messages,
     threadMessagesFetching: store.threadMessages.fetching,
+    threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
     user: store.user.user
   };
 })
@@ -42,6 +43,7 @@ export default class BoxSceneMessages extends Component {
     super(props);
     this.boxSceneMessagesNode = React.createRef();
     this.messageListNode = React.createRef();
+    this.onScroll = this.onScroll.bind(this);
     this.seenMessages = [];
   }
 
@@ -54,23 +56,43 @@ export default class BoxSceneMessages extends Component {
     }
   }
 
+  onScroll() {
+    const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext} = this.props;
+    if (threadMessagesHasNext) {
+      const current = this.boxSceneMessagesNode.current;
+      const scrollHeight = current.scrollHeight;
+      const scrollTop = current.scrollTop;
+      if (scrollTop <= (scrollHeight / 3)) {
+        if (!threadMessagesPartialFetching) {
+          this.props.dispatch(getThreadMessageList(threadMessages[0].threadId, (threadMessages.length / 50) * 50));
+        }
+      }
+    }
+  }
+
   componentDidUpdate() {
     let boxSceneMessages = this.boxSceneMessagesNode.current;
     if (boxSceneMessages) {
-      boxSceneMessages.scrollTop = boxSceneMessages.scrollHeight;
       const {threadMessages} = this.props;
       const lastMessage = threadMessages[threadMessages.length - 1];
-      if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
-        if (!lastMessage.seen && !this._isMessageByMe(lastMessage)) {
-          this.seenMessages.push(lastMessage.uniqueId);
-          this.props.dispatch(messageSeen(lastMessage));
+      if (!this.lastMessage || this.lastMessage !== lastMessage.id) {
+        boxSceneMessages.scrollTop = boxSceneMessages.scrollHeight;
+        this.lastMessage = lastMessage.id;
+      }
+
+      if (lastMessage) {
+        if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
+          if (!lastMessage.seen && !this._isMessageByMe(lastMessage)) {
+            this.seenMessages.push(lastMessage.uniqueId);
+            this.props.dispatch(messageSeen(lastMessage));
+          }
         }
       }
     }
   }
 
   render() {
-    const {threadMessagesFetching, threadMessages} = this.props;
+    const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages} = this.props;
     const {defaultAvatar} = consts;
     if (threadMessagesFetching) {
       return (
@@ -80,11 +102,25 @@ export default class BoxSceneMessages extends Component {
         </Container>
       )
     } else {
-      const isByMe = (el) => {
-        return this._isMessageByMe(el);
-      };
+      let partialLoading = '';
+      if (!threadMessages.length) {
+        return (
+          <Container center={true} centerTextAlign={true}>
+            <Message large={true}>{strings.thereIsNoMessageToShow}</Message>
+            <MdChatBubbleOutline size={48} style={{color: "#f58220"}}/>
+          </Container>
+        )
+      }
+      if (threadMessagesPartialFetching) {
+        partialLoading =
+          (
+            <Container topCenter={true} centerTextAlign={true}>
+              <Loading><LoadingBlinkDots small={true}/></Loading>
+            </Container>
+          )
+      }
       const seenAction = (el) => {
-        if (!isByMe(el)) {
+        if (!this._isMessageByMe(el)) {
           return null;
         }
         if (el.seen) {
@@ -98,7 +134,7 @@ export default class BoxSceneMessages extends Component {
             {el.message}
             <ContentFooter>
               {seenAction(el)}
-              {date.isToday(el.time) ? moment(el.time).format('hh:mm') : moment(el.time).format('dddd hh:mm')}
+              {date.isToday(el.time) ? date.format(el.time, "hh:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "YYYY-MM-DD dddd hh:mm") : date.format(el.time, "YYYY-MM-DD  hh:mm")}
             </ContentFooter>
           </Content>
         </Container>;
@@ -110,13 +146,14 @@ export default class BoxSceneMessages extends Component {
           </Avatar>
         </Container>;
       return (
-        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode}>
+        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode} onScroll={this.onScroll}>
           <List ref={this.messageListNode}>
+            {threadMessagesPartialFetching && partialLoading}
             {threadMessages.map(el => (
               <ListItem key={el.id} data={el}>
-                <Container leftTextAlign={!isByMe(el)} inSpace={true}>
-                  {!isByMe(el) ? message(el) : avatar(el)}
-                  {!isByMe(el) ? avatar(el) : message(el)}
+                <Container leftTextAlign={!this._isMessageByMe(el)} inSpace={true}>
+                  {!this._isMessageByMe(el) ? message(el) : avatar(el)}
+                  {!this._isMessageByMe(el) ? avatar(el) : message(el)}
                 </Container>
               </ListItem>
             ))}

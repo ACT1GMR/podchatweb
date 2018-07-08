@@ -17,7 +17,7 @@ export default class ChatSDK {
       ssoHost: "http://172.16.110.76", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
-      token: ~navigator.userAgent.indexOf('Firefox') ?  "2f16c8d31ac54125b6d3158e1062acb0" :  "fcfb3ef64d164749841a22a983df3678", // {**REQUIRED**} SSO Token Zamani
+      token: ~navigator.userAgent.indexOf('Firefox') ? "c94fe5be749343b0904f7348349e8ec6" : "fe159cfbce4840fc85b2acf1950813b5", // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
       connectionCheckTimeout: 90000, // Socket connection live time on server
@@ -83,18 +83,18 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadMessageList(resolve, reject, params) {
+  getThreadMessageList(resolve, reject, threadId, offset) {
     const getThreadHistoryParams = {
       count: 50,
-      offset: 0,
-      threadId: params
+      offset: offset || 0,
+      threadId: threadId
     };
     this.chatAgent.getHistory(getThreadHistoryParams, function (result) {
       if (!errorHandling(result, reject)) {
         for (let history of result.result.history) {
-          history.threadId = params;
+          history.threadId = threadId;
         }
-        return resolve(result.result.history);
+        return resolve({messages: result.result.history, messagesCount: result.result.contentCount, hasNext: result.result.hasNext});
       }
     });
   }

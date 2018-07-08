@@ -8,6 +8,7 @@ export default class ListItem extends Component {
   static defaultProps = {
     selection: false,
     leftTextAlign: false,
+    active: false,
     onClick: null
   };
 
@@ -16,10 +17,10 @@ export default class ListItem extends Component {
   }
 
   render() {
-    const {selection, leftTextAlign} = this.props;
-    const classNames = classnames({"ListItem--selection": selection});
+    const {selection, leftTextAlign, active} = this.props;
+    const classNames = classnames({"ListItem--selection": selection, "ListItem--active": active});
     return (
-      <li className={`ListItem ${classNames}`} onClick={this.props.onClick} >
+      <li className={`ListItem ${classNames}`} onClick={this.props.onClick}>
         {this.props.children}
       </li>
     );
