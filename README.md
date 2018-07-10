@@ -27,5 +27,5 @@ This project is open-sourced software licensed under the [MIT license](http://op
 
 
 [//]: # (LINKS)
-[preview_image]: https://github.com/ACT1GMR/podchatweb/preview.png "Preview of podchat web"
-[preview_image_url]: https://github.com/ACT1GMR/podchatweb/preview.png
+[preview_image]: https://raw.githubusercontent.com/ACT1GMR/podchatweb/master/docs/preview.png "Preview of podchat web"
+[preview_image_url]: https://raw.githubusercontent.com/ACT1GMR/podchatweb/master/docs/preview.png
