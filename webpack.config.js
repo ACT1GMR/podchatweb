@@ -62,5 +62,11 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty'
-  }
+  },
+  output: {
+    path: __dirname + "/dist",
+    filename: 'index.js',
+    library: '',
+    libraryTarget: 'commonjs'
+  },
 };
