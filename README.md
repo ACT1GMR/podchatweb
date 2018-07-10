@@ -9,7 +9,13 @@
 npm run start
 ```
 
-## Use
+## Installation
+
+```
+npm install podchatweb --save
+```
+
+## Usage
 
 ```jsx
 import {Podchat} from 'podchatweb'
