@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   module: {
+
     rules: [
       {
         test: /\.js$/,
@@ -17,6 +18,14 @@ module.exports = {
           {
             loader: "html-loader",
             options: {minimize: true}
+          }
+        ]
+      },
+      {
+        test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
+        use: [
+          {
+            loader: 'url-loader'
           }
         ]
       },
@@ -53,5 +62,11 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty'
-  }
+  },
+  output: {
+    path: __dirname + "/dist",
+    filename: 'index.js',
+    library: '',
+    libraryTarget: 'commonjs'
+  },
 };

@@ -5,9 +5,12 @@ import store from "./store/index";
 import '../styles/main.scss';
 import Box from "./pages/box";
 
-render(
-  <Provider store={store}>
-    <Box/>
-  </Provider>,
-  document.getElementById("app")
-);
+function Podchat(props) {
+  return (
+    <Provider store={store}>
+      <Box {...props}/>
+    </Provider>
+  )
+}
+
+export {Podchat};
