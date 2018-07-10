@@ -1,7 +1,7 @@
 {
   "name": "podchatweb",
   "version": "0.0.1",
-  "description": "Podchatweb is an web app built by react for handling POD chat use cases",
+  "description": "Podchatweb is an web app built by react for handling POD chating use cases",
   "main": "dist/index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/act1gmr/webpack-4-quickstart.git"
+    "url": "git+https://github.com/ACT1GMR/podchatweb"
   },
   "keywords": ["chat", "podchat", "web", "fanap"],
   "author": "Behnam Salarinia",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/valentinogagliardi/webpack-4-quickstart/issues"
+    "url": "https://github.com/ACT1GMR/podchatweb/issues"
   },
-  "homepage": "https://github.com/valentinogagliardi/webpack-4-quickstart#readme",
+  "homepage": "https://github.com/ACT1GMR/podchatweb#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
