@@ -1,10 +1,7 @@
-# Podchatweb v0.0.1
-> Podchat basic implementation of chat
+# Podchatweb
+> Podchatweb is an web app built by react for handling POD chating use cases
 
-[![npm][npm-image]][npm-url]
-
-[npm-image]: https://img.shields.io/npm/v/react-icons.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/podchatweb
+[![Preview of Telegram Desktop][preview_image]][preview_image_url]
 
 ## Development
 
@@ -15,11 +12,11 @@ npm run start
 ## Use
 
 ```jsx
-import Podchat from 'podchatweb'
+import {Podchat} from 'podchatweb'
 
-class MyAoo extends Component {
+class MyApp extends Component {
     render() {
-        return <div><Podchatweb/></div>
+        return <div><Podchat token={this.props.token}/></div>
     }
 }
 ```
@@ -27,3 +24,8 @@ class MyAoo extends Component {
 ## License
 
 This project is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+
+
+[//]: # (LINKS)
+[preview_image]: https://github.com/ACT1GMR/podchatweb/preview.png "Preview of podchat web"
+[preview_image_url]: https://github.com/ACT1GMR/podchatweb/preview.png
