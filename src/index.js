@@ -12,7 +12,7 @@ render(
   document.getElementById("app")
 );
 
-function Podchat(props) {
+function PodchatReact(props) {
   return (
     <Provider store={store}>
       <Box {...props}/>
@@ -20,4 +20,13 @@ function Podchat(props) {
   )
 }
 
-export {Podchat};
+function Podchat(token, elementId) {
+  render(
+    <Provider store={store}>
+      <Box token={token}/>
+    </Provider>,
+    document.getElementById(elementId)
+  );
+}
+
+export {PodchatReact, Podchat};
