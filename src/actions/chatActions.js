@@ -10,6 +10,9 @@ export const setChatInstance = token => {
       payload: null
     });
     const chatSDKInstance = new ChatSDK({
+      config: {
+        token
+      },
       onThreadEvents: (thread, type) => {
         dispatch({
           type: THREAD_CHANGED,

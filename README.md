@@ -1,7 +1,7 @@
 # Podchatweb
-> Podchatweb is an web app built by react for handling POD chating use cases
+> Podchatweb is a web app built by react for handling POD chating use cases
 
-[![Preview of Telegram Desktop][preview_image]][preview_image_url]
+[![Preview of Podchat web][preview_image]][preview_image_url]
 
 ## Development
 
@@ -22,7 +22,11 @@ import {Podchat} from 'podchatweb'
 
 class MyApp extends Component {
     render() {
-        return <div><Podchat token={this.props.token}/></div>
+        const {token} = this.props;
+        return 
+        <div>
+            <Podchat token={token} onTokenExpire={callBack => {callBack(token)}}/>
+        </div>
     }
 }
 ```

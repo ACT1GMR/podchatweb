@@ -27,12 +27,12 @@ import LoadingBlinkDots from "../../../ui_kit/components/loading/LoadingBlinkDot
   };
 })
 export default class Box extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   componentDidMount() {
-    this.props.dispatch(setChatInstance());
+    this.props.dispatch(setChatInstance(this.props.token));
   }
 
   componentWillUpdate(chatInstance) {
