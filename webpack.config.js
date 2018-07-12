@@ -23,14 +23,6 @@ module.exports = (e, argv) => {
           ]
         },
         {
-          test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
-          use: [
-            {
-              loader: "url-loader"
-            }
-          ]
-        },
-        {
           test: /\.scss$/,
           use: [
             "style-loader", // creates style nodes from JS strings
@@ -48,8 +40,15 @@ module.exports = (e, argv) => {
                 includePaths: [__dirname, "styles"]
               }
             }
-          ],
-
+          ]
+        },
+        {
+          test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
+          use: [
+            {
+              loader: "url-loader?limit=10000000"
+            }
+          ]
         }
       ]
     },
@@ -79,7 +78,8 @@ module.exports = (e, argv) => {
       libraryTarget: "commonjs"
     }
   } else {
-    base.devtool = "source-map"
+    base.devtool = "source-map";
+    base.entry="./src/dev"
   }
 
   return base;

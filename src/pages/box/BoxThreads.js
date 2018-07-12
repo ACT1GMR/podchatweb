@@ -18,9 +18,7 @@ import Loading from "../../../ui_kit/components/loading";
 
 //styling
 import style from "../../../styles/pages/box/BoxThreads.scss";
-
-
-const consts = {defaultAvatar: "/styles/images/_common/default-avatar.png"};
+import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
 
 @connect(store => {
   return {
@@ -50,7 +48,6 @@ export default class BoxThreads extends Component {
   render() {
     const {threads} = this.props;
     const {activeThread} = this.state;
-    const {defaultAvatar} = consts;
     if (!threads.length) {
       return (
         <section className={style.BoxThreads}>

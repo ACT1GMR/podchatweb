@@ -22,8 +22,7 @@ import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss"
-
-const consts = {defaultAvatar: "/styles/images/_common/default-avatar.png"};
+import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
 
 @connect(store => {
   return {
@@ -94,7 +93,6 @@ export default class BoxSceneMessages extends Component {
 
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages} = this.props;
-    const {defaultAvatar} = consts;
     if (threadMessagesFetching) {
       return (
         <Container center={true}>

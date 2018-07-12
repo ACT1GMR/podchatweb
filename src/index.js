@@ -5,13 +5,6 @@ import store from "./store/index";
 import "../styles/main.scss";
 import Box from "./pages/box";
 
-render(
-  <Provider store={store}>
-    <Box token="0f6946a753064b77b3440936c2e0e712"/>
-  </Provider>,
-  document.getElementById("app")
-);
-
 function PodchatReact(props) {
   return (
     <Provider store={store}>
@@ -20,10 +13,10 @@ function PodchatReact(props) {
   )
 }
 
-function Podchat(token, elementId) {
+function Podchat(props, elementId) {
   render(
     <Provider store={store}>
-      <Box token={token}/>
+      <Box {...props}/>
     </Provider>,
     document.getElementById(elementId)
   );

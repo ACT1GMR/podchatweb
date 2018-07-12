@@ -49,7 +49,7 @@ export default class BoxScene extends Component {
       );
     }
     return (
-      <section className="BoxScene">
+      <section className={style.BoxScene}>
         <BoxSceneMessages/>
         <BoxSceneInput/>
       </section>
