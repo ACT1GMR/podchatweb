@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from "moment";
 import PersianDate from "persian-date";
 
 function getMomentDate(date) {
@@ -9,15 +9,15 @@ const date =
   {
     isToday(date) {
       const momentDate = getMomentDate(date);
-      const today = getMomentDate().startOf('day');
-      return momentDate.isSame(today, 'd');
+      const today = getMomentDate().startOf("day");
+      return momentDate.isSame(today, "d");
     },
     isYesterday(date) {
-      const yesterday = getMomentDate().subtract(1, 'days').startOf('day');
-      return getMomentDate(date).isSame(yesterday, 'd');
+      const yesterday = getMomentDate().subtract(1, "days").startOf("day");
+      return getMomentDate(date).isSame(yesterday, "d");
     },
     isWithinAWeek(date) {
-      const A_WEEK_OLD = getMomentDate().subtract(7, 'days').startOf('day');
+      const A_WEEK_OLD = getMomentDate().subtract(7, "days").startOf("day");
       return getMomentDate(date).isAfter(A_WEEK_OLD);
     },
     isTwoWeeksOrMore(date) {
@@ -27,7 +27,7 @@ const date =
       if(locale === "en"){
         return getMomentDate(date).format(format);
       } else {
-        PersianDate.toLocale('fa');
+        PersianDate.toLocale("fa");
         return new PersianDate(date).format(format);
       }
     }

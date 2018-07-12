@@ -1,10 +1,11 @@
 import React, {Component} from "react";
 
-import './../_base';
-import AvatarImage from './AvatarImage'
-import AvatarName from './AvatarName'
-import AvatarText from './AvatarText'
-import '../../styles/modules/avatar/index.scss'
+import "./../_base";
+import AvatarImage from "./AvatarImage";
+import AvatarName from "./AvatarName";
+import AvatarText from "./AvatarText";
+import style from "../../styles/modules/avatar/index.scss";
+import utilsStyle from "../../styles/utils/index.scss";
 import classnames from "classnames";
 
 export default class Avatar extends Component {
@@ -19,9 +20,10 @@ export default class Avatar extends Component {
 
   render() {
     let {left} = this.props;
-    const classNames = classnames({"Avatar--left": left, "u-clearfix": left});
+    let classNames = classnames({[style["Avatar--left"]]: left, [utilsStyle["u-leftTextAlign"]]: left});
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <div className={`Avatar ${classNames}`}>
+      <div className={`${style.Avatar}${classNames}`}>
         {this.props.children}
       </div>
     );

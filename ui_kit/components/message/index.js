@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import '../../styles/modules/message/index.scss'
+import style from "../../styles/modules/message/index.scss";
 import classnames from "classnames";
 
 export default class Message extends Component {
@@ -11,15 +11,16 @@ export default class Message extends Component {
     src: null
   };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   render() {
     const {small, large, xLarge} = this.props;
-    const sizeClassNames = classnames({'Message--sm': small, 'Message--lg': large, 'Message--xlg': xLarge});
+    let classNames = classnames({[style["Message--sm"]]: small, [style["Message--lg"]]: large, [style["Message--xlg"]]: xLarge});
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <div className={`Message ${sizeClassNames}`}>
+      <div className={`${style.Message}${classNames}`}>
         {this.props.children}
       </div>
     );

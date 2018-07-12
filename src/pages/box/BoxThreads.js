@@ -3,24 +3,24 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 
 //strings
-import strings from '../../constants/localization'
+import strings from "../../constants/localization"
 
 //actions
-import {getContactList} from '../../actions/contactActions'
 import {threadCreate, getThreads, getThreadMessageList, getThreadInfo} from "../../actions/threadActions";
 
 //UI components
-import Avatar, {AvatarImage, AvatarName} from '../../../ui_kit/components/avatar'
-import List, {ListItem} from '../../../ui_kit/components/list'
-import Shape, {ShapeCircle} from '../../../ui_kit/components/shape'
-
-//styling
-import "../../../styles/pages/box/BoxThreads.scss";
+import Avatar, {AvatarImage, AvatarName} from "../../../ui_kit/components/avatar";
+import List, {ListItem} from "../../../ui_kit/components/list";
+import Shape, {ShapeCircle} from "../../../ui_kit/components/shape";
 import Container from "../../../ui_kit/components/container";
 import LoadingBlinkDots from "../../../ui_kit/components/loading/LoadingBlinkDots";
 import Loading from "../../../ui_kit/components/loading";
 
-const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
+//styling
+import style from "../../../styles/pages/box/BoxThreads.scss";
+
+
+const consts = {defaultAvatar: "/styles/images/_common/default-avatar.png"};
 
 @connect(store => {
   return {
@@ -40,10 +40,6 @@ export default class BoxThreads extends Component {
     this.props.dispatch(getThreads());
   }
 
-  shouldComponentUpdate() {
-    return true;
-  }
-
   onThreadClick(thread) {
     this.props.dispatch(threadCreate(null, thread));
     this.setState({
@@ -57,13 +53,13 @@ export default class BoxThreads extends Component {
     const {defaultAvatar} = consts;
     if (!threads.length) {
       return (
-        <section className="BoxThreads">
+        <section className={style.BoxThreads}>
           <Loading><LoadingBlinkDots invert={true} rtl={true}/></Loading>
         </section>
       )
     } else {
       return (
-        <section className="BoxThreads">
+        <section className={style.BoxThreads}>
           <List>
             {threads.map(el => (
               <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true} active={activeThread === el.id}>

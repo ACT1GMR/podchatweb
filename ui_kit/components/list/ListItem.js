@@ -1,13 +1,12 @@
 // src/list/List.
 import React, {Component} from "react";
 import classnames from "classnames";
-import '../../styles/modules/list/ListItem.scss'
+import style from "../../styles/modules/list/ListItem.scss";
 
 export default class ListItem extends Component {
 
   static defaultProps = {
     selection: false,
-    leftTextAlign: false,
     active: false,
     onClick: null
   };
@@ -17,10 +16,11 @@ export default class ListItem extends Component {
   }
 
   render() {
-    const {selection, leftTextAlign, active} = this.props;
-    const classNames = classnames({"ListItem--selection": selection, "ListItem--active": active});
+    const {selection, active} = this.props;
+    let classNames = classnames({[style["ListItem--selection"]]: selection, [style["ListItem--active"]]: active});
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <li className={`ListItem ${classNames}`} onClick={this.props.onClick}>
+      <li className={`${style.ListItem}${classNames}`} onClick={this.props.onClick}>
         {this.props.children}
       </li>
     );

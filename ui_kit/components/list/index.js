@@ -1,17 +1,17 @@
-import '../_base';
+import "../_base";
 import React, {Component} from "react";
-import ListItem from './ListItem'
-import '../../styles/modules/list/index.scss'
+import ListItem from "./ListItem";
+import style from "../../styles/modules/list/index.scss";
 
 export default class List extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   render() {
     return (
-      <ul className="List">
+      <ul className={style.List}>
         {this.props.children}
       </ul>
     );

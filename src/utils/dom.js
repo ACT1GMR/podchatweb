@@ -6,7 +6,7 @@ export default function isElementVisible(el) {
       return document.elementFromPoint(x, y)
     };
 
-  // Return false if it's not in the viewport
+  // Return false if it"s not in the viewport
   if (rect.right < 0 || rect.bottom < 0
     || rect.left > vWidth || rect.top > vHeight)
     return false;

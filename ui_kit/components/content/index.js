@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import '../../styles/modules/content/index.scss'
+import style from "../../styles/modules/content/index.scss";
 import classnames from "classnames";
-import ContentFooter from "./ContentFooter"
+import ContentFooter from "./ContentFooter";
 
 export default class Content extends Component {
 
@@ -16,9 +16,10 @@ export default class Content extends Component {
 
   render() {
     let {borderRadius, hasBackground} = this.props;
-    const classNames = classnames({"Content--hasBackground": hasBackground});
+    let classNames = classnames({[style["Content--hasBackground"]]: hasBackground});
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <div className={`Content ${classNames}`} style={{borderRadius: borderRadius}}>
+      <div className={`${style.Content}${classNames}`} style={{borderRadius: borderRadius}}>
         {this.props.children}
       </div>
     );

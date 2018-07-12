@@ -1,32 +1,29 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import {connect} from "react-redux";
-import moment from 'moment';
-import 'moment/locale/fa';
+import "moment/locale/fa";
 import date from "../../utils/date";
-import {MdDoneAll, MdDone, MdChatBubbleOutline} from 'react-icons/lib/md';
-import PersianDate from "persian-date";
 
 //strings
-import strings from '../../constants/localization';
+import strings from "../../constants/localization";
 
 //actions
 import {getThreadMessageList} from "../../actions/threadActions";
-import {messageSeen} from '../../actions/messageActions'
+import {messageSeen} from "../../actions/messageActions"
 
 //components
-import List, {ListItem} from '../../../ui_kit/components/list'
+import List, {ListItem} from "../../../ui_kit/components/list"
 import Avatar, {AvatarImage, AvatarName} from "../../../ui_kit/components/avatar";
 import Loading, {LoadingBlinkDots} from "../../../ui_kit/components/loading";
 import Content, {ContentFooter} from "../../../ui_kit/components/content";
 import Container from "../../../ui_kit/components/container";
 import Message from "../../../ui_kit/components/message";
+import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
 
 //styling
-import '../../../styles/pages/box/BoxSceneMessages.scss'
+import style from "../../../styles/pages/box/BoxSceneMessages.scss"
 
-const consts = {defaultAvatar: '/styles/images/_common/default-avatar.png'};
+const consts = {defaultAvatar: "/styles/images/_common/default-avatar.png"};
 
 @connect(store => {
   return {
@@ -106,7 +103,7 @@ export default class BoxSceneMessages extends Component {
         </Container>
       )
     } else {
-      let partialLoading = '';
+      let partialLoading = "";
       if (!threadMessages.length) {
         return (
           <Container center={true} centerTextAlign={true}>
@@ -150,7 +147,7 @@ export default class BoxSceneMessages extends Component {
           </Avatar>
         </Container>;
       return (
-        <div className="BoxSceneMessages" ref={this.boxSceneMessagesNode} onScroll={this.onScroll}>
+        <div className={style.BoxSceneMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}>
           <List ref={this.messageListNode}>
             {threadMessagesPartialFetching && partialLoading}
             {threadMessages.map(el => (

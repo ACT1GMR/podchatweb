@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-import '../../styles/modules/shape/index.scss'
+import style from "../../styles/modules/shape/index.scss";
 import classnames from "classnames";
-import ShapeCircle from './ShapeCircle';
+import ShapeCircle from "./ShapeCircle";
 
 export default class Shape extends Component {
 
@@ -19,15 +19,16 @@ export default class Shape extends Component {
 
   render() {
     const {small, large, xLarge, colorAccent, colorPrimary} = this.props;
-    const sizeClassNames = classnames({
-      'Shape--sm': small,
-      'Shape--lg': large,
-      'Shape--xlg': xLarge,
-      'Shape--colorAccent': colorAccent,
-      'Shape--colorPrimary': colorPrimary
+    let classNames = classnames({
+      [style["Shape--sm"]]: small,
+      [style["Shape--lg"]]: large,
+      [style["Shape--xlg"]]: xLarge,
+      [style["Shape--colorAccent"]]: colorAccent,
+      [style["Shape--colorPrimary"]]: colorPrimary
     });
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <div className={`Shape ${sizeClassNames}`}>
+      <div className={`${style.Shape}${classNames}`}>
         {this.props.children}
       </div>
     );

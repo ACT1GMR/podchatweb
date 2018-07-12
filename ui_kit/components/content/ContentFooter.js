@@ -1,16 +1,16 @@
 // src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/content/ContentFooter.scss'
+import style from "../../styles/modules/content/ContentFooter.scss";
 
 export default class ContentFooter extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   render() {
     return (
-      <div className="ContentFooter">
+      <div className={style.ContentFooter}>
         {this.props.children}
       </div>
     );

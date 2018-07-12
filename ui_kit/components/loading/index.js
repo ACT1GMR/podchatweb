@@ -1,24 +1,18 @@
-import LoadingSpinner from './LoadingSpinner'
-import LoadingBlinkDots from './LoadingBlinkDots'
+import LoadingSpinner from "./LoadingSpinner";
+import LoadingBlinkDots from "./LoadingBlinkDots";
 import React, {Component} from "react";
-import '../../styles/modules/loading/index.scss'
+import style from "../../styles/modules/loading/index.scss";
 import classnames from "classnames";
 
 export default class Loading extends Component {
 
-  static defaultProps = {
-    invert: false
-  };
-
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   render() {
-    const {invert} = this.props;
-    const classNames = classnames({"Loading--invert": invert});
     return (
-      <div className={`Loading ${classNames}`}>
+      <div className={style.Loading}>
         {this.props.children}
       </div>
     );

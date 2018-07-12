@@ -1,6 +1,6 @@
 // src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/loading/LoadingBlinkDots.scss'
+import style from "../../styles/modules/loading/LoadingBlinkDots.scss";
 import classnames from "classnames";
 
 export default class LoadingBlinkDots extends Component {
@@ -13,15 +13,21 @@ export default class LoadingBlinkDots extends Component {
     src: null
   };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   render() {
     let {invert, large, xLarge, small} = this.props;
-    const classNames = classnames({"LoadingBlinkDots--Invert": large, "LoadingBlinkDots--lg": xLarge, "LoadingBlinkDots--xlg": xLarge, "LoadingBlinkDots--sm": small});
+    let classNames = classnames({
+      [style["LoadingBlinkDots--Invert"]]: invert,
+      [style["LoadingBlinkDots--lg"]]: large,
+      [style["LoadingBlinkDots--xlg"]]: xLarge,
+      [style["LoadingBlinkDots--sm"]]: small
+    });
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <p className={`LoadingBlinkDots ${classNames}`}><span className="LoadingBlinkDots__Dot"/><span className="LoadingBlinkDots__Dot"/><span className="LoadingBlinkDots__Dot"/></p>
+      <p className={`${style.LoadingBlinkDots}${classNames}`}><span className={style.LoadingBlinkDots__Dot}/><span className={style.LoadingBlinkDots__Dot}/><span className={style.LoadingBlinkDots__Dot}/></p>
     );
   }
 }

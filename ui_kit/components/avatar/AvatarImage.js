@@ -1,6 +1,6 @@
 // src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/avatar/AvatarImage.scss'
+import style from "../../styles/modules/avatar/AvatarImage.scss";
 import classnames from "classnames";
 
 export default class AvatarImage extends Component {
@@ -18,10 +18,11 @@ export default class AvatarImage extends Component {
 
   render() {
     let {src, small, large, xLarge} = this.props;
-    const sizeClassNames = classnames({'AvatarImage--sm': small, 'AvatarImage--lg': large, 'AvatarImage--xlg': xLarge});
+    let classNames = classnames({[style["AvatarImage--sm"]]: small, [style["AvatarImage--lg"]]: large, [style["AvatarImage--lg"]]: xLarge});
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <div className={`AvatarImage ${sizeClassNames}`}>
-        <img src={src} className="AvatarImage__image"/>
+      <div className={`${style.AvatarImage}${classNames}`}>
+        <img src={src} className={style.AvatarImage__image}/>
       </div>
     );
   }

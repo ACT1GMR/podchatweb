@@ -1,5 +1,6 @@
 import React, {Component} from "react";
-import '../../styles/modules/container/index.scss'
+import style from "../../styles/modules/container/index.scss"
+import utilsStyle from "../../styles/utils/index.scss"
 import classnames from "classnames";
 
 export default class Container extends Component {
@@ -29,25 +30,26 @@ export default class Container extends Component {
 
   render() {
     const {inline, leftTextAlign, centerTextAlign, maxWidth, relative, absolute, centerLeft, centerRight, center, bottomRight, bottomLeft, bottomCenter, topRight, topLeft, topCenter, inSpace} = this.props;
-    const classNames = classnames({
-      "Container--inline": inline,
-      "Container--relative": relative,
-      "Container--absolute": absolute,
-      "Container--centerLeft": centerLeft,
-      "Container--centerRight": centerRight,
-      "Container--center": center,
-      "Container--bottomRight": bottomRight,
-      "Container--bottomLeft": bottomLeft,
-      "Container--bottomCenter": bottomCenter,
-      "Container--topRight": topRight,
-      "Container--topLeft": topLeft,
-      "Container--topCenter": topCenter,
-      "Container--inSpace": inSpace,
-      'u-leftTextAlign': leftTextAlign,
-      'u-centerTextAlign': centerTextAlign
+    let classNames = classnames({
+      [style["Container--inline"]]: inline,
+      [style["Container--relative"]]: relative,
+      [style["Container--absolute"]]: absolute,
+      [style["Container--centerLeft"]]: centerLeft,
+      [style["Container--centerRight"]]: centerRight,
+      [style["Container--center"]]: center,
+      [style["Container--bottomRight"]]: bottomRight,
+      [style["Container--bottomLeft"]]: bottomLeft,
+      [style["Container--bottomCenter"]]: bottomCenter,
+      [style["Container--topRight"]]: topRight,
+      [style["Container--topLeft"]]: topLeft,
+      [style["Container--topCenter"]]: topCenter,
+      [style["Container--inSpace"]]: inSpace,
+      [utilsStyle["u-leftTextAlign"]]: leftTextAlign,
+      [utilsStyle["u-centerTextAlign"]]: centerTextAlign
     });
+    if (classNames) classNames = ` ${classNames}`;
     return (
-      <div className={`Container ${classNames}`} style={{maxWidth: `${maxWidth ? `${maxWidth}` : 'auto'}`}}>
+      <div className={`${style.Container}${classNames}`} style={{maxWidth: `${maxWidth ? `${maxWidth}` : "auto"}`}}>
         {this.props.children}
       </div>
     );

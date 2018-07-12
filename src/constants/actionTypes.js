@@ -11,7 +11,7 @@ export const buildPromiseMessage = (baseMessage, type) => {
   if (type === "CACHE") {
     return `${baseMessage}_CACHE`;
   }
-  if (type === 'PENDING') {
+  if (type === "PENDING") {
     return `${baseMessage}_PENDING`;
   }
 };

@@ -18,7 +18,7 @@ npm install podchatweb --save
 ## Usage
 
 ```jsx
-import {Podchat} from 'podchatweb'
+import {Podchat} from "podchatweb"
 
 class MyApp extends Component {
     render() {

@@ -1,6 +1,6 @@
 // src/list/List.
 import React, {Component} from "react";
-import '../../styles/modules/loading/LoadingSpinner.scss'
+import style from "../../styles/modules/loading/LoadingSpinner.scss";
 
 export default class LoadingSpinner extends Component {
 
@@ -10,7 +10,7 @@ export default class LoadingSpinner extends Component {
 
   render() {
     return (
-      <div className="LoadingSpinner">
+      <div className={style.LoadingSpinner}>
       </div>
     );
   }

@@ -1,19 +1,18 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import classnames from 'classnames'
 
 //strings
-import strings from '../../constants/localization'
+import strings from "../../constants/localization";
 
 //actions
-import {sendMessage} from '../../actions/messageActions'
+import {sendMessage} from "../../actions/messageActions";
 import {getThreadMessageList} from "../../actions/threadActions";
 
 //components
 
 //styling
-import '../../../styles/pages/box/BoxSceneInput.scss'
+import style from "../../../styles/pages/box/BoxSceneInput.scss";
 
 @connect(store => {
   return {
@@ -45,13 +44,13 @@ export default class BoxSceneInput extends Component {
   render() {
     const {messageText} = this.state;
     return (
-      <form className="BoxSceneInput" onSubmit={this.onFormSubmit}>
-        <input className="BoxSceneInput__text"
+      <form className={style.BoxSceneInput} onSubmit={this.onFormSubmit}>
+        <input className={style.BoxSceneInput__text}
                type="text"
                placeholder={strings.pleaseWriteHere}
                onChange={this.onTextChange}
                value={messageText}/>
-        <button type="submit" className="BoxSceneInput__button"> ></button>
+        <button type="submit" className={style.BoxSceneInput__button}> ></button>
       </form>
     );
   }

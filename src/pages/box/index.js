@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 
 //strings
-import strings from '../../constants/localization'
+import strings from "../../constants/localization";
 
 //actions
 import {setChatInstance} from "../../actions/chatActions";
@@ -13,12 +13,14 @@ import {getUser} from "../../actions/userActions";
 import BoxThreads from "./BoxThreads";
 import BoxScene from "./BoxScene";
 
-//styling
-import '../../../styles/pages/box/index.scss'
 import Container from "../../../ui_kit/components/container";
 import Message from "../../../ui_kit/components/message";
 import Loading from "../../../ui_kit/components/loading";
 import LoadingBlinkDots from "../../../ui_kit/components/loading/LoadingBlinkDots";
+
+
+//styling
+import style from "../../../styles/pages/box/index.scss";
 
 @connect(store => {
   return {
@@ -44,7 +46,7 @@ export default class Box extends Component {
   render() {
     if (!this.props.chatInstance || !this.props.user) {
       return (
-        <div className="Box">
+        <div className={style.Box}>
           <Container center={true}>
             <Message large={true}>{strings.waitingForChatInstance}</Message>
             <Loading><LoadingBlinkDots/></Loading>
@@ -53,7 +55,7 @@ export default class Box extends Component {
       );
     }
     return (
-      <div className="Box">
+      <div className={style.Box}>
         <BoxThreads/>
         <BoxScene/>
       </div>

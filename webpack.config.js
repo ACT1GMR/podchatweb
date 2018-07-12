@@ -26,7 +26,7 @@ module.exports = (e, argv) => {
           test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
           use: [
             {
-              loader: 'url-loader'
+              loader: "url-loader"
             }
           ]
         },
@@ -34,12 +34,18 @@ module.exports = (e, argv) => {
           test: /\.scss$/,
           use: [
             "style-loader", // creates style nodes from JS strings
-            "css-loader",
             {
-              loader: 'sass-loader',
+              loader: "css-loader",
+              options: {
+                modules: true,
+                localIdentName: mode === "production" ? "[hash:base64:5]" : "[local]"
+              }
+            },
+            {
+              loader: "sass-loader",
               options: {
                 data: '@import "../variables.scss";',
-                includePaths: [__dirname, 'styles']
+                includePaths: [__dirname, "styles"]
               }
             }
           ],
@@ -58,9 +64,9 @@ module.exports = (e, argv) => {
       })
     ],
     node: {
-      fs: 'empty',
-      net: 'empty',
-      tls: 'empty'
+      fs: "empty",
+      net: "empty",
+      tls: "empty"
     },
   };
 
@@ -68,12 +74,12 @@ module.exports = (e, argv) => {
   if (mode === "production") {
     base.output = {
       path: __dirname + "/dist",
-      filename: 'index.js',
-      library: '',
-      libraryTarget: 'commonjs'
+      filename: "index.js",
+      library: "",
+      libraryTarget: "commonjs"
     }
   } else {
-    base.devtool = 'source-map'
+    base.devtool = "source-map"
   }
 
   return base;

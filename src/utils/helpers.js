@@ -9,9 +9,9 @@ import urls from "../constants/urls";
  * @returns {string}
  */
 function buildUrl(base, url, params, query) {
-  let paramUrl = '', queryString = '';
+  let paramUrl = "", queryString = "";
   if(query) {
-    queryString = Object.keys(query).map(key => key + '=' + query[key]).join('&');
+    queryString = Object.keys(query).map(key => key + "=" + query[key]).join("&");
     queryString = `?${queryString}`
   }
   if(params) {

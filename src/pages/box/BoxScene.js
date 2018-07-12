@@ -1,22 +1,23 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {MdChat, MdDone} from 'react-icons/lib/md'
+import {MdChat, MdDone} from "react-icons/lib/md"
 
 //strings
-import strings from '../../constants/localization'
+import strings from "../../constants/localization"
 
 //actions
 import {getThreadMessageList} from "../../actions/threadActions";
 
 //components
 import Message from "../../../ui_kit/components/message";
-import BoxSceneInput from './BoxSceneInput';
-import BoxSceneMessages from './BoxSceneMessages';
+import Container from "../../../ui_kit/components/container";
+import BoxSceneInput from "./BoxSceneInput";
+import BoxSceneMessages from "./BoxSceneMessages";
 
 //styling
-import '../../../styles/pages/box/BoxScene.scss'
-import Container from "../../../ui_kit/components/container";
+import style from "../../../styles/pages/box/BoxScene.scss";
+
 
 @connect(store => {
   return {
@@ -25,8 +26,8 @@ import Container from "../../../ui_kit/components/container";
 })
 export default class BoxScene extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   componentDidUpdate(nextProps) {
@@ -39,7 +40,7 @@ export default class BoxScene extends Component {
     const {threadId} = this.props;
     if (!threadId) {
       return (
-        <section className="BoxScene">
+        <section className={style.BoxScene}>
           <Container center={true} centerTextAlign={true}>
             <Message large={true}>{strings.pleaseStartAThreadFirst}</Message>
             <MdChat size={48} style={{color: "#f58220"}}/>

@@ -1,4 +1,4 @@
-import LocalizedStrings from 'react-localization';
+import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
   fa: {
@@ -11,11 +11,8 @@ let strings = new LocalizedStrings({
     choice: "How to choose the egg"
   },
   it: {
-    how: "Come vuoi il tuo uovo oggi?",
-    boiledEgg: "Uovo sodo",
-    softBoiledEgg: "Uovo alla coque",
-    choice: "Come scegliere l'uovo"
+
   }
 });
-strings.setLanguage('fa');
+strings.setLanguage("fa");
 export default strings;
