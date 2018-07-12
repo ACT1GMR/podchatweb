@@ -5,14 +5,17 @@
     <meta charset="utf-8">
     <title>PODCHAT WEB v0.0.1</title>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-    <script src="src/index.js"></script>
 </head>
-<div id="test"></div>
+<div id="chat"></div>
 <body>
 <script type="text/javascript">
-  requirejs(["src/index.js"], function(util) {
-    util.Podchat({token: 'eff19e7d45e04d8ba8a1dc604bd46324'}, 'test')
-  });
+  let token = prompt("Please enter your name","توکن بگیرید: goo.gl/y1jVoJ");
+  if (token != null) {
+    requirejs(["src/index.js"], function(util) {
+      util.Podchat({token}, 'chat')
+    });
+  }
+
 </script>
 </body>
 </html>
