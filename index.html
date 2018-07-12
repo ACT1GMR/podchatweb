@@ -4,9 +4,14 @@
 <head>
     <meta charset="utf-8">
     <title>PODCHAT WEB v0.0.1</title>
+    <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
 </head>
-
+<div id="test"></div>
 <body>
-<div id="app"></div>
+<script type="text/javascript">
+  requirejs(["../ichat/dist/index.js"], function(util) {
+    util.Podchat({token: 'a1467032a476460b88f44a9b58eb0a41'}, 'test')
+  });
+</script>
 </body>
 </html>
