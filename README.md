@@ -17,16 +17,36 @@ npm install podchatweb --save
 
 ## Usage
 
+React component:
+
 ```jsx
-import {Podchat} from "podchatweb"
+import {PodchatReact} from "podchatweb"
 
 class MyApp extends Component {
     render() {
         const {token} = this.props;
         return 
         <div>
-            <Podchat token={token} onTokenExpire={callBack => {callBack(token)}}/>
+            <PodchatReact token={token} onTokenExpire={callBack => {callBack(token)}}/>
         </div>
+    }
+}
+```
+
+Programmatic calling:
+
+```jsx
+import {Podchat} from "podchatweb"
+
+class MyApp extends Component {
+
+    componentDidMount() {
+        const {token} = this.props;
+        Podchat({token, onTokenExpire: callBack=> callBack(token)}, "myChat")
+    }
+    
+    render() {
+        return <div id="myChat/>
     }
 }
 ```
