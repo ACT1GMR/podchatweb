@@ -46,7 +46,7 @@ class MyApp extends Component {
     }
     
     render() {
-        return <div id="myChat/>
+        return <div id="myChat"/>
     }
 }
 ```
