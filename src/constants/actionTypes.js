@@ -20,6 +20,7 @@ export const CHAT_GET_INSTANCE = buildPromiseMessage.bind(null, "CHAT_GET_INSTAN
 export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST");
 export const USER_GET = buildPromiseMessage.bind(null, "USER_GET");
 export const MESSAGE_SEND = buildPromiseMessage.bind(null, "MESSAGE_SEND");
+export const MESSAGE_EDIT = buildPromiseMessage.bind(null, "MESSAGE_EDIT");
 export const MESSAGE_NEW = "MESSAGE_NEW";
 export const MESSAGE_SEEN = "MESSAGE_SEEN";
 export const THREAD_GET_MESSAGE_LIST = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST");

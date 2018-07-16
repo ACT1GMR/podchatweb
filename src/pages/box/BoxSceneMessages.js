@@ -18,7 +18,7 @@ import Loading, {LoadingBlinkDots} from "../../../ui_kit/components/loading";
 import Content, {ContentFooter} from "../../../ui_kit/components/content";
 import Container from "../../../ui_kit/components/container";
 import Message from "../../../ui_kit/components/message";
-import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
+import {MdDoneAll, MdDone, MdChatBubbleOutline, MdEdit, MdDelete} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss"
@@ -40,7 +40,15 @@ export default class BoxSceneMessages extends Component {
     this.boxSceneMessagesNode = React.createRef();
     this.messageListNode = React.createRef();
     this.onScroll = this.onScroll.bind(this);
+    // this.mouseOver = this.mouseOver.bind(this);
+    this.mouseLeave = this.mouseLeave.bind(this);
+    this.onDelete = this.onDelete.bind(this);
+    this.onEdit = this.onEdit.bind(this);
     this.seenMessages = [];
+    this.state = {
+      messageControlShow: false,
+      messageControlId: false
+    }
   }
 
   _isMessageByMe(message) {
@@ -91,8 +99,28 @@ export default class BoxSceneMessages extends Component {
     }
   }
 
+  mouseOver(id) {
+    this.setState({
+      messageControlShow: true,
+      messageControlId: id
+    })
+  }
+
+  mouseLeave(id) {
+    this.setState({
+      messageControlShow: false,
+      messageControlId: false
+    })
+  }
+  onEdit(){
+    console.log(111)
+  }
+  onDelete(){
+
+  }
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages} = this.props;
+    let {messageControlShow, messageControlId} = this.state;
     if (threadMessagesFetching) {
       return (
         <Container center={true}>
@@ -118,6 +146,7 @@ export default class BoxSceneMessages extends Component {
             </Container>
           )
       }
+
       const seenAction = (el) => {
         if (!this._isMessageByMe(el)) {
           return null;
@@ -128,12 +157,20 @@ export default class BoxSceneMessages extends Component {
         return <MdDone size={16} style={{margin: "0 5px"}}/>
       };
       const message = el =>
-        <Container inline={true} maxWidth="50%" inSpace={true}>
+        <Container inline={true} maxWidth="50%" inSpace={true} relative onMouseOver={this.mouseOver.bind(this,el.id)}
+                   onMouseLeave={(e) => this.mouseLeave(el.id)}>
           <Content hasBackground={true} borderRadius={5}>
             {el.message}
             <ContentFooter>
               {seenAction(el)}
               {date.isToday(el.time) ? date.format(el.time, "hh:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "YYYY-MM-DD dddd hh:mm") : date.format(el.time, "YYYY-MM-DD  hh:mm")}
+
+              {messageControlShow && el.id === messageControlId && this._isMessageByMe(el)?
+                <Container inline left inSpace>
+                  <MdEdit style={{margin: "0 5px"}} onClick={this.onEdit}/>
+                  <MdDelete style={{margin: "0 5px"}} onClick={this.onDelete}/>
+                </Container> : ""
+              }
             </ContentFooter>
           </Content>
         </Container>;

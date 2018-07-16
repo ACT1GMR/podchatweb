@@ -1,4 +1,4 @@
-import {MESSAGE_SEND, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
+import {MESSAGE_SEND, MESSAGE_EDIT, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
 
 export const sendMessage = (text, threadId) => {
   return (dispatch, getState) => {
@@ -7,6 +7,16 @@ export const sendMessage = (text, threadId) => {
     dispatch({
       type: MESSAGE_SEND(),
       payload: chatSDK.sendMessage(text, threadId)
+    });
+  }
+};
+export const messageEdit = (text, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: MESSAGE_EDIT(),
+      payload: chatSDK.editMessage(text, threadId)
     });
   }
 };
