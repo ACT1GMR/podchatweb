@@ -17,6 +17,7 @@ import style from "../../../styles/pages/box/BoxSceneInput.scss";
 @connect(store => {
   return {
     messageSent: store.message.sentMessage,
+    messageEditing: store.message.messageEditing,
     threadId: store.thread.thread.id
   };
 })
@@ -42,7 +43,9 @@ export default class BoxSceneInput extends Component {
   }
 
   render() {
+    const {messageEditing} = this.props;
     const {messageText} = this.state;
+    console.log(messageEditing)
     return (
       <form className={style.BoxSceneInput} onSubmit={this.onFormSubmit}>
         <input className={style.BoxSceneInput__text}

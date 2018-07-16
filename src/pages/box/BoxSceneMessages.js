@@ -9,7 +9,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {getThreadMessageList} from "../../actions/threadActions";
-import {messageSeen} from "../../actions/messageActions"
+import {messageSeen, messageEditing} from "../../actions/messageActions"
 
 //components
 import List, {ListItem} from "raduikit/src/list"
@@ -18,7 +18,7 @@ import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 import Content, {ContentFooter} from "raduikit/src/content";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
-import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
+import {MdDoneAll, MdDone, MdChatBubbleOutline, MdEdit, MdDelete} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss"
@@ -42,8 +42,6 @@ export default class BoxSceneMessages extends Component {
     this.onScroll = this.onScroll.bind(this);
     // this.mouseOver = this.mouseOver.bind(this);
     this.mouseLeave = this.mouseLeave.bind(this);
-    this.onDelete = this.onDelete.bind(this);
-    this.onEdit = this.onEdit.bind(this);
     this.seenMessages = [];
     this.state = {
       messageControlShow: false,
@@ -112,10 +110,10 @@ export default class BoxSceneMessages extends Component {
       messageControlId: false
     })
   }
-  onEdit(){
-    console.log(111)
+  onEdit(id, message){
+    this.props.dispatch(messageEditing(id, message))
   }
-  onDelete(){
+  onDelete(id){
 
   }
   render() {
@@ -167,8 +165,8 @@ export default class BoxSceneMessages extends Component {
 
               {messageControlShow && el.id === messageControlId && this._isMessageByMe(el)?
                 <Container inline left inSpace>
-                  <MdEdit style={{margin: "0 5px"}} onClick={this.onEdit}/>
-                  <MdDelete style={{margin: "0 5px"}} onClick={this.onDelete}/>
+                  <MdEdit style={{margin: "0 5px"}} onClick={this.onEdit.bind(this, el.id, el.message)}/>
+                  <MdDelete style={{margin: "0 5px"}} onClick={this.onDelete.bind(this, el.id)}/>
                 </Container> : ""
               }
             </ContentFooter>
