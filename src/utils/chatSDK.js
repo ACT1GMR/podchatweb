@@ -137,6 +137,26 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  editMessage(resolve, reject, content, threadId) {
+    const sendChatParams = {
+      threadId,
+      content
+    };
+
+    this.chatAgent.editMessage(sendChatParams, {
+      onSent: function (result) {
+        if (!errorHandling(result, reject)) {
+          return resolve({
+            result, ...{
+              message: content, participant: {}
+            }
+          });
+        }
+      }
+    });
+  }
+
+  @promiseDecorator
   seenMessage(resolve, reject, messageId, ownerId) {
     this.chatAgent.seen({messageId, ownerId}, function (result) {
       if (!errorHandling(result, reject)) {
