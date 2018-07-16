@@ -10,8 +10,8 @@ import strings from "../../constants/localization"
 import {getThreadMessageList} from "../../actions/threadActions";
 
 //components
-import Message from "../../../ui_kit/components/message";
-import Container from "../../../ui_kit/components/container";
+import Message from "raduikit/src/message";
+import Container from "raduikit/src/container";
 import BoxSceneInput from "./BoxSceneInput";
 import BoxSceneMessages from "./BoxSceneMessages";
 

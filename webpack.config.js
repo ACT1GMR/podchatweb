@@ -1,5 +1,6 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require("path");
 
 module.exports = (e, argv) => {
   const mode = argv.mode;
@@ -8,7 +9,10 @@ module.exports = (e, argv) => {
       rules: [
         {
           test: /\.js$/,
-          exclude: /node_modules/,
+          include: [
+            path.resolve(__dirname, "src"),
+            path.resolve(__dirname, "node_modules/raduikit/src")
+          ],
           use: {
             loader: "babel-loader"
           }
@@ -66,7 +70,7 @@ module.exports = (e, argv) => {
       fs: "empty",
       net: "empty",
       tls: "empty"
-    },
+    }
   };
 
   //IF MODE IS PRODUCTION

@@ -13,10 +13,10 @@ import {getUser} from "../../actions/userActions";
 import BoxThreads from "./BoxThreads";
 import BoxScene from "./BoxScene";
 
-import Container from "../../../ui_kit/components/container";
-import Message from "../../../ui_kit/components/message";
-import Loading from "../../../ui_kit/components/loading";
-import LoadingBlinkDots from "../../../ui_kit/components/loading/LoadingBlinkDots";
+import Container from "raduikit/src/container";
+import Message from "raduikit/src/message";
+import Loading from "raduikit/src/loading";
+import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
 
 
 //styling

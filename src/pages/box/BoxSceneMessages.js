@@ -12,12 +12,12 @@ import {getThreadMessageList} from "../../actions/threadActions";
 import {messageSeen} from "../../actions/messageActions"
 
 //components
-import List, {ListItem} from "../../../ui_kit/components/list"
-import Avatar, {AvatarImage, AvatarName} from "../../../ui_kit/components/avatar";
-import Loading, {LoadingBlinkDots} from "../../../ui_kit/components/loading";
-import Content, {ContentFooter} from "../../../ui_kit/components/content";
-import Container from "../../../ui_kit/components/container";
-import Message from "../../../ui_kit/components/message";
+import List, {ListItem} from "raduikit/src/list"
+import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
+import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
+import Content, {ContentFooter} from "raduikit/src/content";
+import Container from "raduikit/src/container";
+import Message from "raduikit/src/message";
 import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
 
 //styling
