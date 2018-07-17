@@ -1,6 +1,6 @@
 import contactReducer from "./contactReducer";
 import {threadMessageListReducer, threadMessageListPartialReducer, createThreadReducer, threadsReducer} from "./threadReducer";
-import {messageSendReducer, messageNewReducer, messageEditingReducer} from "./messageReducer";
+import {messageSendReducer, messageNewReducer, messageEditingReducer, messageEditReducer} from "./messageReducer";
 import chatReducer from "./chatReducer";
 import userReducer from "./userReducer";
 
@@ -13,6 +13,7 @@ const rootReducer = {
   message: messageNewReducer,
   sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,
+  messageEdit: messageEditReducer,
   user: userReducer,
   threadList: threadsReducer
 };

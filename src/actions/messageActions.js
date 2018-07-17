@@ -11,13 +11,11 @@ export const sendMessage = (text, threadId) => {
   }
 };
 
-export const messageEditing = (text, id) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chat.chatSDK;
+export const messageEditing = (id,text) => {
+  return (dispatch) => {
     dispatch({
-      type: MESSAGE_EDITING(),
-      payload: {text, id}
+      type: MESSAGE_EDITING,
+      payload: id ? {text, id} : null
     });
   }
 };

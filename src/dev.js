@@ -7,7 +7,7 @@ import Box from "./pages/box";
 
 render(
   <Provider store={store}>
-    <Box token="f4024e2e051c478bb3fa211258a434a0"/>
+    <Box token="d39f8f9db8e847e29b09c5dab17414b1"/>
   </Provider>,
   document.getElementById("app")
 );

@@ -7,8 +7,6 @@ export const stateObject = (state, response, payloadKey) => {
   } else {
     object = {fetching: false, fetched: true};
   }
-  if (response) {
-    object = {...object, [payloadKey]: response}
-  }
+  object = {...object, [payloadKey]: response};
   return object;
 };
