@@ -1,7 +1,7 @@
 // src/actions/messageActions.js
 import {USER_GET} from "../constants/actionTypes";
 
-export const getUser = (chatSDK) => {
+export const userGet = (chatSDK) => {
   return (dispatch) => {
     dispatch({
       type: USER_GET(),

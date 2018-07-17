@@ -1,4 +1,4 @@
-import {THREAD_CREATE, THREAD_GET_MESSAGE_LIST, THREAD_GET_LIST, THREAD_GET_MESSAGE_LIST_PARTIAL, THREAD_NEW} from "../constants/actionTypes";
+import {THREAD_CREATE, THREAD_GET_MESSAGE_LIST, THREAD_GET_LIST, THREAD_GET_MESSAGE_LIST_PARTIAL} from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread) => {
   return (dispatch, getState) => {
@@ -17,7 +17,7 @@ export const threadCreate = (contactId, thread) => {
   }
 };
 
-export const getThreads = () => {
+export const threadGetList = () => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
@@ -28,7 +28,7 @@ export const getThreads = () => {
   }
 };
 
-export const getThreadMessageList = (threadId, offset) => {
+export const threadMessageGetList = (threadId, offset) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;

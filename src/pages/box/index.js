@@ -6,21 +6,23 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {setChatInstance} from "../../actions/chatActions";
-import {getUser} from "../../actions/userActions";
+import {chatSetInstance} from "../../actions/chatActions";
+import {userGet} from "../../actions/userActions";
 
 //components
 import BoxThreads from "./BoxThreads";
 import BoxScene from "./BoxScene";
+import BoxHead from "./BoxHead";
 
-import Container from "raduikit/src/container";
-import Message from "raduikit/src/message";
-import Loading from "raduikit/src/loading";
-import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
+import Container from "../../../../uikit/src/container";
+import Message from "../../../../uikit/src/message";
+import Loading from "../../../../uikit/src/loading";
+import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
 
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
+
 
 @connect(store => {
   return {
@@ -34,12 +36,12 @@ export default class Box extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(setChatInstance(this.props.token));
+    this.props.dispatch(chatSetInstance(this.props.token));
   }
 
   componentWillUpdate(chatInstance) {
     if (chatInstance.chatInstance && !this.props.user) {
-      this.props.dispatch(getUser(chatInstance.chatInstance));
+      this.props.dispatch(userGet(chatInstance.chatInstance));
     }
   }
 
@@ -56,6 +58,7 @@ export default class Box extends Component {
     }
     return (
       <div className={style.Box}>
+        <BoxHead/>
         <BoxThreads/>
         <BoxScene/>
       </div>

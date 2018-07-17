@@ -18,6 +18,8 @@ export const buildPromiseMessage = (baseMessage, type) => {
 
 export const CHAT_GET_INSTANCE = buildPromiseMessage.bind(null, "CHAT_GET_INSTANCE");
 export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST");
+export const CONTACT_ADD = "CONTACT_ADD";
+export const CONTACT_ADDING = buildPromiseMessage.bind(null, "CONTACT_ADDING");
 export const USER_GET = buildPromiseMessage.bind(null, "USER_GET");
 export const MESSAGE_SEND = buildPromiseMessage.bind(null, "MESSAGE_SEND");
 export const MESSAGE_EDIT = buildPromiseMessage.bind(null, "MESSAGE_EDIT");

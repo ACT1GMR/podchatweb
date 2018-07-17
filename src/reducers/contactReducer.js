@@ -1,7 +1,7 @@
-import {CONTACT_GET_LIST} from "../constants/actionTypes";
+import {CONTACT_GET_LIST, CONTACT_ADDING} from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
-export default (state = {
+export const contactGetListReducer =  (state = {
   contacts: [],
   fetching: false,
   fetched: false,
@@ -14,6 +14,18 @@ export default (state = {
       return {...state, ...stateObject("SUCCESS", action.payload, "contacts")};
     case CONTACT_GET_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+
+export const contactAddingReducer =  (state = {
+  isAdding: false
+}, action) => {
+  switch (action.type) {
+    case CONTACT_ADDING:
+      return {isAdding: action.payload};
     default:
       return state;
   }

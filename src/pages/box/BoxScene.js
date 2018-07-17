@@ -7,11 +7,11 @@ import {MdChat, MdDone} from "react-icons/lib/md"
 import strings from "../../constants/localization"
 
 //actions
-import {getThreadMessageList} from "../../actions/threadActions";
+import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
-import Message from "raduikit/src/message";
-import Container from "raduikit/src/container";
+import Message from "../../../../uikit/src/message";
+import Container from "../../../../uikit/src/container";
 import BoxSceneInput from "./BoxSceneInput";
 import BoxSceneMessages from "./BoxSceneMessages";
 
@@ -32,7 +32,7 @@ export default class BoxScene extends Component {
 
   componentDidUpdate(nextProps) {
     if (this.props.threadId) {
-      this.props.dispatch(getThreadMessageList(this.props.threadId));
+      this.props.dispatch(threadMessageGetList(this.props.threadId));
     }
   }
 

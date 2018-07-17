@@ -6,8 +6,8 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {sendMessage} from "../../actions/messageActions";
-import {getThreadMessageList} from "../../actions/threadActions";
+import {messageSend} from "../../actions/messageActions";
+import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
 
@@ -33,7 +33,7 @@ export default class BoxSceneInput extends Component {
 
   onFormSubmit(evt) {
     evt.preventDefault();
-    this.props.dispatch(sendMessage(this.state.messageText, this.props.threadId));
+    this.props.dispatch(messageSend(this.state.messageText, this.props.threadId));
     this.setState({messageText: ""});
   }
 

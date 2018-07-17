@@ -1,6 +1,6 @@
 import {MESSAGE_SEND, MESSAGE_EDIT, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
 
-export const sendMessage = (text, threadId) => {
+export const messageSend = (text, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;

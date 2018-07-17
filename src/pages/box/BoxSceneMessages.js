@@ -8,16 +8,16 @@ import date from "../../utils/date";
 import strings from "../../constants/localization";
 
 //actions
-import {getThreadMessageList} from "../../actions/threadActions";
+import {threadMessageGetList} from "../../actions/threadActions";
 import {messageSeen} from "../../actions/messageActions"
 
 //components
-import List, {ListItem} from "raduikit/src/list"
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
-import Content, {ContentFooter} from "raduikit/src/content";
-import Container from "raduikit/src/container";
-import Message from "raduikit/src/message";
+import List, {ListItem} from "../../../../uikit/src/list"
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Content, {ContentFooter} from "../../../../uikit/src/content";
+import Container from "../../../../uikit/src/container";
+import Message from "../../../../uikit/src/message";
 import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
 
 //styling
@@ -72,7 +72,7 @@ export default class BoxSceneMessages extends Component {
       this.position = scrollTop;
       if (scrollTop <= (scrollHeight / 3)) {
         if (!threadMessagesPartialFetching) {
-          this.props.dispatch(getThreadMessageList(threadMessages[0].threadId, (threadMessages.length / 50) * 50));
+          this.props.dispatch(threadMessageGetList(threadMessages[0].threadId, (threadMessages.length / 50) * 50));
         }
       }
     }

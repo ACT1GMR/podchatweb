@@ -3,7 +3,7 @@ import {THREAD_NEW, CHAT_GET_INSTANCE, MESSAGE_NEW, CONTACT_GET_LIST, THREAD_CHA
 import ChatSDK from "../utils/chatSDK";
 import {stateObject} from "../utils/serviceStateGenerator";
 
-export const setChatInstance = token => {
+export const chatSetInstance = token => {
   return (dispatch) => {
     dispatch({
       type: CHAT_GET_INSTANCE(),
