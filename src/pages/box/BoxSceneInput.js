@@ -51,7 +51,7 @@ export default class BoxSceneInput extends Component {
   onFormSubmit(msgEditing, evt) {
     evt.preventDefault();
     if (msgEditing) {
-      this.props.dispatch(messageEdit(msgEditing.text, msgEditing.id));
+      this.props.dispatch(messageEdit(this.state.messageText, msgEditing.id));
     } else {
       this.props.dispatch(sendMessage(this.state.messageText, this.props.threadId));
     }
