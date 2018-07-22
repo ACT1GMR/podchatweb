@@ -18,7 +18,7 @@ import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Content, {ContentFooter} from "../../../../uikit/src/content";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
-import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
+import {MdDoneAll, MdDone, MdChatBubbleOutline, MdEdit, MdDelete} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss"
@@ -112,9 +112,11 @@ export default class BoxSceneMessages extends Component {
       messageControlId: false
     })
   }
+
   onEdit(){
     console.log(111)
   }
+
   onDelete(){
 
   }

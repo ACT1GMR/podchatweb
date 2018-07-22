@@ -38,7 +38,7 @@
     "json-loader": "^0.5.7",
     "mini-css-extract-plugin": "^0.2.0",
     "node-sass": "^4.9.0",
-    "react": "^16.3.0",
+    "react": "^16.4.1",
     "react-dom": "^16.3.0",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",

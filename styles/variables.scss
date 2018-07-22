@@ -40,16 +40,61 @@ $color-primary-light: #343B4B;
 $color-primary-dark: #070F21;
 
 $color-accent: #f58220;
-$color-accent-dark: #f58220;
-$color-accent-light: #f58220;
+$color-accent-dark: #CA6107;
+$color-accent-light: #FFB575;
 
 $color-background: #f0f0f0;
 $color-background-dark: #C5C5C5;
 $color-background-light: #fff;
 
+$color-white: #fff;
 $color-text-invert: #f0f0f0;
 $color-text-light: #B1B1B1;
 $color-text: #555;
 $color-text-dark: #272727;
 
+:export {
+  fontFamily: $font-family;
+  lineHeightBase: $line-height-base;
+  fontWeightUltralight: $font-weight-ultralight;
+  fontWeightLight: $font-weight-light;
+  fontWeightNormal: $font-weight-normal;
+  fontWeightMedium: $font-weight-medium;
+  fontWeightBold: $font-weight-bold;
+  fontSizeBase: $font-size-base;
+  fontSizeLarge: $font-size-large;
+  fontSizeJumbo: $font-size-jumbo;
+  fontSizeSmall: $font-size-small;
+  fontSizeTiny: $font-size-tiny;
+  fontSizeH1: $font-size-h1;
+  fontSizeH2: $font-size-h2;
+  fontSizeH3: $font-size-h3;
+  fontSizeH4: $font-size-h4;
+  fontSizeH5: $font-size-h5;
+  fontSizeH6: $font-size-h6;
+  zIndex1: $z-index-1;
+  zIndex2: $z-index-2;
+  zIndex3: $z-index-3;
+  zIndex4: $z-index-4;
+  zIndex5: $z-index-5;
+  zIndex6: $z-index-6;
+  zIndex7: $z-index-7;
+  zIndex8: $z-index-8;
+  zIndex9: $z-index-9;
+  zIndex10: $z-index-10;
 
+  colorPrimary: $color-primary;
+  colorPrimaryLight: $color-primary-light;
+  colorPrimaryDark: $color-primary-dark;
+  colorAccent: $color-accent;
+  colorAccentDark: $color-accent-dark;
+  colorAccentLight: $color-accent-light;
+  colorBackground: $color-background;
+  colorBackgroundDark: $color-background-dark;
+  colorBackgroundLight: $color-background-light;
+  colorWhite: $color-white;
+  colorTextInvert: $color-text;
+  colorTextLight: $color-text-light;
+  colorText: $color-text;
+  colorTextDark: $color-text-invert;
+}

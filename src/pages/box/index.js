@@ -19,7 +19,6 @@ import Message from "../../../../uikit/src/message";
 import Loading from "../../../../uikit/src/loading";
 import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
 
-
 //styling
 import style from "../../../styles/pages/box/index.scss";
 
@@ -48,20 +47,24 @@ export default class Box extends Component {
   render() {
     if (!this.props.chatInstance || !this.props.user) {
       return (
-        <div className={style.Box}>
+        <Container className={style.Box}>
           <Container center={true}>
             <Message large={true}>{strings.waitingForChatInstance}</Message>
             <Loading><LoadingBlinkDots/></Loading>
           </Container>
-        </div>
+        </Container>
       );
     }
     return (
-      <div className={style.Box}>
-        <BoxHead/>
-        <BoxThreads/>
-        <BoxScene/>
-      </div>
+      <section className={style.Box}>
+        <section className={style.Box__Head}>
+          <BoxHead/>
+        </section>
+        <section className={style.Box__Body}>
+          <BoxThreads/>
+          <BoxScene/>
+        </section>
+      </section>
     );
   }
 }

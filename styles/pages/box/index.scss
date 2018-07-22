@@ -1,6 +1,13 @@
-.Box{
-  margin: 0 auto;
+.Box {
   height: 100vh;
-  background-color: $color-background;
   position: relative;
+  background-color: $color-background;
+}
+
+.Box__Body {
+  height: calc(100vh - 60px);
+}
+
+.Box__Head {
+
 }

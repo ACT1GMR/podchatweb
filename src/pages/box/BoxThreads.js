@@ -51,7 +51,7 @@ export default class BoxThreads extends Component {
     if (!threads.length) {
       return (
         <section className={style.BoxThreads}>
-          <Loading><LoadingBlinkDots invert={true} rtl={true}/></Loading>
+          <Loading><LoadingBlinkDots invert rtl/></Loading>
         </section>
       )
     } else {
@@ -59,7 +59,7 @@ export default class BoxThreads extends Component {
         <section className={style.BoxThreads}>
           <List>
             {threads.map(el => (
-              <ListItem key={el.id} onClick={this.onThreadClick.bind(this, el)} selection={true} active={activeThread === el.id}>
+              <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection={true} active={activeThread === el.id}>
                 <Container relative={true}>
                   <Avatar>
                     <AvatarImage src={el.image ? el.image : defaultAvatar}/>

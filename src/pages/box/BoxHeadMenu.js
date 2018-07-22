@@ -7,15 +7,17 @@ import strings from "../../constants/localization";
 import {CONTACT_ADDING} from "../../constants/actionTypes";
 
 //actions
-import {threadCreate, threadGetList, threadMessageGetList, getThreadInfo} from "../../actions/threadActions";
+import {threadCreate, threadGetList, threadMessageGetList} from "../../actions/threadActions";
 import {contactAdding} from "../../actions/contactActions";
 
 //UI components
 import {Dropdown, DropdownItem, DropdownToggle} from "../../../../uikit/src/menu";
-import {MdMenu} from "react-icons/md";
+import {MdMenu, MdClose} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxHeadMenu.scss";
+import styleVar from "./../../../styles/variables.scss";
+import Container from "../../../../uikit/src/container";
 
 @connect(store => {
   return {
@@ -28,8 +30,12 @@ export default class BoxHeadMenu extends Component {
   static defaultProps = {
     menuItems: [
       {
-        name: strings.pleaseStartAThreadFirst,
+        name: strings.addContact,
         type: CONTACT_ADDING
+      },
+      {
+        name: strings.contactList,
+        type: "test"
       }
     ]
   };
@@ -38,7 +44,8 @@ export default class BoxHeadMenu extends Component {
     super(props);
     this.state = {
       isOpen: false
-    }
+    };
+    this.container = React.createRef();
   }
 
   onMenuSelect(type) {
@@ -47,22 +54,35 @@ export default class BoxHeadMenu extends Component {
     }
   }
 
-  onMenuIconClick() {
+  onCloseMenu() {
     this.setState({
-      isOpen: !this.state.isOpen
+      isOpen: false
+    })
+  }
+
+  onOpenMenu() {
+    this.setState({
+      isOpen: true
     })
   }
 
   render() {
-    const {menuItems, isOpen} = this.props;
+    const {menuItems} = this.props;
+    const {isOpen} = this.state;
     return (
-      <section className={style.BoxHeadMenu}>
-        <MdMenu size={24} onClick={this.onMenuIconClick.bind(this)}/>
-        {menuItems.map(el => (
-          <Dropdown isOpen={isOpen}>
-            <DropdownItem onSelect={this.onMenuSelect.bind(this, el.type)}>{el.name}</DropdownItem>
-          </Dropdown>
-        ))}
+      <section className={style.BoxHeadMenu} ref={this.container}>
+        {isOpen ? (
+          <MdClose size={32} onClick={this.onCloseMenu.bind(this)}
+                   style={{color: styleVar.colorWhite, margin: "14px"}}/>
+        ) : (
+          <MdMenu size={32} onClick={this.onOpenMenu.bind(this)} style={{color: styleVar.colorWhite, margin: "14px"}}/>
+        )}
+
+        <Dropdown isOpen={isOpen} container={this.container}>
+          {menuItems.map(el => (
+            <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)}>{el.name}</DropdownItem>
+          ))}
+        </Dropdown>
       </section>
     )
   }

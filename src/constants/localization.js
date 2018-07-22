@@ -7,6 +7,7 @@ let strings = new LocalizedStrings({
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
     add: "اضافه کردن",
     addContact: "اضافه کردن اطلاعات تماس",
+    contactList: "لیست تماس ها",
     cancel: "لغو",
     waitingForMessageFetching: "در حالت دریافت پیامها",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
