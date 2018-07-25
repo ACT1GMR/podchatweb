@@ -42,7 +42,7 @@ export default class ChatSDK {
 
   _onThreadEvents() {
     this.chatAgent.on("threadEvents", res => {
-      this.onThreadEvents(res.result.thread);
+      this.onThreadEvents(res.result.thread, res.type);
     });
   }
 
@@ -55,6 +55,7 @@ export default class ChatSDK {
   _onChatReady() {
     this.chatAgent.on("chatReady", e => {
       this.onChatReady(this);
+      this.getContactList()
     });
   }
 
@@ -94,7 +95,11 @@ export default class ChatSDK {
         for (let history of result.result.history) {
           history.threadId = threadId;
         }
-        return resolve({messages: result.result.history, messagesCount: result.result.contentCount, hasNext: result.result.hasNext});
+        return resolve({
+          messages: result.result.history,
+          messagesCount: result.result.contentCount,
+          hasNext: result.result.hasNext
+        });
       }
     });
   }
@@ -182,5 +187,42 @@ export default class ChatSDK {
       }
     })
   }
+
+  @promiseDecorator
+  addContact(resolve, reject, cellphoneNumber, firstName, lastName, email) {
+    const addContactParams = {
+      firstName,
+      lastName,
+      cellphoneNumber,
+      email
+    };
+    this.chatAgent.addContacts(addContactParams, function (result) {
+      if (!errorHandling(result, reject)) {
+        return resolve(result.result.contacts[0]);
+      }
+    });
+  }
+
+
+  @promiseDecorator
+  getContactList(resolve, reject, name) {
+    const getContactsParams = {
+      count: 50,
+      offset: 0
+    };
+
+    if (typeof name === "string") {
+      getContactsParams.name = name;
+    }
+    this.chatAgent.getContacts(getContactsParams, function(contactsResult) {
+      if (!contactsResult.hasError) {
+        const contactsCount = contactsResult.result.contentCount;
+        const contacts = contactsResult.result.contacts;
+        console.log(contacts);
+      }
+    });
+  }
+
+
 
 };

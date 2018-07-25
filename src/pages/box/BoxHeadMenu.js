@@ -17,7 +17,6 @@ import {MdMenu, MdClose} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/BoxHeadMenu.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Container from "../../../../uikit/src/container";
 
 @connect(store => {
   return {
@@ -46,6 +45,8 @@ export default class BoxHeadMenu extends Component {
       isOpen: false
     };
     this.container = React.createRef();
+    this.onCloseMenu = this.onCloseMenu.bind(this);
+    this.onOpenMenu = this.onOpenMenu.bind(this);
   }
 
   onMenuSelect(type) {
@@ -72,13 +73,13 @@ export default class BoxHeadMenu extends Component {
     return (
       <section className={style.BoxHeadMenu} ref={this.container}>
         {isOpen ? (
-          <MdClose size={32} onClick={this.onCloseMenu.bind(this)}
+          <MdClose size={32} onClick={this.onCloseMenu}
                    style={{color: styleVar.colorWhite, margin: "14px"}}/>
         ) : (
-          <MdMenu size={32} onClick={this.onOpenMenu.bind(this)} style={{color: styleVar.colorWhite, margin: "14px"}}/>
+          <MdMenu size={32} onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: "14px"}}/>
         )}
 
-        <Dropdown isOpen={isOpen} container={this.container}>
+        <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu}>
           {menuItems.map(el => (
             <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)}>{el.name}</DropdownItem>
           ))}

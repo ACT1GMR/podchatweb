@@ -22,12 +22,10 @@ export const createThreadReducer = (state = {
     case THREAD_CREATE("CACHE"):
       return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
     case THREAD_CHANGED: {
-      let updatedThread = action.payload;
-      let thread = state.thread;
-      if (thread) {
-        if (thread.id === updatedThread.id) {
-          return {...state, ...stateObject("SUCCESS", updatedThread, "thread")};
-        }
+      const updatedThread = action.payload;
+      const thread = state.thread;
+      if (thread.id === updatedThread.id) {
+        return {...state, ...stateObject("SUCCESS", updatedThread, "thread")};
       }
       return state;
     }

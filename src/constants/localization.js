@@ -11,8 +11,9 @@ let strings = new LocalizedStrings({
     cancel: "لغو",
     waitingForMessageFetching: "در حالت دریافت پیامها",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
-    softBoiledEgg: "Soft-boiled egg",
-    choice: "How to choose the egg"
+    mobilePhone: "شماره موبایل",
+    firstName: "نام",
+    lastName: "نام خانوادگی"
   },
   it: {
 

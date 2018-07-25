@@ -14,6 +14,13 @@ export const chatSetInstance = token => {
         token
       },
       onThreadEvents: (thread, type) => {
+        thread.changeType = type;
+        if(thread.changeType === THREAD_NEW) {
+          return dispatch({
+            type: THREAD_NEW,
+            payload: thread
+          });
+        }
         dispatch({
           type: THREAD_CHANGED,
           payload: thread

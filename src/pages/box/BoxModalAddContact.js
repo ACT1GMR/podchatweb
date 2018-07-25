@@ -1,4 +1,3 @@
-// src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
 
@@ -9,16 +8,20 @@ import strings from "../../constants/localization";
 import {contactAdd, contactAdding} from "../../actions/contactActions";
 
 //UI components
-import Menu, {MenuItem} from "../../../../uikit/src/menu";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
 
 //styling
-import style from "../../../styles/pages/box/BoxMenu.scss";
-import Container from "../../../../uikit/src/container";
 import {InputText} from "../../../../uikit/src/input";
+import Button from "../../../../uikit/src/button";
+import {Heading} from "../../../../uikit/src/typography";
+import Message from "../../../../uikit/src/message";
 
 @connect(store => {
   return {
-    isAdding: store.contactAdding.isAdding
+    isAdding: store.contactAdding.isAdding,
+    contactAdd: store.contactAdd.contact,
+    contactAddPending: store.contactAdd.fetching,
+    contactAddError: store.contactAdd.fetching
   };
 })
 export default class BoxModalAddContact extends Component {
@@ -28,14 +31,24 @@ export default class BoxModalAddContact extends Component {
     this.state = {
       mobilePhone: null,
       firstName: null,
-      lastName: null,
-      isOpen: this.props.isAdding
+      lastName: null
+    }
+  }
+
+  componentDidUpdate(oldProps) {
+    const {contactAdd, isAdding} = this.props;
+    if (this.props.contactAdd){
+      if (oldProps.contactAdd !== this.props.contactAdd) {
+        if (isAdding) {
+          this.props.dispatch(contactAdding(false));
+        }
+      }
     }
   }
 
   onSubmit() {
-    const {phoneNumber, firstName, lastName} = this.props;
-    this.props.dispatch(contactAdd(phoneNumber, firstName, lastName));
+    const {mobilePhone, firstName, lastName} = this.state;
+    this.props.dispatch(contactAdd(mobilePhone, firstName, lastName));
   }
 
   onCancel() {
@@ -49,23 +62,32 @@ export default class BoxModalAddContact extends Component {
   }
 
   render() {
-    const {isAdding} = this.props;
+    const {isAdding, contactAdd, contactAddPending, contactAddError} = this.props;
     return (
-      <Modal isOpen={isAdding}>
+      <Modal isOpen={isAdding} onClose={this.onCancel.bind(this)}>
+
         <ModalHeader>
-          <Heading h3>${strings.addContact}</Heading>
+          <Heading h3 invert>{strings.addContact}</Heading>
         </ModalHeader>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          <ModalBody>
-            <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}/>
-            <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")}/>
-            <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")}/>
-          </ModalBody>
-          <ModalFooter>
-            <Button submit onClick={this.onClick.bind(this)}>{strings.add}</Button>
-            <Button onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
-          </ModalFooter>
-        </form>
+
+        <ModalBody>
+          <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
+                     placeholder={strings.mobilePhone}/>
+          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")} placeholder={strings.firstName}/>
+          <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}/>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
+          <Button onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
+          {contactAddError ?
+
+            <Message>
+              {strings.getAvailableLanguages}
+            </Message>
+            : ""}
+        </ModalFooter>
+
       </Modal>
     )
   }

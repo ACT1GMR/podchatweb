@@ -14,6 +14,7 @@ import Message from "../../../../uikit/src/message";
 import Container from "../../../../uikit/src/container";
 import BoxSceneInput from "./BoxSceneInput";
 import BoxSceneMessages from "./BoxSceneMessages";
+import BoxModalAddContact from "./BoxModalAddContact";
 
 //styling
 import style from "../../../styles/pages/box/BoxScene.scss";
@@ -45,6 +46,7 @@ export default class BoxScene extends Component {
             <Message large={true}>{strings.pleaseStartAThreadFirst}</Message>
             <MdChat size={48} style={{color: "#f58220"}}/>
           </Container>
+          <BoxModalAddContact/>
         </section>
       );
     }
@@ -52,6 +54,7 @@ export default class BoxScene extends Component {
       <section className={style.BoxScene}>
         <BoxSceneMessages/>
         <BoxSceneInput/>
+        <BoxModalAddContact/>
       </section>
     );
   }

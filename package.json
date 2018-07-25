@@ -55,7 +55,7 @@
     "classnames": "^2.2.6",
     "moment": "^2.22.2",
     "persian-date": "^1.0.5",
-    "podchat": "^0.6.2",
+    "podchat": "^0.7.3",
     "raduikit": "^0.0.4",
     "react-icons": "^2.2.7",
     "react-localization": "^1.0.10",
