@@ -1,5 +1,5 @@
 // src/actions/messageActions.js
-import {CONTACT_GET_LIST, CONTACT_ADD, CONTACT_ADDING, THREAD_CREATE} from "../constants/actionTypes";
+import {CONTACT_GET_LIST, CONTACT_ADD, CONTACT_ADDING, CONTACT_LIST_SHOWING, THREAD_CREATE} from "../constants/actionTypes";
 import {threadCreate, threadMessageGetList} from "./threadActions";
 
 export const contactGetList = () => {
@@ -19,6 +19,15 @@ export const contactAdding = (isAdding) => {
     return dispatch({
       type: CONTACT_ADDING,
       payload: isAdding
+    });
+  }
+};
+
+export const contactListShowing = (isShowing) => {
+  return dispatch => {
+    return dispatch({
+      type: CONTACT_LIST_SHOWING,
+      payload: isShowing
     });
   }
 };

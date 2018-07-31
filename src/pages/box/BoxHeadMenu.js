@@ -8,7 +8,7 @@ import {CONTACT_ADDING} from "../../constants/actionTypes";
 
 //actions
 import {threadCreate, threadGetList, threadMessageGetList} from "../../actions/threadActions";
-import {contactAdding} from "../../actions/contactActions";
+import {contactAdding, contactListShowing} from "../../actions/contactActions";
 
 //UI components
 import {Dropdown, DropdownItem, DropdownToggle} from "../../../../uikit/src/menu";
@@ -52,6 +52,8 @@ export default class BoxHeadMenu extends Component {
   onMenuSelect(type) {
     if (type === CONTACT_ADDING) {
       this.props.dispatch(contactAdding(true));
+    } else {
+      this.props.dispatch(contactListShowing(true));
     }
   }
 

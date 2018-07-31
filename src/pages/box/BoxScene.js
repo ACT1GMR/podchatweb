@@ -15,6 +15,7 @@ import Container from "../../../../uikit/src/container";
 import BoxSceneInput from "./BoxSceneInput";
 import BoxSceneMessages from "./BoxSceneMessages";
 import BoxModalAddContact from "./BoxModalAddContact";
+import BoxModalContactList from "./BoxModalContactList";
 
 //styling
 import style from "../../../styles/pages/box/BoxScene.scss";
@@ -29,6 +30,7 @@ export default class BoxScene extends Component {
 
   constructor(props) {
     super(props);
+
   }
 
   componentDidUpdate(nextProps) {
@@ -39,6 +41,12 @@ export default class BoxScene extends Component {
 
   render() {
     const {threadId} = this.props;
+    const popups = (
+      <section>
+        <BoxModalContactList/>
+        <BoxModalAddContact/>
+      </section>
+    );
     if (!threadId) {
       return (
         <section className={style.BoxScene}>
@@ -46,7 +54,7 @@ export default class BoxScene extends Component {
             <Message large={true}>{strings.pleaseStartAThreadFirst}</Message>
             <MdChat size={48} style={{color: "#f58220"}}/>
           </Container>
-          <BoxModalAddContact/>
+          {popups}
         </section>
       );
     }
@@ -54,7 +62,7 @@ export default class BoxScene extends Component {
       <section className={style.BoxScene}>
         <BoxSceneMessages/>
         <BoxSceneInput/>
-        <BoxModalAddContact/>
+        {popups}
       </section>
     );
   }

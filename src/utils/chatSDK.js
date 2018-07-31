@@ -59,20 +59,6 @@ export default class ChatSDK {
     });
   }
 
-
-  @promiseDecorator
-  getContactList(resolve, reject, params) {
-    const getContactsParams = {
-      count: 50,
-      offset: 0
-    };
-    this.chatAgent.getContacts(getContactsParams, function (contactsResult) {
-      if (!errorHandling(contactsResult, reject)) {
-        return resolve(contactsResult.result.contacts);
-      }
-    });
-  }
-
   @promiseDecorator
   createThread(resolve, reject, params) {
     const createThreadParams = {
@@ -214,11 +200,9 @@ export default class ChatSDK {
     if (typeof name === "string") {
       getContactsParams.name = name;
     }
-    this.chatAgent.getContacts(getContactsParams, function(contactsResult) {
-      if (!contactsResult.hasError) {
-        const contactsCount = contactsResult.result.contentCount;
-        const contacts = contactsResult.result.contacts;
-        console.log(contacts);
+    this.chatAgent.getContacts(getContactsParams, function(result) {
+      if (!errorHandling(result, reject)) {
+        return resolve(result.result.contacts);
       }
     });
   }

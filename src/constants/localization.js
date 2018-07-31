@@ -9,6 +9,8 @@ let strings = new LocalizedStrings({
     addContact: "اضافه کردن اطلاعات تماس",
     contactList: "لیست تماس ها",
     cancel: "لغو",
+    close: "بستن",
+    startChat: "شروع گفتگو",
     waitingForMessageFetching: "در حالت دریافت پیامها",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
