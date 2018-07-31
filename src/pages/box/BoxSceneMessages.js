@@ -18,7 +18,7 @@ import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 import Content, {ContentFooter} from "raduikit/src/content";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
-import {MdDoneAll, MdDone, MdChatBubbleOutline} from "react-icons/lib/md";
+import {MdDoneAll, MdDone, MdDelete, MdEdit, MdChatBubbleOutline} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss"
@@ -110,12 +110,15 @@ export default class BoxSceneMessages extends Component {
       messageControlId: false
     })
   }
-  onEdit(id, message){
+
+  onEdit(id, message) {
     this.props.dispatch(messageEditing(id, message))
   }
-  onDelete(id){
+
+  onDelete(id) {
 
   }
+
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages} = this.props;
     const {messageControlShow, messageControlId} = this.state;
@@ -155,7 +158,7 @@ export default class BoxSceneMessages extends Component {
         return <MdDone size={16} style={{margin: "0 5px"}}/>
       };
       const message = el =>
-        <Container inline={true} maxWidth="50%" inSpace={true} relative onMouseOver={this.mouseOver.bind(this,el.id)}
+        <Container inline={true} maxWidth="50%" inSpace={true} relative onMouseOver={this.mouseOver.bind(this, el.id)}
                    onMouseLeave={(e) => this.mouseLeave(el.id)}>
           <Content hasBackground={true} borderRadius={5}>
             {el.message}
@@ -163,7 +166,7 @@ export default class BoxSceneMessages extends Component {
               {seenAction(el)}
               {date.isToday(el.time) ? date.format(el.time, "hh:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "YYYY-MM-DD dddd hh:mm") : date.format(el.time, "YYYY-MM-DD  hh:mm")}
 
-              {messageControlShow && el.id === messageControlId && this._isMessageByMe(el)?
+              {messageControlShow && el.id === messageControlId && this._isMessageByMe(el) ?
                 <Container inline left inSpace>
                   <MdEdit style={{margin: "0 5px"}} onClick={this.onEdit.bind(this, el.id, el.message)}/>
                   <MdDelete style={{margin: "0 5px"}} onClick={this.onDelete.bind(this, el.id)}/>

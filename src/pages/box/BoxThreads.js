@@ -9,12 +9,12 @@ import strings from "../../constants/localization"
 import {threadCreate, threadGetList, threadMessageGetList, getThreadInfo} from "../../actions/threadActions";
 
 //UI components
-import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
-import List, {ListItem} from "../../../../uikit/src/list";
-import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
-import Container from "../../../../uikit/src/container";
-import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
-import Loading from "../../../../uikit/src/loading";
+import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
+import List, {ListItem} from "raduikit/src/list";
+import Shape, {ShapeCircle} from "raduikit/src/shape";
+import Container from "raduikit/src/container";
+import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
+import Loading from "raduikit/src/loading";
 
 //styling
 import style from "../../../styles/pages/box/BoxThreads.scss";

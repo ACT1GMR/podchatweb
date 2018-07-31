@@ -10,8 +10,8 @@ import strings from "../../constants/localization"
 import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
-import Message from "../../../../uikit/src/message";
-import Container from "../../../../uikit/src/container";
+import Message from "raduikit/src/message";
+import Container from "raduikit/src/container";
 import BoxSceneInput from "./BoxSceneInput";
 import BoxSceneMessages from "./BoxSceneMessages";
 import BoxModalAddContact from "./BoxModalAddContact";

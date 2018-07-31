@@ -11,7 +11,7 @@ import {threadCreate, threadGetList, threadMessageGetList} from "../../actions/t
 import {contactAdding, contactListShowing} from "../../actions/contactActions";
 
 //UI components
-import {Dropdown, DropdownItem, DropdownToggle} from "../../../../uikit/src/menu";
+import {Dropdown, DropdownItem, DropdownToggle} from "raduikit/src/menu";
 import {MdMenu, MdClose} from "react-icons/lib/md";
 
 //styling

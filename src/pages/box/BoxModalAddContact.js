@@ -8,13 +8,13 @@ import strings from "../../constants/localization";
 import {contactAdd, contactAdding} from "../../actions/contactActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 
 //styling
-import {InputText} from "../../../../uikit/src/input";
-import Button from "../../../../uikit/src/button";
-import {Heading} from "../../../../uikit/src/typography";
-import Message from "../../../../uikit/src/message";
+import {InputText} from "raduikit/src/input";
+import Button from "raduikit/src/button";
+import {Heading} from "raduikit/src/typography";
+import Message from "raduikit/src/message";
 
 @connect(store => {
   return {

@@ -14,10 +14,10 @@ import BoxThreads from "./BoxThreads";
 import BoxScene from "./BoxScene";
 import BoxHead from "./BoxHead";
 
-import Container from "../../../../uikit/src/container";
-import Message from "../../../../uikit/src/message";
-import Loading from "../../../../uikit/src/loading";
-import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
+import Container from "raduikit/src/container";
+import Message from "raduikit/src/message";
+import Loading from "raduikit/src/loading";
+import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
