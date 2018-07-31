@@ -128,12 +128,11 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  editMessage(resolve, reject, content, threadId) {
+  editMessage(resolve, reject, content, messageId) {
     const sendChatParams = {
-      threadId,
+      messageId,
       content
     };
-
     this.chatAgent.editMessage(sendChatParams, {
       onSent: function (result) {
         if (!errorHandling(result, reject)) {

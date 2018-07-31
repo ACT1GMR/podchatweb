@@ -23,6 +23,7 @@ export const CONTACT_ADDING = "CONTACT_ADDING";
 export const CONTACT_LIST_SHOWING = "CONTACT_LIST_SHOWING";
 export const USER_GET = buildPromiseMessage.bind(null, "USER_GET");
 export const MESSAGE_SEND = buildPromiseMessage.bind(null, "MESSAGE_SEND");
+export const MESSAGE_EDITING = "MESSAGE_EDITING";
 export const MESSAGE_EDIT = buildPromiseMessage.bind(null, "MESSAGE_EDIT");
 export const MESSAGE_NEW = "MESSAGE_NEW";
 export const MESSAGE_SEEN = "MESSAGE_SEEN";

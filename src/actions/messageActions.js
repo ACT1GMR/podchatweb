@@ -1,4 +1,4 @@
-import {MESSAGE_SEND, MESSAGE_EDIT, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
+import {MESSAGE_SEND, MESSAGE_EDITING, MESSAGE_EDIT, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
 
 export const messageSend = (text, threadId) => {
   return (dispatch, getState) => {
@@ -10,13 +10,23 @@ export const messageSend = (text, threadId) => {
     });
   }
 };
-export const messageEdit = (text, threadId) => {
+
+export const messageEditing = (id,text) => {
+  return (dispatch) => {
+    dispatch({
+      type: MESSAGE_EDITING,
+      payload: id ? {text, id} : null
+    });
+  }
+};
+
+export const messageEdit = (newText, id) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
     dispatch({
       type: MESSAGE_EDIT(),
-      payload: chatSDK.editMessage(text, threadId)
+      payload: chatSDK.editMessage(newText, id)
     });
   }
 };
