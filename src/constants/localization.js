@@ -11,11 +11,13 @@ let strings = new LocalizedStrings({
     cancel: "لغو",
     close: "بستن",
     startChat: "شروع گفتگو",
+    edited: "اصلاح شد",
     waitingForMessageFetching: "در حالت دریافت پیامها",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     firstName: "نام",
-    lastName: "نام خانوادگی"
+    lastName: "نام خانوادگی",
+    replyTo: "پاسخ به"
   },
   it: {
 

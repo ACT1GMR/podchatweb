@@ -133,15 +133,31 @@ export default class ChatSDK {
       messageId,
       content
     };
-    this.chatAgent.editMessage(sendChatParams, {
-      onSent: function (result) {
-        if (!errorHandling(result, reject)) {
-          return resolve({
-            result, ...{
-              message: content, participant: {}
-            }
-          });
-        }
+    this.chatAgent.editMessage(sendChatParams, function (result) {
+      if (!errorHandling(result, reject)) {
+        return resolve({
+          result, ...{
+            message: content, participant: {}
+          }
+        });
+      }
+    });
+  }
+
+  @promiseDecorator
+  replyMessage(resolve, reject, content, repliedTo, threadId) {
+    const sendChatParams = {
+      threadId,
+      repliedTo,
+      content
+    };
+    this.chatAgent.replyMessage(sendChatParams, function (result) {
+      if (!errorHandling(result, reject)) {
+        return resolve({
+          result, ...{
+            message: content, participant: {}
+          }
+        });
       }
     });
   }
@@ -199,13 +215,12 @@ export default class ChatSDK {
     if (typeof name === "string") {
       getContactsParams.name = name;
     }
-    this.chatAgent.getContacts(getContactsParams, function(result) {
+    this.chatAgent.getContacts(getContactsParams, function (result) {
       if (!errorHandling(result, reject)) {
         return resolve(result.result.contacts);
       }
     });
   }
-
 
 
 };

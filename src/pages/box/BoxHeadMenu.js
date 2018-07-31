@@ -18,6 +18,10 @@ import {MdMenu, MdClose} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/BoxHeadMenu.scss";
 import styleVar from "./../../../styles/variables.scss";
 
+const statics = {
+  headMenuSize: 60
+};
+
 @connect(store => {
   return {
     threads: store.threadList.threads,
@@ -72,13 +76,15 @@ export default class BoxHeadMenu extends Component {
   render() {
     const {menuItems} = this.props;
     const {isOpen} = this.state;
+    const iconSize = styleVar.iconSizeLg;
+    const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
     return (
       <section className={style.BoxHeadMenu} ref={this.container}>
         {isOpen ? (
-          <MdClose size={32} onClick={this.onCloseMenu}
-                   style={{color: styleVar.colorWhite, margin: "14px"}}/>
+          <MdClose size={iconSize} onClick={this.onCloseMenu}
+                   style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         ) : (
-          <MdMenu size={32} onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: "14px"}}/>
+          <MdMenu size={iconSize} onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         )}
 
         <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu}>

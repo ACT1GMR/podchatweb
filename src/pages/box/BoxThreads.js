@@ -59,15 +59,15 @@ export default class BoxThreads extends Component {
         <section className={style.BoxThreads}>
           <List>
             {threads.map(el => (
-              <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection={true} active={activeThread === el.id}>
-                <Container relative={true}>
+              <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection active={activeThread === el.id}>
+                <Container relative>
                   <Avatar>
                     <AvatarImage src={el.image ? el.image : defaultAvatar}/>
-                    <AvatarName textInvert={true}>{el.title}</AvatarName>
+                    <AvatarName textInvert>{el.title}</AvatarName>
                   </Avatar>
                   {el.unreadCount && activeThread !== el.id ?
-                    <Container absolute={true} centerLeft={true}>
-                      <Shape cirlce={true} colorAccent={true}>
+                    <Container absolute centerLeft>
+                      <Shape cirlce colorAccent>
                         <ShapeCircle>{el.unreadCount}</ShapeCircle>
                       </Shape>
                     </Container> : ""}

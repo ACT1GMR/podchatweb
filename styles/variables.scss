@@ -22,6 +22,13 @@ $font-size-h4: 18px;
 $font-size-h5: 16px;
 $font-size-h6: 14px;
 
+//icon size
+$icon-size-xs: 16;
+$icon-size-sm: 18;
+$icon-size-md: 24;
+$icon-size-lg: 36;
+$icon-size-xlg: 48;
+
 //z-index
 $z-index-1: 100;
 $z-index-2: 200;
@@ -72,6 +79,11 @@ $color-text-dark: #272727;
   fontSizeH4: $font-size-h4;
   fontSizeH5: $font-size-h5;
   fontSizeH6: $font-size-h6;
+  iconSizeXs: $icon-size-xs;
+  iconSizeSm: $icon-size-sm;
+  iconSizeMd: $icon-size-md;
+  iconSizeLg: $icon-size-lg;
+  iconSizeXlg: $icon-size-xlg;
   zIndex1: $z-index-1;
   zIndex2: $z-index-2;
   zIndex3: $z-index-3;

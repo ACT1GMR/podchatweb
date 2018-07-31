@@ -4,7 +4,7 @@ import {
   THREAD_GET_MESSAGE_LIST_PARTIAL,
   THREAD_GET_LIST,
   THREAD_NEW,
-  MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN
+  MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN , MESSAGE_EDIT
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -122,6 +122,7 @@ export const threadMessageListReducer = (state = {
       }
       return {...state, messages: [...state.messages, action.payload]};
     }
+    case MESSAGE_EDIT():
     case MESSAGE_SEEN: {
       if (!checkForCurrentThread()) {
         return state;
