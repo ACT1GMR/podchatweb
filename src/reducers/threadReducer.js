@@ -4,7 +4,7 @@ import {
   THREAD_GET_MESSAGE_LIST_PARTIAL,
   THREAD_GET_LIST,
   THREAD_NEW,
-  MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN , MESSAGE_EDIT
+  MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN, MESSAGE_EDIT
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -87,17 +87,15 @@ export const threadMessageListPartialReducer = (state = {
 
 export const threadMessageListReducer = (state = {
   messages: [],
+  threadId: null,
   hasNext: false,
   fetching: false,
   fetched: false,
   error: false
 }, action) => {
   const checkForCurrentThread = () => {
-    const firstMessage = state.messages[0];
-    if (firstMessage) {
-      if (action.payload.threadId === firstMessage.threadId) {
-        return true;
-      }
+    if (action.payload.threadId === state.threadId) {
+      return true;
     }
   };
   switch (action.type) {
@@ -107,11 +105,13 @@ export const threadMessageListReducer = (state = {
       return {...state, ...stateObject("PENDING")};
     case THREAD_GET_MESSAGE_LIST("SUCCESS"):
       let newStateInit = {...state, ...stateObject("SUCCESS", action.payload.messages.reverse(), "messages")};
+      newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
       return {...newStateInit, ...{hasNext: action.payload.hasNext}};
     case THREAD_GET_MESSAGE_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     case THREAD_GET_MESSAGE_LIST_PARTIAL("SUCCESS"):
       let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages.reverse(), ...state.messages], "messages")};
+      newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
       return {...newStatePartial, ...{hasNext: action.payload.hasNext}};
     case MESSAGE_NEW: {
       if (!checkForCurrentThread()) {

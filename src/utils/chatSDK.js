@@ -78,11 +78,9 @@ export default class ChatSDK {
     };
     this.chatAgent.getHistory(getThreadHistoryParams, function (result) {
       if (!errorHandling(result, reject)) {
-        for (let history of result.result.history) {
-          history.threadId = threadId;
-        }
         return resolve({
           messages: result.result.history,
+          threadId: threadId,
           messagesCount: result.result.contentCount,
           hasNext: result.result.hasNext
         });
