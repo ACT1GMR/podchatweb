@@ -14,11 +14,11 @@ import {messageSeen, messageEditing, messageReplying} from "../../actions/messag
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
-import Content, {ContentFooter} from "../../../../uikit/src/content";
-import Container from "../../../../uikit/src/container";
+import Content, {ContentFooter} from "raduikit/src/content";
+import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
-import {Text} from "../../../../uikit/src/typography";
-import Gap from "../../../../uikit/src/gap";
+import {Text} from "raduikit/src/typography";
+import Gap from "raduikit/src/gap";
 import {MdDoneAll, MdDone, MdDelete, MdEdit, MdReply, MdChatBubbleOutline} from "react-icons/lib/md";
 
 //styling
