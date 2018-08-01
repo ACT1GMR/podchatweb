@@ -12,9 +12,9 @@ function errorHandling(response, reject) {
 export default class ChatSDK {
 
   constructor(props) {
-    const params = {
-      socketAddress: "ws://172.16.106.26:8003/ws", // {**REQUIRED**} Socket Address
-      ssoHost: "http://172.16.110.76", // {**REQUIRED**} Socket Address
+    this.params = {
+      socketAddress: props.config.local ? "ws://172.16.106.26:8003/ws" : "wss://chat-sandbox.pod.land/ws", // {**REQUIRED**} Socket Address
+      ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.land", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
       token: null, // {**REQUIRED**} SSO Token Zamani
@@ -31,7 +31,7 @@ export default class ChatSDK {
       },
       ...props.config
     };
-    this.chatAgent = new PodChat(params);
+    this.chatAgent = new PodChat(this.params);
     this.onThreadEvents = props.onThreadEvents;
     this.onMessageEvents = props.onMessageEvents;
     this.onChatReady = props.onChatReady;
@@ -55,8 +55,20 @@ export default class ChatSDK {
   _onChatReady() {
     this.chatAgent.on("chatReady", e => {
       this.onChatReady(this);
-      this.getContactList()
+      this.getContactList();
+      const {onTokenExpire} = this.params;
+      if (onTokenExpire) {
+        setInterval(() => {
+          onTokenExpire(newToken => {
+            this.chatAgent.setToken("test");
+          })
+        }, 1000 * 60 * 10);
+      }
     });
+  }
+
+  updateToken(token) {
+    this.chatAgent.setToekn(token);
   }
 
   @promiseDecorator
@@ -97,7 +109,6 @@ export default class ChatSDK {
     if (threadIds) {
       getThreadsParams = {...getThreadsParams, threadIds};
     }
-
     this.chatAgent.getThreads(getThreadsParams, function (result) {
       if (!errorHandling(result, reject)) {
         return resolve(result.result.threads);

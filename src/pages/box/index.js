@@ -35,7 +35,7 @@ export default class Box extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(chatSetInstance(this.props.token));
+    this.props.dispatch(chatSetInstance(this.props));
   }
 
   componentWillUpdate(chatInstance) {

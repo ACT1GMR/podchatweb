@@ -17,7 +17,7 @@ function getParameterByName(name, url) {
 
 render(
   <Provider store={store}>
-    <Box token={getParameterByName("token")}/>
+    <Box token={getParameterByName("token")} local onTokenExpire={e=>{e("test")}}/>
   </Provider>,
   document.getElementById("app")
 );

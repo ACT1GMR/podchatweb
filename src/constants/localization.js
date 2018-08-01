@@ -13,6 +13,7 @@ let strings = new LocalizedStrings({
     startChat: "شروع گفتگو",
     edited: "اصلاح شد",
     waitingForMessageFetching: "در حالت دریافت پیامها",
+    thereIsNoChat: "چتی وجود ندارد",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     firstName: "نام",

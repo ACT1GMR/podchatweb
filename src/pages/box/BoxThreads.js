@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization"
 
 //actions
-import {threadCreate, threadGetList, threadMessageGetList, getThreadInfo} from "../../actions/threadActions";
+import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
@@ -19,10 +19,12 @@ import Loading from "raduikit/src/loading";
 //styling
 import style from "../../../styles/pages/box/BoxThreads.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
+import Message from "raduikit/src/message";
 
 @connect(store => {
   return {
     threads: store.threadList.threads,
+    threadsFetching: store.threadList.fetching,
     threadId: store.thread.thread.id
   };
 })
@@ -46,15 +48,24 @@ export default class BoxThreads extends Component {
   }
 
   render() {
-    const {threads} = this.props;
+    const {threads, threadsFetching} = this.props;
     const {activeThread} = this.state;
-    if (!threads.length) {
+    if (threadsFetching) {
       return (
         <section className={style.BoxThreads}>
           <Loading><LoadingBlinkDots invert rtl/></Loading>
         </section>
       )
     } else {
+      if(!threads.length) {
+        return (
+          <section className={style.BoxThreads}>
+            <Container center>
+              <Message invert large>{strings.thereIsNoChat}</Message>
+            </Container>
+          </section>
+        )
+      }
       return (
         <section className={style.BoxThreads}>
           <List>

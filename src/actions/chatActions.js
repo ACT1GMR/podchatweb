@@ -3,16 +3,14 @@ import {THREAD_NEW, CHAT_GET_INSTANCE, MESSAGE_NEW, CONTACT_GET_LIST, THREAD_CHA
 import ChatSDK from "../utils/chatSDK";
 import {stateObject} from "../utils/serviceStateGenerator";
 
-export const chatSetInstance = token => {
+export const chatSetInstance = config => {
   return (dispatch) => {
     dispatch({
       type: CHAT_GET_INSTANCE(),
       payload: null
     });
     const chatSDKInstance = new ChatSDK({
-      config: {
-        token
-      },
+      config,
       onThreadEvents: (thread, type) => {
         thread.changeType = type;
         if(thread.changeType === THREAD_NEW) {
