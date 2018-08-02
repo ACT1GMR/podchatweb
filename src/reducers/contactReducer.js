@@ -1,4 +1,10 @@
-import {CONTACT_GET_LIST, CONTACT_LIST_SHOWING, CONTACT_ADDING, CONTACT_ADD} from "../constants/actionTypes";
+import {
+  CONTACT_GET_LIST,
+  CONTACT_LIST_SHOWING,
+  CONTACT_ADDING,
+  CONTACT_ADD,
+  CONTACT_CHATTING
+} from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const contactGetListReducer =  (state = {
@@ -27,7 +33,7 @@ export const contactAdd =  (state = {
 }, action) => {
   switch (action.type) {
     case CONTACT_ADD("PENDING"):
-      return {...state, ...stateObject("PENDING")};
+      return {...state, ...stateObject("PENDING", null, "contact")};
     case CONTACT_ADD("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload, "contact")};
     case CONTACT_ADD("ERROR"):
@@ -43,6 +49,17 @@ export const contactAddingReducer =  (state = {
   switch (action.type) {
     case CONTACT_ADDING:
       return {isAdding: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const contactChattingReducer =  (state = {
+  contact: false
+}, action) => {
+  switch (action.type) {
+    case CONTACT_CHATTING:
+      return {contact: action.payload};
     default:
       return state;
   }

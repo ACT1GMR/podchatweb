@@ -27,7 +27,8 @@ const constants = {
     messageSent: store.message.sentMessage,
     messageEditing: store.messageEditing.message,
     messageEdit: store.message.messageEdit,
-    threadId: store.thread.thread.id
+    threadId: store.thread.thread.id,
+    threadFetching: store.thread.thread.id
   };
 })
 export default class BoxSceneInput extends Component {
@@ -36,6 +37,7 @@ export default class BoxSceneInput extends Component {
     super();
     this.onTextChange = this.onTextChange.bind(this);
     this.onCancelEditing = this.onCancelEditing.bind(this);
+    this.inputNode = React.createRef();
     this.state = {
       messageText: ""
     }
@@ -46,11 +48,17 @@ export default class BoxSceneInput extends Component {
     if (messageEditing) {
       if(messageEditing.type !== constants.replying){
         if (prevProps.messageEditing !== messageEditing) {
-          this.setState({
-            messageText: messageEditing.text ? messageEditing.text : ""
-          })
+          if(messageEditing.type !== constants.replying){
+            this.setState({
+              messageText: messageEditing.text ? messageEditing.text : ""
+            });
+          }
         }
       }
+    }
+    const current = this.inputNode.current;
+    if(current) {
+      current.focus();
     }
   }
 
@@ -87,7 +95,7 @@ export default class BoxSceneInput extends Component {
         <Content hasBackground>
           {messageEditing.text}
           <Container inline left>
-            <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}} onClick={this.onCancelEditing}/>
+            <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}} className={"u-clickable u-hoverColorAccent"} onClick={this.onCancelEditing}/>
           </Container>
         </Content>
       </Container> : '';
@@ -96,6 +104,7 @@ export default class BoxSceneInput extends Component {
       <form className={style.BoxSceneInput} onSubmit={this.onFormSubmit.bind(this, messageEditing)}>
         {editingPopup}
         <input className={style.BoxSceneInput__text}
+               ref={this.inputNode}
                type="text"
                placeholder={strings.pleaseWriteHere}
                onChange={this.onTextChange}

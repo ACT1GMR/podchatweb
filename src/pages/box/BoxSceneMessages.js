@@ -8,7 +8,8 @@ import date from "../../utils/date";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSeen, messageEditing, messageReplying} from "../../actions/messageActions"
+import {messageSeen, messageEditing} from "../../actions/messageActions";
+import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
 import List, {ListItem} from "raduikit/src/list"
@@ -25,7 +26,6 @@ import {MdDoneAll, MdDone, MdDelete, MdEdit, MdReply, MdChatBubbleOutline} from 
 import style from "../../../styles/pages/box/BoxSceneMessages.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
-import {threadMessageGetList} from "../../actions/threadActions";
 
 @connect(store => {
   return {
@@ -33,7 +33,9 @@ import {threadMessageGetList} from "../../actions/threadActions";
     threadMessages: store.threadMessages.messages,
     threadMessagesFetching: store.threadMessages.fetching,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
-    user: store.user.user
+    user: store.user.user,
+    contact: store.contactChatting.contact,
+    threadFetching: store.thread.fetching
   };
 })
 export default class BoxSceneMessages extends Component {
@@ -125,13 +127,14 @@ export default class BoxSceneMessages extends Component {
   }
 
   render() {
-    const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages} = this.props;
+    const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact} = this.props;
     const {messageControlShow, messageControlId} = this.state;
-    if (threadMessagesFetching) {
+    if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
-          <Message large>{strings.waitingForMessageFetching}</Message>
-          <Loading><LoadingBlinkDots/></Loading>
+          <Message
+            large>{threadFetching ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+          <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
     } else {
@@ -186,7 +189,8 @@ export default class BoxSceneMessages extends Component {
         return "";
       };
       const message = el =>
-        <Container inline inSpace relative maxWidth="50%" onMouseOver={this.onMouseOver.bind(this, el.id)}
+        <Container inline inSpace relative maxWidth="50%" minWidth="220px"
+                   onMouseOver={this.onMouseOver.bind(this, el.id)}
                    onMouseLeave={this.onMouseLeave.bind(this, el.id)}>
           <Content hasBackground borderRadius={5}>
             {replyAction(el)}
@@ -198,16 +202,19 @@ export default class BoxSceneMessages extends Component {
               {editAction(el)}
               {date.isToday(el.time) ? date.format(el.time, "hh:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "YYYY-MM-DD dddd hh:mm") : date.format(el.time, "YYYY-MM-DD  hh:mm")}
               {messageControlShow && el.id === messageControlId ?
-                <Container inline left inSpace>
+                <Container inline left={this._isMessageByMe(el)} right={!this._isMessageByMe(el)} inSpace>
                   {this._isMessageByMe(el) &&
                   <Container inline>
-                    <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
-                            onClick={this.onEdit.bind(this, el.id, el.message)}/>
-                    <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
-                              onClick={this.onDelete.bind(this, el.id)}/>
+                    {el.editable && <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
+                                            className={"u-clickable u-hoverColorAccent"}
+                                            onClick={this.onEdit.bind(this, el.id, el.message)}/>}
+                    {el.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
+                                               className={"u-clickable u-hoverColorAccent"}
+                                               onClick={this.onDelete.bind(this, el.id)}/>}
                   </Container>
                   }
                   <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
+                           className={"u-clickable u-hoverColorAccent"}
                            onClick={this.onReply.bind(this, el.id, el.message)}/>
                 </Container> : ""
               }

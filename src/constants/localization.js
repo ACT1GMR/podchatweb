@@ -12,13 +12,17 @@ let strings = new LocalizedStrings({
     close: "بستن",
     startChat: "شروع گفتگو",
     edited: "اصلاح شد",
-    waitingForMessageFetching: "در حالت دریافت پیامها",
+    waitingForMessageFetching: "در حالت دریافت پیامهای قبلی",
+    creatingChatWith: (firstName ,lastName) => {
+      return `در حال ایجاد گفتگو با ${firstName} ${lastName}`;
+    },
     thereIsNoChat: "چتی وجود ندارد",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     firstName: "نام",
     lastName: "نام خانوادگی",
-    replyTo: "پاسخ به"
+    replyTo: "پاسخ به",
+    isNotPodUser: "کاربر پاد نیست"
   },
   it: {
 

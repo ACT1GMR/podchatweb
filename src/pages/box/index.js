@@ -16,8 +16,7 @@ import BoxHead from "./BoxHead";
 
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
-import Loading from "raduikit/src/loading";
-import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
+import Loading , {LoadingBlinkDots} from "raduikit/src/loading";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
@@ -48,9 +47,9 @@ export default class Box extends Component {
     if (!this.props.chatInstance || !this.props.user) {
       return (
         <Container className={style.Box}>
-          <Container center={true}>
-            <Message large={true}>{strings.waitingForChatInstance}</Message>
-            <Loading><LoadingBlinkDots/></Loading>
+          <Container center>
+            <Message large>{strings.waitingForChatInstance}</Message>
+            <Loading hasSpace><LoadingBlinkDots/></Loading>
           </Container>
         </Container>
       );

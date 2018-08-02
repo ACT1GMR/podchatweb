@@ -8,7 +8,7 @@ import {
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
-export const createThreadReducer = (state = {
+export const threadCreateReducer = (state = {
   thread: {},
   fetching: false,
   fetched: false,
@@ -47,9 +47,10 @@ export const threadsReducer = (state = {
   };
   switch (action.type) {
     case THREAD_GET_LIST("PENDING"):
-      return {...state, ...stateObject("PENDING", action.payload)};
+      return {...state, ...stateObject("PENDING", [], "threads")};
     case THREAD_GET_LIST("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", sortThreads(action.payload), "threads")};
+    case THREAD_NEW:
     case THREAD_CHANGED: {
       let updatedThread = action.payload;
       let threads = [...state.threads];
@@ -100,7 +101,7 @@ export const threadMessageListReducer = (state = {
   };
   switch (action.type) {
     case THREAD_CREATE("PENDING"):
-      return {...state, ...stateObject("PENDING", [])};
+      return {...state, ...stateObject("PENDING", [], "messages")};
     case THREAD_GET_MESSAGE_LIST("PENDING"):
       return {...state, ...stateObject("PENDING")};
     case THREAD_GET_MESSAGE_LIST("SUCCESS"):

@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {contactListShowing, contactAdding, contactGetList} from "../../actions/contactActions";
+import {contactListShowing, contactAdding, contactGetList, contactChatting} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
@@ -46,6 +46,7 @@ export default class BoxModalContactList extends Component {
   }
 
   onStartChat(contact) {
+    this.props.dispatch(contactChatting(contact));
     this.props.dispatch(threadCreate(contact.id));
     this.onClose();
   }
@@ -69,18 +70,24 @@ export default class BoxModalContactList extends Component {
                       <AvatarImage src={el.image ? el.image : defaultAvatar}/>
                       <AvatarName>{el.firstName} {el.lastName}</AvatarName>
                     </Avatar>
+
                     <Container absolute centerLeft>
-                      <Button onClick={this.onStartChat.bind(this, el)} text>
-                        {strings.startChat}
-                      </Button>
+                      {el.hasUser ? (
+                        <Button onClick={this.onStartChat.bind(this, el)} text>
+                          {strings.startChat}
+                        </Button>
+                      ) : (
+                        <Button text disabled>{strings.isNotPodUser}</Button>
+                      )}
                     </Container>
+
                   </Container>
                 </ListItem>
               ))}
             </List>
             :
             <Container center>
-              <Message>{strings.add}</Message>
+              <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
             </Container>
           }
 

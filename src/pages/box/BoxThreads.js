@@ -53,7 +53,7 @@ export default class BoxThreads extends Component {
     if (threadsFetching) {
       return (
         <section className={style.BoxThreads}>
-          <Loading><LoadingBlinkDots invert rtl/></Loading>
+          <Loading hasSpace><LoadingBlinkDots invert rtl/></Loading>
         </section>
       )
     } else {

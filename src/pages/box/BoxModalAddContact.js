@@ -9,12 +9,14 @@ import {contactAdd, contactAdding} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-
-//styling
 import {InputText} from "raduikit/src/input";
 import Button from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import Message from "raduikit/src/message";
+import Container from "raduikit/src/container";
+
+
+//styling
 
 @connect(store => {
   return {
@@ -37,10 +39,12 @@ export default class BoxModalAddContact extends Component {
 
   componentDidUpdate(oldProps) {
     const {contactAdd, isAdding} = this.props;
-    if (this.props.contactAdd){
+    if (this.props.contactAdd) {
       if (oldProps.contactAdd !== this.props.contactAdd) {
         if (isAdding) {
-          this.props.dispatch(contactAdding(false));
+          if (contactAdd.hasUser) {
+            this.props.dispatch(contactAdding(false));
+          }
         }
       }
     }
@@ -78,14 +82,18 @@ export default class BoxModalAddContact extends Component {
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
+          <Button loading={contactAddPending} onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
           <Button onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
-          {contactAddError ?
+          {contactAdd && !contactAdd.hasUser &&
+          (
+            <Container inline>
+              <Message warn>
+                {strings.isNotPodUser}
+              </Message>
+            </Container>
+          )
+          }
 
-            <Message>
-              {strings.getAvailableLanguages}
-            </Message>
-            : ""}
         </ModalFooter>
 
       </Modal>

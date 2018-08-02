@@ -21,6 +21,7 @@ export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST
 export const CONTACT_ADD = buildPromiseMessage.bind(null, "CONTACT_ADD");
 export const CONTACT_ADDING = "CONTACT_ADDING";
 export const CONTACT_LIST_SHOWING = "CONTACT_LIST_SHOWING";
+export const CONTACT_CHATTING = "CONTACT_CHATTING";
 export const USER_GET = buildPromiseMessage.bind(null, "USER_GET");
 export const MESSAGE_SEND = buildPromiseMessage.bind(null, "MESSAGE_SEND");
 export const MESSAGE_EDITING = "MESSAGE_EDITING";

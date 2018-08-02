@@ -1,5 +1,12 @@
 // src/actions/messageActions.js
-import {CONTACT_GET_LIST, CONTACT_ADD, CONTACT_ADDING, CONTACT_LIST_SHOWING, THREAD_CREATE} from "../constants/actionTypes";
+import {
+  CONTACT_GET_LIST,
+  CONTACT_ADD,
+  CONTACT_ADDING,
+  CONTACT_LIST_SHOWING,
+  CONTACT_CHATTING,
+  THREAD_CREATE
+} from "../constants/actionTypes";
 import {threadCreate, threadMessageGetList} from "./threadActions";
 
 export const contactGetList = () => {
@@ -33,6 +40,16 @@ export const contactListShowing = (isShowing) => {
 };
 
 
+export const contactChatting = (contact) => {
+  return dispatch => {
+    return dispatch({
+      type: CONTACT_CHATTING,
+      payload: contact
+    });
+  }
+};
+
+
 export const contactAdd = (mobilePhone, firstName, lastName) => {
   return (dispatch, getState) => {
     const state = getState();
@@ -42,7 +59,9 @@ export const contactAdd = (mobilePhone, firstName, lastName) => {
         type: CONTACT_ADD("SUCCESS"),
         payload: e
       });
-      dispatch(threadCreate(e.id, null, true));
+      if (e.hasUser) {
+        dispatch(threadCreate(e.id, null, true));
+      }
     }, e => {
       dispatch({
         type: CONTACT_ADD("ERROR"),
