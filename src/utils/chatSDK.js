@@ -1,14 +1,9 @@
 import PodChat from "podchat";
 import {promiseDecorator} from "./decorators";
-
-function errorHandling(response, reject) {
-  if (response.hasError) {
-    if (reject) {
-      return reject(response.errorMessage);
-    }
-  }
-}
-
+const errorCodes = {
+  CLIENT_NOT_AUTH: 21,
+  CLIENT_UNAUTHORIZED: 6200
+};
 export default class ChatSDK {
 
   constructor(props) {
@@ -39,6 +34,21 @@ export default class ChatSDK {
     this._onMessageEvents();
     this._onThreadEvents();
     this._onChatReady();
+    this._onChatError();
+  }
+
+  _onError(response, reject) {
+    if (response.hasError) {
+      const onTokenExpire = this.params.onTokenExpire;
+      if (onTokenExpire) {
+        if(response.errorCode === errorCodes.CLIENT_NOT_AUTH || response.errorCode === errorCodes.CLIENT_UNAUTHORIZED){
+          onTokenExpire();
+        }
+      }
+      if (reject) {
+        return reject(response.errorMessage);
+      }
+    }
   }
 
   _onThreadEvents() {
@@ -59,12 +69,14 @@ export default class ChatSDK {
       this.getContactList();
       const {onTokenExpire} = this.params;
       if (onTokenExpire) {
-        setInterval(() => {
-          onTokenExpire(newToken => {
-            this.chatAgent.setToken("test");
-          })
-        }, 1000 * 60 * 10);
+        setInterval(onTokenExpire, 1000 * 60 * 10);
       }
+    });
+  }
+
+  _onChatError() {
+    this.chatAgent.on("error", (response) => {
+      this._onError(response.error);
     });
   }
 
@@ -80,8 +92,7 @@ export default class ChatSDK {
   createThread(resolve, reject, params) {
     const createThreadParams = {
       "type": "NORMAL",
-      "invitees":
-        [{"id": params, "idType": "TO_BE_USER_CONTACT_ID"}]
+      "invitees": [{"id": params, "idType": "TO_BE_USER_CONTACT_ID"}]
     };
     this.chatAgent.createThread(createThreadParams);
   }
@@ -94,7 +105,7 @@ export default class ChatSDK {
       threadId: threadId
     };
     this.chatAgent.getHistory(getThreadHistoryParams, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve({
           messages: result.result.history,
           threadId: threadId,
@@ -115,7 +126,7 @@ export default class ChatSDK {
       getThreadsParams = {...getThreadsParams, threadIds};
     }
     this.chatAgent.getThreads(getThreadsParams, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve(result.result.threads);
       }
     });
@@ -130,7 +141,7 @@ export default class ChatSDK {
 
     this.chatAgent.sendTextMessage(sendChatParams, {
       onSent: function (result) {
-        if (!errorHandling(result, reject)) {
+        if (!this._onError(result, reject)) {
           return resolve({
             result, ...{
               message: content, participant: {}
@@ -148,7 +159,7 @@ export default class ChatSDK {
       content
     };
     this.chatAgent.editMessage(sendChatParams, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve({
           result, ...{
             message: content, participant: {}
@@ -166,7 +177,7 @@ export default class ChatSDK {
       content
     };
     this.chatAgent.replyMessage(sendChatParams, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve({
           result, ...{
             message: content, participant: {}
@@ -179,7 +190,7 @@ export default class ChatSDK {
   @promiseDecorator
   seenMessage(resolve, reject, messageId, ownerId) {
     this.chatAgent.seen({messageId, ownerId}, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve(result);
       }
     });
@@ -188,7 +199,7 @@ export default class ChatSDK {
   @promiseDecorator
   getUserInfo(resolve, reject) {
     this.chatAgent.getUserInfo((result) => {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve(result.result.user);
       }
     });
@@ -197,7 +208,7 @@ export default class ChatSDK {
   @promiseDecorator
   getThreadInfo(resolve, reject, threadId) {
     this.getThreads([threadId]).then(result => {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve(result[0]);
       }
     })
@@ -212,7 +223,7 @@ export default class ChatSDK {
       email
     };
     this.chatAgent.addContacts(addContactParams, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve(result.result.contacts[0]);
       }
     });
@@ -230,7 +241,7 @@ export default class ChatSDK {
       getContactsParams.name = name;
     }
     this.chatAgent.getContacts(getContactsParams, function (result) {
-      if (!errorHandling(result, reject)) {
+      if (!this._onError(result, reject)) {
         return resolve(result.result.contacts);
       }
     });

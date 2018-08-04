@@ -44,7 +44,9 @@ export default class Box extends Component {
   }
 
   setToken(token) {
-    this.chatInstance.chatInstance.setToken(token);
+    if (this.props.chatInstance) {
+      this.props.chatInstance.setToken(token);
+    }
   }
 
   render() {

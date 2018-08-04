@@ -15,10 +15,12 @@ function getParameterByName(name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+let instance;
 render(
   <Provider store={store}>
-    <Box token={getParameterByName("token")} onTokenExpire={e=>{e("test")}}/>
+    <Box token={getParameterByName("token")} onTokenExpire={e=>{e("test")}} ref={e => instance = e}/>
   </Provider>,
   document.getElementById("app")
 );
+window.podchat = instance;
 
