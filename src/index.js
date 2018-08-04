@@ -14,12 +14,14 @@ function PodchatReact(props) {
 }
 
 function Podchat(props, elementId) {
+  let instance;
   render(
     <Provider store={store}>
-      <Box {...props}/>
+      <Box {...props} ref={e => instance = e}/>
     </Provider>,
     document.getElementById(elementId)
   );
+  return instance.getWrappedInstance();
 }
 
 export {PodchatReact, Podchat};

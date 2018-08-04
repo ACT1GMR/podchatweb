@@ -16,7 +16,7 @@ import BoxHead from "./BoxHead";
 
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
-import Loading , {LoadingBlinkDots} from "raduikit/src/loading";
+import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
@@ -27,7 +27,7 @@ import style from "../../../styles/pages/box/index.scss";
     chatInstance: store.chat.chatSDK,
     user: store.user.user
   };
-})
+}, null, null, {withRef: true})
 export default class Box extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +41,10 @@ export default class Box extends Component {
     if (chatInstance.chatInstance && !this.props.user) {
       this.props.dispatch(userGet(chatInstance.chatInstance));
     }
+  }
+
+  setToken(token) {
+    this.chatInstance.chatInstance.setToken(token);
   }
 
   render() {

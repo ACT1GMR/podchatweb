@@ -68,6 +68,10 @@ export default class ChatSDK {
     });
   }
 
+  setToken(token) {
+    this.chatAgent.setToken(token);
+  }
+
   updateToken(token) {
     this.chatAgent.setToekn(token);
   }
