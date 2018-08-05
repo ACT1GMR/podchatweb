@@ -68,11 +68,11 @@ export default class ChatSDK {
     this.chatAgent.on("chatReady", e => {
       this.onChatReady(this);
       this.getContactList();
-      const {onTokenExpire} = this.params;
+      const {onTokenExpire, expireTokenTimeOut} = this.params;
       if (onTokenExpire) {
         setInterval(e=>{
           onTokenExpire();
-        }, 1000 * 60 * 10);
+        }, expireTokenTimeOut || (1000 * 60 * 10));
       }
     });
   }
