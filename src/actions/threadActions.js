@@ -1,4 +1,10 @@
-import {THREAD_CREATE, THREAD_GET_MESSAGE_LIST, THREAD_GET_LIST, THREAD_GET_MESSAGE_LIST_PARTIAL} from "../constants/actionTypes";
+import {
+  THREAD_CREATE,
+  THREAD_GET_MESSAGE_LIST,
+  THREAD_GET_LIST,
+  THREAD_GET_MESSAGE_LIST_PARTIAL,
+  THREAD_MODAL_LIST_SHOWING
+} from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread) => {
   return (dispatch, getState) => {
@@ -35,6 +41,16 @@ export const threadMessageGetList = (threadId, offset) => {
     dispatch({
       type: offset ? THREAD_GET_MESSAGE_LIST_PARTIAL() : THREAD_GET_MESSAGE_LIST(),
       payload: chatSDK.getThreadMessageList(threadId, offset)
+    });
+  }
+};
+
+
+export const threadModalListShowing = (isShowing, messageId, messageText) => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_MODAL_LIST_SHOWING,
+      payload: {isShowing, messageId, messageText}
     });
   }
 };

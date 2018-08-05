@@ -70,7 +70,9 @@ export default class ChatSDK {
       this.getContactList();
       const {onTokenExpire} = this.params;
       if (onTokenExpire) {
-        setInterval(onTokenExpire, 1000 * 60 * 10);
+        setInterval(e=>{
+          onTokenExpire();
+        }, 1000 * 60 * 10);
       }
     });
   }
@@ -166,6 +168,19 @@ export default class ChatSDK {
             message: content, participant: {}
           }
         });
+      }
+    });
+  }
+
+  @promiseDecorator
+  forwardMessage(resolve, reject, threadId, messageId) {
+    const sendChatParams = {
+      subjectId: threadId,
+      content: JSON.stringify([messageId])
+    };
+    this.chatAgent.forwardMessage(sendChatParams, {
+      onSent(){
+
       }
     });
   }

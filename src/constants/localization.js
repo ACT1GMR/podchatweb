@@ -17,12 +17,15 @@ let strings = new LocalizedStrings({
       return `در حال ایجاد گفتگو با ${firstName} ${lastName}`;
     },
     thereIsNoChat: "چتی وجود ندارد",
+    select: "انتخاب",
+    forwardTo: "انتخاب چت برای فرستادن",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     firstName: "نام",
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
-    isNotPodUser: "کاربر پاد نیست"
+    isNotPodUser: "کاربر پاد نیست",
+    forwardFrom: "ارسال شده از طرف"
   },
   it: {
 

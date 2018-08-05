@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSend, messageEditing, messageEdit, messageReply} from "../../actions/messageActions";
+import {messageSend, messageEditing, messageEdit, messageReply, messageForward} from "../../actions/messageActions";
 import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
@@ -19,7 +19,8 @@ import style from "../../../styles/pages/box/BoxSceneInput.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 const constants = {
-  replying: "REPLYING"
+  replying: "REPLYING",
+  forwarding: "FORWARDING"
 };
 
 @connect(store => {
@@ -48,7 +49,7 @@ export default class BoxSceneInput extends Component {
     if (messageEditing) {
       if(messageEditing.type !== constants.replying){
         if (prevProps.messageEditing !== messageEditing) {
-          if(messageEditing.type !== constants.replying){
+          if(messageEditing.type !== constants.replying && messageEditing.type !== constants.forwarding){
             this.setState({
               messageText: messageEditing.text ? messageEditing.text : ""
             });
@@ -64,18 +65,22 @@ export default class BoxSceneInput extends Component {
 
   onFormSubmit(msgEditing, evt) {
     evt.preventDefault();
-    const {threadId} = this.props;
+    const {threadId, dispatch} = this.props;
+    const {messageText} = this.state;
     if (msgEditing) {
+      const msgEditingId = msgEditing.id;
       if(msgEditing.type === constants.replying) {
-        this.props.dispatch(messageReply(this.state.messageText, msgEditing.id, threadId));
+        dispatch(messageReply(messageText, msgEditingId, threadId));
       } else {
-        this.props.dispatch(messageEdit(this.state.messageText, msgEditing.id));
+        if(messageText) {
+          dispatch(messageSend(messageText, threadId));
+        }
+        dispatch(messageForward(threadId ,msgEditingId));
       }
     } else {
-      this.props.dispatch(messageSend(this.state.messageText, threadId));
+      dispatch(messageSend(messageText, threadId));
     }
-
-    this.props.dispatch(messageEditing());
+    dispatch(messageEditing());
     this.setState({messageText: ""});
   }
 

@@ -9,7 +9,8 @@ import strings from "../../constants/localization";
 
 //actions
 import {messageSeen, messageEditing} from "../../actions/messageActions";
-import {threadMessageGetList} from "../../actions/threadActions";
+import {threadModalListShowing} from "../../actions/threadActions";
+import {contactListShowing} from "../../actions/contactActions";
 
 //components
 import List, {ListItem} from "raduikit/src/list"
@@ -20,7 +21,7 @@ import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import {Text} from "raduikit/src/typography";
 import Gap from "raduikit/src/gap";
-import {MdDoneAll, MdDone, MdDelete, MdEdit, MdReply, MdChatBubbleOutline} from "react-icons/lib/md";
+import {MdDoneAll, MdDone, MdDelete, MdEdit, MdReply, MdChatBubbleOutline, MdForward} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss";
@@ -122,6 +123,10 @@ export default class BoxSceneMessages extends Component {
 
   }
 
+  onForward(el) {
+    this.props.dispatch(threadModalListShowing(true, el.id, el.message));
+  }
+
   onReply(id, message) {
     this.props.dispatch(messageEditing(id, message, "REPLYING"));
   }
@@ -188,12 +193,24 @@ export default class BoxSceneMessages extends Component {
         }
         return "";
       };
+      const forwardAction = (el) => {
+        if (el.forwardInfo) {
+          return (
+            <Content hasBackground colorBackground borderRadius={5}>
+              <Text italic xs>{strings.forwardFrom}</Text>
+              <Text bold>{el.forwardInfo.participant.name}:</Text>
+            </Content>
+          )
+        }
+        return "";
+      };
       const message = el =>
         <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                    onMouseOver={this.onMouseOver.bind(this, el.id)}
                    onMouseLeave={this.onMouseLeave.bind(this, el.id)}>
           <Content hasBackground borderRadius={5}>
             {replyAction(el)}
+            {forwardAction(el)}
             <Text>
               {el.message}
             </Text>
@@ -213,6 +230,9 @@ export default class BoxSceneMessages extends Component {
                                                onClick={this.onDelete.bind(this, el.id)}/>}
                   </Container>
                   }
+                  <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
+                             className={"u-clickable u-hoverColorAccent"}
+                             onClick={this.onForward.bind(this, el)}/>
                   <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
                            className={"u-clickable u-hoverColorAccent"}
                            onClick={this.onReply.bind(this, el.id, el.message)}/>

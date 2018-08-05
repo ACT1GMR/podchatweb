@@ -1,4 +1,11 @@
-import {MESSAGE_SEND, MESSAGE_EDITING, MESSAGE_EDIT, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
+import {
+  MESSAGE_SEND,
+  MESSAGE_EDITING,
+  MESSAGE_EDIT,
+  MESSAGE_NEW,
+  MESSAGE_SEEN,
+  MESSAGE_FORWARD
+} from "../constants/actionTypes";
 
 export const messageSend = (text, threadId) => {
   return (dispatch, getState) => {
@@ -27,6 +34,17 @@ export const messageEdit = (newText, id) => {
     dispatch({
       type: MESSAGE_EDIT(),
       payload: chatSDK.editMessage(newText, id)
+    });
+  }
+};
+
+export const messageForward = (threadId, messageUniqueId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: MESSAGE_FORWARD(),
+      payload: chatSDK.forwardMessage(threadId, messageUniqueId)
     });
   }
 };
