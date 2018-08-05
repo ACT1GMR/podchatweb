@@ -1,5 +1,6 @@
 import PodChat from "podchat";
 import {promiseDecorator} from "./decorators";
+
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
   CLIENT_UNAUTHORIZED: 6200
@@ -41,7 +42,7 @@ export default class ChatSDK {
     if (response.hasError) {
       const onTokenExpire = this.params.onTokenExpire;
       if (onTokenExpire) {
-        if(response.errorCode === errorCodes.CLIENT_NOT_AUTH || response.errorCode === errorCodes.CLIENT_UNAUTHORIZED){
+        if (response.errorCode === errorCodes.CLIENT_NOT_AUTH || response.errorCode === errorCodes.CLIENT_UNAUTHORIZED) {
           onTokenExpire();
         }
       }
@@ -104,7 +105,7 @@ export default class ChatSDK {
       offset: offset || 0,
       threadId: threadId
     };
-    this.chatAgent.getHistory(getThreadHistoryParams, function (result) {
+    this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({
           messages: result.result.history,
@@ -125,7 +126,7 @@ export default class ChatSDK {
     if (threadIds) {
       getThreadsParams = {...getThreadsParams, threadIds};
     }
-    this.chatAgent.getThreads(getThreadsParams, function (result) {
+    this.chatAgent.getThreads(getThreadsParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.threads);
       }
@@ -140,7 +141,7 @@ export default class ChatSDK {
     };
 
     this.chatAgent.sendTextMessage(sendChatParams, {
-      onSent: function (result) {
+      onSent: (result) => {
         if (!this._onError(result, reject)) {
           return resolve({
             result, ...{
@@ -158,7 +159,7 @@ export default class ChatSDK {
       messageId,
       content
     };
-    this.chatAgent.editMessage(sendChatParams, function (result) {
+    this.chatAgent.editMessage(sendChatParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({
           result, ...{
@@ -176,7 +177,7 @@ export default class ChatSDK {
       repliedTo,
       content
     };
-    this.chatAgent.replyMessage(sendChatParams, function (result) {
+    this.chatAgent.replyMessage(sendChatParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({
           result, ...{
@@ -189,7 +190,7 @@ export default class ChatSDK {
 
   @promiseDecorator
   seenMessage(resolve, reject, messageId, ownerId) {
-    this.chatAgent.seen({messageId, ownerId}, function (result) {
+    this.chatAgent.seen({messageId, ownerId}, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result);
       }
@@ -222,7 +223,7 @@ export default class ChatSDK {
       cellphoneNumber,
       email
     };
-    this.chatAgent.addContacts(addContactParams, function (result) {
+    this.chatAgent.addContacts(addContactParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.contacts[0]);
       }
@@ -240,7 +241,7 @@ export default class ChatSDK {
     if (typeof name === "string") {
       getContactsParams.name = name;
     }
-    this.chatAgent.getContacts(getContactsParams, function (result) {
+    this.chatAgent.getContacts(getContactsParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.contacts);
       }
