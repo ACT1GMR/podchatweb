@@ -95,20 +95,21 @@ export default class BoxSceneInput extends Component {
   render() {
     const {messageEditing} = this.props;
     const {messageText} = this.state;
-    let editingPopup = messageEditing && messageEditing.text ?
+    const messageEditCondition = messageEditing && messageEditing.text;
+    let editingPopup = messageEditCondition ?
       <Container relative>
-        <Content hasBackground>
+        <Content hasBackground borderRadius="5px 5px 0 0">
           {messageEditing.text}
           <Container inline left>
             <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}} className={"u-clickable u-hoverColorAccent"} onClick={this.onCancelEditing}/>
           </Container>
         </Content>
       </Container> : '';
-
+    const boxSceneInputClass = messageEditCondition ? `${style["BoxSceneInput__text--halfBorder"]} ${style.BoxSceneInput__text}` : style["BoxSceneInput__text"];
     return (
       <form className={style.BoxSceneInput} onSubmit={this.onFormSubmit.bind(this, messageEditing)}>
         {editingPopup}
-        <input className={style.BoxSceneInput__text}
+        <input className={boxSceneInputClass}
                ref={this.inputNode}
                type="text"
                placeholder={strings.pleaseWriteHere}

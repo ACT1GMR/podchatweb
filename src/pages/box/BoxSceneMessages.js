@@ -9,7 +9,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {messageSeen, messageEditing} from "../../actions/messageActions";
-import {threadModalListShowing} from "../../actions/threadActions";
+import {threadModalListShowing, threadMessageGetList } from "../../actions/threadActions";
 import {contactListShowing} from "../../actions/contactActions";
 
 //components
@@ -25,6 +25,7 @@ import {MdDoneAll, MdDone, MdDelete, MdEdit, MdReply, MdChatBubbleOutline, MdFor
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss";
+import utilsStlye from "../../../styles/utils/utils.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 
@@ -204,6 +205,7 @@ export default class BoxSceneMessages extends Component {
         }
         return "";
       };
+      const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
       const message = el =>
         <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                    onMouseOver={this.onMouseOver.bind(this, el.id)}
@@ -222,19 +224,19 @@ export default class BoxSceneMessages extends Component {
                 <Container inline left={this._isMessageByMe(el)} right={!this._isMessageByMe(el)} inSpace>
                   {this._isMessageByMe(el) &&
                   <Container inline>
-                    {el.editable && <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
-                                            className={"u-clickable u-hoverColorAccent"}
+                    {el.editable && <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                                            className={iconClasses}
                                             onClick={this.onEdit.bind(this, el.id, el.message)}/>}
-                    {el.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
-                                               className={"u-clickable u-hoverColorAccent"}
+                    {el.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                                               className={iconClasses}
                                                onClick={this.onDelete.bind(this, el.id)}/>}
                   </Container>
                   }
-                  <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
-                             className={"u-clickable u-hoverColorAccent"}
+                  <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                             className={iconClasses}
                              onClick={this.onForward.bind(this, el)}/>
-                  <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeXs}
-                           className={"u-clickable u-hoverColorAccent"}
+                  <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                           className={iconClasses}
                            onClick={this.onReply.bind(this, el.id, el.message)}/>
                 </Container> : ""
               }

@@ -1,9 +1,8 @@
 .BoxScene {
   display: inline-block;
   padding: 20px;
-  box-shadow: 0 0 10px $color-background-dark;
-  width: calc(100% - 300px);
-  height: 80%;
+  width: calc(100% - 251px);
+  height: 100%;
   position: relative;
-  top: 10%;
+  top: 0;
 }

@@ -4,6 +4,8 @@
   left: 0;
   width: 100%;
   padding: 20px;
+  background-color: darken($color-background, 5%);
+  border-top: 1px solid darken($color-background, 10%);
 }
 
 .BoxSceneInput__text {
@@ -11,6 +13,11 @@
   border: none;
   width: 100%;
   height: 41px;
+  border-radius: 5px;
+}
+
+.BoxSceneInput__text--halfBorder {
+  border-radius: 0 0 5px 5px;
 }
 
 .BoxSceneInput__button {

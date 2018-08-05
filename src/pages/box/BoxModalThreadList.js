@@ -63,18 +63,13 @@ export default class BoxModalContactList extends Component {
           {threads.length ?
             <List>
               {threads.map(el => (
-                <ListItem key={el.id} selection invert>
+                <ListItem key={el.id} selection invert onSelect={this.onSend.bind(this, el)}>
                   <Container relative>
+
                     <Avatar>
                       <AvatarImage src={el.image ? el.image : defaultAvatar}/>
                       <AvatarName>{el.title}</AvatarName>
                     </Avatar>
-
-                    <Container absolute centerLeft>
-                      <Button onClick={this.onSend.bind(this, el)} text>
-                        {strings.select}
-                      </Button>
-                    </Container>
 
                   </Container>
                 </ListItem>
