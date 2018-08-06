@@ -1,0 +1,19 @@
+body {
+    background-color: #f5ddc9;
+}
+
+#chat {
+    max-width: 1396px;
+    margin: 10px auto;
+    border-radius: 10px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.06), 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.Podchatbox {
+    height: calc(100vh - 80px) !important;
+    border-radius: 5px !important;
+}
+
+.Podchatboxbody {
+    height: calc(100vh - 80px) !important;
+}
