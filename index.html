@@ -9,13 +9,23 @@
 <div id="chat"></div>
 <body>
 <script type="text/javascript">
-  let token = prompt("Please enter your name","توکن بگیرید: goo.gl/y1jVoJ");
-  if (token != null) {
-    requirejs(["src/index.js"], function(util) {
-      util.Podchat({token}, 'chat')
-    });
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
   }
 
+  let token = getParameterByName("token");
+
+  if (token) {
+    requirejs(["src/index.js"], function (util) {
+      util.Podchat({token}, "chat");
+    });
+  }
 </script>
 </body>
 </html>
