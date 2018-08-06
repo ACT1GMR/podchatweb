@@ -1,5 +1,5 @@
 body {
-    background-color: #f5ddc9;
+    background-color: #f5ddc9 !important;
 }
 
 #chat {
@@ -10,7 +10,7 @@ body {
 }
 
 .Podchatbox {
-    height: calc(100vh - 80px) !important;
+    height: calc(100vh - 20px) !important;
     border-radius: 5px !important;
 }
 
