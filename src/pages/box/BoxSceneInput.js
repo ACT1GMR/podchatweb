@@ -47,9 +47,9 @@ export default class BoxSceneInput extends Component {
   componentDidUpdate(prevProps) {
     const {messageEditing} = this.props;
     if (messageEditing) {
-      if(messageEditing.type !== constants.replying){
+      if (messageEditing.type !== constants.replying) {
         if (prevProps.messageEditing !== messageEditing) {
-          if(messageEditing.type !== constants.replying && messageEditing.type !== constants.forwarding){
+          if (messageEditing.type !== constants.replying && messageEditing.type !== constants.forwarding) {
             this.setState({
               messageText: messageEditing.text ? messageEditing.text : ""
             });
@@ -58,7 +58,7 @@ export default class BoxSceneInput extends Component {
       }
     }
     const current = this.inputNode.current;
-    if(current) {
+    if (current) {
       current.focus();
     }
   }
@@ -69,13 +69,16 @@ export default class BoxSceneInput extends Component {
     const {messageText} = this.state;
     if (msgEditing) {
       const msgEditingId = msgEditing.id;
-      if(msgEditing.type === constants.replying) {
+      if (msgEditing.type === constants.replying) {
         dispatch(messageReply(messageText, msgEditingId, threadId));
-      } else {
-        if(messageText) {
+      } else if (msgEditing.type === constants.forwarding) {
+        if (messageText) {
           dispatch(messageSend(messageText, threadId));
         }
-        dispatch(messageForward(threadId ,msgEditingId));
+        dispatch(messageForward(threadId, msgEditingId));
+      } else {
+
+        this.props.dispatch(messageEdit(messageText, msgEditingId));
       }
     } else {
       dispatch(messageSend(messageText, threadId));
@@ -101,7 +104,8 @@ export default class BoxSceneInput extends Component {
         <Content hasBackground borderRadius="5px 5px 0 0">
           {messageEditing.text}
           <Container inline left>
-            <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}} className={"u-clickable u-hoverColorAccent"} onClick={this.onCancelEditing}/>
+            <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}}
+                     className={"u-clickable u-hoverColorAccent"} onClick={this.onCancelEditing}/>
           </Container>
         </Content>
       </Container> : '';

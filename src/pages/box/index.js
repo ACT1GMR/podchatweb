@@ -50,9 +50,11 @@ export default class Box extends Component {
   }
 
   render() {
+    const className = `${style.Box} Podchatbox`;
+    const classNameBody = `${style.Box__Body} Podchatboxbody`;
     if (!this.props.chatInstance || !this.props.user) {
       return (
-        <Container className={style.Box}>
+        <Container className={className}>
           <Container center>
             <Message large>{strings.waitingForChatInstance}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
@@ -61,11 +63,11 @@ export default class Box extends Component {
       );
     }
     return (
-      <section className={style.Box}>
+      <section className={className}>
         <section className={style.Box__Head}>
           <BoxHead/>
         </section>
-        <section className={style.Box__Body}>
+        <section className={classNameBody}>
           <BoxThreads/>
           <BoxScene/>
         </section>
