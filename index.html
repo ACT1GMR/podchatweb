@@ -5,8 +5,12 @@
     <meta charset="utf-8">
     <title>PODCHAT WEB v0.0.1</title>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+    <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
     <link rel="stylesheet" href="styles/index.css">
 </head>
+<div class="loader"></div>
+<p class="message">...در حال لودینگ چت</p>
+
 <div id="chat"></div>
 <body>
 <script type="text/javascript">
@@ -19,18 +23,20 @@
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
   }
+/*
 
   let token = getParameterByName("access_token");
   if(!token) {
     window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://podchat.test"
   }
+*/
 
   require.config( {waitSeconds : 3000});
   if (token) {
     requirejs(["src/index.js?2"], function (util) {
       util.Podchat({token,
         onTokenExpire(){
-            window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://podchat.test"
+            //window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://podchat.test"
         }}, "chat");
     });
   }
