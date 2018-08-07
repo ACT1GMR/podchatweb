@@ -59,7 +59,7 @@ export const contactAdd = (mobilePhone, firstName, lastName) => {
         type: CONTACT_ADD("SUCCESS"),
         payload: e
       });
-      if (e.hasUser) {
+      if (e.linkedUser) {
         dispatch(threadCreate(e.id, null, true));
       }
     }, e => {

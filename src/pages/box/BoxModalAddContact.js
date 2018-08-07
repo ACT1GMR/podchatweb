@@ -42,7 +42,7 @@ export default class BoxModalAddContact extends Component {
     if (this.props.contactAdd) {
       if (oldProps.contactAdd !== this.props.contactAdd) {
         if (isAdding) {
-          if (contactAdd.hasUser) {
+          if (contactAdd.linkedUser) {
             this.props.dispatch(contactAdding(false));
           }
         }
