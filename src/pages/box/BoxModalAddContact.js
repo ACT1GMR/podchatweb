@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {contactAdd, contactAdding} from "../../actions/contactActions";
+import {contactAdd, contactAdding, contactListShowing} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
@@ -44,6 +44,7 @@ export default class BoxModalAddContact extends Component {
         if (isAdding) {
           if (contactAdd.linkedUser) {
             this.props.dispatch(contactAdding(false));
+            this.props.dispatch(contactListShowing(false));
           }
         }
       }
