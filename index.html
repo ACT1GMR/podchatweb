@@ -25,8 +25,9 @@
     window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://podchat.test"
   }
 
+  require.config( {waitSeconds : 3000});
   if (token) {
-    requirejs(["src/index.js?1"], function (util) {
+    requirejs(["src/index.js?2"], function (util) {
       util.Podchat({token,
         onTokenExpire(){
             window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://podchat.test"
