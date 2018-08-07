@@ -25,7 +25,9 @@ let strings = new LocalizedStrings({
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
     isNotPodUser: "کاربر پاد نیست",
-    forwardFrom: "ارسال شده از طرف"
+    forwardFrom: "ارسال شده از طرف",
+    selectContacts: "انتخاب مخاطبها",
+    createGroup: "ایجاد گروه"
   },
   it: {
 

@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 
 //strings
 import strings from "../../constants/localization";
-import {CONTACT_ADDING} from "../../constants/actionTypes";
+import {CONTACT_ADDING, CONTACT_LIST_SHOWING, THREAD_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
 
 //actions
 import {threadCreate, threadGetList, threadMessageGetList} from "../../actions/threadActions";
@@ -38,7 +38,11 @@ export default class BoxHeadMenu extends Component {
       },
       {
         name: strings.contactList,
-        type: "test"
+        type: CONTACT_LIST_SHOWING
+      },
+      {
+        name: strings.createGroup,
+        type: THREAD_MODAL_CREATE_GROUP_SHOWING
       }
     ]
   };
@@ -56,7 +60,7 @@ export default class BoxHeadMenu extends Component {
   onMenuSelect(type) {
     if (type === CONTACT_ADDING) {
       this.props.dispatch(contactAdding(true));
-    } else {
+    } else if (type === ){
       this.props.dispatch(contactListShowing(true));
     }
   }

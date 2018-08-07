@@ -3,7 +3,8 @@ import {
   THREAD_GET_MESSAGE_LIST,
   THREAD_GET_LIST,
   THREAD_GET_MESSAGE_LIST_PARTIAL,
-  THREAD_MODAL_LIST_SHOWING
+  THREAD_MODAL_LIST_SHOWING,
+  THREAD_MODAL_CREATE_GROUP_SHOWING
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread) => {
@@ -51,6 +52,17 @@ export const threadModalListShowing = (isShowing, messageId, messageText) => {
     return dispatch({
       type: THREAD_MODAL_LIST_SHOWING,
       payload: {isShowing, messageId, messageText}
+    });
+  }
+};
+
+
+
+export const threadModalCreateGroupShowing = (isShowing) => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_MODAL_CREATE_GROUP_SHOWING,
+      payload: {isShowing}
     });
   }
 };
