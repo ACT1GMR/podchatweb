@@ -101,7 +101,7 @@ export default class BoxSceneInput extends Component {
     const messageEditCondition = messageEditing && messageEditing.text;
     let editingPopup = messageEditCondition ?
       <Container relative>
-        <Content hasBackground borderRadius="5px 5px 0 0">
+        <Content colorBackgroundLight borderRadius="5px 5px 0 0">
           {messageEditing.text}
           <Container inline left>
             <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}}

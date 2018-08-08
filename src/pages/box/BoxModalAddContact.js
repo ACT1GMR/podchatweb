@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {contactAdd, contactAdding, contactListShowing} from "../../actions/contactActions";
+import {contactAdd, contactAdding, contactChatting, contactListShowing} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
@@ -38,13 +38,14 @@ export default class BoxModalAddContact extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {contactAdd, isAdding} = this.props;
+    const {contactAdd, isAdding, dispatch} = this.props;
     if (this.props.contactAdd) {
       if (oldProps.contactAdd !== this.props.contactAdd) {
         if (isAdding) {
           if (contactAdd.linkedUser) {
-            this.props.dispatch(contactAdding(false));
-            this.props.dispatch(contactListShowing(false));
+            dispatch(contactAdding(false));
+            dispatch(contactListShowing(false));
+            dispatch(contactChatting(contactAdd));
           }
         }
       }

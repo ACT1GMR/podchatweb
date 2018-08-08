@@ -185,7 +185,7 @@ export default class BoxSceneMessages extends Component {
         if (el.replyInfo) {
           return (
             <Text link={`#${el.replyInfo.repliedToMessageId}`}>
-              <Content hasBackground colorBackground borderRadius={5}>
+              <Content colorBackgroundLight colorBackground borderRadius={5}>
                 <Text bold xs>{strings.replyTo}:</Text>
                 <Text italic xs>{el.replyInfo.repliedToMessage}</Text>
               </Content>
@@ -197,7 +197,7 @@ export default class BoxSceneMessages extends Component {
       const forwardAction = (el) => {
         if (el.forwardInfo) {
           return (
-            <Content hasBackground colorBackground borderRadius={5}>
+            <Content colorBackgroundLight colorBackground borderRadius={5}>
               <Text italic xs>{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
             </Content>
@@ -210,7 +210,7 @@ export default class BoxSceneMessages extends Component {
         <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                    onMouseOver={this.onMouseOver.bind(this, el.id)}
                    onMouseLeave={this.onMouseLeave.bind(this, el.id)}>
-          <Content hasBackground borderRadius={5}>
+          <Content colorBackgroundLight borderRadius={5}>
             {replyAction(el)}
             {forwardAction(el)}
             <Text>
