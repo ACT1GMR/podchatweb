@@ -139,7 +139,7 @@ export default class BoxSceneMessages extends Component {
       return (
         <Container center>
           <Message
-            large>{threadFetching ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+            large>{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )

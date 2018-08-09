@@ -91,11 +91,22 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  createThread(resolve, reject, params) {
+  createThread(resolve, reject, params, threadName) {
+    let invitees = [{"id": params, "idType": "TO_BE_USER_CONTACT_ID"}];
+    const isGroup = params instanceof Array;
+    if(isGroup) {
+      invitees = [];
+      for(const param of params) {
+        invitees.push({"id": param, "idType": "TO_BE_USER_CONTACT_ID"})
+      }
+    }
     const createThreadParams = {
-      "type": "NORMAL",
-      "invitees": [{"id": params, "idType": "TO_BE_USER_CONTACT_ID"}]
+      type :isGroup ?  "OWNER_GROUP" : "NORMAL",
+      invitees
     };
+    if(threadName) {
+      createThreadParams.title = threadName;
+    }
     this.chatAgent.createThread(createThreadParams);
   }
 

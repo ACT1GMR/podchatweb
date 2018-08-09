@@ -3,6 +3,7 @@ import {
   contactGetListReducer,
   contactAdd,
   contactListShowingReducer,
+  contactModalCreateGroupShowingReducer,
   contactChattingReducer
 } from "./contactReducer";
 import {
@@ -19,6 +20,7 @@ import userReducer from "./userReducer";
 const rootReducer = {
   contactGetList: contactGetListReducer,
   contactListShowing: contactListShowingReducer,
+  contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,
   contactAdding: contactAddingReducer,
   contactAdd: contactAdd,
   contactChatting: contactChattingReducer,

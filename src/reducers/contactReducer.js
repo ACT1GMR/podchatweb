@@ -1,6 +1,7 @@
 import {
   CONTACT_GET_LIST,
   CONTACT_LIST_SHOWING,
+  CONTACT_MODAL_CREATE_GROUP_SHOWING,
   CONTACT_ADDING,
   CONTACT_ADD,
   CONTACT_CHATTING
@@ -70,6 +71,17 @@ export const contactListShowingReducer =  (state = {
 }, action) => {
   switch (action.type) {
     case CONTACT_LIST_SHOWING:
+      return {isShow: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const contactModalCreateGroupShowingReducer = (state = {
+  isShow: false
+}, action) => {
+  switch (action.type) {
+    case CONTACT_MODAL_CREATE_GROUP_SHOWING:
       return {isShow: action.payload};
     default:
       return state;

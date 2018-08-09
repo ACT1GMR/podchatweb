@@ -4,11 +4,11 @@ import {connect} from "react-redux";
 
 //strings
 import strings from "../../constants/localization";
-import {CONTACT_ADDING, CONTACT_LIST_SHOWING, THREAD_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
+import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
 
 //actions
 import {threadCreate, threadGetList, threadMessageGetList} from "../../actions/threadActions";
-import {contactAdding, contactListShowing} from "../../actions/contactActions";
+import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
 
 //UI components
 import {Dropdown, DropdownItem} from "raduikit/src/menu";
@@ -42,7 +42,7 @@ export default class BoxHeadMenu extends Component {
       },
       {
         name: strings.createGroup,
-        type: THREAD_MODAL_CREATE_GROUP_SHOWING
+        type: CONTACT_MODAL_CREATE_GROUP_SHOWING
       }
     ]
   };
@@ -60,8 +60,10 @@ export default class BoxHeadMenu extends Component {
   onMenuSelect(type) {
     if (type === CONTACT_ADDING) {
       this.props.dispatch(contactAdding(true));
-    } else if (type === ){
+    } else if (type ===  CONTACT_LIST_SHOWING){
       this.props.dispatch(contactListShowing(true));
+    } else if( type === CONTACT_MODAL_CREATE_GROUP_SHOWING) {
+      this.props.dispatch(contactModalCreateGroupShowing(true));
     }
   }
 

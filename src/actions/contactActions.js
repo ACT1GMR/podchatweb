@@ -5,6 +5,7 @@ import {
   CONTACT_ADDING,
   CONTACT_LIST_SHOWING,
   CONTACT_CHATTING,
+  CONTACT_MODAL_CREATE_GROUP_SHOWING,
   THREAD_CREATE
 } from "../constants/actionTypes";
 import {threadCreate, threadMessageGetList} from "./threadActions";
@@ -40,6 +41,16 @@ export const contactListShowing = (isShowing) => {
 };
 
 
+export const contactModalCreateGroupShowing = (isShowing) => {
+  return dispatch => {
+    return dispatch({
+      type: CONTACT_MODAL_CREATE_GROUP_SHOWING,
+      payload: isShowing
+    });
+  }
+};
+
+
 export const contactChatting = (contact) => {
   return dispatch => {
     return dispatch({
@@ -48,7 +59,6 @@ export const contactChatting = (contact) => {
     });
   }
 };
-
 
 export const contactAdd = (mobilePhone, firstName, lastName) => {
   return (dispatch, getState) => {

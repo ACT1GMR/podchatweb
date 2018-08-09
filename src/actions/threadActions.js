@@ -7,7 +7,7 @@ import {
   THREAD_MODAL_CREATE_GROUP_SHOWING
 } from "../constants/actionTypes";
 
-export const threadCreate = (contactId, thread) => {
+export const threadCreate = (contactId, thread, threadName) => {
   return (dispatch, getState) => {
     if (thread) {
       return dispatch({
@@ -19,7 +19,7 @@ export const threadCreate = (contactId, thread) => {
     const chatSDK = state.chat.chatSDK;
     return dispatch({
       type: THREAD_CREATE(),
-      payload: chatSDK.createThread(contactId)
+      payload: chatSDK.createThread(contactId, threadName)
     });
   }
 };
