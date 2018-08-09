@@ -17,8 +17,7 @@ export default class ChatSDK {
       token: null, // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
       connectionRetryInterval: 5000, // Time interval to retry registering device or registering server
-      connectionCheckTimeout: 90000, // Socket connection live time on server
-      connectionCheckTimeoutThreshold: 20000, // Socket Ping time threshold
+      connectionCheckTimeout: 10000, // Socket connection live time on server
       messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
       asyncLogging: {

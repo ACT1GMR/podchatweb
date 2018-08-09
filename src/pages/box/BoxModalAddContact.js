@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {contactAdd, contactAdding} from "../../actions/contactActions";
+import {contactAdd, contactAdding, contactChatting, contactListShowing} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
@@ -38,12 +38,14 @@ export default class BoxModalAddContact extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {contactAdd, isAdding} = this.props;
+    const {contactAdd, isAdding, dispatch} = this.props;
     if (this.props.contactAdd) {
       if (oldProps.contactAdd !== this.props.contactAdd) {
         if (isAdding) {
-          if (contactAdd.hasUser) {
-            this.props.dispatch(contactAdding(false));
+          if (contactAdd.linkedUser) {
+            dispatch(contactAdding(false));
+            dispatch(contactListShowing(false));
+            dispatch(contactChatting(contactAdd));
           }
         }
       }
@@ -84,7 +86,7 @@ export default class BoxModalAddContact extends Component {
         <ModalFooter>
           <Button loading={contactAddPending} onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
           <Button onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
-          {contactAdd && !contactAdd.hasUser &&
+          {contactAdd && !contactAdd.linkedUser &&
           (
             <Container inline>
               <Message warn>
