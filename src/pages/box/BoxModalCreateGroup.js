@@ -13,8 +13,8 @@ import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 import Button from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import Message from "raduikit/src/message";
-import List, {ListItem} from "../../../../uikit/src/list";
-import {InputText} from "../../../../uikit/src/input";
+import List, {ListItem} from "raduikit/src/list";
+import {InputText} from "raduikit/src/input";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
 
