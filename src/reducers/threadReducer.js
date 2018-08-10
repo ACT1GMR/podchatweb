@@ -4,6 +4,7 @@ import {
   THREAD_GET_MESSAGE_LIST_PARTIAL,
   THREAD_GET_LIST,
   THREAD_NEW,
+  THREAD_PARTICIPANT_GET_LIST,
   MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN, MESSAGE_EDIT, CONTACT_LIST_SHOWING, THREAD_MODAL_LIST_SHOWING
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
@@ -149,6 +150,24 @@ export const threadMessageListReducer = (state = {
       messages[index] = updatedMessage;
       return {...state, ...stateObject("SUCCESS", messages, "messages")};
     }
+    default:
+      return state;
+  }
+};
+
+export const threadParticipantListReducer = (state = {
+  participants: [],
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_PARTICIPANT_GET_LIST("PENDING"):
+      return {...state, ...stateObject("PENDING", [], "participants")};
+    case THREAD_PARTICIPANT_GET_LIST("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "participants")};
+    case THREAD_PARTICIPANT_GET_LIST("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;
   }
