@@ -9,7 +9,7 @@ import {
 import {
   threadMessageListReducer,
   threadMessageListPartialReducer,
-  threadParticipantGetListReducer,
+  threadParticipantListReducer,
   threadCreateReducer,
   threadsReducer,
   threadModalListShowingReducer
