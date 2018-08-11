@@ -27,7 +27,8 @@ let strings = new LocalizedStrings({
     isNotPodUser: "کاربر پاد نیست",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
-    createGroup: "ایجاد گروه"
+    createGroup: "ایجاد گروه",
+    member: "عضو"
   },
   it: {
 

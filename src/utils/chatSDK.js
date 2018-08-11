@@ -273,5 +273,20 @@ export default class ChatSDK {
     });
   }
 
+  @promiseDecorator
+  getThreadParticipantList(resolve, reject, threadId){
+    const getParticipantsParams = {
+      count: 50,
+      offset: 0,
+      threadId
+    };
+
+    this.chatAgent.getThreadParticipants(getParticipantsParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.participants);
+      }
+    });
+  }
+
 
 };

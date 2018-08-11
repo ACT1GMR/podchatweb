@@ -46,6 +46,17 @@ export const threadMessageGetList = (threadId, offset) => {
   }
 };
 
+export const threadParticipantGetList = (threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: THREAD_PARTICIPANT_GET_LIST(),
+      payload: chatSDK.getThreadParticipantList(threadId)
+    });
+  }
+};
+
 
 export const threadModalListShowing = (isShowing, messageId, messageText) => {
   return dispatch => {
