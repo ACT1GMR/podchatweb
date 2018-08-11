@@ -1,7 +1,7 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {MdChat, MdDone} from "react-icons/lib/md";
+import {MdChat} from "react-icons/lib/md";
 
 //strings
 import strings from "../../constants/localization"
@@ -61,7 +61,7 @@ export default class BoxScene extends Component {
       return (
         <section className={style.BoxScene}>
           <Container center centerTextAlign>
-            <Message large>{strings.pleaseStartAThreadFirst}</Message>
+            <Message lg>{strings.pleaseStartAThreadFirst}</Message>
             <Gap y={10} block/>
             <MdChat size={48} style={{color: styleVar.colorAccent}}/>
             <Container>

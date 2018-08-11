@@ -61,7 +61,7 @@ export default class BoxThreads extends Component {
         return (
           <section className={style.BoxThreads}>
             <Container center>
-              <Message invert large>{strings.thereIsNoChat}</Message>
+              <Message invert lg>{strings.thereIsNoChat}</Message>
             </Container>
           </section>
         )
@@ -74,7 +74,7 @@ export default class BoxThreads extends Component {
                 <Container relative>
                   <Avatar>
                     <AvatarImage src={el.image ? el.image : defaultAvatar}/>
-                    <AvatarName textInvert>{el.title}</AvatarName>
+                    <AvatarName invert>{el.title}</AvatarName>
                   </Avatar>
                   {el.unreadCount && activeThread !== el.id ?
                     <Container absolute centerLeft>

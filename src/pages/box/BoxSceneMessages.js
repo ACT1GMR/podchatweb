@@ -138,8 +138,7 @@ export default class BoxSceneMessages extends Component {
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
-          <Message
-            large>{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+          <Message lg>{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
@@ -148,7 +147,7 @@ export default class BoxSceneMessages extends Component {
       if (!threadMessages.length) {
         return (
           <Container center centerTextAlign>
-            <Message large>{strings.thereIsNoMessageToShow}</Message>
+            <Message lg>{strings.thereIsNoMessageToShow}</Message>
             <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
           </Container>
         )
@@ -157,7 +156,7 @@ export default class BoxSceneMessages extends Component {
         partialLoading =
           (
             <Container topCenter centerTextAlign>
-              <Loading><LoadingBlinkDots small/></Loading>
+              <Loading><LoadingBlinkDots sm/></Loading>
             </Container>
           )
       }
@@ -185,7 +184,7 @@ export default class BoxSceneMessages extends Component {
         if (el.replyInfo) {
           return (
             <Text link={`#${el.replyInfo.repliedToMessageId}`}>
-              <Content colorBackgroundLight colorBackground borderRadius={5}>
+              <Content colorBackground borderRadius={5}>
                 <Text bold xs>{strings.replyTo}:</Text>
                 <Text italic xs>{el.replyInfo.repliedToMessage}</Text>
               </Content>
@@ -197,7 +196,7 @@ export default class BoxSceneMessages extends Component {
       const forwardAction = (el) => {
         if (el.forwardInfo) {
           return (
-            <Content colorBackgroundLight colorBackground borderRadius={5}>
+            <Content colorBackground borderRadius={5}>
               <Text italic xs>{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
             </Content>
@@ -247,7 +246,7 @@ export default class BoxSceneMessages extends Component {
         <Container inline maxWidth="50px" inSpace>
           <Avatar>
             <AvatarImage src={el.participant.image || defaultAvatar}/>
-            <AvatarName bottom small>{el.participant.name}</AvatarName>
+            <AvatarName bottom sm>{el.participant.name}</AvatarName>
           </Avatar>
         </Container>;
       return (

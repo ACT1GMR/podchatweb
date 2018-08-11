@@ -93,9 +93,9 @@ export default class BoxHeadMenu extends Component {
           <MdMenu size={iconSize} onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         )}
 
-        <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu}>
+        <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu} >
           {menuItems.map(el => (
-            <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)}>{el.name}</DropdownItem>
+            <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)} invert>{el.name}</DropdownItem>
           ))}
         </Dropdown>
       </section>
