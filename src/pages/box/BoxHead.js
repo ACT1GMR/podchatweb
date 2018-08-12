@@ -7,7 +7,7 @@ import {threadCreate, threadGetList, threadMessageGetList} from "../../actions/t
 
 //UI components
 import BoxHeadMenu from "./BoxHeadMenu";
-import BoxHeadSearch from "./BoxHeadSearch";
+import BoxHeadThreadInfo from "./BoxHeadThreadInfo";
 
 //styling
 import style from "../../../styles/pages/box/BoxHead.scss";
@@ -22,7 +22,7 @@ export default class BoxHead extends Component {
     return (
       <section className={style.BoxHead}>
         <BoxHeadMenu/>
-        <BoxHeadSearch/>
+        <BoxHeadThreadInfo/>
       </section>
     )
   }

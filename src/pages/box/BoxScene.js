@@ -20,8 +20,8 @@ import BoxModalAddContact from "./BoxModalAddContact";
 import BoxModalContactList from "./BoxModalContactList";
 import BoxModalThreadList from "./BoxModalThreadList";
 import BoxModalCreateGroup from "./BoxModalCreateGroup";
+import BoxModalThreadInfo from "./BoxModalThreadInfo";
 import Button from "raduikit/src/button";
-
 import Gap from "raduikit/src/gap";
 
 //styling
@@ -55,6 +55,7 @@ export default class BoxScene extends Component {
         <BoxModalAddContact/>
         <BoxModalThreadList/>
         <BoxModalCreateGroup/>
+        <BoxModalThreadInfo/>
       </section>
     );
     if (!threadId && !threadFetching) {

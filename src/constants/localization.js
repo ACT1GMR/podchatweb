@@ -28,7 +28,8 @@ let strings = new LocalizedStrings({
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
     createGroup: "ایجاد گروه",
-    member: "عضو"
+    member: "عضو",
+    addMember: "اضافه کردن عضو"
   },
   it: {
 

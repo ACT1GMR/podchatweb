@@ -5,7 +5,11 @@ import {
   THREAD_GET_LIST,
   THREAD_NEW,
   THREAD_PARTICIPANT_GET_LIST,
-  MESSAGE_NEW, THREAD_CHANGED, MESSAGE_SEEN, MESSAGE_EDIT, CONTACT_LIST_SHOWING, THREAD_MODAL_LIST_SHOWING
+  THREAD_MODAL_LIST_SHOWING,
+  THREAD_MODAL_THREAD_INFO_SHOWING,
+  THREAD_CHANGED,
+  MESSAGE_NEW, MESSAGE_SEEN, MESSAGE_EDIT,
+  CONTACT_LIST_SHOWING,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -48,6 +52,16 @@ export const threadModalListShowingReducer = (state = {
   }
 };
 
+export const threadModalThreadInfoShowingReducer = (state = {
+  isShow: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_MODAL_THREAD_INFO_SHOWING:
+      return {isShow: action.payload};
+    default:
+      return state;
+  }
+};
 
 export const threadsReducer = (state = {
   threads: [],

@@ -4,7 +4,8 @@ import {
   THREAD_GET_LIST,
   THREAD_GET_MESSAGE_LIST_PARTIAL,
   THREAD_MODAL_LIST_SHOWING,
-  THREAD_MODAL_CREATE_GROUP_SHOWING
+  THREAD_PARTICIPANT_GET_LIST,
+  THREAD_MODAL_THREAD_INFO_SHOWING
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -46,7 +47,7 @@ export const threadMessageGetList = (threadId, offset) => {
   }
 };
 
-export const threadParticipantGetList = (threadId) => {
+export const threadParticipantList = (threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
@@ -74,6 +75,15 @@ export const threadModalCreateGroupShowing = (isShowing) => {
     return dispatch({
       type: THREAD_MODAL_CREATE_GROUP_SHOWING,
       payload: {isShowing}
+    });
+  }
+};
+
+export const threadModalThreadInfoShowing = (isShowing) => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_MODAL_THREAD_INFO_SHOWING,
+      payload: isShowing
     });
   }
 };

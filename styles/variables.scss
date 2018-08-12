@@ -70,6 +70,10 @@ $color-background: #f0f0f0;
 $color-background-dark: #C5C5C5;
 $color-background-light: #fff;
 
+$color-gray-light: #eee;
+$color-gray: #ddd;
+$color-gray-dark: #aaa;
+
 $color-white: #fff;
 $color-text-invert: #f0f0f0;
 $color-text-light: #B1B1B1;
@@ -120,6 +124,9 @@ $color-text-dark: #272727;
   colorBackground: $color-background;
   colorBackgroundDark: $color-background-dark;
   colorBackgroundLight: $color-background-light;
+  colorGrayLight: $color-gray-light;
+  colorGray: $color-gray;
+  colorGrayDark: $color-gray-dark;
   colorWhite: $color-white;
   colorTextInvert: $color-text;
   colorTextLight: $color-text-light;
