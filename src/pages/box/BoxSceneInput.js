@@ -10,7 +10,7 @@ import {messageSend, messageEditing, messageEdit, messageReply, messageForward} 
 import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
-import Content from "raduikit/src/content";
+import Paper from "raduikit/src/paper";
 import Container from "raduikit/src/container";
 import {MdClose, MdChevronLeft} from "react-icons/lib/md";
 
@@ -101,13 +101,13 @@ export default class BoxSceneInput extends Component {
     const messageEditCondition = messageEditing && messageEditing.text;
     let editingPopup = messageEditCondition ?
       <Container relative>
-        <Content colorBackgroundLight borderRadius="5px 5px 0 0">
+        <Paper colorBackgroundLight borderRadius="5px 5px 0 0">
           {messageEditing.text}
           <Container inline left>
             <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}}
                      className={"u-clickable u-hoverColorAccent"} onClick={this.onCancelEditing}/>
           </Container>
-        </Content>
+        </Paper>
       </Container> : '';
     const boxSceneInputClass = messageEditCondition ? `${style["BoxSceneInput__text--halfBorder"]} ${style.BoxSceneInput__text}` : style["BoxSceneInput__text"];
     return (

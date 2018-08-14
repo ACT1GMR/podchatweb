@@ -16,7 +16,7 @@ import {contactListShowing} from "../../actions/contactActions";
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
-import Content, {ContentFooter} from "raduikit/src/content";
+import Paper, {PaperFooter} from "raduikit/src/paper";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import {Text} from "raduikit/src/typography";
@@ -138,7 +138,7 @@ export default class BoxSceneMessages extends Component {
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
-          <Message lg>{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+          <Message size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
@@ -147,7 +147,7 @@ export default class BoxSceneMessages extends Component {
       if (!threadMessages.length) {
         return (
           <Container center centerTextAlign>
-            <Message lg>{strings.thereIsNoMessageToShow}</Message>
+            <Message size="lg">{strings.thereIsNoMessageToShow}</Message>
             <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
           </Container>
         )
@@ -156,7 +156,7 @@ export default class BoxSceneMessages extends Component {
         partialLoading =
           (
             <Container topCenter centerTextAlign>
-              <Loading><LoadingBlinkDots sm/></Loading>
+              <Loading><LoadingBlinkDots size="sm"/></Loading>
             </Container>
           )
       }
@@ -184,10 +184,10 @@ export default class BoxSceneMessages extends Component {
         if (el.replyInfo) {
           return (
             <Text link={`#${el.replyInfo.repliedToMessageId}`}>
-              <Content colorBackground borderRadius={5}>
+              <Paper colorBackground borderRadius={5}>
                 <Text bold xs>{strings.replyTo}:</Text>
                 <Text italic xs>{el.replyInfo.repliedToMessage}</Text>
-              </Content>
+              </Paper>
             </Text>
           )
         }
@@ -196,10 +196,10 @@ export default class BoxSceneMessages extends Component {
       const forwardAction = (el) => {
         if (el.forwardInfo) {
           return (
-            <Content colorBackground borderRadius={5}>
+            <Paper colorBackground borderRadius={5}>
               <Text italic xs>{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
-            </Content>
+            </Paper>
           )
         }
         return "";
@@ -209,13 +209,13 @@ export default class BoxSceneMessages extends Component {
         <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                    onMouseOver={this.onMouseOver.bind(this, el.id)}
                    onMouseLeave={this.onMouseLeave.bind(this, el.id)}>
-          <Content colorBackgroundLight borderRadius={5}>
+          <Paper colorBackgroundLight borderRadius={5}>
             {replyAction(el)}
             {forwardAction(el)}
             <Text>
               {el.message}
             </Text>
-            <ContentFooter>
+            <PaperFooter>
               {seenAction(el)}
               {editAction(el)}
               {date.isToday(el.time) ? date.format(el.time, "hh:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "YYYY-MM-DD dddd hh:mm") : date.format(el.time, "YYYY-MM-DD  hh:mm")}
@@ -239,14 +239,14 @@ export default class BoxSceneMessages extends Component {
                            onClick={this.onReply.bind(this, el.id, el.message)}/>
                 </Container> : ""
               }
-            </ContentFooter>
-          </Content>
+            </PaperFooter>
+          </Paper>
         </Container>;
       const avatar = el =>
         <Container inline maxWidth="50px" inSpace>
           <Avatar>
             <AvatarImage src={el.participant.image || defaultAvatar}/>
-            <AvatarName bottom sm>{el.participant.name}</AvatarName>
+            <AvatarName bottom size="sm">{el.participant.name}</AvatarName>
           </Avatar>
         </Container>;
       return (

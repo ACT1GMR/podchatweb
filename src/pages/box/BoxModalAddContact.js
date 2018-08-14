@@ -31,9 +31,9 @@ export default class BoxModalAddContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mobilePhone: null,
-      firstName: null,
-      lastName: null
+      mobilePhone: "",
+      firstName: "",
+      lastName: ""
     }
   }
 
@@ -69,18 +69,20 @@ export default class BoxModalAddContact extends Component {
 
   render() {
     const {isAdding, contactAdd, contactAddPending, contactAddError} = this.props;
+    const {mobilePhone, firstName, lastName} = this.state;
     return (
       <Modal isOpen={isAdding} onClose={this.onCancel.bind(this)}>
 
         <ModalHeader>
-          <Heading h3 invert>{strings.addContact}</Heading>
+          <Heading h3>{strings.addContact}</Heading>
         </ModalHeader>
 
         <ModalBody>
           <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
+                     value={mobilePhone}
                      placeholder={strings.mobilePhone}/>
-          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")} placeholder={strings.firstName}/>
-          <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}/>
+          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")} placeholder={strings.firstName} value={firstName}/>
+          <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}  value={lastName}/>
         </ModalBody>
 
         <ModalFooter>

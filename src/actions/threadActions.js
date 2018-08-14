@@ -5,6 +5,7 @@ import {
   THREAD_GET_MESSAGE_LIST_PARTIAL,
   THREAD_MODAL_LIST_SHOWING,
   THREAD_PARTICIPANT_GET_LIST,
+  THREAD_PARTICIPANT_ADD,
   THREAD_MODAL_THREAD_INFO_SHOWING
 } from "../constants/actionTypes";
 
@@ -84,6 +85,18 @@ export const threadModalThreadInfoShowing = (isShowing) => {
     return dispatch({
       type: THREAD_MODAL_THREAD_INFO_SHOWING,
       payload: isShowing
+    });
+  }
+};
+
+
+export const threadAddParticipant = (threadId, contactIds) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    return dispatch({
+      type: THREAD_PARTICIPANT_ADD(),
+      payload: chatSDK.addParticipants(threadId, contactIds)
     });
   }
 };

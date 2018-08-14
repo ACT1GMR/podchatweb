@@ -31,6 +31,7 @@ export const MESSAGE_FORWARD = buildPromiseMessage.bind(null, "MESSAGE_FORWARD")
 export const MESSAGE_NEW = "MESSAGE_NEW";
 export const MESSAGE_SEEN = "MESSAGE_SEEN";
 export const THREAD_PARTICIPANT_GET_LIST = buildPromiseMessage.bind(null, "THREAD_PARTICIPANT_GET_LIST");
+export const THREAD_PARTICIPANT_ADD = buildPromiseMessage.bind(null, "THREAD_PARTICIPANT_ADD");
 export const THREAD_GET_MESSAGE_LIST = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST");
 export const THREAD_GET_MESSAGE_LIST_PARTIAL = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_PARTIAL");
 export const THREAD_CREATE = buildPromiseMessage.bind(null, "THREAD_CREATE");

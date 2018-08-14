@@ -57,7 +57,7 @@ export default class BoxModalContactList extends Component {
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
         <ModalHeader>
-          <Heading h3 invert>{strings.contactList}</Heading>
+          <Heading h3>{strings.contactList}</Heading>
         </ModalHeader>
 
         <ModalBody>

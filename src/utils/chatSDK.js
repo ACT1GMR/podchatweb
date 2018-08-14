@@ -69,7 +69,7 @@ export default class ChatSDK {
       this.getContactList();
       const {onTokenExpire, expireTokenTimeOut} = this.params;
       if (onTokenExpire) {
-        setInterval(e=>{
+        setInterval(e => {
           onTokenExpire();
         }, expireTokenTimeOut || (1000 * 60 * 10));
       }
@@ -94,17 +94,17 @@ export default class ChatSDK {
   createThread(resolve, reject, params, threadName) {
     let invitees = [{"id": params, "idType": "TO_BE_USER_CONTACT_ID"}];
     const isGroup = params instanceof Array;
-    if(isGroup) {
+    if (isGroup) {
       invitees = [];
-      for(const param of params) {
+      for (const param of params) {
         invitees.push({"id": param, "idType": "TO_BE_USER_CONTACT_ID"})
       }
     }
     const createThreadParams = {
-      type :isGroup ?  "OWNER_GROUP" : "NORMAL",
+      type: isGroup ? "OWNER_GROUP" : "NORMAL",
       invitees
     };
-    if(threadName) {
+    if (threadName) {
       createThreadParams.title = threadName;
     }
     this.chatAgent.createThread(createThreadParams);
@@ -189,7 +189,7 @@ export default class ChatSDK {
       content: JSON.stringify([messageId])
     };
     this.chatAgent.forwardMessage(sendChatParams, {
-      onSent(){
+      onSent() {
 
       }
     });
@@ -274,7 +274,7 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadParticipantList(resolve, reject, threadId){
+  getThreadParticipantList(resolve, reject, threadId) {
     const getParticipantsParams = {
       count: 50,
       offset: 0,
@@ -284,6 +284,20 @@ export default class ChatSDK {
     this.chatAgent.getThreadParticipants(getParticipantsParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.participants);
+      }
+    });
+  }
+
+  @promiseDecorator
+  addParticipants(resolve, reject, threadId, contacts) {
+    const addParticipantParams = {
+      threadId,
+      contacts
+    };
+
+    this.chatAgent.addParticipants(addParticipantParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.thread);
       }
     });
   }

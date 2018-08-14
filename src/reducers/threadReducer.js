@@ -5,6 +5,7 @@ import {
   THREAD_GET_LIST,
   THREAD_NEW,
   THREAD_PARTICIPANT_GET_LIST,
+  THREAD_PARTICIPANT_ADD,
   THREAD_MODAL_LIST_SHOWING,
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_CHANGED,
@@ -181,6 +182,27 @@ export const threadParticipantListReducer = (state = {
     case THREAD_PARTICIPANT_GET_LIST("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload, "participants")};
     case THREAD_PARTICIPANT_GET_LIST("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadParticipantAddReducer = (state = {
+  thread: null,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_PARTICIPANT_ADD("PENDING"):
+      return {...state, ...stateObject("PENDING", null, "thread")};
+    case THREAD_PARTICIPANT_ADD("SUCCESS"):{
+      let thread = action.payload;
+      thread.timestamp = Date.now();
+      return {...state, ...stateObject("SUCCESS", thread, "thread")};
+    }
+    case THREAD_PARTICIPANT_ADD("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;

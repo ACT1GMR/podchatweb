@@ -62,7 +62,7 @@ export default class BoxScene extends Component {
       return (
         <section className={style.BoxScene}>
           <Container center centerTextAlign>
-            <Message lg>{strings.pleaseStartAThreadFirst}</Message>
+            <Message size="lg">{strings.pleaseStartAThreadFirst}</Message>
             <Gap y={10} block/>
             <MdChat size={48} style={{color: styleVar.colorAccent}}/>
             <Container>

@@ -21,15 +21,14 @@ import Gap from "raduikit/src/Gap";
 import {Heading, Text} from "raduikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
-import Divider from "../../../../uikit/src/divider";
+import Divider from "raduikit/src/divider";
 
 //styling
 import style from "../../../styles/pages/box/BoxHeadThreadInfo.scss";
 import styleVar from "./../../../styles/variables.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 
-const statics = {
-};
+const statics = {};
 
 @connect(store => {
   return {
@@ -49,19 +48,22 @@ export default class BoxHeadThreadInfo extends Component {
 
   render() {
     const {thread} = this.props;
-    if(thread.id) {
+    if (thread.id) {
       return (
-        <section className={style.BoxHeadThreadInfo} ref={this.container}>
+        <section className={style.BoxHeadThreadInfo} onClick={this.onShowInfoClick}>
           <Container>
             <Avatar>
               <AvatarImage src={thread.image ? thread.image : defaultAvatar}/>
               <AvatarName>
-                <Text>{thread.title}</Text>
-                <Text>{thread.participantCount} {strings.member}</Text>
+                <Text size="lg" invert>{thread.title}</Text>
+                {thread.group ?
+                  <Text size="xs" invert>{thread.participantCount} {strings.member}</Text>
+                  :
+                  <Text size="xs" invert>{strings.you}, {thread.title}</Text>
+                }
               </AvatarName>
             </Avatar>
           </Container>
-
         </section>
       )
     }

@@ -29,7 +29,22 @@ let strings = new LocalizedStrings({
     selectContacts: "انتخاب مخاطبها",
     createGroup: "ایجاد گروه",
     member: "عضو",
-    addMember: "اضافه کردن عضو"
+    you: "شما",
+    addMember: "اضافه کردن عضو",
+    chatInfo: "اطلاعات چت",
+    years: "سال",
+    months: "ماه",
+    days: "روز",
+    hours: "ساعت",
+    minutes: "دقیقه",
+    seconds: "ثانیه",
+    recently: "چند لحظه پیش",
+    prettifyDateString(string){
+      if(~string.indexOf("پیش")) {
+        return string;
+      }
+      return `${string} پیش`;
+    }
   },
   it: {
 

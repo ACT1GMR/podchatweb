@@ -6,7 +6,12 @@ import strings from "../../constants/localization";
 
 //actions
 import {contactChatting, contactModalCreateGroupShowing} from "../../actions/contactActions";
-import {threadCreate, threadModalThreadInfoShowing, threadParticipantList} from "../../actions/threadActions";
+import {
+  threadCreate,
+  threadModalThreadInfoShowing,
+  threadParticipantList,
+  threadAddParticipant
+} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
@@ -15,11 +20,12 @@ import Gap from "raduikit/src/Gap";
 import {Heading, Text} from "raduikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
-import Divider from "../../../../uikit/src/divider";
+import Divider from "raduikit/src/divider";
 import {ContactList, ContactListSelective} from "./_component/contactList";
+import date from "../../utils/date";
 
 //styling
-import {MdGroupAdd, MdGroup, MdArrowBack} from "react-icons/lib/md";
+import {MdGroupAdd, MdGroup, MdArrowBack, MdPerson} from "react-icons/lib/md";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
@@ -34,6 +40,7 @@ const constants = {
     isShow: store.threadModalThreadInfoShowing.isShow,
     participants: store.threadParticipantList.participants,
     thread: store.thread.thread,
+    threadParticipantAdd: store.threadParticipantAdd.thread,
     contacts: store.contactGetList.contacts
   };
 })
@@ -54,10 +61,23 @@ export default class BoxModalThreadInfo extends Component {
     this.onPrevious = this.onPrevious.bind(this);
   }
 
-  componentDidUpdate(oldProps) {
+  componentDidMount() {
     const {thread, dispatch} = this.props;
-    if (thread) {
-      if (oldProps.thread !== thread) {
+    if (thread.id) {
+      dispatch(threadParticipantList(thread.id));
+    }
+  }
+
+  componentDidUpdate(oldProps) {
+    const {thread, threadParticipantAdd, dispatch} = this.props;
+    if (thread.id) {
+      if (oldProps.thread.id !== thread.id) {
+        dispatch(threadParticipantList(thread.id));
+      }
+    }
+
+    if (threadParticipantAdd) {
+      if (!oldProps.threadParticipantAdd || oldProps.threadParticipantAdd.timestamp !== threadParticipantAdd.timestamp) {
         dispatch(threadParticipantList(thread.id));
       }
     }
@@ -70,8 +90,11 @@ export default class BoxModalThreadInfo extends Component {
   }
 
   onAddMember() {
+    const {thread, dispatch} = this.props;
+    dispatch(threadAddParticipant(thread.id, this.state.addMembers));
     this.setState({
-      step: constants.ADD_MEMBER
+      step: constants.GROUP_INFO,
+      addMembers: []
     });
   }
 
@@ -121,6 +144,7 @@ export default class BoxModalThreadInfo extends Component {
   render() {
     const {participants, contacts, isShow, thread} = this.props;
     const {addMembers, step, groupName} = this.state;
+    const isGroup = thread.group;
     const conversationAction = (contact) => {
       return (<Button onClick={this.onStartChat.bind(this, contact.id)} text>
         {strings.startChat}
@@ -131,7 +155,7 @@ export default class BoxModalThreadInfo extends Component {
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
         <ModalHeader>
-          <Heading h3 invert>{strings.selectContacts}</Heading>
+          <Heading h3>{step === constants.GROUP_INFO ? strings.chatInfo: strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -141,24 +165,38 @@ export default class BoxModalThreadInfo extends Component {
 
                 <Container>
                   <Avatar>
-                    <AvatarImage src={thread.image ? thread.image : defaultAvatar} xlg/>
+                    <AvatarImage src={thread.image ? thread.image : defaultAvatar} size="xlg"/>
                     <AvatarName>
                       <Heading h1>{thread.title}</Heading>
-                      <Text>{participants.length} {strings.member}</Text>
+                      {isGroup ?
+                        <Text>{participants.length} {strings.member}</Text>
+                        :
+                        <Text>{strings.prettifyDateString(date.prettifySince(participants && participants[0] ? participants[0].notSeenDuration : ""))}</Text>
+                      }
                     </AvatarName>
                   </Avatar>
                 </Container>
 
                 <Container bottomLeft>
-                  <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                              onClick={this.onAddingMember}/>
-                  <Gap x="5"/>
-                  <MdGroup size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                  {isGroup ?
+                    <Container inline>
+                      <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
+                                  onClick={this.onAddingMember}/>
+                      <Gap x={5}/>
+                    </Container>
+                    : ""}
+
+                  {isGroup ?
+                    <MdGroup size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                    :
+                    <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                  }
+
                 </Container>
 
               </Container>
 
-              <Gap y="20" block>
+              <Gap y={20} block>
                 <Divider thick={2} color="gray"/>
               </Gap>
 
@@ -190,11 +228,14 @@ export default class BoxModalThreadInfo extends Component {
               </Button>
               : ""
             :
-            <Button onClick={this.onAddingMember}>
-              {strings.addMember}
-            </Button>
+            isGroup ?
+              <Button onClick={this.onAddingMember}>
+                {strings.addMember}
+              </Button>
+              : ""
+
           }
-          <Button onClick={this.onClose}>{strings.cancel}</Button>
+          <Button onClick={this.onClose}>{strings.close}</Button>
           {step === constants.ADD_MEMBER ?
             <Button onClick={this.onPrevious}>
               <MdArrowBack/>

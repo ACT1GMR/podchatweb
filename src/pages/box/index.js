@@ -56,7 +56,7 @@ export default class Box extends Component {
       return (
         <Container className={className}>
           <Container center>
-            <Message lg>{strings.waitingForChatInstance}</Message>
+            <Message size="lg">{strings.waitingForChatInstance}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
           </Container>
         </Container>

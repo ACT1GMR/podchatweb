@@ -11,10 +11,11 @@ $font-weight-bold: bold;
 
 //font-size
 $font-size-base: 14px;
-$font-size-large: 18px;
+$font-size-xlg: 18px;
+$font-size-lg: 18px;
 $font-size-jumbo: 50px;
-$font-size-small: 12px;
-$font-size-tiny: 10px;
+$font-size-sm: 12px;
+$font-size-xsm: 10px;
 $font-size-h1: 36px;
 $font-size-h2: 20px;
 $font-size-h3: 24px;
@@ -50,10 +51,6 @@ $color-accent: #f58220;
 $color-accent-dark: #CA6107;
 $color-accent-light: #FFB575;
 
-$color-accent: #f58220;
-$color-accent-dark: #CA6107;
-$color-accent-light: #FFB575;
-
 $color-red: #F52020;
 $color-red-dark: #A00000;
 $color-red-light: #FF4C4C;
@@ -75,6 +72,7 @@ $color-gray: #ddd;
 $color-gray-dark: #aaa;
 
 $color-white: #fff;
+
 $color-text-invert: #f0f0f0;
 $color-text-light: #B1B1B1;
 $color-text: #555;
@@ -89,10 +87,11 @@ $color-text-dark: #272727;
   fontWeightMedium: $font-weight-medium;
   fontWeightBold: $font-weight-bold;
   fontSizeBase: $font-size-base;
-  fontSizeLarge: $font-size-large;
   fontSizeJumbo: $font-size-jumbo;
-  fontSizeSmall: $font-size-small;
-  fontSizeTiny: $font-size-tiny;
+  fontSizeXlg: $font-size-lg;
+  fontSizeLg: $font-size-lg;
+  fontSizeSm: $font-size-sm;
+  fontSizeXsm: $font-size-xsm;
   fontSizeH1: $font-size-h1;
   fontSizeH2: $font-size-h2;
   fontSizeH3: $font-size-h3;

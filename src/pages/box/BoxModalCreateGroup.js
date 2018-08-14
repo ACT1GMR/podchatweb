@@ -39,6 +39,7 @@ export default class BoxModalCreateGroup extends Component {
     super(props);
     this.state = {
       threadContacts: [],
+      groupName:"",
       step: constants.SELECT_CONTACT
     };
     this.onAdd = this.onAdd.bind(this);
@@ -105,7 +106,7 @@ export default class BoxModalCreateGroup extends Component {
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
         <ModalHeader>
-          <Heading h3 invert>{strings.selectContacts}</Heading>
+          <Heading h3>{strings.selectContacts}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -114,7 +115,7 @@ export default class BoxModalCreateGroup extends Component {
               <List>
                 {filteredContacts.map(el => (
                   <ListItem key={el.id} invert selection activeWithTick multiple
-                            active={~threadContacts.indexOf(el.id)}
+                            active={threadContacts.indexOf(el.id) > -1}
                             onSelect={this.onSelect.bind(this, el.id)}
                             onDeselect={this.onDeSelect.bind(this, el.id)}>
                     <Container>
@@ -133,8 +134,9 @@ export default class BoxModalCreateGroup extends Component {
                 <Button text onClick={this.onAdd}>{strings.add}</Button>
               </Container>
             :
-              <InputText onChange={this.groupNameChange.bind(this)}
-                         placeholder={strings.firstName}/>
+            <InputText onChange={this.groupNameChange.bind(this)}
+                       value={groupName}
+                       placeholder={strings.firstName}/>
           }
 
 
@@ -148,7 +150,7 @@ export default class BoxModalCreateGroup extends Component {
               </Button>
               : ""
             :
-              <Button onClick={this.onCreate.bind(this, groupName)}>{strings.createGroup}</Button>
+            <Button onClick={this.onCreate.bind(this, groupName)}>{strings.createGroup}</Button>
           }
           <Button onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
         </ModalFooter>

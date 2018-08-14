@@ -61,7 +61,7 @@ export default class BoxThreads extends Component {
         return (
           <section className={style.BoxThreads}>
             <Container center>
-              <Message invert lg>{strings.thereIsNoChat}</Message>
+              <Message invert size="lg">{strings.thereIsNoChat}</Message>
             </Container>
           </section>
         )
