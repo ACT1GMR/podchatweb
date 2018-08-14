@@ -175,7 +175,7 @@ export default class BoxSceneMessages extends Component {
         if (el.edited) {
           return (
             <Gap x={2}>
-              <Text italic xs inline>{strings.edited}</Text>
+              <Text italic size="xs" inline>{strings.edited}</Text>
             </Gap>
           )
         }
@@ -185,8 +185,8 @@ export default class BoxSceneMessages extends Component {
           return (
             <Text link={`#${el.replyInfo.repliedToMessageId}`}>
               <Paper colorBackground borderRadius={5}>
-                <Text bold xs>{strings.replyTo}:</Text>
-                <Text italic xs>{el.replyInfo.repliedToMessage}</Text>
+                <Text bold size="xs">{strings.replyTo}:</Text>
+                <Text italic size="xs">{el.replyInfo.repliedToMessage}</Text>
               </Paper>
             </Text>
           )
@@ -197,7 +197,7 @@ export default class BoxSceneMessages extends Component {
         if (el.forwardInfo) {
           return (
             <Paper colorBackground borderRadius={5}>
-              <Text italic xs>{strings.forwardFrom}</Text>
+              <Text italic size="xs">{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
             </Paper>
           )
