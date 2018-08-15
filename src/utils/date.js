@@ -44,6 +44,9 @@ const date =
       }
       interval = Math.floor(seconds / 86400);
       if (interval > 1) {
+        if (interval <= 2) {
+          return strings.yesterday;
+        }
         return `${interval} ${strings.days}`;
       }
       interval = Math.floor(seconds / 3600);
@@ -54,7 +57,7 @@ const date =
       if (interval > 1) {
         return `${interval} ${strings.minutes}`;
       }
-      if(interval > 1){
+      if (interval > 1) {
         return `${interval} ${strings.seconds}`;
       }
       return strings.recently;

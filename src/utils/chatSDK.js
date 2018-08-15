@@ -241,12 +241,11 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  addContact(resolve, reject, cellphoneNumber, firstName, lastName, email) {
+  addContact(resolve, reject, cellphoneNumber, firstName, lastName) {
     const addContactParams = {
       firstName,
       lastName,
-      cellphoneNumber,
-      email
+      cellphoneNumber
     };
     this.chatAgent.addContacts(addContactParams, (result) => {
       if (!this._onError(result, reject)) {

@@ -155,7 +155,7 @@ export default class BoxModalThreadInfo extends Component {
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
         <ModalHeader>
-          <Heading h3>{step === constants.GROUP_INFO ? strings.chatInfo: strings.addMember}</Heading>
+          <Heading h3>{step === constants.GROUP_INFO ? strings.chatInfo : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>

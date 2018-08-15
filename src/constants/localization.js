@@ -13,7 +13,7 @@ let strings = new LocalizedStrings({
     startChat: "شروع گفتگو",
     edited: "اصلاح شد",
     waitingForMessageFetching: "در حالت دریافت پیامهای قبلی",
-    creatingChatWith: (firstName ,lastName) => {
+    creatingChatWith: (firstName, lastName) => {
       return `در حال ایجاد گفتگو با ${firstName} ${lastName}`;
     },
     thereIsNoChat: "چتی وجود ندارد",
@@ -38,17 +38,22 @@ let strings = new LocalizedStrings({
     hours: "ساعت",
     minutes: "دقیقه",
     seconds: "ثانیه",
+    yesterday: "دیروز",
     recently: "چند لحظه پیش",
-    prettifyDateString(string){
-      if(~string.indexOf("پیش")) {
+    prettifyDateString(string) {
+      if (~string.indexOf("پیش")) {
         return string;
       }
       return `${string} پیش`;
-    }
+    },
+    createdAGroup(person) {
+      return `${person} گروهی ساخت`
+    },
+    createdAChat(person) {
+      return `${person} چتی ساخت`
+    },
   },
-  it: {
-
-  }
+  it: {}
 });
 strings.setLanguage("fa");
 export default strings;

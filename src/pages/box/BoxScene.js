@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {MdChat} from "react-icons/lib/md";
 
 //strings
-import strings from "../../constants/localization"
+import strings from "../../constants/localization";
 
 //actions
 import {threadMessageGetList} from "../../actions/threadActions";
