@@ -9,14 +9,14 @@ import strings from "../../constants/localization";
 import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
-import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../rad_uikit/src/avatar";
+import Avatar, {AvatarImage, AvatarName, AvatarText} from "raduikit/src/avatar";
 import List, {ListItem} from "raduikit/src/list";
 import Shape, {ShapeCircle} from "raduikit/src/shape";
 import Container from "raduikit/src/container";
 import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
 import Loading from "raduikit/src/loading";
 import Divider from "raduikit/src/Divider";
-import {Text} from "../../../../rad_uikit/src/typography";
+import {Text} from "raduikit/src/typography";
 import Gap from "raduikit/src/gap";
 import date from "../../utils/date"
 
@@ -25,9 +25,9 @@ import style from "../../../styles/pages/box/BoxThreads.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
 import Message from "raduikit/src/message";
 
-function sliceMessage(message) {
+function sliceMessage(message, to) {
   if (message.length >= 15) {
-    return `${message.slice(0, 15)}...`;
+    return `${message.slice(0, to || 15)}...`;
   }
   return message;
 }
@@ -92,30 +92,32 @@ export default class BoxThreads extends Component {
                         {el.group ?
                           el.lastMessage ?
                             <Container>
-                              <Text size="sm" inline bold color="accent">{el.lastParticipantName}: </Text>
+                              <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
                               <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
-                              <Container centerLeft>
-                                <Text size="xs" color="gray"
-                                      bold>{date.prettifySince(el.lastMessageVO.time - Date.now())}</Text>
-                              </Container>
                             </Container>
                             :
                             <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName))}</Text>
+                                  color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
                           :
                           el.lastMessage ?
-                            <Container>
-                              <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
-                            </Container>
+                            <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
                             :
                             <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName))}</Text>
+                                  color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 30)}</Text>
                         }
+                        {el.lastMessageVO || el.time ?
+                          <Container topLeft>
+                            <Text size="xs"
+                                  color="gray">{date.prettifySince(Date.now() - ( el.time || el.lastMessageVO.time))}</Text>
+                          </Container>
+                          : ""}
+
                       </AvatarText>
                     </AvatarName>
                   </Avatar>
                   {el.unreadCount && activeThread !== el.id ?
                     <Container absolute centerLeft>
+                      <Gap y={10} block/>
                       <Shape colorAccent>
                         <ShapeCircle>{el.unreadCount}</ShapeCircle>
                       </Shape>

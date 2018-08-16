@@ -43,8 +43,8 @@ const date =
         return `${interval} ${strings.months}`;
       }
       interval = Math.floor(seconds / 86400);
-      if (interval > 1) {
-        if (interval <= 2) {
+      if (interval >= 1) {
+        if (interval === 1) {
           return strings.yesterday;
         }
         return `${interval} ${strings.days}`;
