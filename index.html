@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>PODCHAT WEB v0.1.5</title>
+    <title>PODCHAT WEB v0.1.6</title>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
     <link rel="stylesheet" href="styles/index.css">
 </head>
@@ -30,7 +30,7 @@
 
   require.config( {waitSeconds : 3000});
   if (token) {
-    requirejs(["src/index-0.1.5.js"], function (util) {
+    requirejs(["src/index-0.1.6.js"], function (util) {
       util.Podchat({token,
         onTokenExpire(){
             window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://chat.fanapsoft.ir"
