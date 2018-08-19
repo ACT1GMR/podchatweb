@@ -32,6 +32,15 @@ function sliceMessage(message, to) {
   return message;
 }
 
+function prettifyMessageDate(passedTime) {
+  const diff = Date.now() - passedTime;
+  const isToday = date.isToday(passedTime);
+  if(isToday) {
+    return date.format(passedTime, "HH:mm", "en")
+  }
+  return date.prettifySince(diff);
+}
+
 @connect(store => {
   return {
     threads: store.threadList.threads,
@@ -108,7 +117,7 @@ export default class BoxThreads extends Component {
                         {el.lastMessageVO || el.time ?
                           <Container topLeft>
                             <Text size="xs"
-                                  color="gray">{date.prettifySince(Date.now() - ( el.time || el.lastMessageVO.time))}</Text>
+                                  color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
                           </Container>
                           : ""}
 

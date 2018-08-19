@@ -146,7 +146,7 @@ export default class BoxModalThreadInfo extends Component {
     const {addMembers, step, groupName} = this.state;
     const isGroup = thread.group;
     const conversationAction = (contact) => {
-      return (<Button onClick={this.onStartChat.bind(this, contact.id)} text>
+      return (<Button onClick={this.onStartChat.bind(this, contact.contactId)} text>
         {strings.startChat}
       </Button>)
     };

@@ -82,7 +82,7 @@ export default class BoxHeadMenu extends Component {
   render() {
     const {menuItems} = this.props;
     const {isOpen} = this.state;
-    const iconSize = styleVar.iconSizeLg;
+    const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
     return (
       <section className={style.BoxHeadMenu} ref={this.container}>

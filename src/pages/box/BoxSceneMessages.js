@@ -9,7 +9,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {messageSeen, messageEditing} from "../../actions/messageActions";
-import {threadModalListShowing, threadMessageGetList } from "../../actions/threadActions";
+import {threadModalListShowing, threadMessageGetList} from "../../actions/threadActions";
 import {contactListShowing} from "../../actions/contactActions";
 
 //components
@@ -218,7 +218,7 @@ export default class BoxSceneMessages extends Component {
             <PaperFooter>
               {seenAction(el)}
               {editAction(el)}
-              {date.isToday(el.time) ? date.format(el.time, "hh:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "YYYY-MM-DD dddd hh:mm") : date.format(el.time, "YYYY-MM-DD  hh:mm")}
+              {date.isToday(el.time) ? date.format(el.time, "HH:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "dddd HH:mm") : date.format(el.time, "YYYY-MM-DD  HH:mm")}
               {messageControlShow && el.id === messageControlId ?
                 <Container inline left={this._isMessageByMe(el)} right={!this._isMessageByMe(el)} inSpace>
                   {this._isMessageByMe(el) &&
