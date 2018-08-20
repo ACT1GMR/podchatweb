@@ -16,6 +16,14 @@ import {threadCreate} from "../../actions/threadActions";
 //styling
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 
+function isMessageByMe(message, user) {
+  if (user) {
+    if (message) {
+      return message.participant.id === user.id;
+    }
+  }
+}
+
 @connect(store => {
   return {
     newMessage: store.message.message,
@@ -50,37 +58,39 @@ export default class BoxNotification extends Component {
 
   componentDidUpdate(oldProps) {
     if (Push.Permission.request()) {
-      const {newMessage, chatInstance, dispatch} = this.props;
-      if (chatInstance) {
-        if (!window.document.hasFocus()) {
-          if (newMessage === oldProps.newMessage) {
-            return;
-          }
-          chatInstance.getThreadInfo(newMessage.threadId).then(thread => {
-            const {count} = this.state;
-            this.setState({
-              thread,
-              count: count + 1
-            });
-            if (!this.intervalId) {
-              this.intervalId = window.setInterval(e => {
-                const {showLastThread} = this.state;
-                this.setState({
-                  showLastThread: !showLastThread
-                })
-              }, 1500);
+      const {newMessage, chatInstance, dispatch, user} = this.props;
+      if (!isMessageByMe(newMessage, user)) {
+        if (chatInstance) {
+          if (!window.document.hasFocus()) {
+            if (newMessage === oldProps.newMessage) {
+              return;
             }
-            Push.create(thread.title, {
-              body: newMessage.message,
-              icon: thread.image || defaultAvatar,
-              timeout: 60000,
-              onClick: function () {
-                dispatch(threadCreate(null, thread));
-                window.focus();
-                this.close();
+            chatInstance.getThreadInfo(newMessage.threadId).then(thread => {
+              const {count} = this.state;
+              this.setState({
+                thread,
+                count: count + 1
+              });
+              if (!this.intervalId) {
+                this.intervalId = window.setInterval(e => {
+                  const {showLastThread} = this.state;
+                  this.setState({
+                    showLastThread: !showLastThread
+                  })
+                }, 1500);
               }
-            });
-          })
+              Push.create(thread.title, {
+                body: newMessage.message,
+                icon: thread.image || defaultAvatar,
+                timeout: 60000,
+                onClick: function () {
+                  dispatch(threadCreate(null, thread));
+                  window.focus();
+                  this.close();
+                }
+              });
+            })
+          }
         }
       }
     }

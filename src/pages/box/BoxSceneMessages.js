@@ -29,7 +29,7 @@ import utilsStlye from "../../../styles/utils/utils.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 
-function isMessageByMe(me, userssage, user) {
+function isMessageByMe(message, user) {
   if (user) {
     if (message) {
       return message.participant.id === user.id;
