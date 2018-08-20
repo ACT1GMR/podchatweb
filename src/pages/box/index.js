@@ -13,6 +13,7 @@ import {userGet} from "../../actions/userActions";
 import BoxThreads from "./BoxThreads";
 import BoxScene from "./BoxScene";
 import BoxHead from "./BoxHead";
+import BoxNotification from "./BoxNotification";
 
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
@@ -70,6 +71,7 @@ export default class Box extends Component {
         <section className={classNameBody}>
           <BoxThreads/>
           <BoxScene/>
+          <BoxNotification/>
         </section>
       </section>
     );

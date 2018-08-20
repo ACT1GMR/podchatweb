@@ -29,6 +29,14 @@ import utilsStlye from "../../../styles/utils/utils.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 
+function isMessageByMe(me, userssage, user) {
+  if (user) {
+    if (message) {
+      return message.participant.id === user.id;
+    }
+  }
+}
+
 @connect(store => {
   return {
     threadMessagesHasNext: store.threadMessages.hasNext,
@@ -54,14 +62,6 @@ export default class BoxSceneMessages extends Component {
     }
   }
 
-  _isMessageByMe(message) {
-    const {user} = this.props;
-    if (user) {
-      if (message) {
-        return message.participant.id === user.id;
-      }
-    }
-  }
 
   onScroll() {
     const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext} = this.props;
@@ -84,7 +84,7 @@ export default class BoxSceneMessages extends Component {
   componentDidUpdate() {
     let boxSceneMessages = this.boxSceneMessagesNode.current;
     if (boxSceneMessages) {
-      const {threadMessages} = this.props;
+      const {threadMessages, user} = this.props;
       const lastMessage = threadMessages[threadMessages.length - 1];
       if (!this.lastMessage || this.lastMessage !== lastMessage.id) {
         boxSceneMessages.scrollTop = boxSceneMessages.scrollHeight;
@@ -93,7 +93,7 @@ export default class BoxSceneMessages extends Component {
 
       if (lastMessage) {
         if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
-          if (!lastMessage.seen && !this._isMessageByMe(lastMessage)) {
+          if (!lastMessage.seen && !isMessageByMe(lastMessage, user)) {
             this.seenMessages.push(lastMessage.uniqueId);
             this.props.dispatch(messageSeen(lastMessage));
           }
@@ -133,12 +133,13 @@ export default class BoxSceneMessages extends Component {
   }
 
   render() {
-    const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact} = this.props;
+    const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
     const {messageControlShow, messageControlId} = this.state;
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
-          <Message size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+          <Message
+            size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
@@ -162,7 +163,7 @@ export default class BoxSceneMessages extends Component {
       }
 
       const seenAction = (el) => {
-        if (!this._isMessageByMe(el)) {
+        if (!isMessageByMe(el, user)) {
           return null;
         }
         if (el.seen) {
@@ -220,8 +221,8 @@ export default class BoxSceneMessages extends Component {
               {editAction(el)}
               {date.isToday(el.time) ? date.format(el.time, "HH:mm") : date.isWithinAWeek(el.time) ? date.format(el.time, "dddd HH:mm") : date.format(el.time, "YYYY-MM-DD  HH:mm")}
               {messageControlShow && el.id === messageControlId ?
-                <Container inline left={this._isMessageByMe(el)} right={!this._isMessageByMe(el)} inSpace>
-                  {this._isMessageByMe(el) &&
+                <Container inline left={isMessageByMe(el, user)} right={!isMessageByMe(el, user)} inSpace>
+                  {isMessageByMe(el, user) &&
                   <Container inline>
                     {el.editable && <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
                                             className={iconClasses}
@@ -255,9 +256,9 @@ export default class BoxSceneMessages extends Component {
             {threadMessagesPartialFetching && partialLoading}
             {threadMessages.map(el => (
               <ListItem key={el.id} data={el}>
-                <Container leftTextAlign={!this._isMessageByMe(el)} inSpace id={el.id}>
-                  {!this._isMessageByMe(el) ? message(el) : avatar(el)}
-                  {!this._isMessageByMe(el) ? avatar(el) : message(el)}
+                <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={el.id}>
+                  {!isMessageByMe(el, user) ? message(el) : avatar(el)}
+                  {!isMessageByMe(el, user) ? avatar(el) : message(el)}
                 </Container>
               </ListItem>
             ))}

@@ -26,13 +26,13 @@ export const threadCreate = (contactId, thread, threadName) => {
   }
 };
 
-export const threadGetList = () => {
+export const threadGetList = threadIds => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
     dispatch({
       type: THREAD_GET_LIST(),
-      payload: chatSDK.getThreads()
+      payload: chatSDK.getThreads(threadIds)
     });
   }
 };
@@ -100,3 +100,15 @@ export const threadAddParticipant = (threadId, contactIds) => {
     });
   }
 };
+
+export const threadInfo = (threadId, contactIds) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    return dispatch({
+      type: THREAD_PARTICIPANT_ADD(),
+      payload: chatSDK.addParticipants(threadId, contactIds)
+    });
+  }
+};
+

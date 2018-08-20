@@ -25,9 +25,7 @@ const constants = {
 
 @connect(store => {
   return {
-    messageSent: store.message.sentMessage,
     messageEditing: store.messageEditing.message,
-    messageEdit: store.message.messageEdit,
     threadId: store.thread.thread.id,
     threadFetching: store.thread.thread.id
   };
