@@ -20,6 +20,17 @@ body {
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.06), 0 2px 5px 0 rgba(0, 0, 0, 0.2);
 }
 
+.Podchatbox {
+    height: calc(100vh - 20px) !important;
+    border-radius: 5px !important;
+}
+
+@media only screen and (max-width: 1420px) {
+    #chat {
+        max-width: 1200px;
+    }
+}
+
 @media only screen and (max-width: 1200px) {
     #chat {
         max-width: 1000px;
@@ -33,12 +44,13 @@ body {
         border-radius: 10px;
         box-shadow: none;
     }
+    .Podchatbox {
+        height: calc(100vh - 20px) !important;
+        border-radius: 0 !important;
+    }
+
 }
 
-.Podchatbox {
-    height: calc(100vh - 20px) !important;
-    border-radius: 5px !important;
-}
 
 .Podchatboxbody {
     height: calc(100vh - 80px) !important;
