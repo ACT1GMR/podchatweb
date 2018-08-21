@@ -12,7 +12,7 @@ import {threadMessageGetList} from "../../actions/threadActions";
 //components
 import Paper from "raduikit/src/paper";
 import Container from "raduikit/src/container";
-import {MdClose, MdChevronLeft} from "react-icons/lib/md";
+import {MdClose, MdChevronLeft, MdAttachFile} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneInput.scss";
@@ -36,6 +36,7 @@ export default class BoxSceneInput extends Component {
     super();
     this.onTextChange = this.onTextChange.bind(this);
     this.onCancelEditing = this.onCancelEditing.bind(this);
+    this.onAttachmentChange = this.onAttachmentChange.bind(this);
     this.inputNode = React.createRef();
     this.state = {
       messageText: ""
@@ -61,6 +62,11 @@ export default class BoxSceneInput extends Component {
     }
   }
 
+  onAttachmentChange(evt) {
+    const file = evt.target.files[0];
+    this.props.dispatch(messageSendFile(file, this.props.threadId));
+  }
+
   onFormSubmit(msgEditing, evt) {
     evt.preventDefault();
     const {threadId, dispatch} = this.props;
@@ -75,7 +81,6 @@ export default class BoxSceneInput extends Component {
         }
         dispatch(messageForward(threadId, msgEditingId));
       } else {
-
         this.props.dispatch(messageEdit(messageText, msgEditingId));
       }
     } else {
@@ -107,20 +112,28 @@ export default class BoxSceneInput extends Component {
           </Container>
         </Paper>
       </Container> : '';
-    const boxSceneInputClass = messageEditCondition ? `${style["BoxSceneInput__text--halfBorder"]} ${style.BoxSceneInput__text}` : style["BoxSceneInput__text"];
+    const boxSceneInputClass = messageEditCondition ? `${style["BoxSceneInput__Text--halfBorder"]} ${style.BoxSceneInput__Text}` : style["BoxSceneInput__Text"];
     return (
-      <form className={style.BoxSceneInput} onSubmit={this.onFormSubmit.bind(this, messageEditing)}>
-        {editingPopup}
-        <input className={boxSceneInputClass}
-               ref={this.inputNode}
-               type="text"
-               placeholder={strings.pleaseWriteHere}
-               onChange={this.onTextChange}
-               value={messageText}/>
-        <button type="submit" className={style.BoxSceneInput__button}>
-          <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorTextLight} style={{margin: "0 4px"}}/>
-        </button>
-      </form>
+      <Container className={style.BoxSceneInput}>
+        <Container inline minWidth="calc(100% - 50px)" relative>
+          <form onSubmit={this.onFormSubmit.bind(this, messageEditing)}>
+            {editingPopup}
+            <input className={boxSceneInputClass}
+                   ref={this.inputNode}
+                   type="text"
+                   placeholder={strings.pleaseWriteHere}
+                   onChange={this.onTextChange}
+                   value={messageText}/>
+            <button type="submit" className={style.BoxSceneInput__Button}>
+              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorTextLight} style={{margin: "0 4px"}}/>
+            </button>
+          </form>
+        </Container>
+        <Container inline className={style.BoxSceneInput__Attach} relative>
+          <input className={style.BoxSceneInput__AttachButton} type="file" onChange={this.onAttachmentChange}/>
+          <MdAttachFile size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
+        </Container>
+      </Container>
     );
   }
 }

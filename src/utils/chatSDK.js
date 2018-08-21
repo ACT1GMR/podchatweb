@@ -152,8 +152,9 @@ export default class ChatSDK {
       content
     };
 
-    this.chatAgent.sendTextMessage(sendChatParams, {
+    return this.chatAgent.sendTextMessage(sendChatParams, {
       onSent: (result) => {
+        console.log(result);
         if (!this._onError(result, reject)) {
           return resolve({
             result, ...{

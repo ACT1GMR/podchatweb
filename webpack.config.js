@@ -80,7 +80,7 @@ module.exports = (e, argv) => {
       path: __dirname + "/dist",
       filename: "index.js",
       library: "",
-      libraryTarget: "commonjs"
+      libraryTarget: "amd"
     }
   } else {
     base.devtool = "source-map";

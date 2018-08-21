@@ -18,6 +18,17 @@ export const messageSend = (text, threadId) => {
   }
 };
 
+export const messageSendFile = (file, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: MESSAGE_SEND(),
+      payload: chatSDK.sendFileMessage(threadId, file)
+    });
+  }
+};
+
 export const messageEditing = (id, text, type) => {
   return (dispatch) => {
     dispatch({

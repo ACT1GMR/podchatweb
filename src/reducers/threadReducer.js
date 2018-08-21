@@ -10,7 +10,7 @@ import {
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_CHANGED,
   MESSAGE_NEW, MESSAGE_SEEN, MESSAGE_EDIT,
-  CONTACT_LIST_SHOWING,
+  CONTACT_LIST_SHOWING, MESSAGE_SEND,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -142,13 +142,26 @@ export const threadMessageListReducer = (state = {
       let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages.reverse(), ...state.messages], "messages")};
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
       return {...newStatePartial, ...{hasNext: action.payload.hasNext}};
-    case MESSAGE_NEW: {
+    case MESSAGE_NEW:
+    case MESSAGE_SEND(): {
       if (!checkForCurrentThread()) {
         return state;
       }
-      if (state.messages.filter(e => e.id === action.payload.id).length) {
-        return state;
+      if(action.payload.id) {
+        const messageClone = state.messages;
+        const idFilter = messageClone.filter(e => e.id === action.payload.id).length;
+        if (idFilter.length) {
+          return state;
+        }
+        const uniqueId = action.payload.uniqueId;
+        let index = messageClone.findIndex(message => message.uniqueId === uniqueId);
+        if (!~index) {
+          return state;
+        }
+        messageClone[index] = action.payload;
+        return messageClone;
       }
+
       return {...state, messages: [...state.messages, action.payload]};
     }
     case MESSAGE_EDIT():
@@ -197,7 +210,7 @@ export const threadParticipantAddReducer = (state = {
   switch (action.type) {
     case THREAD_PARTICIPANT_ADD("PENDING"):
       return {...state, ...stateObject("PENDING", null, "thread")};
-    case THREAD_PARTICIPANT_ADD("SUCCESS"):{
+    case THREAD_PARTICIPANT_ADD("SUCCESS"): {
       let thread = action.payload;
       thread.timestamp = Date.now();
       return {...state, ...stateObject("SUCCESS", thread, "thread")};
