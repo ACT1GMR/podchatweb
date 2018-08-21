@@ -112,7 +112,7 @@ export default class BoxThreads extends Component {
                             <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
                             :
                             <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 30)}</Text>
+                                  color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
                         }
                         {el.lastMessageVO || el.time ?
                           <Container topLeft>
