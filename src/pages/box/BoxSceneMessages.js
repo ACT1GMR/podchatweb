@@ -8,8 +8,8 @@ import date from "../../utils/date";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSeen, messageEditing} from "../../actions/messageActions";
-import {threadModalListShowing, threadMessageGetList} from "../../actions/threadActions";
+import {messageSeen} from "../../actions/messageActions";
+import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
 import List, {ListItem} from "raduikit/src/list"
@@ -32,12 +32,25 @@ import {
 import style from "../../../styles/pages/box/BoxSceneMessages.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
+import BoxSceneMessagesFile from "./BoxSceneMessagesFile";
 
 function isMessageByMe(message, user) {
-  if (user) {
-    if (message) {
+  if (message) {
+    if (!message.id) {
+      return true;
+    }
+    if (user) {
       return message.participant.id === user.id;
     }
+  }
+}
+
+function isFile(message) {
+  if (message.type === "file") {
+    return true
+  }
+  if (message.metaData) {
+    return JSON.parse(message.metaData).file
   }
 }
 
@@ -193,10 +206,11 @@ export default class BoxSceneMessages extends Component {
         user
       }
     };
-    const message = message => message.message ?
-      <BoxSceneMessagesText {...messageArguments(message)}/>
+    const message = message => isFile(message) ?
+      <BoxSceneMessagesFile {...messageArguments(message)}/>
       :
       <BoxSceneMessagesText {...messageArguments(message)}/>;
+
     const avatar = message =>
       <Container inline maxWidth="50px" inSpace>
         <Avatar>
@@ -209,7 +223,7 @@ export default class BoxSceneMessages extends Component {
         <List ref={this.messageListNode}>
           {threadMessagesPartialFetching && partialLoading}
           {threadMessages.map(el => (
-            <ListItem key={el.id} data={el}>
+            <ListItem key={el.id || el.uniqueId} data={el}>
               <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={el.id}>
                 {!isMessageByMe(el, user) ? message(el) : avatar(el)}
                 {!isMessageByMe(el, user) ? avatar(el) : message(el)}

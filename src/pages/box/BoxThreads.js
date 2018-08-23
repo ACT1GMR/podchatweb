@@ -35,10 +35,19 @@ function sliceMessage(message, to) {
 function prettifyMessageDate(passedTime) {
   const diff = Date.now() - passedTime;
   const isToday = date.isToday(passedTime);
-  if(isToday) {
+  if (isToday) {
     return date.format(passedTime, "HH:mm", "en")
   }
   return date.prettifySince(diff);
+}
+
+function isFile(message) {
+  if (message.type === "file") {
+    return true
+  }
+  if (message.metaData) {
+    return JSON.parse(message.metaData).file
+  }
 }
 
 @connect(store => {
@@ -99,17 +108,24 @@ export default class BoxThreads extends Component {
                       {el.title}
                       <AvatarText>
                         {el.group ?
-                          el.lastMessage ?
+                          el.lastMessage || el.lastMessageVO ?
                             <Container>
                               <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
-                              <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
+                              {isFile(el.lastMessageVO) ?
+                                <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
+                                :
+                                <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
+                              }
                             </Container>
                             :
                             <Text size="sm" inline
                                   color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
                           :
-                          el.lastMessage ?
-                            <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
+                          el.lastMessage || el.lastMessageVO ?
+                            isFile(el.lastMessageVO) ?
+                              <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
+                              :
+                              <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
                             :
                             <Text size="sm" inline
                                   color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
@@ -127,7 +143,7 @@ export default class BoxThreads extends Component {
                   {el.unreadCount && activeThread !== el.id ?
                     <Container absolute centerLeft>
                       <Gap y={10} block/>
-                      <Shape colorAccent>
+                      <Shape color="accent">
                         <ShapeCircle>{el.unreadCount}</ShapeCircle>
                       </Shape>
                     </Container> : ""}

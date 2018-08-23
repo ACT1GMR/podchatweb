@@ -40,6 +40,7 @@ let strings = new LocalizedStrings({
     seconds: "ثانیه",
     yesterday: "دیروز",
     recently: "چند لحظه پیش",
+    sentAFile: "فایلی فرستاد",
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {
         return string;

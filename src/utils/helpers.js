@@ -1,24 +1,15 @@
-import urls from "../constants/urls";
-
-/**
- * build url baseی on url category base URL, URL, params and query string
- * @param base - URL group name
- * @param url - URL have to join to base URL of group name
- * @param params
- * @param query
- * @returns {string}
- */
-function buildUrl(base, url, params, query) {
-  let paramUrl = "", queryString = "";
-  if(query) {
-    queryString = Object.keys(query).map(key => key + "=" + query[key]).join("&");
-    queryString = `?${queryString}`
+export function humanFileSize(bytes, si) {
+  const thresh = si ? 1000 : 1024;
+  if(Math.abs(bytes) < thresh) {
+    return bytes + ' B';
   }
-  if(params) {
-    paramUrl = `/${paramUrl}`;
-    if(queryString) {
-      paramUrl = `${paramUrl}/`
-    }
-  }
-  return `${urls[base].baseUrl}/${url}${paramUrl}${queryString}`;
+  const units = si
+    ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+    : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+  let u = -1;
+  do {
+    bytes /= thresh;
+    ++u;
+  } while(Math.abs(bytes) >= thresh && u < units.length - 1);
+  return bytes.toFixed(1)+' '+units[u];
 }

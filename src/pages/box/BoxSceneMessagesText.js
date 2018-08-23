@@ -33,7 +33,6 @@ export default class BoxSceneMessagesText extends Component {
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
     this.state = {
-
       messageControlShow: false
     }
   }
@@ -68,7 +67,7 @@ export default class BoxSceneMessagesText extends Component {
   }
 
   render() {
-    const {seenFragment, editFragment, replyFragment, forwardFragment, onEdit, onForward, onReply, isMessageByMe, datePetrification, message, user} = this.props;
+    const {seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
     const {messageControlShow} = this.state;
     const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
     return (

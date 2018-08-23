@@ -6,8 +6,14 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSend, messageEditing, messageEdit, messageReply, messageForward} from "../../actions/messageActions";
-import {threadMessageGetList} from "../../actions/threadActions";
+import {
+  messageSend,
+  messageEditing,
+  messageEdit,
+  messageReply,
+  messageForward,
+  messageSendFile
+} from "../../actions/messageActions";
 
 //components
 import Paper from "raduikit/src/paper";
@@ -63,8 +69,9 @@ export default class BoxSceneInput extends Component {
   }
 
   onAttachmentChange(evt) {
+    const {threadId, dispatch} = this.props;
     const file = evt.target.files[0];
-    this.props.dispatch(messageSendFile(file, this.props.threadId));
+    dispatch(messageSendFile(file, threadId));
   }
 
   onFormSubmit(msgEditing, evt) {

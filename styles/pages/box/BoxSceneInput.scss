@@ -40,10 +40,11 @@
   width: 40px;
   border-radius: 50%;
   margin: 0 5px;
+  transition: box-shadow 0.2s ease-in-out;
 }
 
 .BoxSceneInput__Attach:hover {
-  background-color: $color-accent;
+  box-shadow: 0 0 20px $color-accent;
 }
 
 .BoxSceneInput__AttachButton

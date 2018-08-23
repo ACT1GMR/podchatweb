@@ -24,7 +24,7 @@ export const messageSendFile = (file, threadId) => {
     const chatSDK = state.chat.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.sendFileMessage(threadId, file)
+      payload: chatSDK.sendFileMessage(file, threadId)
     });
   }
 };

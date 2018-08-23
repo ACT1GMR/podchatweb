@@ -13,6 +13,7 @@ export default class ChatSDK {
       ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.land", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       platformHost: props.config.local ? "http://172.16.106.26:8080/hamsam" : "https://sandbox.pod.land:8043/srv/basic-platform", // {**REQUIRED**} Platform Core Address
+      fileServer: "http://sandbox.fanapium.com:8080", // {**REQUIRED**} File Server Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
       token: null, // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
@@ -27,6 +28,7 @@ export default class ChatSDK {
       },
       ...props.config
     };
+    this.user = null;
     this.chatAgent = new PodChat(this.params);
     this.onThreadEvents = props.onThreadEvents;
     this.onMessageEvents = props.onMessageEvents;
@@ -152,18 +154,48 @@ export default class ChatSDK {
       content
     };
 
-    return this.chatAgent.sendTextMessage(sendChatParams, {
+    const uniqueId = this.chatAgent.sendTextMessage(sendChatParams, {
       onSent: (result) => {
-        console.log(result);
-        if (!this._onError(result, reject)) {
-          return resolve({
-            result, ...{
-              message: content, participant: {}
-            }
-          });
-        }
+        this._onError(result, reject);
       }
     });
+    resolve({
+      ...uniqueId, ...{
+        threadId,
+        message: content,
+        participant: this.user
+      }
+    })
+  }
+
+  @promiseDecorator
+  sendFileMessage(resolve, reject, file, threadId) {
+    const sendChatParams = {
+      threadId,
+      file,
+      uniqueId: Math.random().toString(36).substring(7)
+    };
+
+    const uniqueId = this.chatAgent.sendFileMessage(sendChatParams, {
+      onSent: result => {
+        this._onError(result, reject);
+      }
+    });
+    resolve({
+      ...{uniqueId}, ...{
+        threadId,
+        type: "file",
+        participant: this.user,
+        metaData: {
+          file:{
+            mimeType: file.type,
+            originalName: file.name,
+            link: URL.createObjectURL(file),
+            size: file.size
+          }
+        }
+      }
+    })
   }
 
   @promiseDecorator
@@ -227,6 +259,7 @@ export default class ChatSDK {
   getUserInfo(resolve, reject) {
     this.chatAgent.getUserInfo((result) => {
       if (!this._onError(result, reject)) {
+        this.user = result.result.user;
         return resolve(result.result.user);
       }
     });

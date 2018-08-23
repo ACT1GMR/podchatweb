@@ -143,23 +143,24 @@ export const threadMessageListReducer = (state = {
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
       return {...newStatePartial, ...{hasNext: action.payload.hasNext}};
     case MESSAGE_NEW:
-    case MESSAGE_SEND(): {
+    case MESSAGE_SEND("SUCCESS"): {
       if (!checkForCurrentThread()) {
         return state;
       }
       if(action.payload.id) {
-        const messageClone = state.messages;
-        const idFilter = messageClone.filter(e => e.id === action.payload.id).length;
+        const messageClone = [...state.messages];
+        const idFilter = messageClone.filter(e => e.id === action.payload.id);
         if (idFilter.length) {
           return state;
         }
         const uniqueId = action.payload.uniqueId;
         let index = messageClone.findIndex(message => message.uniqueId === uniqueId);
         if (!~index) {
-          return state;
+          messageClone.push(action.payload);
+          return {...state, ...stateObject("SUCCESS", messageClone, "messages")};
         }
         messageClone[index] = action.payload;
-        return messageClone;
+        return {...state, ...stateObject("SUCCESS", messageClone, "messages")};
       }
 
       return {...state, messages: [...state.messages, action.payload]};
