@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>PODCHAT WEB v0.2.0</title>
+    <title>PODCHAT WEB v0.2.1</title>
     <script src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
     <link rel="stylesheet" href="styles/index.css">
 </head>
@@ -25,15 +25,15 @@
 
   let token = getParameterByName("access_token");
   if(!token) {
-    window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://chat.fanapsoft.ir"
+    window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=https://chat.fanapsoft.ir"
   }
 
   require.config( {waitSeconds : 3000});
   if (token) {
-    requirejs(["src/index-0.2.0.js"], function (util) {
+    requirejs(["src/index-0.2.1.js"], function (util) {
       util.Podchat({token,
         onTokenExpire(){
-            window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=http://chat.fanapsoft.ir"
+            window.location = "https://accounts.pod.land/oauth2/authorize/?client_id=2051121e4348af52664cf7de0bda&response_type=token&redirect_uri=https://chat.fanapsoft.ir"
         }}, "chat");
     });
   }
