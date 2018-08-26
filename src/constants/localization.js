@@ -41,6 +41,9 @@ let strings = new LocalizedStrings({
     yesterday: "دیروز",
     recently: "چند لحظه پیش",
     sentAFile: "فایلی فرستاد",
+    remove: "حذف",
+    groupInfo: "اطلاعات گروه",
+    contactInfo: "اطلاعات تماس",
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {
         return string;

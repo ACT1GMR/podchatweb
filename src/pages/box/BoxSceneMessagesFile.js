@@ -6,6 +6,10 @@ import {humanFileSize} from "../../utils/helpers";
 //strings
 
 //actions
+//actions
+import {
+  threadModalMediaShowing
+} from "../../actions/threadActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
@@ -28,6 +32,23 @@ import {messageEditing} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 import {connect} from "react-redux";
 
+function getImage(metaData, isFromServer) {
+
+  let imageLink = metaData.link;
+  let width = metaData.width;
+  let height = metaData.height;
+
+  const ratio = height / width;
+  const maxWidth = ratio >= 2 ? 200 : 300;
+  if (width <= maxWidth) {
+    return {imageLink};
+  }
+  if(!isFromServer) {
+    return {imageLink, maxWidth};
+  }
+  height = Math.ceil(maxWidth * ratio);
+  return {imageLink:`${imageLink}&width=${maxWidth}&height=${height}`, maxWidth};
+}
 
 @connect()
 export default class BoxSceneMessagesFile extends Component {
@@ -74,6 +95,10 @@ export default class BoxSceneMessagesFile extends Component {
     this.props.dispatch(messageEditing(id, message, "REPLYING"));
   }
 
+  onModalMediaShow(metaData) {
+    this.props.dispatch(threadModalMediaShowing(true, {src: metaData.link}));
+  }
+
   render() {
     const {seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
     const {messageControlShow} = this.state;
@@ -81,6 +106,7 @@ export default class BoxSceneMessagesFile extends Component {
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = ~metaData.mimeType.indexOf("image");
     const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
+    const imageSizeLink = isImage ? getImage(metaData, message.id) : false;
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                  onMouseOver={this.onMouseOver}
@@ -89,7 +115,8 @@ export default class BoxSceneMessagesFile extends Component {
           {replyFragment(message)}
           {forwardFragment(message)}
           {isImage ?
-            <img className={style.BoxSceneMessagesFile__Image} src={metaData.link}/>
+            <img className={style.BoxSceneMessagesFile__Image} src={imageSizeLink.imageLink} style={{width: `${imageSizeLink.maxWidth}px`}}
+                 onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/>
             :
             <Container relative>
               <Container maxWidth="calc(100% - 36px)">

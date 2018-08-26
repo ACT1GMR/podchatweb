@@ -10,7 +10,7 @@ import {
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_CHANGED,
   MESSAGE_NEW, MESSAGE_SEEN, MESSAGE_EDIT,
-  CONTACT_LIST_SHOWING, MESSAGE_SEND,
+  CONTACT_LIST_SHOWING, MESSAGE_SEND, THREAD_PARTICIPANT_REMOVE, THREAD_MODAL_MEDIA_SHOWING,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -48,6 +48,17 @@ export const threadModalListShowingReducer = (state = {
   switch (action.type) {
     case THREAD_MODAL_LIST_SHOWING:
       return {details: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const threadModalMedialShowingReducer = (state = {
+  object: {}
+}, action) => {
+  switch (action.type) {
+    case THREAD_MODAL_MEDIA_SHOWING:
+      return {object: action.payload};
     default:
       return state;
   }
@@ -192,7 +203,7 @@ export const threadParticipantListReducer = (state = {
 }, action) => {
   switch (action.type) {
     case THREAD_PARTICIPANT_GET_LIST("PENDING"):
-      return {...state, ...stateObject("PENDING", [], "participants")};
+      return {...state, ...stateObject("PENDING", state.participants, "participants")};
     case THREAD_PARTICIPANT_GET_LIST("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload, "participants")};
     case THREAD_PARTICIPANT_GET_LIST("ERROR"):
@@ -217,6 +228,27 @@ export const threadParticipantAddReducer = (state = {
       return {...state, ...stateObject("SUCCESS", thread, "thread")};
     }
     case THREAD_PARTICIPANT_ADD("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadParticipantRemoveReducer = (state = {
+  thread: null,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_PARTICIPANT_REMOVE("PENDING"):
+      return {...state, ...stateObject("PENDING", null, "thread")};
+    case THREAD_PARTICIPANT_REMOVE("SUCCESS"): {
+      let thread = action.payload;
+      thread.timestamp = Date.now();
+      return {...state, ...stateObject("SUCCESS", thread, "thread")};
+    }
+    case THREAD_PARTICIPANT_REMOVE("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;

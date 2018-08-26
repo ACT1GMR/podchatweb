@@ -36,21 +36,25 @@ import BoxSceneMessagesFile from "./BoxSceneMessagesFile";
 
 function isMessageByMe(message, user) {
   if (message) {
-    if (!message.id) {
-      return true;
-    }
-    if (user) {
-      return message.participant.id === user.id;
+    if (message) {
+      if (!message.id) {
+        return true;
+      }
+      if (user) {
+        return message.participant.id === user.id;
+      }
     }
   }
 }
 
 function isFile(message) {
-  if (message.type === "file") {
-    return true
-  }
-  if (message.metaData) {
-    return JSON.parse(message.metaData).file
+  if (message) {
+    if (message.type === "file") {
+      return true
+    }
+    if (message.metaData) {
+      return JSON.parse(message.metaData).file
+    }
   }
 }
 
@@ -224,7 +228,7 @@ export default class BoxSceneMessages extends Component {
           {threadMessagesPartialFetching && partialLoading}
           {threadMessages.map(el => (
             <ListItem key={el.id || el.uniqueId} data={el}>
-              <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={el.id}>
+              <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`}>
                 {!isMessageByMe(el, user) ? message(el) : avatar(el)}
                 {!isMessageByMe(el, user) ? avatar(el) : message(el)}
               </Container>

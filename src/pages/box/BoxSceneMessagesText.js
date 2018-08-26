@@ -1,6 +1,7 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
 import "moment/locale/fa";
+import reactStringReplace from "react-string-replace";
 
 //strings
 
@@ -24,6 +25,11 @@ import {messageEditing} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 import {connect} from "react-redux";
 
+function urlify(text) {
+  return reactStringReplace(text, /(https?:\/\/[^\s]+)/g, (match, i) => (
+    <Text link={match}>{match}</Text>
+  ));
+}
 
 @connect()
 export default class BoxSceneMessagesText extends Component {
@@ -70,6 +76,7 @@ export default class BoxSceneMessagesText extends Component {
     const {seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
     const {messageControlShow} = this.state;
     const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
+
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                  onMouseOver={this.onMouseOver}
@@ -78,7 +85,7 @@ export default class BoxSceneMessagesText extends Component {
           {replyFragment(message)}
           {forwardFragment(message)}
           <Text>
-            {message.message}
+            {urlify(message.message)}
           </Text>
           <PaperFooter>
             {seenFragment(message)}

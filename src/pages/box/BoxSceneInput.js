@@ -78,9 +78,19 @@ export default class BoxSceneInput extends Component {
     evt.preventDefault();
     const {threadId, dispatch} = this.props;
     const {messageText} = this.state;
+    let isEmptyMessage = false;
+    if (!messageText) {
+      isEmptyMessage = true;
+    }
+    if (!messageText.trim()) {
+      isEmptyMessage = true;
+    }
     if (msgEditing) {
       const msgEditingId = msgEditing.id;
       if (msgEditing.type === constants.replying) {
+        if (isEmptyMessage) {
+          return;
+        }
         dispatch(messageReply(messageText, msgEditingId, threadId));
       } else if (msgEditing.type === constants.forwarding) {
         if (messageText) {
@@ -88,9 +98,15 @@ export default class BoxSceneInput extends Component {
         }
         dispatch(messageForward(threadId, msgEditingId));
       } else {
+        if (isEmptyMessage) {
+          return;
+        }
         this.props.dispatch(messageEdit(messageText, msgEditingId));
       }
     } else {
+      if (isEmptyMessage) {
+        return;
+      }
       dispatch(messageSend(messageText, threadId));
     }
     dispatch(messageEditing());

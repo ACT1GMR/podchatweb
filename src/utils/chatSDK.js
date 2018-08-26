@@ -13,7 +13,7 @@ export default class ChatSDK {
       ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.land", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       platformHost: props.config.local ? "http://172.16.106.26:8080/hamsam" : "https://sandbox.pod.land:8043/srv/basic-platform", // {**REQUIRED**} Platform Core Address
-      fileServer: "http://sandbox.fanapium.com:8080", // {**REQUIRED**} File Server Address
+      fileServer: "https://sandbox.pod.land:8443", // {**REQUIRED**} File Server Address
       serverName: "chat-server", // {**REQUIRED**} Server to to register on
       token: null, // {**REQUIRED**} SSO Token Zamani
       wsConnectionWaitTime: 500, // Time out to wait for socket to get ready after open
@@ -334,6 +334,23 @@ export default class ChatSDK {
       }
     });
   }
+
+  @promiseDecorator
+  removeParticipants(resolve, reject, threadId, participants) {
+    const removeParticipantParams = {
+      threadId,
+      participants
+    };
+
+    this.chatAgent.removeParticipants(removeParticipantParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.thread);
+      }
+    });
+  }
+
+
+
 
 
 };

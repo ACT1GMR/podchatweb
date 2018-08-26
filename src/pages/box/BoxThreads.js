@@ -26,8 +26,10 @@ import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
 import Message from "raduikit/src/message";
 
 function sliceMessage(message, to) {
-  if (message.length >= 15) {
-    return `${message.slice(0, to || 15)}...`;
+  if (message) {
+    if (message.length >= 15) {
+      return `${message.slice(0, to || 15)}...`;
+    }
   }
   return message;
 }
@@ -42,11 +44,13 @@ function prettifyMessageDate(passedTime) {
 }
 
 function isFile(message) {
-  if (message.type === "file") {
-    return true
-  }
-  if (message.metaData) {
-    return JSON.parse(message.metaData).file
+  if (message) {
+    if (message.type === "file") {
+      return true
+    }
+    if (message.metaData) {
+      return JSON.parse(message.metaData).file
+    }
   }
 }
 

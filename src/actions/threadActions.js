@@ -6,7 +6,7 @@ import {
   THREAD_MODAL_LIST_SHOWING,
   THREAD_PARTICIPANT_GET_LIST,
   THREAD_PARTICIPANT_ADD,
-  THREAD_MODAL_THREAD_INFO_SHOWING
+  THREAD_MODAL_THREAD_INFO_SHOWING, THREAD_PARTICIPANT_REMOVE, THREAD_MODAL_MEDIA_SHOWING
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -70,6 +70,15 @@ export const threadModalListShowing = (isShowing, messageId, messageText) => {
 };
 
 
+export const threadModalMediaShowing = (isShowing, object = {}) => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_MODAL_MEDIA_SHOWING,
+      payload: {isShowing, ...object}
+    });
+  }
+};
+
 
 export const threadModalCreateGroupShowing = (isShowing) => {
   return dispatch => {
@@ -97,6 +106,18 @@ export const threadAddParticipant = (threadId, contactIds) => {
     return dispatch({
       type: THREAD_PARTICIPANT_ADD(),
       payload: chatSDK.addParticipants(threadId, contactIds)
+    });
+  }
+};
+
+
+export const threadRemoveParticipant = (threadId, participants) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    return dispatch({
+      type: THREAD_PARTICIPANT_REMOVE(),
+      payload: chatSDK.removeParticipants(threadId, participants)
     });
   }
 };

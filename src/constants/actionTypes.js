@@ -32,6 +32,7 @@ export const MESSAGE_NEW = "MESSAGE_NEW";
 export const MESSAGE_SEEN = "MESSAGE_SEEN";
 export const THREAD_PARTICIPANT_GET_LIST = buildPromiseMessage.bind(null, "THREAD_PARTICIPANT_GET_LIST");
 export const THREAD_PARTICIPANT_ADD = buildPromiseMessage.bind(null, "THREAD_PARTICIPANT_ADD");
+export const THREAD_PARTICIPANT_REMOVE = buildPromiseMessage.bind(null, "THREAD_PARTICIPANT_REMOVE");
 export const THREAD_GET_MESSAGE_LIST = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST");
 export const THREAD_GET_MESSAGE_LIST_PARTIAL = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_PARTIAL");
 export const THREAD_CREATE = buildPromiseMessage.bind(null, "THREAD_CREATE");
@@ -39,5 +40,6 @@ export const THREAD_GET_LIST = buildPromiseMessage.bind(null, "THREAD_GET_LIST")
 export const THREAD_NEW = "THREAD_NEW";
 export const THREAD_CHANGED = "THREAD_CHANGED";
 export const THREAD_MODAL_LIST_SHOWING = "THREAD_MODAL_LIST_SHOWING";
+export const THREAD_MODAL_MEDIA_SHOWING = "THREAD_MODAL_MEDIA_SHOWING";
 export const THREAD_MODAL_THREAD_INFO_SHOWING = "THREAD_MODAL_THREAD_INFO_SHOWING";
 

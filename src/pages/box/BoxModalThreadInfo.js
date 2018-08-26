@@ -5,12 +5,12 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {contactChatting, contactModalCreateGroupShowing} from "../../actions/contactActions";
 import {
   threadCreate,
   threadModalThreadInfoShowing,
   threadParticipantList,
-  threadAddParticipant
+  threadAddParticipant,
+  threadRemoveParticipant
 } from "../../actions/threadActions";
 
 //UI components
@@ -23,6 +23,8 @@ import Container from "raduikit/src/container";
 import Divider from "raduikit/src/divider";
 import {ContactList, ContactListSelective} from "./_component/contactList";
 import date from "../../utils/date";
+import BoxModalThreadInfoGroup from "./BoxModalThreadInfoGroup"
+import BoxModalThreadInfoPerson from "./BoxModalThreadInfoPerson"
 
 //styling
 import {MdGroupAdd, MdGroup, MdArrowBack, MdPerson} from "react-icons/lib/md";
@@ -37,10 +39,12 @@ const constants = {
 
 @connect(store => {
   return {
+    user: store.user.user,
     isShow: store.threadModalThreadInfoShowing.isShow,
     participants: store.threadParticipantList.participants,
     thread: store.thread.thread,
     threadParticipantAdd: store.threadParticipantAdd.thread,
+    threadParticipantRemove: store.threadParticipantRemove.thread,
     contacts: store.contactGetList.contacts
   };
 })
@@ -69,7 +73,7 @@ export default class BoxModalThreadInfo extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {thread, threadParticipantAdd, dispatch} = this.props;
+    const {thread, threadParticipantAdd, threadParticipantRemove, dispatch} = this.props;
     if (thread.id) {
       if (oldProps.thread.id !== thread.id) {
         dispatch(threadParticipantList(thread.id));
@@ -78,6 +82,12 @@ export default class BoxModalThreadInfo extends Component {
 
     if (threadParticipantAdd) {
       if (!oldProps.threadParticipantAdd || oldProps.threadParticipantAdd.timestamp !== threadParticipantAdd.timestamp) {
+        dispatch(threadParticipantList(thread.id));
+      }
+    }
+
+    if (threadParticipantRemove) {
+      if (!oldProps.threadParticipantRemove || oldProps.threadParticipantRemove.timestamp !== threadParticipantRemove.timestamp) {
         dispatch(threadParticipantList(thread.id));
       }
     }
@@ -129,11 +139,6 @@ export default class BoxModalThreadInfo extends Component {
     });
   }
 
-  onStartChat(id) {
-    this.props.dispatch(threadCreate(id));
-    this.onClose();
-  }
-
   onPrevious(id) {
     this.setState({
       step: constants.GROUP_INFO,
@@ -142,69 +147,22 @@ export default class BoxModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, contacts, isShow, thread} = this.props;
-    const {addMembers, step, groupName} = this.state;
+    const {participants, contacts, isShow, thread, user} = this.props;
+    const {addMembers, step} = this.state;
     const isGroup = thread.group;
-    const conversationAction = (contact) => {
-      return (<Button onClick={this.onStartChat.bind(this, contact.contactId)} text>
-        {strings.startChat}
-      </Button>)
-    };
-    const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
         <ModalHeader>
-          <Heading h3>{step === constants.GROUP_INFO ? strings.chatInfo : strings.addMember}</Heading>
+          <Heading h3>{step === constants.GROUP_INFO ? isGroup ? strings.groupInfo : strings.contactInfo : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
           {step === constants.GROUP_INFO ?
-            <Container>
-              <Container relative>
-
-                <Container>
-                  <Avatar>
-                    <AvatarImage src={thread.image ? thread.image : defaultAvatar} size="xlg"/>
-                    <AvatarName>
-                      <Heading h1>{thread.title}</Heading>
-                      {isGroup ?
-                        <Text>{participants.length} {strings.member}</Text>
-                        :
-                        <Text>{strings.prettifyDateString(date.prettifySince(participants && participants[0] ? participants[0].notSeenDuration : ""))}</Text>
-                      }
-                    </AvatarName>
-                  </Avatar>
-                </Container>
-
-                <Container bottomLeft>
-                  {isGroup ?
-                    <Container inline>
-                      <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                                  onClick={this.onAddingMember}/>
-                      <Gap x={5}/>
-                    </Container>
-                    : ""}
-
-                  {isGroup ?
-                    <MdGroup size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                    :
-                    <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                  }
-
-                </Container>
-
-              </Container>
-
-              <Gap y={20} block>
-                <Divider thick={2} color="gray"/>
-              </Gap>
-
-              <Container>
-                <ContactList invert selection contacts={participants} actions={conversationAction}/>
-              </Container>
-
-            </Container>
+            isGroup ?
+              <BoxModalThreadInfoGroup thread={thread} user={user} participants={participants} onClose={this.onClose.bind(this)} onAddingMember={this.onAddingMember}/>
+              :
+              <BoxModalThreadInfoPerson thread={thread} user={user} onClose={this.onClose.bind(this)} participants={participants}/>
             :
             <Container>
               {contacts.length ?
