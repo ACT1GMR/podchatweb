@@ -150,6 +150,7 @@ export default class BoxModalThreadInfo extends Component {
     const {participants, contacts, isShow, thread, user} = this.props;
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
+    const isOwner = thread.inviter && user.id === thread.inviter.id;
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
@@ -186,7 +187,7 @@ export default class BoxModalThreadInfo extends Component {
               </Button>
               : ""
             :
-            isGroup ?
+            isGroup && isOwner ?
               <Button onClick={this.onAddingMember}>
                 {strings.addMember}
               </Button>

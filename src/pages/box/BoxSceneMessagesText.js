@@ -27,7 +27,7 @@ import {connect} from "react-redux";
 
 function urlify(text) {
   return reactStringReplace(text, /(https?:\/\/[^\s]+)/g, (match, i) => (
-    <Text link={match}>{match}</Text>
+    <Text link={match} target="_blank">{match}</Text>
   ));
 }
 

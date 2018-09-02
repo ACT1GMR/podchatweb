@@ -7,29 +7,23 @@ import strings from "../../constants/localization";
 //actions
 import {
   threadCreate,
-  threadModalThreadInfoShowing,
-  threadParticipantList,
-  threadAddParticipant,
   threadRemoveParticipant
 } from "../../actions/threadActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 import Button from "raduikit/src/button";
 import Gap from "raduikit/src/Gap";
 import {Heading, Text} from "raduikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
 import Divider from "raduikit/src/divider";
-import {ContactList, ContactListSelective} from "./_component/contactList";
-import date from "../../utils/date";
+import {ContactList} from "./_component/contactList";
 
 //styling
-import {MdGroupAdd, MdGroup, MdArrowBack, MdPerson} from "react-icons/lib/md";
+import {MdGroupAdd, MdGroup} from "react-icons/lib/md";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
-
 
 @connect()
 export default class BoxModalThreadInfo extends Component {
@@ -51,6 +45,7 @@ export default class BoxModalThreadInfo extends Component {
 
   render() {
     const {participants, thread, user, onAddingMember} = this.props;
+    const isOwner = thread.inviter && user.id === thread.inviter.id;
     const conversationAction = (participant) => {
       return (
         <Container>
@@ -83,11 +78,13 @@ export default class BoxModalThreadInfo extends Component {
           </Container>
 
           <Container bottomLeft>
-            <Container inline>
-              <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                          onClick={onAddingMember}/>
-              <Gap x={5}/>
-            </Container>
+            {isOwner ?
+              <Container inline>
+                <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
+                            onClick={onAddingMember}/>
+                <Gap x={5}/>
+              </Container>
+              : ""}
             <MdGroup size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
           </Container>
 
