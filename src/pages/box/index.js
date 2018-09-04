@@ -60,9 +60,10 @@ export default class Box extends Component {
   }
 
   render() {
-    const className = `${style.Box} Podchatbox`;
-    const classNameBody = `${style.Box__Body} Podchatboxbody`;
-    if (!this.props.chatInstance || !this.props.user) {
+    const {chatInstance, user, boxClassName, boxBodyClassName} = this.props;
+    const className = `${style.Box} ${boxClassName}`;
+    const classNameBody = `${style.Box__Body} ${boxBodyClassName}`;
+    if (!chatInstance || !user) {
       return (
         <Container className={className}>
           <Container center>
