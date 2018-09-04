@@ -5,12 +5,12 @@ import store from "./store/index";
 import "../styles/main.scss";
 import Box from "./pages/box";
 
-function PodchatReact(props) {
+function PodchatJSX(props) {
   return (
     <Provider store={store}>
       <Box {...props}/>
     </Provider>
-  )
+  );
 }
 
 function Podchat(props, elementId) {
@@ -24,4 +24,4 @@ function Podchat(props, elementId) {
   return instance.getWrappedInstance();
 }
 
-export {PodchatReact, Podchat};
+export {PodchatJSX, Podchat};
