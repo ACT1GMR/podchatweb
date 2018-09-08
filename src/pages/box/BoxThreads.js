@@ -45,10 +45,10 @@ function prettifyMessageDate(passedTime) {
 
 function isFile(message) {
   if (message) {
-    if (message.type === "file") {
-      return true
-    }
     if (message.metaData) {
+      if (typeof message.metaData === "object") {
+        return message.metaData.file;
+      }
       return JSON.parse(message.metaData).file
     }
   }

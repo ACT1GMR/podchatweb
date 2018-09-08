@@ -2,3 +2,30 @@
   max-width: 400px;
   border-radius: 5px;
 }
+
+.BoxSceneMessagesFile__Progress {
+  position: absolute;
+  height: 4px;
+  background-color: $color-accent;
+  bottom: 0;
+  left: 0;
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.BoxSceneMessagesFile__Progress:after {
+  position: absolute;
+  color: $color-white;
+  line-height: 20px;
+  content: attr(title);
+  width: 20px;
+  height: 20px;
+  right: -10px;
+  top: -10px;
+  background-color: #f58220;
+  border-radius: 50%;
+  box-shadow: 0 0 25px #f58220;
+  font-size: $font-size-xsm;
+  text-align: center;
+}
+

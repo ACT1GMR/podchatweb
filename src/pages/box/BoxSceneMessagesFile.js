@@ -21,7 +21,8 @@ import {
   MdEdit,
   MdReply,
   MdForward,
-  MdArrowDownward
+  MdArrowDownward,
+  MdClose
 } from "react-icons/lib/md";
 
 //styling
@@ -43,11 +44,21 @@ function getImage(metaData, isFromServer) {
   if (width <= maxWidth) {
     return {imageLink};
   }
-  if(!isFromServer) {
+  if (!isFromServer) {
     return {imageLink, maxWidth};
   }
   height = Math.ceil(maxWidth * ratio);
-  return {imageLink:`${imageLink}&width=${maxWidth}&height=${height}`, maxWidth};
+  return {imageLink: `${imageLink}&width=${maxWidth}&height=${height}`, maxWidth};
+}
+
+function isDownloadable(message) {
+  if (!message.progress) {
+    return true;
+  }
+  const msgStatus = message.progress.status;
+  if (msgStatus === "DONE") {
+    return true;
+  }
 }
 
 @connect()
@@ -76,6 +87,10 @@ export default class BoxSceneMessagesFile extends Component {
 
 
   onDownload(metaData) {
+    window.location.href = `${metaData.link}&downloadable=true`;
+  }
+
+  onCancel(metaData) {
     window.location.href = `${metaData.link}&downloadable=true`;
   }
 
@@ -111,55 +126,70 @@ export default class BoxSceneMessagesFile extends Component {
       <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
-        <Paper colorBackgroundLight borderRadius={5}>
-          {replyFragment(message)}
-          {forwardFragment(message)}
-          {isImage ?
-            <img className={style.BoxSceneMessagesFile__Image} src={imageSizeLink.imageLink} style={{width: `${imageSizeLink.maxWidth}px`}}
-                 onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/>
-            :
-            <Container relative>
-              <Container maxWidth="calc(100% - 36px)">
-                <Text bold>
-                  {metaData.originalName}
-                </Text>
-                <Text size="xs" color="gray">
-                  {humanFileSize(metaData.size, true)}
-                </Text>
-              </Container>
-              <Container centerLeft className={"u-clickable"}>
-                <Shape color="accent" size="lg" onClick={this.onDownload.bind(this, metaData)}>
-                  <ShapeCircle>
-                    <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
-                  </ShapeCircle>
-                </Shape>
-              </Container>
-            </Container>
+        <Container relative>
+          {message.progress && message.progress.state === "UPLOADING" ?
+            <div className={style.BoxSceneMessagesFile__Progress}
+                 style={{width: `${message.progress ? message.progress.progress : 0}%`}}
+                 title={`${message.progress && message.progress.progress}`}/>
+            : ""}
 
-          }
-          <PaperFooter>
-            {seenFragment(message)}
-            {datePetrification(message.time)}
-            {message.id && messageControlShow ?
-              <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
-                {isMessageByMe(message, user) &&
-                <Container inline>
-                  {message.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                                                  className={iconClasses}
-                                                  onClick={this.onDelete.bind(this, message.id)}/>}
+          <Paper colorBackgroundLight borderRadius={5}>
+            {replyFragment(message)}
+            {forwardFragment(message)}
+            {isImage ?
+              <img className={style.BoxSceneMessagesFile__Image} src={imageSizeLink.imageLink}
+                   style={{width: `${imageSizeLink.maxWidth}px`}}
+                   onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/>
+              :
+              <Container relative>
+                <Container maxWidth="calc(100% - 36px)">
+                  <Text bold>
+                    {metaData.originalName}
+                  </Text>
+                  <Text size="xs" color="gray">
+                    {humanFileSize(metaData.size, true)}
+                  </Text>
                 </Container>
-                }
-                <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                           className={iconClasses}/>
-                <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                         className={iconClasses}/>
-                <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                                 className={iconClasses}
-                                 onClick={this.onDownload.bind(this, metaData)}/>
-              </Container> : ""
+
+                <Container centerLeft className={"u-clickable"}>
+                  <Shape color="accent" size="lg" onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, metaData)}>
+                    <ShapeCircle>
+                      {isDownloadable(message) ?
+                        <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                        :
+                        <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                      }
+                    </ShapeCircle>
+                  </Shape>
+                </Container>
+
+              </Container>
+
             }
-          </PaperFooter>
-        </Paper>
+            <PaperFooter>
+              {seenFragment(message)}
+              {datePetrification(message.time)}
+              {message.id && messageControlShow ?
+                <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
+                  {isMessageByMe(message, user) &&
+                  <Container inline>
+                    {message.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                                                    className={iconClasses}
+                                                    onClick={this.onDelete.bind(this, message.id)}/>}
+                  </Container>
+                  }
+                  <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                             className={iconClasses}/>
+                  <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                           className={iconClasses}/>
+                  <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
+                                   className={iconClasses}
+                                   onClick={this.onDownload.bind(this, metaData)}/>
+                </Container> : ""
+              }
+            </PaperFooter>
+          </Paper>
+        </Container>
       </Container>
     );
   }

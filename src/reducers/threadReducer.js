@@ -10,7 +10,7 @@ import {
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_CHANGED,
   MESSAGE_NEW, MESSAGE_SEEN, MESSAGE_EDIT,
-  CONTACT_LIST_SHOWING, MESSAGE_SEND, THREAD_PARTICIPANT_REMOVE, THREAD_MODAL_MEDIA_SHOWING,
+  CONTACT_LIST_SHOWING, MESSAGE_SEND, THREAD_PARTICIPANT_REMOVE, THREAD_MODAL_MEDIA_SHOWING, THREAD_FILE_UPLOAD,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -126,7 +126,7 @@ export const threadMessageListPartialReducer = (state = {
 };
 
 export const threadMessageListReducer = (state = {
-  messages: [],
+  messages: {},
   threadId: null,
   hasNext: false,
   fetching: false,
@@ -149,6 +149,27 @@ export const threadMessageListReducer = (state = {
       return {...newStateInit, ...{hasNext: action.payload.hasNext}};
     case THREAD_GET_MESSAGE_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
+    case THREAD_FILE_UPLOAD:
+      if (!checkForCurrentThread()) {
+        return state;
+      }
+      let messages = [...state.messages];
+      const uniqueId = action.payload.uniqueId;
+      let index = messages.findIndex(message => {
+        const fileName = action.payload.fileInfo.fileName;
+        if (message.metaData) {
+          if (message.metaData.file) {
+            if (message.metaData.file.originalName === fileName) {
+              return true;
+            }
+          }
+        }
+      });
+      if (~index) {
+        messages[index].progress = action.payload;
+        return {...state, ...stateObject("SUCCESS", messages, "messages")};
+      }
+      return state;
     case THREAD_GET_MESSAGE_LIST_PARTIAL("SUCCESS"):
       let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages.reverse(), ...state.messages], "messages")};
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
@@ -158,7 +179,7 @@ export const threadMessageListReducer = (state = {
       if (!checkForCurrentThread()) {
         return state;
       }
-      if(action.payload.id) {
+      if (action.payload.id) {
         const messageClone = [...state.messages];
         const idFilter = messageClone.filter(e => e.id === action.payload.id);
         if (idFilter.length) {
@@ -173,7 +194,6 @@ export const threadMessageListReducer = (state = {
         messageClone[index] = action.payload;
         return {...state, ...stateObject("SUCCESS", messageClone, "messages")};
       }
-
       return {...state, messages: [...state.messages, action.payload]};
     }
     case MESSAGE_EDIT():

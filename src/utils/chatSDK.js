@@ -32,9 +32,11 @@ export default class ChatSDK {
     this.chatAgent = new PodChat(this.params);
     this.onThreadEvents = props.onThreadEvents;
     this.onMessageEvents = props.onMessageEvents;
+    this.onFileUploadEvents = props.onFileUploadEvents;
     this.onChatReady = props.onChatReady;
     this._onMessageEvents();
     this._onThreadEvents();
+    this._onFileUploadEvents();
     this._onChatReady();
     this._onChatError();
   }
@@ -62,6 +64,11 @@ export default class ChatSDK {
   _onMessageEvents() {
     this.chatAgent.on("messageEvents", (msg) => {
       this.onMessageEvents(msg.result.message, msg.type);
+    });
+  }
+  _onFileUploadEvents() {
+    this.chatAgent.on("fileUploadEvents", (msg) => {
+      this.onFileUploadEvents(msg);
     });
   }
 
@@ -154,16 +161,14 @@ export default class ChatSDK {
       content
     };
 
-    const uniqueId = this.chatAgent.sendTextMessage(sendChatParams, {
+    const obj = this.chatAgent.sendTextMessage(sendChatParams, {
       onSent: (result) => {
         this._onError(result, reject);
       }
     });
     resolve({
-      ...uniqueId, ...{
-        threadId,
-        message: content,
-        participant: this.user
+      ...obj, ...{
+        message: content
       }
     })
   }
@@ -176,16 +181,13 @@ export default class ChatSDK {
       uniqueId: Math.random().toString(36).substring(7)
     };
 
-    const uniqueId = this.chatAgent.sendFileMessage(sendChatParams, {
+    const obj = this.chatAgent.sendFileMessage(sendChatParams, {
       onSent: result => {
         this._onError(result, reject);
       }
     });
     resolve({
-      ...{uniqueId}, ...{
-        threadId,
-        type: "file",
-        participant: this.user,
+      ...obj, ...{
         metaData: {
           file:{
             mimeType: file.type,

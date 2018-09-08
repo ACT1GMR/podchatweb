@@ -49,10 +49,10 @@ function isMessageByMe(message, user) {
 
 function isFile(message) {
   if (message) {
-    if (message.type === "file") {
-      return true
-    }
     if (message.metaData) {
+      if (typeof message.metaData === "object") {
+        return message.metaData.file;
+      }
       return JSON.parse(message.metaData).file
     }
   }
@@ -122,7 +122,6 @@ export default class BoxSceneMessages extends Component {
       }
     }
   }
-
 
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
