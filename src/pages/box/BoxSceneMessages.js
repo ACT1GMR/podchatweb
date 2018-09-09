@@ -25,7 +25,8 @@ import {
   MdDoneAll,
   MdDone,
   MdChatBubbleOutline,
-  MdSchedule
+  MdSchedule,
+  MdFileUpload
 } from "react-icons/lib/md";
 
 //styling
@@ -81,6 +82,9 @@ export default class BoxSceneMessages extends Component {
     this.messageListNode = React.createRef();
     this.onScroll = this.onScroll.bind(this);
     this.seenMessages = [];
+    this.state = {
+      showDropZone: false
+    };
   }
 
 
@@ -107,9 +111,9 @@ export default class BoxSceneMessages extends Component {
     if (boxSceneMessages) {
       const {threadMessages, user} = this.props;
       const lastMessage = threadMessages[threadMessages.length - 1];
-      if (!this.lastMessage || this.lastMessage !== lastMessage.id) {
+      if (!this.lastMessage || this.lastMessage !== lastMessage.uniqueId) {
         boxSceneMessages.scrollTop = boxSceneMessages.scrollHeight;
-        this.lastMessage = lastMessage.id;
+        this.lastMessage = lastMessage.uniqueId;
       }
 
       if (lastMessage) {
@@ -123,8 +127,43 @@ export default class BoxSceneMessages extends Component {
     }
   }
 
+  onDrag(e) {
+    const dt = e.dataTransfer;
+    e.stopPropagation();
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy"; // Explicitly show this is a copy.
+    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') !== -1 : dt.types.contains('Files'))) {
+      window.clearTimeout(this.dragTimer);
+
+      this.setState({
+        showDropZone: true
+      });
+    }
+  }
+
+  onDrop(e) {
+    const dt = e.dataTransfer;
+    e.preventDefault();
+    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') !== -1 : dt.types.contains('Files'))) {
+      this.dragTimer;
+
+      this.setState({
+        showDropZone: false
+      });
+    }
+  }
+
+  onDragLeave() {
+    this.dragTimer = window.setTimeout(() => {
+      this.setState({
+        showDropZone: false
+      });
+    }, 25);
+  }
+
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
+    const {showDropZone} = this.state;
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
@@ -135,9 +174,11 @@ export default class BoxSceneMessages extends Component {
       )
     }
     let partialLoading = "";
+
     if (!threadMessages.length) {
       return (
-        <Container center centerTextAlign>
+        <Container center centerTextAlign relative>
+          <div className={style.BoxSceneMessages__Empty}/>
           <Message size="lg">{strings.thereIsNoMessageToShow}</Message>
           <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
         </Container>
@@ -209,6 +250,17 @@ export default class BoxSceneMessages extends Component {
         user
       }
     };
+    const dropZone = () => {
+      return showDropZone ?
+        <Container className={style.BoxSceneMessages__DropZone}>
+          <Container className={style.BoxSceneMessages__DropZoneText} center centerTextAlign>
+            <Message size="lg">{strings.dropYourFileHere}</Message>
+            <MdFileUpload size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
+          </Container>
+          <Container className={style.BoxSceneMessages__DropZonePlaceHolder}/>
+        </Container>
+        : ""
+    };
     const message = message => isFile(message) ?
       <BoxSceneMessagesFile {...messageArguments(message)}/>
       :
@@ -222,7 +274,9 @@ export default class BoxSceneMessages extends Component {
         </Avatar>
       </Container>;
     return (
-      <div className={style.BoxSceneMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}>
+      <div className={style.BoxSceneMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
+           onDragOver={this.onDrag.bind(this)} onDragLeave={this.onDragLeave.bind(this)} onDrop={this.onDrop}>
+        {dropZone()}
         <List ref={this.messageListNode}>
           {threadMessagesPartialFetching && partialLoading}
           {threadMessages.map(el => (

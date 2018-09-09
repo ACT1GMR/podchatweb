@@ -44,6 +44,7 @@ let strings = new LocalizedStrings({
     remove: "حذف",
     groupInfo: "اطلاعات گروه",
     contactInfo: "اطلاعات تماس",
+    dropYourFileHere: "فایلاتون رو بندازید اینجا",
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {
         return string;

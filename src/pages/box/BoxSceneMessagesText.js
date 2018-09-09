@@ -88,7 +88,7 @@ export default class BoxSceneMessagesText extends Component {
             {urlify(message.message)}
           </Text>
           <PaperFooter>
-            {seenFragment(message)}
+            {seenFragment(message, user)}
             {editFragment(message)}
             {datePetrification(message.time)}
             {message.id && messageControlShow ?

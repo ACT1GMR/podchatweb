@@ -70,8 +70,9 @@ export default class BoxSceneInput extends Component {
 
   onAttachmentChange(evt) {
     const {threadId, dispatch} = this.props;
-    const file = evt.target.files[0];
-    dispatch(messageSendFile(file, threadId));
+    for (const file of evt.target.files) {
+      dispatch(messageSendFile(file, threadId));
+    }
   }
 
   onFormSubmit(msgEditing, evt) {
@@ -153,7 +154,7 @@ export default class BoxSceneInput extends Component {
           </form>
         </Container>
         <Container inline className={style.BoxSceneInput__Attach} relative>
-          <input className={style.BoxSceneInput__AttachButton} type="file" onChange={this.onAttachmentChange}/>
+          <input className={style.BoxSceneInput__AttachButton} type="file" onChange={this.onAttachmentChange} multiple/>
           <MdAttachFile size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
         </Container>
       </Container>

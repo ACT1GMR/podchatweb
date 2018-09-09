@@ -5,3 +5,34 @@
   overflow-y: auto;
   width: 100%;
 }
+
+.BoxSceneMessages__Empty {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.BoxSceneMessages__DropZone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  z-index: $z-index-1;
+}
+
+.BoxSceneMessages__DropZoneText {
+  z-index: $z-index-1;
+}
+
+.BoxSceneMessages__DropZonePlaceHolder {
+  background-color: #fff;
+  opacity: 0.9;
+  border: 4px dashed $color-accent-dark;
+  width: 100%;
+  height: 100%;
+  border-radius: 9px;
+}

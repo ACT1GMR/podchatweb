@@ -152,7 +152,8 @@ export default class BoxSceneMessagesFile extends Component {
                 </Container>
 
                 <Container centerLeft className={"u-clickable"}>
-                  <Shape color="accent" size="lg" onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, metaData)}>
+                  <Shape color="accent" size="lg"
+                         onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, metaData)}>
                     <ShapeCircle>
                       {isDownloadable(message) ?
                         <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
@@ -167,7 +168,7 @@ export default class BoxSceneMessagesFile extends Component {
 
             }
             <PaperFooter>
-              {seenFragment(message)}
+              {seenFragment(message, user)}
               {datePetrification(message.time)}
               {message.id && messageControlShow ?
                 <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>

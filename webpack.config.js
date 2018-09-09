@@ -5,6 +5,10 @@ const path = require("path");
 module.exports = (e, argv) => {
   const mode = argv.mode;
   let base = {
+    devServer: {
+      compress: true,
+      public: "chat.fanapsoft.ir"
+    },
     module: {
       rules: [
         {
