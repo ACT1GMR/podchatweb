@@ -27,9 +27,8 @@ const constants = {
 
 @connect(store => {
   return {
-    isShow: store.threadModalListShowing.details.isShowing,
-    messageId: store.threadModalListShowing.details.messageId,
-    messageText: store.threadModalListShowing.details.messageText,
+    isShow: store.threadModalListShowing.isShowing,
+    message: store.threadModalListShowing.message,
     threads: store.threadList.threads
   };
 })
@@ -40,9 +39,9 @@ export default class BoxModalContactList extends Component {
   }
 
   onSend(thread) {
-    const {dispatch, messageId, messageText} = this.props;
+    const {dispatch, message} = this.props;
     dispatch(threadCreate(null, thread));
-    dispatch(messageEditing(messageId, messageText, constants.forwarding));
+    dispatch(messageEditing(message, constants.forwarding));
     this.onClose();
   }
 

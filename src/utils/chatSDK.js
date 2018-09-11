@@ -177,8 +177,7 @@ export default class ChatSDK {
   sendFileMessage(resolve, reject, file, threadId) {
     const sendChatParams = {
       threadId,
-      file,
-      uniqueId: Math.random().toString(36).substring(7)
+      file
     };
 
     const obj = this.chatAgent.sendFileMessage(sendChatParams, {
@@ -192,7 +191,7 @@ export default class ChatSDK {
           file:{
             mimeType: file.type,
             originalName: file.name,
-            link: URL.createObjectURL(file),
+            link: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
             size: file.size
           }
         }

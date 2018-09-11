@@ -56,20 +56,20 @@ export default class BoxSceneMessagesText extends Component {
   }
 
 
-  onEdit(id, message) {
-    this.props.dispatch(messageEditing(id, message));
+  onEdit(message) {
+    this.props.dispatch(messageEditing(message));
   }
 
   onDelete(id) {
 
   }
 
-  onForward(el) {
-    this.props.dispatch(threadModalListShowing(true, el.id, el.message));
+  onForward(message) {
+    this.props.dispatch(threadModalListShowing(true, message));
   }
 
-  onReply(id, message) {
-    this.props.dispatch(messageEditing(id, message, "REPLYING"));
+  onReply(message) {
+    this.props.dispatch(messageEditing(message, "REPLYING"));
   }
 
   render() {
@@ -97,7 +97,7 @@ export default class BoxSceneMessagesText extends Component {
                 <Container inline>
                   {message.editable && <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
                                                className={iconClasses}
-                                               onClick={this.onEdit.bind(this, message.id, message.message)}/>}
+                                               onClick={this.onEdit.bind(this, message)}/>}
                   {message.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
                                                   className={iconClasses}
                                                   onClick={this.onDelete.bind(this, message.id)}/>}
@@ -108,7 +108,7 @@ export default class BoxSceneMessagesText extends Component {
                            onClick={this.onForward.bind(this, message)}/>
                 <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
                          className={iconClasses}
-                         onClick={this.onReply.bind(this, message.id, message.message)}/>
+                         onClick={this.onReply.bind(this, message)}/>
               </Container> : ""
             }
           </PaperFooter>

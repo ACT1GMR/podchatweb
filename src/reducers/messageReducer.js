@@ -19,15 +19,10 @@ export const messageSendReducer = (state = {
   }
 };
 
-export const messageEditingReducer = (state = {
-  message: null,
-  fetching: true,
-  fetched: false,
-  error: false
-}, action) => {
+export const messageEditingReducer = (state = null, action) => {
   switch (action.type) {
     case MESSAGE_EDITING:
-      return {...state, ...stateObject("SUCCESS", action.payload, "message")};
+      return action.payload;
     default:
       return state;
   }

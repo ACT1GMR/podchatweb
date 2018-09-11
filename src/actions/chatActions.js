@@ -1,7 +1,6 @@
 // src/actions/messageActions.js
-import {THREAD_NEW, CHAT_GET_INSTANCE, MESSAGE_NEW, CONTACT_GET_LIST, THREAD_CHANGED, THREAD_FILE_UPLOAD} from "../constants/actionTypes";
+import {THREAD_NEW, CHAT_GET_INSTANCE, THREAD_CHANGED, THREAD_FILE_UPLOADING} from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
-import {stateObject} from "../utils/serviceStateGenerator";
 
 export const chatSetInstance = config => {
   return (dispatch) => {
@@ -30,9 +29,9 @@ export const chatSetInstance = config => {
           payload: message
         });
       },
-      onFileUploadEvents: (message) => {
+      onFileUploadEvents: message => {
         dispatch({
-          type: THREAD_FILE_UPLOAD,
+          type: THREAD_FILE_UPLOADING,
           payload: message
         });
       },

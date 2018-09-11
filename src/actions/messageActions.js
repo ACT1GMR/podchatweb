@@ -4,7 +4,7 @@ import {
   MESSAGE_EDIT,
   MESSAGE_NEW,
   MESSAGE_SEEN,
-  MESSAGE_FORWARD
+  MESSAGE_FORWARD, MESSAGE_SENDING_ERROR
 } from "../constants/actionTypes";
 
 export const messageSend = (text, threadId) => {
@@ -29,11 +29,20 @@ export const messageSendFile = (file, threadId) => {
   }
 };
 
-export const messageEditing = (id, text, type) => {
+export const messageEditing = (message, type) => {
   return (dispatch) => {
     dispatch({
       type: MESSAGE_EDITING,
-      payload: id ? {text, id, type} : null
+      payload: message ? {message, type} : null
+    });
+  }
+};
+
+export const messageSendingError = (threadId, uniqueId) => {
+  return (dispatch) => {
+    dispatch({
+      type: MESSAGE_SENDING_ERROR,
+      payload: {threadId, uniqueId}
     });
   }
 };

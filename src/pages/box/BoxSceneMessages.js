@@ -9,9 +9,10 @@ import strings from "../../constants/localization";
 
 //actions
 import {messageSeen} from "../../actions/messageActions";
-import {threadMessageGetList} from "../../actions/threadActions";
+import {threadMessageGetList, threadFilesToUpload} from "../../actions/threadActions";
 
 //components
+
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
@@ -20,20 +21,20 @@ import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import {Text} from "raduikit/src/typography";
 import Gap from "raduikit/src/gap";
+import BoxSceneMessagesFile from "./BoxSceneMessagesFile";
 import BoxSceneMessagesText from "./BoxSceneMessagesText"
 import {
   MdDoneAll,
   MdDone,
   MdChatBubbleOutline,
+  MdErrorOutline,
   MdSchedule,
-  MdFileUpload
 } from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/BoxSceneMessages.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
-import BoxSceneMessagesFile from "./BoxSceneMessagesFile";
 
 function isMessageByMe(message, user) {
   if (message) {
@@ -65,8 +66,8 @@ function datePetrification(time) {
 
 @connect(store => {
   return {
-    threadMessagesHasNext: store.threadMessages.hasNext,
     threadMessages: store.threadMessages.messages,
+    threadMessagesHasNext: store.threadMessages.hasNext,
     threadMessagesFetching: store.threadMessages.fetching,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
     user: store.user.user,
@@ -82,9 +83,7 @@ export default class BoxSceneMessages extends Component {
     this.messageListNode = React.createRef();
     this.onScroll = this.onScroll.bind(this);
     this.seenMessages = [];
-    this.state = {
-      showDropZone: false
-    };
+    this.onFileDrop = this.onFileDrop.bind(this);
   }
 
 
@@ -127,48 +126,31 @@ export default class BoxSceneMessages extends Component {
     }
   }
 
-  onDrag(e) {
-    const dt = e.dataTransfer;
+  onDragOver(e) {
     e.stopPropagation();
     e.preventDefault();
-    e.dataTransfer.dropEffect = "copy"; // Explicitly show this is a copy.
-    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') !== -1 : dt.types.contains('Files'))) {
-      window.clearTimeout(this.dragTimer);
-
-      this.setState({
-        showDropZone: true
-      });
-    }
   }
 
-  onDrop(e) {
-    const dt = e.dataTransfer;
+  onDragEnter(e) {
+    e.stopPropagation();
+  }
+
+  onFileDrop(e) {
+    e.stopPropagation();
     e.preventDefault();
+    const dt = e.dataTransfer;
     if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') !== -1 : dt.types.contains('Files'))) {
-      this.dragTimer;
-
-      this.setState({
-        showDropZone: false
-      });
+      this.props.dispatch(threadFilesToUpload(dt.files));
     }
-  }
-
-  onDragLeave() {
-    this.dragTimer = window.setTimeout(() => {
-      this.setState({
-        showDropZone: false
-      });
-    }, 25);
+    return false;
   }
 
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
-    const {showDropZone} = this.state;
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
-          <Message
-            size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+          <Message size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
@@ -195,6 +177,9 @@ export default class BoxSceneMessages extends Component {
     const seenFragment = (el) => {
       if (!isMessageByMe(el, user)) {
         return null;
+      }
+      if(el.hasError) {
+        return <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
       }
       if (!el.id) {
         return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
@@ -250,17 +235,6 @@ export default class BoxSceneMessages extends Component {
         user
       }
     };
-    const dropZone = () => {
-      return showDropZone ?
-        <Container className={style.BoxSceneMessages__DropZone}>
-          <Container className={style.BoxSceneMessages__DropZoneText} center centerTextAlign>
-            <Message size="lg">{strings.dropYourFileHere}</Message>
-            <MdFileUpload size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
-          </Container>
-          <Container className={style.BoxSceneMessages__DropZonePlaceHolder}/>
-        </Container>
-        : ""
-    };
     const message = message => isFile(message) ?
       <BoxSceneMessagesFile {...messageArguments(message)}/>
       :
@@ -275,8 +249,9 @@ export default class BoxSceneMessages extends Component {
       </Container>;
     return (
       <div className={style.BoxSceneMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
-           onDragOver={this.onDrag.bind(this)} onDragLeave={this.onDragLeave.bind(this)} onDrop={this.onDrop}>
-        {dropZone()}
+           onDragEnter={this.onDragEnter}
+           onDragOver={this.onDragOver}
+           onDrop={this.onFileDrop}>
         <List ref={this.messageListNode}>
           {threadMessagesPartialFetching && partialLoading}
           {threadMessages.map(el => (

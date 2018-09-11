@@ -6,7 +6,6 @@ import {humanFileSize} from "../../utils/helpers";
 //strings
 
 //actions
-//actions
 import {
   threadModalMediaShowing
 } from "../../actions/threadActions";
@@ -18,7 +17,6 @@ import {Text} from "raduikit/src/typography";
 import Shape, {ShapeCircle} from "raduikit/src/shape";
 import {
   MdDelete,
-  MdEdit,
   MdReply,
   MdForward,
   MdArrowDownward,
@@ -29,12 +27,11 @@ import {
 import style from "../../../styles/pages/box/BoxSceneMessagesFile.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {messageEditing} from "../../actions/messageActions";
+import {messageEditing, messageSendingError} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 import {connect} from "react-redux";
 
 function getImage(metaData, isFromServer) {
-
   let imageLink = metaData.link;
   let width = metaData.width;
   let height = metaData.height;
@@ -55,9 +52,25 @@ function isDownloadable(message) {
   if (!message.progress) {
     return true;
   }
-  const msgStatus = message.progress.status;
+  const msgStatus = message.progress.state;
   if (msgStatus === "DONE") {
     return true;
+  }
+}
+
+function isUploading(message) {
+  if (message.progress) {
+    if (message.progress.state === "UPLOADING") {
+      return true;
+    }
+  }
+}
+
+function hasError(message) {
+  if (message.progress) {
+    if (message.progress.state === "UPLOAD_ERROR") {
+      return true;
+    }
   }
 }
 
@@ -70,6 +83,18 @@ export default class BoxSceneMessagesFile extends Component {
     this.onMouseLeave = this.onMouseLeave.bind(this);
     this.state = {
       messageControlShow: false
+    };
+  }
+
+  componentDidUpdate(oldProps) {
+    const {message, dispatch, threadId} = this.props;
+    if (message) {
+      if(message.progress) {
+        if(!message.hasError)
+        if (hasError(message)) {
+          dispatch(messageSendingError(message.threadId, message.uniqueId));
+        }
+      }
     }
   }
 
@@ -84,7 +109,6 @@ export default class BoxSceneMessagesFile extends Component {
       messageControlShow: false
     });
   }
-
 
   onDownload(metaData) {
     window.location.href = `${metaData.link}&downloadable=true`;
@@ -102,12 +126,12 @@ export default class BoxSceneMessagesFile extends Component {
 
   }
 
-  onForward(el) {
-    this.props.dispatch(threadModalListShowing(true, el.id, el.message));
+  onForward(message) {
+    this.props.dispatch(threadModalListShowing(true, message));
   }
 
-  onReply(id, message) {
-    this.props.dispatch(messageEditing(id, message, "REPLYING"));
+  onReply(message) {
+    this.props.dispatch(messageEditing(message, "REPLYING"));
   }
 
   onModalMediaShow(metaData) {
@@ -116,6 +140,7 @@ export default class BoxSceneMessagesFile extends Component {
 
   render() {
     const {seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
+    console.log(message.progress);
     const {messageControlShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -127,7 +152,7 @@ export default class BoxSceneMessagesFile extends Component {
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
         <Container relative>
-          {message.progress && message.progress.state === "UPLOADING" ?
+          {isUploading(message) ?
             <div className={style.BoxSceneMessagesFile__Progress}
                  style={{width: `${message.progress ? message.progress.progress : 0}%`}}
                  title={`${message.progress && message.progress.progress}`}/>
@@ -143,7 +168,7 @@ export default class BoxSceneMessagesFile extends Component {
               :
               <Container relative>
                 <Container maxWidth="calc(100% - 36px)">
-                  <Text bold>
+                  <Text wordWrap="breakWord" bold>
                     {metaData.originalName}
                   </Text>
                   <Text size="xs" color="gray">
@@ -152,16 +177,19 @@ export default class BoxSceneMessagesFile extends Component {
                 </Container>
 
                 <Container centerLeft className={"u-clickable"}>
-                  <Shape color="accent" size="lg"
-                         onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, metaData)}>
-                    <ShapeCircle>
-                      {isDownloadable(message) ?
-                        <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
-                        :
-                        <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
-                      }
-                    </ShapeCircle>
-                  </Shape>
+                  {isDownloadable(message) || isUploading(message) ?
+                    <Shape color="accent" size="lg"
+                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, metaData)}>
+                      <ShapeCircle>
+                        {isUploading(message) ?
+                          <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                          : isDownloadable(message) ?
+                            <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
+                        }
+                      </ShapeCircle>
+                    </Shape>
+                    : ""}
+
                 </Container>
 
               </Container>
@@ -180,9 +208,11 @@ export default class BoxSceneMessagesFile extends Component {
                   </Container>
                   }
                   <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                             className={iconClasses}/>
+                             className={iconClasses}
+                             onClick={this.onForward.bind(this, message)}/>
                   <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                           className={iconClasses}/>
+                           className={iconClasses}
+                           onClick={this.onReply.bind(this, message)}/>
                   <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
                                    className={iconClasses}
                                    onClick={this.onDownload.bind(this, metaData)}/>

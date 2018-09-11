@@ -6,7 +6,10 @@ import {
   THREAD_MODAL_LIST_SHOWING,
   THREAD_PARTICIPANT_GET_LIST,
   THREAD_PARTICIPANT_ADD,
-  THREAD_MODAL_THREAD_INFO_SHOWING, THREAD_PARTICIPANT_REMOVE, THREAD_MODAL_MEDIA_SHOWING
+  THREAD_MODAL_THREAD_INFO_SHOWING,
+  THREAD_PARTICIPANT_REMOVE,
+  THREAD_MODAL_MEDIA_SHOWING,
+  THREAD_FILES_TO_UPLOAD
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -60,11 +63,11 @@ export const threadParticipantList = (threadId) => {
 };
 
 
-export const threadModalListShowing = (isShowing, messageId, messageText) => {
+export const threadModalListShowing = (isShowing, message) => {
   return dispatch => {
     return dispatch({
       type: THREAD_MODAL_LIST_SHOWING,
-      payload: {isShowing, messageId, messageText}
+      payload: {isShowing, message}
     });
   }
 };
@@ -133,3 +136,11 @@ export const threadInfo = (threadId, contactIds) => {
   }
 };
 
+export const threadFilesToUpload = (files) => {
+  return (dispatch) => {
+    return dispatch({
+      type: THREAD_FILES_TO_UPLOAD,
+      payload: files
+    });
+  }
+};

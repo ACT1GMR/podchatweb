@@ -9,8 +9,15 @@ import {
   THREAD_MODAL_LIST_SHOWING,
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_CHANGED,
-  MESSAGE_NEW, MESSAGE_SEEN, MESSAGE_EDIT,
-  CONTACT_LIST_SHOWING, MESSAGE_SEND, THREAD_PARTICIPANT_REMOVE, THREAD_MODAL_MEDIA_SHOWING, THREAD_FILE_UPLOAD,
+  MESSAGE_NEW,
+  MESSAGE_SEEN,
+  MESSAGE_EDIT,
+  CONTACT_LIST_SHOWING,
+  MESSAGE_SEND,
+  THREAD_PARTICIPANT_REMOVE,
+  THREAD_MODAL_MEDIA_SHOWING,
+  THREAD_FILE_UPLOAD,
+  THREAD_FILES_TO_UPLOAD, THREAD_FILE_UPLOADING, MESSAGE_SENDING_ERROR,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -42,12 +49,10 @@ export const threadCreateReducer = (state = {
   }
 };
 
-export const threadModalListShowingReducer = (state = {
-  details: {}
-}, action) => {
+export const threadModalListShowingReducer = (state = {}, action) => {
   switch (action.type) {
     case THREAD_MODAL_LIST_SHOWING:
-      return {details: action.payload};
+      return action.payload;
     default:
       return state;
   }
@@ -59,6 +64,15 @@ export const threadModalMedialShowingReducer = (state = {
   switch (action.type) {
     case THREAD_MODAL_MEDIA_SHOWING:
       return {object: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const threadFilesToUploadReducer = (state = null, action) => {
+  switch (action.type) {
+    case THREAD_FILES_TO_UPLOAD:
+      return action.payload;
     default:
       return state;
   }
@@ -126,18 +140,42 @@ export const threadMessageListPartialReducer = (state = {
 };
 
 export const threadMessageListReducer = (state = {
-  messages: {},
+  messages: [],
   threadId: null,
   hasNext: false,
   fetching: false,
   fetched: false,
   error: false
 }, action) => {
-  const checkForCurrentThread = () => {
+  function checkForCurrentThread() {
     if (action.payload.threadId === state.threadId) {
       return true;
     }
-  };
+  }
+
+  function updateMessage(field, value, criteria, upsert) {
+    const messagesClone = [...state.messages];
+    const uniqueId = action.payload.uniqueId;
+    if (!checkForCurrentThread()) {
+      return state;
+    }
+    let fileIndex = messagesClone.findIndex(criteria || (message => message.uniqueId === uniqueId));
+    if (~fileIndex) {
+      if (field) {
+        messagesClone[fileIndex][field] = value;
+      } else {
+        messagesClone[fileIndex] = value;
+      }
+      return {...state, ...stateObject("SUCCESS", messagesClone, "messages")};
+    } else {
+      if (upsert) {
+        messagesClone.push(value);
+        return {...state, ...stateObject("SUCCESS", messagesClone, "messages")};
+      }
+      return state;
+    }
+  }
+
   switch (action.type) {
     case THREAD_CREATE("PENDING"):
       return {...state, ...stateObject("PENDING", [], "messages")};
@@ -149,67 +187,39 @@ export const threadMessageListReducer = (state = {
       return {...newStateInit, ...{hasNext: action.payload.hasNext}};
     case THREAD_GET_MESSAGE_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
-    case THREAD_FILE_UPLOAD:
-      if (!checkForCurrentThread()) {
-        return state;
-      }
-      let messages = [...state.messages];
-      const uniqueId = action.payload.uniqueId;
-      let index = messages.findIndex(message => {
-        const fileName = action.payload.fileInfo.fileName;
+    case THREAD_FILE_UPLOADING:
+      return updateMessage("progress", action.payload, function (message) {
         if (message.metaData) {
           if (message.metaData.file) {
-            if (message.metaData.file.originalName === fileName) {
+            if (message.metaData.file.originalName === action.payload.fileInfo.fileName) {
               return true;
             }
           }
         }
       });
-      if (~index) {
-        messages[index].progress = action.payload;
-        return {...state, ...stateObject("SUCCESS", messages, "messages")};
-      }
-      return state;
     case THREAD_GET_MESSAGE_LIST_PARTIAL("SUCCESS"):
       let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages.reverse(), ...state.messages], "messages")};
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
       return {...newStatePartial, ...{hasNext: action.payload.hasNext}};
+    case MESSAGE_SENDING_ERROR:
+      return updateMessage("hasError", true);
     case MESSAGE_NEW:
     case MESSAGE_SEND("SUCCESS"): {
       if (!checkForCurrentThread()) {
         return state;
       }
       if (action.payload.id) {
-        const messageClone = [...state.messages];
-        const idFilter = messageClone.filter(e => e.id === action.payload.id);
+        const idFilter = state.messages.filter(e => e.id === action.payload.id);
         if (idFilter.length) {
           return state;
         }
-        const uniqueId = action.payload.uniqueId;
-        let index = messageClone.findIndex(message => message.uniqueId === uniqueId);
-        if (!~index) {
-          messageClone.push(action.payload);
-          return {...state, ...stateObject("SUCCESS", messageClone, "messages")};
-        }
-        messageClone[index] = action.payload;
-        return {...state, ...stateObject("SUCCESS", messageClone, "messages")};
+        return updateMessage(null, action.payload, null, true);
       }
       return {...state, messages: [...state.messages, action.payload]};
     }
     case MESSAGE_EDIT():
-    case MESSAGE_SEEN: {
-      if (!checkForCurrentThread()) {
-        return state;
-      }
-      let updatedMessage = action.payload;
-      let messages = [...state.messages];
-      let index = messages.findIndex(message => message.id === updatedMessage.id);
-      if (!~index) {
-        return state;
-      }
-      messages[index] = updatedMessage;
-      return {...state, ...stateObject("SUCCESS", messages, "messages")};
-    }
+    case MESSAGE_SEEN:
+      return updateMessage(null, action.payload, message => message.id === updatedMessage.id)
     default:
       return state;
   }
@@ -274,3 +284,4 @@ export const threadParticipantRemoveReducer = (state = {
       return state;
   }
 };
+

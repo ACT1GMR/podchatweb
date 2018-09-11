@@ -16,7 +16,7 @@ module.exports = (e, argv) => {
           include: [
             path.resolve(__dirname, "src"),
             path.resolve(__dirname, "node_modules/raduikit/src"),
-            path.resolve(__dirname, "../rad_uikit/src")
+            path.resolve(__dirname, "../uikit/src")
           ],
           use: {
             loader: "babel-loader"
