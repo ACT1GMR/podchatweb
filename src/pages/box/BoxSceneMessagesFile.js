@@ -2,13 +2,12 @@
 import React, {Component} from "react";
 import "moment/locale/fa";
 import {humanFileSize} from "../../utils/helpers";
+import {connect} from "react-redux";
 
 //strings
 
 //actions
-import {
-  threadModalMediaShowing
-} from "../../actions/threadActions";
+import {threadModalMediaShowing} from "../../actions/threadActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
@@ -29,7 +28,6 @@ import utilsStlye from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
 import {messageEditing, messageSendingError} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
-import {connect} from "react-redux";
 
 function getImage(metaData, isFromServer) {
   let imageLink = metaData.link;
@@ -38,14 +36,11 @@ function getImage(metaData, isFromServer) {
 
   const ratio = height / width;
   const maxWidth = ratio >= 2 ? 200 : 300;
-  if (width <= maxWidth) {
-    return {imageLink};
-  }
   if (!isFromServer) {
-    return {imageLink, maxWidth};
+    return {imageLink, width: maxWidth, height};
   }
   height = Math.ceil(maxWidth * ratio);
-  return {imageLink: `${imageLink}&width=${maxWidth}&height=${height}`, maxWidth};
+  return {imageLink: `${imageLink}&width=${maxWidth}&height=${height}`, width: maxWidth, height};
 }
 
 function isDownloadable(message) {
@@ -87,13 +82,13 @@ export default class BoxSceneMessagesFile extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {message, dispatch, threadId} = this.props;
+    const {message, dispatch} = this.props;
     if (message) {
-      if(message.progress) {
-        if(!message.hasError)
-        if (hasError(message)) {
-          dispatch(messageSendingError(message.threadId, message.uniqueId));
-        }
+      if (message.progress) {
+        if (!message.hasError)
+          if (hasError(message)) {
+            dispatch(messageSendingError(message.threadId, message.uniqueId));
+          }
       }
     }
   }
@@ -163,7 +158,7 @@ export default class BoxSceneMessagesFile extends Component {
             {forwardFragment(message)}
             {isImage ?
               <img className={style.BoxSceneMessagesFile__Image} src={imageSizeLink.imageLink}
-                   style={{width: `${imageSizeLink.maxWidth}px`}}
+                   style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
                    onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/>
               :
               <Container relative>

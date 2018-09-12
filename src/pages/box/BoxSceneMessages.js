@@ -12,7 +12,6 @@ import {messageSeen} from "../../actions/messageActions";
 import {threadMessageGetList, threadFilesToUpload} from "../../actions/threadActions";
 
 //components
-
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
@@ -150,7 +149,8 @@ export default class BoxSceneMessages extends Component {
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container center>
-          <Message size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+          <Message
+            size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
@@ -178,7 +178,7 @@ export default class BoxSceneMessages extends Component {
       if (!isMessageByMe(el, user)) {
         return null;
       }
-      if(el.hasError) {
+      if (el.hasError) {
         return <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
       }
       if (!el.id) {
@@ -202,12 +202,15 @@ export default class BoxSceneMessages extends Component {
     const replyFragment = (el) => {
       if (el.replyInfo) {
         return (
-          <Text link={`#${el.replyInfo.repliedToMessageId}`}>
-            <Paper colorBackground borderRadius={5}>
-              <Text bold size="xs">{strings.replyTo}:</Text>
-              <Text italic size="xs">{el.replyInfo.repliedToMessage}</Text>
-            </Paper>
-          </Text>
+          <Container>
+            <Text link={`#${el.replyInfo.repliedToMessageId}`}>
+              <Paper colorBackground borderRadius={5}>
+                <Text bold size="xs">{strings.replyTo}:</Text>
+                <Text italic size="xs">{el.replyInfo.repliedToMessage}</Text>
+              </Paper>
+            </Text>
+            <Gap block y={5}/>
+          </Container>
         )
       }
       return "";
@@ -215,10 +218,13 @@ export default class BoxSceneMessages extends Component {
     const forwardFragment = (el) => {
       if (el.forwardInfo) {
         return (
-          <Paper colorBackground borderRadius={5}>
-            <Text italic size="xs">{strings.forwardFrom}</Text>
-            <Text bold>{el.forwardInfo.participant.name}:</Text>
-          </Paper>
+          <Container>
+            <Paper colorBackground borderRadius={5}>
+              <Text italic size="xs">{strings.forwardFrom}</Text>
+              <Text bold>{el.forwardInfo.participant.name}:</Text>
+            </Paper>
+            <Gap block y={5}/>
+          </Container>
         )
       }
       return "";

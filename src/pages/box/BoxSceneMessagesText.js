@@ -40,7 +40,7 @@ export default class BoxSceneMessagesText extends Component {
     this.onMouseLeave = this.onMouseLeave.bind(this);
     this.state = {
       messageControlShow: false
-    }
+    };
   }
 
   onMouseOver() {
