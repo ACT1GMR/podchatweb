@@ -35,7 +35,7 @@ function getImage(metaData, isFromServer) {
   let height = metaData.height;
 
   const ratio = height / width;
-  const maxWidth = ratio >= 2 ? 200 : 300;
+  const maxWidth = window.innerWidth <= 700 ? 190 : ratio >= 2 ? 200 : 300;
   if (!isFromServer) {
     return {imageLink, width: maxWidth, height};
   }
@@ -76,6 +76,7 @@ export default class BoxSceneMessagesFile extends Component {
     super(props);
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
+    this.containerRef = React.createRef();
     this.state = {
       messageControlShow: false
     };
@@ -135,7 +136,6 @@ export default class BoxSceneMessagesFile extends Component {
 
   render() {
     const {seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
-    console.log(message.progress);
     const {messageControlShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -152,7 +152,6 @@ export default class BoxSceneMessagesFile extends Component {
                  style={{width: `${message.progress ? message.progress.progress : 0}%`}}
                  title={`${message.progress && message.progress.progress}`}/>
             : ""}
-
           <Paper colorBackgroundLight borderRadius={5}>
             {replyFragment(message)}
             {forwardFragment(message)}

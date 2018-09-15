@@ -1,7 +1,23 @@
+@import "../../utils/responsive";
+
 .BoxHeadMenu {
-  display: inline-block;
-  width: 350px;
+  display: block;
+  width: 100%;
   height: 100%;
-  border-left: 1px solid $color-accent-dark;
   position: relative;
+}
+
+.BoxHeadMenu--isThreadShow {
+  display: none;
+}
+
+@include grid("md") {
+  .BoxHeadMenu {
+    display: inline-block;
+    width: 350px;
+    border-left: 1px solid $color-accent-dark;
+  }
+  .BoxHeadMenu--isThreadShow {
+    display: inline-block;
+  }
 }

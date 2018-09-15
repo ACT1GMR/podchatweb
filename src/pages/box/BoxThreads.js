@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {threadCreate, threadGetList} from "../../actions/threadActions";
+import {threadCreate, threadGetList, threadShowing} from "../../actions/threadActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "raduikit/src/avatar";
@@ -24,6 +24,7 @@ import date from "../../utils/date"
 import style from "../../../styles/pages/box/BoxThreads.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
 import Message from "raduikit/src/message";
+import classnames from "classnames";
 
 function sliceMessage(message, to) {
   if (message) {
@@ -58,7 +59,8 @@ function isFile(message) {
   return {
     threads: store.threadList.threads,
     threadsFetching: store.threadList.fetching,
-    threadId: store.thread.thread.id
+    threadId: store.thread.thread.id,
+    threadShowing: store.threadShowing
   };
 })
 export default class BoxThreads extends Component {
@@ -75,39 +77,49 @@ export default class BoxThreads extends Component {
 
   onThreadClick(thread) {
     this.props.dispatch(threadCreate(null, thread));
-    this.setState({
-      activeThread: thread.id
-    })
+    this.props.dispatch(threadShowing(true));
+  }
+
+  componentDidUpdate(oldProps) {
+    if (oldProps.threadId !== this.props.threadId) {
+      this.setState({
+        activeThread: this.props.threadId
+      });
+    }
   }
 
   render() {
-    const {threads, threadsFetching} = this.props;
+    const {threads, threadsFetching, threadShowing} = this.props;
     const {activeThread} = this.state;
+    const classNames = classnames({
+      [style.BoxThreads]: true,
+      [style["BoxThreads--isThreadShow"]]: threadShowing
+    });
     if (threadsFetching) {
       return (
-        <section className={style.BoxThreads}>
+        <section className={classNames}>
           <Loading hasSpace><LoadingBlinkDots invert rtl/></Loading>
         </section>
       )
     } else {
       if (!threads.length) {
         return (
-          <section className={style.BoxThreads}>
-            <Container center>
+          <section className={classNames}>
+            <Container center centerTextAlign>
               <Message invert size="lg">{strings.thereIsNoChat}</Message>
             </Container>
           </section>
         )
       }
       return (
-        <section className={style.BoxThreads}>
+        <section className={classNames}>
           <List>
             {threads.map(el => (
               <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                         active={activeThread === el.id}>
                 <Container relative>
                   <Avatar>
-                    <AvatarImage src={el.image ? el.image : defaultAvatar}/>
+                    <AvatarImage src={el.image ? el.image : defaultAvatar} customSize="50px"/>
                     <AvatarName invert>
                       {el.title}
                       <AvatarText>

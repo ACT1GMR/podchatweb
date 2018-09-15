@@ -9,7 +9,7 @@ import {
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
-  THREAD_FILES_TO_UPLOAD
+  THREAD_FILES_TO_UPLOAD, CONTACT_LIST_SHOWING, THREAD_SHOWING
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -141,6 +141,16 @@ export const threadFilesToUpload = (files) => {
     return dispatch({
       type: THREAD_FILES_TO_UPLOAD,
       payload: files
+    });
+  }
+};
+
+
+export const threadShowing = (isShowing) => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_SHOWING,
+      payload: isShowing
     });
   }
 };

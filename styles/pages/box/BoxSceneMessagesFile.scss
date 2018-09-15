@@ -1,7 +1,17 @@
+@import "../../utils/responsive";
+
 .BoxSceneMessagesFile__Image {
-  max-width: 400px;
+  max-width: 100%;
   border-radius: 5px;
 }
+
+@include grid("md") {
+
+  .BoxSceneMessagesFile__Image {
+    max-width: 400px;
+  }
+}
+
 
 .BoxSceneMessagesFile__Progress {
   position: absolute;

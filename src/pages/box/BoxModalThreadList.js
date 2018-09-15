@@ -10,7 +10,7 @@ import {threadCreate} from "../../actions/threadActions";
 import {messageEditing} from "../../actions/messageActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
 import Button from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import Message from "raduikit/src/message";

@@ -27,7 +27,7 @@ import {connect} from "react-redux";
 
 function urlify(text) {
   return reactStringReplace(text, /(https?:\/\/[^\s]+)/g, (match, i) => (
-    <Text link={match} target="_blank">{match}</Text>
+    <Text link={match} target="_blank" wordWrap="breakWord">{match}</Text>
   ));
 }
 
@@ -84,7 +84,7 @@ export default class BoxSceneMessagesText extends Component {
         <Paper colorBackgroundLight borderRadius={5}>
           {replyFragment(message)}
           {forwardFragment(message)}
-          <Text>
+          <Text wordWrap="breakWord">
             {urlify(message.message)}
           </Text>
           <PaperFooter>

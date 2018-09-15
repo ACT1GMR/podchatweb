@@ -1,11 +1,33 @@
+@import "../../utils/responsive";
+
 .BoxHeadThreadInfo {
-  display: inline-block;
+  display: none;
   cursor: pointer;
-  width: calc(100% - 350px);
   padding: 2px 10px;
   transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }
 
 .BoxHeadThreadInfo:hover {
   background-color: rgba(7, 16, 36, 0.16);
+}
+
+.BoxHeadThreadInfo--isThreadShow {
+  display: block;
+}
+
+@include grid("md") {
+
+  .BoxHeadThreadInfo {
+    display: inline-block;
+    width: calc(100% - 350px);
+    border-left: 1px solid $color-accent-dark;
+  }
+
+  .BoxHeadThreadInfo--isThreadShow {
+    display: inline-block;
+  }
+
+  .BoxHeadThreadInfo__Back {
+    display: none;
+  }
 }

@@ -66,7 +66,7 @@ export default class Box extends Component {
     if (!chatInstance || !user) {
       return (
         <Container className={className}>
-          <Container center>
+          <Container center centerTextAlign className={style.Box__MessageContainer}>
             <Message size="lg">{strings.waitingForChatInstance}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
           </Container>

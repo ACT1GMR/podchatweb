@@ -1,6 +1,6 @@
 {
   "name": "podchatweb",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Podchatweb is a web app built by react for handling POD chating use cases",
   "main": "dist/index.js",
   "scripts": {
@@ -60,7 +60,7 @@
     "podauth": "^1.0.0",
     "podchat": "^1.2.1",
     "push.js": "^1.0.7",
-    "raduikit": "^0.2.0",
+    "raduikit": "^0.2.3",
     "react-dropzone": "^5.1.0",
     "react-icons": "^2.2.7",
     "react-localization": "^1.0.10",

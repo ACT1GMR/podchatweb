@@ -1,5 +1,7 @@
+@import "../../utils/responsive";
+
 .BoxThreads {
-  width: 350px;
+  width: 100%;
   display: inline-block;
   float: right;
   background-color: $color-primary;
@@ -8,4 +10,17 @@
   z-index: $z-index-1;
   overflow: hidden;
   overflow-y: auto;
+}
+
+.BoxThreads--isThreadShow {
+  width: 0;
+  display: none;
+}
+
+@include grid("md") {
+  .BoxThreads, .BoxThreads--isThreadShow {
+    width: 350px;
+    display: block;
+  }
+
 }

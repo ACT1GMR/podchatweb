@@ -148,9 +148,8 @@ export default class BoxSceneMessages extends Component {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
     if (threadMessagesFetching || threadFetching) {
       return (
-        <Container center>
-          <Message
-            size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+        <Container center centerTextAlign style={{width: "100%"}}>
+          <Message size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
           <Loading hasSpace><LoadingBlinkDots/></Loading>
         </Container>
       )
@@ -159,7 +158,7 @@ export default class BoxSceneMessages extends Component {
 
     if (!threadMessages.length) {
       return (
-        <Container center centerTextAlign relative>
+        <Container center centerTextAlign relative style={{width: "100%"}}>
           <div className={style.BoxSceneMessages__Empty}/>
           <Message size="lg">{strings.thereIsNoMessageToShow}</Message>
           <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>

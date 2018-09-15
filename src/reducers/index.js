@@ -15,7 +15,7 @@ import {
   threadModalListShowingReducer,
   threadModalThreadInfoShowingReducer,
   threadFilesToUploadReducer,
-  threadParticipantAddReducer, threadParticipantRemoveReducer, threadModalMedialShowingReducer
+  threadParticipantAddReducer, threadParticipantRemoveReducer, threadModalMedialShowingReducer, threadShowingReducer
 } from "./threadReducer";
 import {messageSendReducer, messageNewReducer, messageEditingReducer, messageEditReducer} from "./messageReducer";
 import chatReducer from "./chatReducer";
@@ -40,6 +40,7 @@ const rootReducer = {
   threadParticipantAdd: threadParticipantAddReducer,
   threadParticipantRemove: threadParticipantRemoveReducer,
   threadFilesToUpload: threadFilesToUploadReducer,
+  threadShowing: threadShowingReducer,
   message: messageNewReducer,
   sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,

@@ -17,6 +17,7 @@ import {MdMenu, MdClose} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/BoxHeadMenu.scss";
 import styleVar from "./../../../styles/variables.scss";
+import classnames from "classnames";
 
 const statics = {
   headMenuSize: 60
@@ -25,7 +26,8 @@ const statics = {
 @connect(store => {
   return {
     threads: store.threadList.threads,
-    threadId: store.thread.thread.id
+    threadId: store.thread.thread.id,
+    threadShowing: store.threadShowing
   };
 })
 export default class BoxHeadMenu extends Component {
@@ -80,12 +82,16 @@ export default class BoxHeadMenu extends Component {
   }
 
   render() {
-    const {menuItems} = this.props;
+    const {menuItems, threadShowing} = this.props;
     const {isOpen} = this.state;
     const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
+    const classNames = classnames({
+      [style.BoxHeadMenu]: true,
+      [style["BoxHeadMenu--isThreadShow"]]: threadShowing
+    });
     return (
-      <section className={style.BoxHeadMenu} ref={this.container}>
+      <section className={classNames} ref={this.container}>
         {isOpen ? (
           <MdClose size={iconSize} onClick={this.onCloseMenu}
                    style={{color: styleVar.colorWhite, margin: iconMargin}}/>

@@ -17,7 +17,7 @@ import {
   THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
   THREAD_FILE_UPLOAD,
-  THREAD_FILES_TO_UPLOAD, THREAD_FILE_UPLOADING, MESSAGE_SENDING_ERROR,
+  THREAD_FILES_TO_UPLOAD, THREAD_FILE_UPLOADING, MESSAGE_SENDING_ERROR, THREAD_SHOWING,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -84,6 +84,15 @@ export const threadModalThreadInfoShowingReducer = (state = {
   switch (action.type) {
     case THREAD_MODAL_THREAD_INFO_SHOWING:
       return {isShow: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const threadShowingReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_SHOWING:
+      return action.payload;
     default:
       return state;
   }

@@ -2,6 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {MdChat} from "react-icons/lib/md";
+import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
@@ -33,7 +34,8 @@ import styleVar from "../../../styles/variables.scss";
 @connect(store => {
   return {
     threadId: store.thread.thread.id,
-    threadFetching: store.thread.fetching
+    threadFetching: store.thread.fetching,
+    threadShowing: store.threadShowing
   };
 })
 export default class BoxScene extends Component {
@@ -42,14 +44,14 @@ export default class BoxScene extends Component {
     super(props);
   }
 
-  componentDidUpdate(nextProps) {
+  componentDidUpdate(oldProps) {
     if (this.props.threadId) {
       this.props.dispatch(threadMessageGetList(this.props.threadId));
     }
   }
 
   render() {
-    const {threadId, threadFetching} = this.props;
+    const {threadId, threadFetching, threadShowing} = this.props;
     const popups = (
       <section>
         <BoxModalContactList/>
@@ -76,8 +78,12 @@ export default class BoxScene extends Component {
         </section>
       );
     }
+    const classNames = classnames({
+      [style.BoxScene]: true,
+      [style["BoxScene--isThreadShow"]]: threadShowing
+    });
     return (
-      <section className={style.BoxScene}>
+      <section className={classNames}>
         <BoxSceneMessages/>
         <BoxSceneInput/>
         {popups}
