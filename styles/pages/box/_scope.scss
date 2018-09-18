@@ -1,0 +1,5 @@
+@mixin scope() {
+  .Box {
+    @content;
+  }
+}

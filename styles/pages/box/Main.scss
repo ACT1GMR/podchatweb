@@ -1,0 +1,11 @@
+@import "_scope";
+
+.Main {
+  display: flex;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}

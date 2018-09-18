@@ -1,0 +1,10 @@
+@import "_scope";
+@import "../../utils/responsive";
+
+.AsideHead {
+  height: 59px;
+  width: 100%;
+  background-color: $color-accent;
+  position: relative;
+}
+

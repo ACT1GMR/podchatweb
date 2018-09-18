@@ -1,20 +1,44 @@
 @import "../../utils/responsive";
 
 .Box {
-  height: 100vh;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   position: relative;
   background-color: $color-background;
-  overflow: hidden;
 }
 
-.Box__Body {
-  height: calc(100vh - 60px);
+.Box__Aside {
+  flex: 0 0 100%;
+  position: relative;
 }
 
-.Box__Head {
-
+.Box__Main {
+  flex: 0 0 100%;
+  position: relative;
 }
 
-.Box__MessageContainer {
-  width: 100%;
+.Box--isThreadShow .Box__Aside {
+  display: none;
+}
+
+.Box--isThreadShow .Box__Main {
+  display: block;
+}
+
+@include grid("md") {
+  .Box--isThreadShow .Box__Aside,
+  .Box--isThreadShow .Box__Main {
+    display: block;
+  }
+  .Box__Aside {
+    flex: 0 0 30%;
+    position: relative;
+  }
+
+  .Box__Main {
+    flex: 0 0 70%;
+    position: relative;
+  }
 }

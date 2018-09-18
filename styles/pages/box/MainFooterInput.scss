@@ -1,0 +1,36 @@
+.MainFooterInput {
+  display: flex;
+  flex-direction: column;
+}
+
+.MainFooterInput__EditingBox {
+
+}
+
+.MainFooterInput__InputBox {
+  height: 41px;
+}
+
+.MainFooterInput__Input {
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.MainFooterInput__Input--halfBorder {
+  border-radius: 0 0 20px 20px;
+}
+
+.MainFooterInput__Button {
+  position: absolute;
+  left: 0;
+  padding: 0 10px;
+  border: none;
+  color: #555;
+  font-family: monospace;
+  font-weight: bold;
+  line-height: 0;
+  height: 100%;
+  background-color: transparent;
+}

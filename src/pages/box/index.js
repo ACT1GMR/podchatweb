@@ -1,6 +1,7 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
@@ -10,11 +11,8 @@ import {chatSetInstance} from "../../actions/chatActions";
 import {userGet} from "../../actions/userActions";
 
 //components
-import BoxThreads from "./BoxThreads";
-import BoxScene from "./BoxScene";
-import BoxHead from "./BoxHead";
-import BoxNotification from "./BoxNotification";
-
+import Aside from "./Aside";
+import Main from "./Main";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
@@ -26,7 +24,8 @@ import style from "../../../styles/pages/box/index.scss";
 @connect(store => {
   return {
     chatInstance: store.chat.chatSDK,
-    user: store.user.user
+    user: store.user.user,
+    threadShowing: store.threadShowing
   };
 }, null, null, {withRef: true})
 export default class Box extends Component {
@@ -60,12 +59,11 @@ export default class Box extends Component {
   }
 
   render() {
-    const {chatInstance, user, boxClassName, boxBodyClassName} = this.props;
-    const className = `${style.Box} ${boxClassName}`;
-    const classNameBody = `${style.Box__Body} ${boxBodyClassName}`;
+    const {chatInstance, user, threadShowing} = this.props;
+
     if (!chatInstance || !user) {
       return (
-        <Container className={className}>
+        <Container className={style.Box}>
           <Container center centerTextAlign className={style.Box__MessageContainer}>
             <Message size="lg">{strings.waitingForChatInstance}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
@@ -73,17 +71,21 @@ export default class Box extends Component {
         </Container>
       );
     }
+
+    const classNames = classnames({
+      [style.Box]: true,
+      [style["Box--isThreadShow"]]: threadShowing
+    });
+
     return (
-      <section className={className}>
-        <section className={style.Box__Head}>
-          <BoxHead/>
-        </section>
-        <section className={classNameBody}>
-          <BoxThreads/>
-          <BoxScene/>
-          <BoxNotification/>
-        </section>
-      </section>
+      <Container className={classNames}>
+        <Container className={style.Box__Aside}>
+          <Aside/>
+        </Container>
+        <Container className={style.Box__Main}>
+          <Main/>
+        </Container>
+      </Container>
     );
   }
 }

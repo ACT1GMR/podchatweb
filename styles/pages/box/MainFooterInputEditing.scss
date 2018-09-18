@@ -1,0 +1,17 @@
+@import "_scope";
+
+.MainFooterInputEditing {
+
+}
+
+.MainFooterInputEditing__ImageContainer {
+  vertical-align: middle;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.MainFooterInputEditing__Image {
+  background-size: cover;
+  width: 24px;
+  height: 24px;
+}

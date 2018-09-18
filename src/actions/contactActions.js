@@ -8,7 +8,7 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   THREAD_CREATE
 } from "../constants/actionTypes";
-import {threadCreate, threadMessageGetList} from "./threadActions";
+import {threadCreate, threadMessageGetList, threadShowing} from "./threadActions";
 
 export const contactGetList = () => {
   return (dispatch, getState) => {
@@ -71,6 +71,7 @@ export const contactAdd = (mobilePhone, firstName, lastName) => {
       });
       if (e.linkedUser) {
         dispatch(threadCreate(e.id, null, true));
+        dispatch(threadShowing(true));
       }
     }, e => {
       dispatch({
