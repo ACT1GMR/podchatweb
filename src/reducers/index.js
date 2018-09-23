@@ -15,7 +15,11 @@ import {
   threadModalListShowingReducer,
   threadModalThreadInfoShowingReducer,
   threadFilesToUploadReducer,
-  threadParticipantAddReducer, threadParticipantRemoveReducer, threadModalMedialShowingReducer, threadShowingReducer
+  threadParticipantAddReducer,
+  threadParticipantRemoveReducer,
+  threadModalMedialShowingReducer,
+  threadShowingReducer,
+  threadImagesToCaptionReducer, threadModalImageCaptionShowingReducer
 } from "./threadReducer";
 import {messageSendReducer, messageNewReducer, messageEditingReducer, messageEditReducer} from "./messageReducer";
 import chatReducer from "./chatReducer";
@@ -35,11 +39,13 @@ const rootReducer = {
   threadModalListShowing: threadModalListShowingReducer,
   threadModalThreadInfoShowing: threadModalThreadInfoShowingReducer,
   threadModalMedialShowing: threadModalMedialShowingReducer,
+  threadModalImageCaptionShowing: threadModalImageCaptionShowingReducer,
   threadList: threadsReducer,
   threadParticipantList: threadParticipantListReducer,
   threadParticipantAdd: threadParticipantAddReducer,
   threadParticipantRemove: threadParticipantRemoveReducer,
   threadFilesToUpload: threadFilesToUploadReducer,
+  threadImagesToCaption: threadImagesToCaptionReducer,
   threadShowing: threadShowingReducer,
   message: messageNewReducer,
   sendMessage: messageSendReducer,

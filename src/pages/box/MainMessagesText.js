@@ -1,11 +1,15 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
 import "moment/locale/fa";
+import {connect} from "react-redux";
 import reactStringReplace from "react-string-replace";
 
 //strings
 
 //actions
+import {messageEditing} from "../../actions/messageActions";
+import {threadModalListShowing} from "../../actions/threadActions";
+
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
@@ -19,11 +23,9 @@ import {
 } from "react-icons/lib/md";
 
 //styling
+import style from "../../../styles/pages/box/MainMessagesText.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {messageEditing} from "../../actions/messageActions";
-import {threadModalListShowing} from "../../actions/threadActions";
-import {connect} from "react-redux";
 
 function urlify(text) {
   return reactStringReplace(text, /(https?:\/\/[^\s]+)/g, (match, i) => (
@@ -78,7 +80,7 @@ export default class MainMessagesText extends Component {
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
 
     return (
-      <Container inline inSpace relative maxWidth="50%" minWidth="220px"
+      <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={style.MainMessagesText}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
         <Paper colorBackgroundLight borderRadius={5}>

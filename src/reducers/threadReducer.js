@@ -16,8 +16,11 @@ import {
   MESSAGE_SEND,
   THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
-  THREAD_FILE_UPLOAD,
-  THREAD_FILES_TO_UPLOAD, THREAD_FILE_UPLOADING, MESSAGE_SENDING_ERROR, THREAD_SHOWING,
+  THREAD_FILES_TO_UPLOAD,
+  THREAD_FILE_UPLOADING,
+  MESSAGE_SENDING_ERROR,
+  THREAD_SHOWING,
+  THREAD_MODAL_IMAGE_CAPTION_SHOWING, THREAD_IMAGES_TO_CAPTION, MESSAGE_FILE_UPLOAD_CANCEL,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -78,12 +81,30 @@ export const threadFilesToUploadReducer = (state = null, action) => {
   }
 };
 
+export const threadImagesToCaptionReducer = (state = null, action) => {
+  switch (action.type) {
+    case THREAD_IMAGES_TO_CAPTION:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
 export const threadModalThreadInfoShowingReducer = (state = {
   isShow: false
 }, action) => {
   switch (action.type) {
     case THREAD_MODAL_THREAD_INFO_SHOWING:
       return {isShow: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const threadModalImageCaptionShowingReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_MODAL_IMAGE_CAPTION_SHOWING:
+      return action.payload;
     default:
       return state;
   }
@@ -162,7 +183,7 @@ export const threadMessageListReducer = (state = {
     }
   }
 
-  function updateMessage(field, value, criteria, upsert) {
+  function updateMessage(field, value, criteria, upsert, remove) {
     const messagesClone = [...state.messages];
     const uniqueId = action.payload.uniqueId;
     if (!checkForCurrentThread()) {
@@ -173,7 +194,11 @@ export const threadMessageListReducer = (state = {
       if (field) {
         messagesClone[fileIndex][field] = value;
       } else {
-        messagesClone[fileIndex] = value;
+        if(remove) {
+          messagesClone.splice(fileIndex, 1);
+        } else {
+          messagesClone[fileIndex] = value;
+        }
       }
       return {...state, ...stateObject("SUCCESS", messagesClone, "messages")};
     } else {
@@ -184,7 +209,6 @@ export const threadMessageListReducer = (state = {
       return state;
     }
   }
-
   switch (action.type) {
     case THREAD_CREATE("PENDING"):
       return {...state, ...stateObject("PENDING", [], "messages")};
@@ -198,13 +222,7 @@ export const threadMessageListReducer = (state = {
       return {...state, ...stateObject("ERROR", action.payload)};
     case THREAD_FILE_UPLOADING:
       return updateMessage("progress", action.payload, function (message) {
-        if (message.metaData) {
-          if (message.metaData.file) {
-            if (message.metaData.file.originalName === action.payload.fileInfo.fileName) {
-              return true;
-            }
-          }
-        }
+        return message.fileUniqueId === action.payload.uniqueId;
       });
     case THREAD_GET_MESSAGE_LIST_PARTIAL("SUCCESS"):
       let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages.reverse(), ...state.messages], "messages")};
@@ -212,6 +230,10 @@ export const threadMessageListReducer = (state = {
       return {...newStatePartial, ...{hasNext: action.payload.hasNext}};
     case MESSAGE_SENDING_ERROR:
       return updateMessage("hasError", true);
+    case MESSAGE_FILE_UPLOAD_CANCEL("SUCCESS"):
+      return updateMessage(null, null, function (message) {
+        return message.fileUniqueId === action.payload.uniqueId;
+      }, null , true);
     case MESSAGE_NEW:
     case MESSAGE_SEND("SUCCESS"): {
       if (!checkForCurrentThread()) {
@@ -228,7 +250,7 @@ export const threadMessageListReducer = (state = {
     }
     case MESSAGE_EDIT():
     case MESSAGE_SEEN:
-      return updateMessage(null, action.payload, message => message.id === updatedMessage.id)
+      return updateMessage(null, action.payload, message => message.id === updatedMessage.id);
     default:
       return state;
   }

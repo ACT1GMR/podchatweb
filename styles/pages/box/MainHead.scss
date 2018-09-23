@@ -1,28 +1,31 @@
 @import "_scope";
 @import "../../utils/responsive";
 
+.MainHead {
+  height: 59px;
+  width: 100%;
+  align-items: center;
+  position: relative;
+  padding: 2px 10px;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  background-color: $color-accent;
+  cursor: pointer;
+  border-right: 1px solid $color-accent-dark;
+  z-index: $z-index-1;
+  order: 1;
+}
 
-  .MainHead {
-    height: 59px;
-    width: 100%;
-    align-items: center;
-    position: relative;
-    padding: 2px 10px;
-    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-    background-color: $color-accent;
-    cursor: pointer;
-    border-right: 1px solid $color-accent-dark;
-    z-index: $z-index-1;
-    order: 1;
+.MainHead * {
+  user-select: none;
+}
+
+.MainHead:hover {
+  background-color: $color-accent-dark;
+}
+
+@include grid("md") {
+
+  .MainHead__Back {
+    display: none;
   }
-
-  .MainHead:hover {
-    background-color: $color-accent-dark;
-  }
-
-  @include grid("md") {
-
-    .MainHead__Back {
-      display: none;
-    }
-  }
+}

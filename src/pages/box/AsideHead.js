@@ -87,6 +87,7 @@ export default class AsideHead extends Component {
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
     return (
       <Container className={style.AsideHead} ref={this.container}>
+        <Notification/>
         {isOpen ? (
           <MdClose size={iconSize} onClick={this.onCloseMenu}
                    style={{color: styleVar.colorWhite, margin: iconMargin}}/>

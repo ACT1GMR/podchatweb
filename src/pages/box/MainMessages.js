@@ -48,6 +48,21 @@ function isMessageByMe(message, user) {
   }
 }
 
+function hiddenLastOwner(message, threadMessages) {
+  const msgOwnerId = message.participant.id;
+  const msgId = message.id;
+  const index = threadMessages.findIndex(e=>e.id === msgId);
+  if(~index) {
+    const lastMessage = threadMessages[index - 1];
+    if(lastMessage) {
+      if(lastMessage.participant.id === msgOwnerId) {
+        return "hidden";
+      }
+    }
+    return "visible";
+  }
+}
+
 function isFile(message) {
   if (message) {
     if (message.metaData) {
@@ -150,7 +165,8 @@ export default class MainMessages extends Component {
       return (
         <Container className={style.MainMessages}>
           <Container center centerTextAlign style={{width: "100%"}}>
-            <Message size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
+            <Message
+              size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
           </Container>
         </Container>
@@ -250,7 +266,7 @@ export default class MainMessages extends Component {
       <MainMessagesText {...messageArguments(message)}/>;
 
     const avatar = message =>
-      <Container inline maxWidth="50px" inSpace>
+      <Container inline inSpace style={{visibility: hiddenLastOwner(message, threadMessages), maxWidth: "50px"}}>
         <Avatar>
           <AvatarImage src={message.participant.image || defaultAvatar}/>
           <AvatarName bottom size="sm">{message.participant.name}</AvatarName>
@@ -258,9 +274,9 @@ export default class MainMessages extends Component {
       </Container>;
     return (
       <section className={style.MainMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
-           onDragEnter={this.onDragEnter}
-           onDragOver={this.onDragOver}
-           onDrop={this.onFileDrop}>
+               onDragEnter={this.onDragEnter}
+               onDragOver={this.onDragOver}
+               onDrop={this.onFileDrop}>
         {threadMessagesPartialFetching && partialLoading}
         <List ref={this.messageListNode}>
           {threadMessages.map(el => (

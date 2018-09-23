@@ -7,7 +7,8 @@ import {connect} from "react-redux";
 //strings
 
 //actions
-import {threadModalMediaShowing} from "../../actions/threadActions";
+import {threadModalListShowing, threadModalMediaShowing} from "../../actions/threadActions";
+import {messageEditing, messageSendingError, messageCancelFile} from "../../actions/messageActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
@@ -26,8 +27,7 @@ import {
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {messageEditing, messageSendingError} from "../../actions/messageActions";
-import {threadModalListShowing} from "../../actions/threadActions";
+
 
 function getImage(metaData, isFromServer) {
   let imageLink = metaData.link;
@@ -109,8 +109,8 @@ export default class MainMessagesFile extends Component {
     window.location.href = `${metaData.link}&downloadable=true`;
   }
 
-  onCancel(metaData) {
-    window.location.href = `${metaData.link}&downloadable=true`;
+  onCancel(message) {
+    this.props.dispatch(messageCancelFile(message.fileUniqueId, message.threadId));
   }
 
   onEdit(id, message) {
@@ -172,7 +172,7 @@ export default class MainMessagesFile extends Component {
                 <Container centerLeft className={"u-clickable"}>
                   {isDownloadable(message) || isUploading(message) ?
                     <Shape color="accent" size="lg"
-                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, metaData)}>
+                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, message)}>
                       <ShapeCircle>
                         {isUploading(message) ?
                           <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>

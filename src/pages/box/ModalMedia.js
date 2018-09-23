@@ -15,8 +15,8 @@ import {Heading} from "raduikit/src/typography";
 import Message from "raduikit/src/message";
 import Container from "raduikit/src/container";
 
-
 //styling
+import style from "../../../styles/pages/box/ModalMedia.scss";
 
 @connect(store => {
   return {
@@ -29,23 +29,17 @@ export default class ModalAddContact extends Component {
     super(props);
   }
 
-  componentDidUpdate(oldProps) {
-  }
-
-  onSubmit() {
-  }
-
   onCancel() {
     this.props.dispatch(threadModalMediaShowing(false));
   }
 
   render() {
-    const {isOpen, object} = this.props;
+    const {object} = this.props;
     return (
       <Modal isOpen={object.isShowing} onClose={this.onCancel.bind(this)}>
 
         <ModalBody>
-          <img src={object.src} style={{maxWidth: "100%"}}/>
+          <img className={style.ModalMedia__Img} src={object.src} style={{maxWidth: "100%"}}/>
         </ModalBody>
 
       </Modal>

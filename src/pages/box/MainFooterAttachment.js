@@ -16,6 +16,7 @@ import {MdAttachFile} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/MainFooterAttachment.scss";
 import styleVar from "./../../../styles/variables.scss";
+import {threadFilesToUpload} from "../../actions/threadActions";
 
 @connect(store => {
   return {
@@ -34,14 +35,18 @@ export default class MainFooterAttachment extends Component {
     const {threadFilesToUpload} = this.props;
     if (threadFilesToUpload) {
       if (prevProps.threadFilesToUpload !== threadFilesToUpload) {
-        this.onAttachmentChange(null, threadFilesToUpload);
+        this.sendFiles(threadFilesToUpload);
       }
     }
   }
 
-  onAttachmentChange(evt, files) {
+  onAttachmentChange(evt) {
+    this.props.dispatch(threadFilesToUpload(evt.target.files));
+  }
+
+  sendFiles(files) {
     const {threadId, dispatch} = this.props;
-    for (const file of files || evt.target.files) {
+    for (const file of files) {
       dispatch(messageSendFile(file, threadId));
     }
   }

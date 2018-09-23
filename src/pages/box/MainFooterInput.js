@@ -1,6 +1,7 @@
 // src/list/BoxScene.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {mobileCheck} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -53,9 +54,11 @@ export default class BoxSceneInput extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const current = this.inputNode.current;
-    if (current) {
-      current.focus();
+    if(!mobileCheck()) {
+      const current = this.inputNode.current;
+      if (current) {
+        current.focus();
+      }
     }
   }
 

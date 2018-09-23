@@ -187,6 +187,7 @@ export default class ChatSDK {
     });
     resolve({
       ...obj, ...{
+        fileUniqueId: obj.content.file.uniqueId,
         metaData: {
           file:{
             mimeType: file.type,
@@ -197,6 +198,16 @@ export default class ChatSDK {
         }
       }
     })
+  }
+
+  @promiseDecorator
+  cancelFileUpload(resolve, reject, uniqueId, threadId) {
+    const cancelFileUploadParams = {
+      uniqueId,
+      threadId
+    };
+    resolve(cancelFileUploadParams);
+    this.chatAgent.cancelFileUpload(cancelFileUploadParams);
   }
 
   @promiseDecorator

@@ -9,7 +9,11 @@ import {
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
-  THREAD_FILES_TO_UPLOAD, CONTACT_LIST_SHOWING, THREAD_SHOWING
+  THREAD_FILES_TO_UPLOAD,
+  CONTACT_LIST_SHOWING,
+  THREAD_SHOWING,
+  THREAD_MODAL_IMAGE_CAPTION_SHOWING,
+  THREAD_IMAGES_TO_CAPTION
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -68,6 +72,16 @@ export const threadModalListShowing = (isShowing, message) => {
     return dispatch({
       type: THREAD_MODAL_LIST_SHOWING,
       payload: {isShowing, message}
+    });
+  }
+};
+
+
+export const threadModalImageCaptionShowing = (isShowing) => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_MODAL_IMAGE_CAPTION_SHOWING,
+      payload: isShowing
     });
   }
 };
@@ -136,11 +150,33 @@ export const threadInfo = (threadId, contactIds) => {
   }
 };
 
-export const threadFilesToUpload = (files) => {
+export const threadFilesToUpload = (files, upload) => {
+  if(!upload) {
+    let isAllImage = true;
+    for (let file of files) {
+      if (!~file.type.indexOf("image")) {
+        isAllImage = false;
+        break;
+      }
+    }
+    if (isAllImage) {
+      return threadImagesToCaption(files);
+    }
+  }
   return (dispatch) => {
     return dispatch({
       type: THREAD_FILES_TO_UPLOAD,
       payload: files
+    });
+  }
+};
+
+export const threadImagesToCaption = (images) => {
+  return (dispatch) => {
+    dispatch(threadModalImageCaptionShowing(true));
+    return dispatch({
+      type: THREAD_IMAGES_TO_CAPTION,
+      payload: images
     });
   }
 };

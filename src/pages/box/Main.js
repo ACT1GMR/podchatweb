@@ -18,6 +18,7 @@ import ModalAddContact from "./ModalAddContact";
 import ModalThreadList from "./ModalThreadList";
 import ModalCreateGroup from "./ModalCreateGroup";
 import ModalThreadInfo from "./ModalThreadInfo";
+import ModalImageCaption from "./ModalImageCaption";
 import ModalMedia from "./ModalMedia";
 import Message from "raduikit/src/message";
 import Gap from "raduikit/src/gap";
@@ -57,6 +58,7 @@ export default class Main extends Component {
         <ModalCreateGroup/>
         <ModalThreadInfo/>
         <ModalMedia/>
+        <ModalImageCaption/>
       </section>
     );
     if (!threadId && !threadFetching) {

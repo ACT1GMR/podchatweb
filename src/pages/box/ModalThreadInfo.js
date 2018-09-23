@@ -182,21 +182,21 @@ export default class ModalThreadInfo extends Component {
         <ModalFooter>
           {step === constants.ADD_MEMBER ?
             addMembers.length > 0 ?
-              <Button onClick={this.onAddMember}>
+              <Button text onClick={this.onAddMember}>
                 {strings.add}
               </Button>
               : ""
             :
             isGroup && isOwner ?
-              <Button onClick={this.onAddingMember}>
+              <Button text onClick={this.onAddingMember}>
                 {strings.addMember}
               </Button>
               : ""
 
           }
-          <Button onClick={this.onClose}>{strings.close}</Button>
+          <Button text onClick={this.onClose}>{strings.close}</Button>
           {step === constants.ADD_MEMBER ?
-            <Button onClick={this.onPrevious}>
+            <Button text onClick={this.onPrevious}>
               <MdArrowBack/>
             </Button> : ""
           }

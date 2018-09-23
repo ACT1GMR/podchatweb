@@ -145,14 +145,14 @@ export default class ModalCreateGroup extends Component {
         <ModalFooter>
           {step === constants.SELECT_CONTACT ?
             threadContacts.length > 1 ?
-              <Button onClick={this.onNext.bind(this)}>
+              <Button text onClick={this.onNext.bind(this)}>
                 <MdArrowForward/>
               </Button>
               : ""
             :
-            <Button onClick={this.onCreate.bind(this, groupName)}>{strings.createGroup}</Button>
+            <Button text onClick={this.onCreate.bind(this, groupName)}>{strings.createGroup}</Button>
           }
-          <Button onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
+          <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
         </ModalFooter>
 
       </Modal>

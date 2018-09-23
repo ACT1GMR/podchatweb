@@ -45,6 +45,9 @@ let strings = new LocalizedStrings({
     groupInfo: "اطلاعات گروه",
     contactInfo: "اطلاعات تماس",
     dropYourFileHere: "فایلاتون رو بندازید اینجا",
+    imageText: "متن تصویر",
+    send: "بفرست",
+    sendingImages: "ارسال عکس ( ها )",
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {
         return string;

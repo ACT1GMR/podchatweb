@@ -4,7 +4,7 @@ import {
   MESSAGE_EDIT,
   MESSAGE_NEW,
   MESSAGE_SEEN,
-  MESSAGE_FORWARD, MESSAGE_SENDING_ERROR
+  MESSAGE_FORWARD, MESSAGE_SENDING_ERROR, MESSAGE_FILE_UPLOAD, MESSAGE_FILE_UPLOAD_CANCEL
 } from "../constants/actionTypes";
 
 export const messageSend = (text, threadId) => {
@@ -25,6 +25,17 @@ export const messageSendFile = (file, threadId) => {
     dispatch({
       type: MESSAGE_SEND(),
       payload: chatSDK.sendFileMessage(file, threadId)
+    });
+  }
+};
+
+export const messageCancelFile = (uniqueId, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: MESSAGE_FILE_UPLOAD_CANCEL(),
+      payload: chatSDK.cancelFileUpload(uniqueId, threadId)
     });
   }
 };

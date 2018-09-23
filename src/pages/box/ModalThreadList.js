@@ -85,7 +85,7 @@ export default class ModalContactList extends Component {
         </ModalBody>
 
         <ModalFooter>
-          <Button onClick={this.onClose.bind(this)}>{strings.close}</Button>
+          <Button text onClick={this.onClose.bind(this)}>{strings.close}</Button>
         </ModalFooter>
 
       </Modal>

@@ -6,6 +6,10 @@
   overflow-y: auto;
 }
 
+.MainMessages * {
+  user-select: none;
+}
+
 .MainMessages__Empty {
   position: absolute;
   top: 0;

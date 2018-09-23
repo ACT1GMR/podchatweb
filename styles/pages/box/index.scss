@@ -14,6 +14,10 @@
   position: relative;
 }
 
+.Box__Aside * {
+  user-select: none;
+}
+
 .Box__Main {
   flex: 0 0 100%;
   position: relative;

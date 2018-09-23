@@ -86,8 +86,8 @@ export default class ModalAddContact extends Component {
         </ModalBody>
 
         <ModalFooter>
-          <Button loading={contactAddPending} onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
-          <Button onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
+          <Button text loading={contactAddPending} onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
+          <Button text onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
           {contactAdd && !contactAdd.linkedUser &&
           (
             <Container inline>
