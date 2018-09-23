@@ -1,6 +1,7 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -61,7 +62,7 @@ function isFile(message) {
     threadId: store.thread.thread.id
   };
 })
-export default class BoxThreads extends Component {
+class AsideThreads extends Component {
 
   constructor(props) {
     super(props);
@@ -71,11 +72,13 @@ export default class BoxThreads extends Component {
 
   componentDidMount() {
     this.props.dispatch(threadGetList());
+
   }
 
   onThreadClick(thread) {
     this.props.dispatch(threadCreate(null, thread));
     this.props.dispatch(threadShowing(true));
+    this.props.history.push(`/${thread.inviter.id}`);
   }
 
   componentDidUpdate(oldProps) {
@@ -115,6 +118,7 @@ export default class BoxThreads extends Component {
             {threads.map(el => (
               <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                         active={activeThread === el.id}>
+
                 <Container relative>
                   <Avatar>
                     <AvatarImage src={el.image ? el.image : defaultAvatar} customSize="50px"/>
@@ -162,7 +166,6 @@ export default class BoxThreads extends Component {
                       </Shape>
                     </Container> : ""}
                 </Container>
-
               </ListItem>
             ))}
           </List>
@@ -170,4 +173,6 @@ export default class BoxThreads extends Component {
       );
     }
   }
-};
+}
+
+export default withRouter(AsideThreads);

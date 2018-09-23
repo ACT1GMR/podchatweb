@@ -1,13 +1,14 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {BrowserRouter, Switch, Route, Link} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
 
 //actions
 import {contactAdding, contactListShowing} from "../../actions/contactActions";
-import {threadMessageGetList} from "../../actions/threadActions";
+import {threadCreate, threadMessageGetList, threadShowing} from "../../actions/threadActions";
 
 //components
 import MainHead from "./MainHead";
@@ -61,22 +62,51 @@ export default class Main extends Component {
         <ModalImageCaption/>
       </section>
     );
-    if (!threadId && !threadFetching) {
-      return (
-        <Container className={style.Main}>
-          <Container center centerTextAlign>
-            <Message size="lg">{strings.pleaseStartAThreadFirst}</Message>
-            <Gap y={10} block/>
-            <MdChat size={48} style={{color: styleVar.colorAccent}}/>
-            <Container>
-              <Button outlined onClick={() => this.props.dispatch(contactAdding(true))}>{strings.addContact}</Button>
-              <Button outlined onClick={() => this.props.dispatch(contactListShowing(true))}>{strings.contactList}</Button>
+
+    return (
+      <Switch>
+        <Route path="/" exact render={e => {
+          return (
+            <Container className={style.Main}>
+              <Container center centerTextAlign>
+                <Message size="lg">{strings.pleaseStartAThreadFirst}</Message>
+                <Gap y={10} block/>
+                <MdChat size={48} style={{color: styleVar.colorAccent}}/>
+                <Container>
+                  <Button outlined
+                          onClick={() => this.props.dispatch(contactAdding(true))}>{strings.addContact}</Button>
+                  <Button outlined
+                          onClick={() => this.props.dispatch(contactListShowing(true))}>{strings.contactList}</Button>
+                </Container>
+              </Container>
+              {popups}
             </Container>
-          </Container>
-          {popups}
-        </Container>
-      );
+          );
+        }}/>
+        <Route path="/:threadId" render={e => <MainBody popups={popups} match={e}/>}/>
+      </Switch>
+    );
+  }
+}
+
+@connect(store => {
+  return {
+    threadId: store.thread.thread.id,
+    threadFetching: store.thread.fetching
+  };
+})
+class MainBody extends React.Component {
+
+  componentDidMount() {
+    const {threadId, threadFetching, match} = this.props;
+    if (!threadId && !threadFetching) {
+      this.props.dispatch(threadCreate(+match.match.params.threadId));
+      this.props.dispatch(threadShowing(true));
     }
+  }
+
+  render() {
+    const {popups} = this.props;
     return (
       <Container className={style.Main}>
         <MainHead/>
@@ -86,4 +116,5 @@ export default class Main extends Component {
       </Container>
     );
   }
+
 }

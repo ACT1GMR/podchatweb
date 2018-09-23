@@ -7,7 +7,8 @@ module.exports = (e, argv) => {
   let base = {
     devServer: {
       compress: true,
-      public: "chat.fanapsoft.ir"
+      public: "chat.fanapsoft.ir",
+      historyApiFallback: true
     },
     module: {
       rules: [

@@ -19,6 +19,7 @@ import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
+import {BrowserRouter, withRouter} from "react-router-dom";
 
 
 @connect(store => {
@@ -78,14 +79,16 @@ export default class Box extends Component {
     });
 
     return (
-      <Container className={classNames}>
-        <Container className={style.Box__Aside}>
-          <Aside/>
+      <BrowserRouter>
+        <Container className={classNames}>
+          <Container className={style.Box__Aside}>
+            <Aside/>
+          </Container>
+          <Container className={style.Box__Main}>
+            <Main/>
+          </Container>
         </Container>
-        <Container className={style.Box__Main}>
-          <Main/>
-        </Container>
-      </Container>
+      </BrowserRouter>
     );
   }
 }
