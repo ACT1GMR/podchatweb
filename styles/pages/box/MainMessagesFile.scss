@@ -1,6 +1,23 @@
 @import "_scope";
 @import "../../utils/responsive";
 
+.MainMessagesFile__FileContainer {
+  display: flex;
+  align-items: center;
+}
+
+.MainMessagesFile__FileContainer--reverseDirection {
+  flex-direction: row-reverse;
+}
+
+.MainMessagesFile__FileName {
+  flex-grow: 1;
+}
+
+.MainMessagesFile__FileControlIcon {
+  cursor: pointer;
+}
+
 .MainMessagesFile__Image {
   max-width: 100%;
   border-radius: 5px;

@@ -51,11 +51,11 @@ function isMessageByMe(message, user) {
 function hiddenLastOwner(message, threadMessages) {
   const msgOwnerId = message.participant.id;
   const msgId = message.id;
-  const index = threadMessages.findIndex(e=>e.id === msgId);
-  if(~index) {
+  const index = threadMessages.findIndex(e => e.id === msgId);
+  if (~index) {
     const lastMessage = threadMessages[index - 1];
-    if(lastMessage) {
-      if(lastMessage.participant.id === msgOwnerId) {
+    if (lastMessage) {
+      if (lastMessage.participant.id === msgOwnerId) {
         return "hidden";
       }
     }
@@ -193,12 +193,22 @@ export default class MainMessages extends Component {
           </Container>
         )
     }
-    const seenFragment = (el) => {
+    const seenFragment = (el, onClick) => {
       if (!isMessageByMe(el, user)) {
         return null;
       }
       if (el.hasError) {
-        return <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+        return (
+          <Container inline>
+            <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+            <Gap x={2}>
+              <Container onClick={onClick}>
+                <Text size="xs" color="accent" linkStyle>{strings.tryAgain}</Text>
+              </Container>
+            </Gap>
+            <Gap x={3}/>
+          </Container>
+        )
       }
       if (!el.id) {
         return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>

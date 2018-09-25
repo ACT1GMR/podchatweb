@@ -8,7 +8,7 @@ import strings from "../../constants/localization";
 import {threadFilesToUpload, threadModalImageCaptionShowing} from "../../actions/threadActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 import Button from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import List, {ListItem} from "raduikit/src/list";

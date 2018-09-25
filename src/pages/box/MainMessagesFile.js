@@ -8,7 +8,7 @@ import {connect} from "react-redux";
 
 //actions
 import {threadModalListShowing, threadModalMediaShowing} from "../../actions/threadActions";
-import {messageEditing, messageSendingError, messageCancelFile} from "../../actions/messageActions";
+import {messageEditing, messageSendingError, messageCancelFile, messageSendFile} from "../../actions/messageActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
@@ -27,6 +27,7 @@ import {
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
+import Gap from "../../../../uikit/src/gap";
 
 
 function getImage(metaData, isFromServer) {
@@ -44,13 +45,7 @@ function getImage(metaData, isFromServer) {
 }
 
 function isDownloadable(message) {
-  if (!message.progress) {
-    return true;
-  }
-  const msgStatus = message.progress.state;
-  if (msgStatus === "DONE") {
-    return true;
-  }
+  return message.id;
 }
 
 function isUploading(message) {
@@ -85,10 +80,11 @@ export default class MainMessagesFile extends Component {
     const {message, dispatch} = this.props;
     if (message) {
       if (message.progress) {
-        if (!message.hasError)
+        if (!message.hasError) {
           if (hasError(message)) {
             dispatch(messageSendingError(message.threadId, message.uniqueId));
           }
+        }
       }
     }
   }
@@ -134,13 +130,14 @@ export default class MainMessagesFile extends Component {
   }
 
   render() {
-    const {seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
+    const {seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch} = this.props;
     const {messageControlShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = ~metaData.mimeType.indexOf("image");
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
     const imageSizeLink = isImage ? getImage(metaData, message.id) : false;
+    const isMsgByMe = isMessageByMe(message, user);
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                  onMouseOver={this.onMouseOver}
@@ -151,16 +148,16 @@ export default class MainMessagesFile extends Component {
                  style={{width: `${message.progress ? message.progress.progress : 0}%`}}
                  title={`${message.progress && message.progress.progress}`}/>
             : ""}
-          <Paper colorBackgroundLight borderRadius={5}>
+          <Paper colorBackgroundLight borderRadius={5} hasShadow>
             {replyFragment(message)}
             {forwardFragment(message)}
-            {isImage ?
-              <img className={style.MainMessagesFile__Image} src={imageSizeLink.imageLink}
-                   style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
-                   onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/>
-              :
-              <Container relative>
-                <Container maxWidth="calc(100% - 36px)">
+            <Container relative className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"]: ""}`}>
+              {isImage ?
+                <img className={style.MainMessagesFile__Image} src={imageSizeLink.imageLink}
+                     style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
+                     onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/> :
+
+                <Container className={style.MainMessagesFile__FileName}>
                   <Text wordWrap="breakWord" bold>
                     {metaData.originalName}
                   </Text>
@@ -168,32 +165,36 @@ export default class MainMessagesFile extends Component {
                     {humanFileSize(metaData.size, true)}
                   </Text>
                 </Container>
-
-                <Container centerLeft className={"u-clickable"}>
-                  {isDownloadable(message) || isUploading(message) ?
+              }
+              <Container className={style.MainMessagesFile__FileControlIcon} center={isImage}>
+                {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
+                  <Gap x={10}>
                     <Shape color="accent" size="lg"
                            onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, message)}>
                       <ShapeCircle>
-                        {isUploading(message) ?
+                        {isUploading(message) || hasError(message) ?
                           <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
                           : isDownloadable(message) ?
                             <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
                         }
                       </ShapeCircle>
                     </Shape>
-                    : ""}
-
-                </Container>
+                  </Gap>
+                  : ""}
 
               </Container>
 
-            }
+            </Container>
+
             <PaperFooter>
-              {seenFragment(message, user)}
+              {seenFragment(message, () => {
+                this.onCancel(message);
+                dispatch(messageSendFile(message.content.file.fileObject, message.threadId));
+              })}
               {datePetrification(message.time)}
               {message.id && messageControlShow ?
-                <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
-                  {isMessageByMe(message, user) &&
+                <Container inline left={isMsgByMe} right={!isMsgByMe} inSpace>
+                  {isMsgByMe &&
                   <Container inline>
                     {message.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
                                                     className={iconClasses}

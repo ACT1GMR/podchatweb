@@ -83,7 +83,7 @@ export default class MainMessagesText extends Component {
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={style.MainMessagesText}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
-        <Paper colorBackgroundLight borderRadius={5}>
+        <Paper colorBackgroundLight borderRadius={5} hasShadow>
           {replyFragment(message)}
           {forwardFragment(message)}
           <Text wordWrap="breakWord">

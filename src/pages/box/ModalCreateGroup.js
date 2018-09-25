@@ -12,14 +12,13 @@ import {threadModalListShowing, threadCreate} from "../../actions/threadActions"
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 import Button from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
-import Message from "raduikit/src/message";
 import List, {ListItem} from "raduikit/src/list";
 import {InputText} from "raduikit/src/input";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
+import {MdArrowForward} from "react-icons/lib/md";
 
 //styling
-import {MdArrowForward} from "react-icons/lib/md";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 
 const constants = {
@@ -136,7 +135,7 @@ export default class ModalCreateGroup extends Component {
             :
             <InputText onChange={this.groupNameChange.bind(this)}
                        value={groupName}
-                       placeholder={strings.firstName}/>
+                       placeholder={strings.groupName}/>
           }
 
 
@@ -146,7 +145,7 @@ export default class ModalCreateGroup extends Component {
           {step === constants.SELECT_CONTACT ?
             threadContacts.length > 1 ?
               <Button text onClick={this.onNext.bind(this)}>
-                <MdArrowForward/>
+                <MdArrowForward size={i}/>
               </Button>
               : ""
             :

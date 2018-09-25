@@ -2,6 +2,7 @@ import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
   fa: {
+    tryAgain: "تلاش دوباره",
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کنید!!",
     pleaseWriteHere: "اینجا بنویسید...",
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
@@ -22,6 +23,7 @@ let strings = new LocalizedStrings({
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     firstName: "نام",
+    groupName: "نام گروه",
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
     isNotPodUser: "کاربر پاد نیست",

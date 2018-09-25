@@ -106,37 +106,37 @@ export default class MainFooterInputEditing extends Component {
     if (isEditing) {
       editObject = getMessageEditingText(messageEditing);
       return (
-        <Container relative className={style.MainFooterInputEditing}>
-          <Paper colorBackgroundLight borderRadius="20px 20px 0 0">
-            <Container inline>
-              <Container inline>
-                {messageEditing.type === constants.forwarding ?
-                  <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+
+        <Paper colorBackgroundLight borderRadius="20px 20px 0 0">
+          <Container inline className={style.MainFooterInputEditing}>
+            <Container>
+              {messageEditing.type === constants.forwarding ?
+                <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+                :
+                messageEditing.type === constants.replying ?
+                  <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
                   :
-                  messageEditing.type === constants.replying ?
-                    <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
-                    :
-                    <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
-                }
-              </Container>
-
-              <Container inline>
-                {editObject.image ?
-                  <Container className={style.MainFooterInputEditing__ImageContainer} inline>
-                    <div className={style.MainFooterInputEditing__Image} style={{backgroundImage: `url(${editObject.image})`}}/>
-                  </Container>
-                  : ""}
-                {editObject.text}
-              </Container>
-
+                  <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+              }
             </Container>
-            <Container inline left>
+
+            <Container className={style.MainFooterInputEditing__Content}>
+              {editObject.image ?
+                <Container className={style.MainFooterInputEditing__ImageContainer} inline>
+                  <div className={style.MainFooterInputEditing__Image}
+                       style={{backgroundImage: `url(${editObject.image})`}}/>
+                </Container>
+                : ""}
+              {editObject.text}
+            </Container>
+
+            <Container>
               <MdClose size={styleVar.iconSizeSm} color={styleVar.colorTextLight} style={{margin: "0 4px"}}
                        className={`${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`}
                        onClick={this.onCancelEditing}/>
             </Container>
-          </Paper>
-        </Container>
+          </Container>
+        </Paper>
       );
     }
     return false;

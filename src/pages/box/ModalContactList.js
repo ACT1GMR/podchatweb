@@ -33,6 +33,12 @@ export default class ModalContactList extends Component {
     super(props);
   }
 
+  componentDidUpdate(oldProps) {
+    if (oldProps.isShow !== this.props.isShow) {
+      this.props.dispatch(contactGetList());
+    }
+  }
+
   componentDidMount() {
     this.props.dispatch(contactGetList());
   }
@@ -68,7 +74,7 @@ export default class ModalContactList extends Component {
                 <ListItem key={el.id} selection invert>
                   <Container relative>
                     <Avatar>
-                      <AvatarImage src={el.image ? el.image : defaultAvatar}/>
+                      <AvatarImage src={el.linkedUser && el.linkedUser.image ? el.linkedUser.image : defaultAvatar}/>
                       <AvatarName>{el.firstName} {el.lastName}</AvatarName>
                     </Avatar>
 

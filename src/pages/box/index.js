@@ -19,7 +19,6 @@ import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
-import {BrowserRouter, withRouter} from "react-router-dom";
 
 
 @connect(store => {
@@ -60,11 +59,15 @@ export default class Box extends Component {
   }
 
   render() {
-    const {chatInstance, user, threadShowing} = this.props;
+    const {chatInstance, user, threadShowing, customClassName} = this.props;
+    let classNames = classnames({
+      [style.Box]: true,
+      [customClassName]: customClassName
+    });
 
     if (!chatInstance || !user) {
       return (
-        <Container className={style.Box}>
+        <Container className={classNames}>
           <Container center centerTextAlign className={style.Box__MessageContainer}>
             <Message size="lg">{strings.waitingForChatInstance}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
@@ -73,22 +76,19 @@ export default class Box extends Component {
       );
     }
 
-    const classNames = classnames({
-      [style.Box]: true,
+    classNames += ` ${classnames({
       [style["Box--isThreadShow"]]: threadShowing
-    });
+    })}`;
 
     return (
-      <BrowserRouter>
-        <Container className={classNames}>
-          <Container className={style.Box__Aside}>
-            <Aside/>
-          </Container>
-          <Container className={style.Box__Main}>
-            <Main/>
-          </Container>
+      <Container className={classNames}>
+        <Container className={style.Box__Aside}>
+          <Aside/>
         </Container>
-      </BrowserRouter>
+        <Container className={style.Box__Main}>
+          <Main/>
+        </Container>
+      </Container>
     );
   }
 }

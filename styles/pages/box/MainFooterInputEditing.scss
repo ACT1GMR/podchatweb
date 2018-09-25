@@ -1,7 +1,11 @@
 @import "_scope";
 
 .MainFooterInputEditing {
+  display: flex;
+}
 
+.MainFooterInputEditing__Content {
+  flex-grow: 1;
 }
 
 .MainFooterInputEditing__ImageContainer {

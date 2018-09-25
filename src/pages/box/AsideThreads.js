@@ -1,7 +1,6 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -54,6 +53,12 @@ function isFile(message) {
     }
   }
 }
+function getTitle(title) {
+  if(title.length >= 30) {
+    return `${title.slice(0, 30)}...`;
+  }
+  return title;
+}
 
 @connect(store => {
   return {
@@ -62,7 +67,7 @@ function isFile(message) {
     threadId: store.thread.thread.id
   };
 })
-class AsideThreads extends Component {
+export default class AsideThreads extends Component {
 
   constructor(props) {
     super(props);
@@ -78,7 +83,6 @@ class AsideThreads extends Component {
   onThreadClick(thread) {
     this.props.dispatch(threadCreate(null, thread));
     this.props.dispatch(threadShowing(true));
-    this.props.history.push(`/${thread.inviter.id}`);
   }
 
   componentDidUpdate(oldProps) {
@@ -121,9 +125,9 @@ class AsideThreads extends Component {
 
                 <Container relative>
                   <Avatar>
-                    <AvatarImage src={el.image ? el.image : defaultAvatar} customSize="50px"/>
+                    <AvatarImage src={el.lastParticipantImage ? el.lastParticipantImage : defaultAvatar} customSize="50px"/>
                     <AvatarName invert>
-                      {el.title}
+                      {getTitle(el.title)}
                       <AvatarText>
                         {el.group ?
                           el.lastMessage || el.lastMessageVO ?
@@ -174,5 +178,3 @@ class AsideThreads extends Component {
     }
   }
 }
-
-export default withRouter(AsideThreads);

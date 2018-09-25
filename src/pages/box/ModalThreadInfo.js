@@ -151,23 +151,28 @@ export default class ModalThreadInfo extends Component {
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
+    const filteredContacts = contacts.filter(a => a.hasUser && !participants.filter(b => a.id === b.contactId).length);
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
 
         <ModalHeader>
-          <Heading h3>{step === constants.GROUP_INFO ? isGroup ? strings.groupInfo : strings.contactInfo : strings.addMember}</Heading>
+          <Heading
+            h3>{step === constants.GROUP_INFO ? isGroup ? strings.groupInfo : strings.contactInfo : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
           {step === constants.GROUP_INFO ?
             isGroup ?
-              <BoxModalThreadInfoGroup thread={thread} user={user} participants={participants} onClose={this.onClose.bind(this)} onAddingMember={this.onAddingMember}/>
+              <BoxModalThreadInfoGroup thread={thread} user={user} participants={participants}
+                                       onClose={this.onClose.bind(this)} onAddingMember={this.onAddingMember}/>
               :
-              <BoxModalThreadInfoPerson thread={thread} user={user} onClose={this.onClose.bind(this)} participants={participants}/>
+              <BoxModalThreadInfoPerson thread={thread} user={user} onClose={this.onClose.bind(this)}
+                                        participants={participants}/>
             :
             <Container>
               {contacts.length ?
-                <ContactListSelective invert onSelect={this.onSelect} onDeselect={this.onDeselect} contacts={contacts}
+                <ContactListSelective invert onSelect={this.onSelect} onDeselect={this.onDeselect}
+                                      contacts={filteredContacts}
                                       activeList={addMembers}/>
                 :
                 <Container center>
@@ -187,7 +192,7 @@ export default class ModalThreadInfo extends Component {
               </Button>
               : ""
             :
-            isGroup && isOwner ?
+            isGroup && isOwner && filteredContacts.length ?
               <Button text onClick={this.onAddingMember}>
                 {strings.addMember}
               </Button>
