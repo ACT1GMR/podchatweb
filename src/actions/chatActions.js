@@ -44,3 +44,11 @@ export const chatSetInstance = config => {
     });
   }
 };
+
+export const chatUploadImage = (image, threadId, callBack) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    chatSDK.uploadImage(image, threadId).then(callBack);
+  }
+};

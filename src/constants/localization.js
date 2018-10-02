@@ -13,6 +13,7 @@ let strings = new LocalizedStrings({
     close: "بستن",
     startChat: "شروع گفتگو",
     edited: "اصلاح شد",
+    groupDescription: "توضیحات گروه",
     waitingForMessageFetching: "در حالت دریافت پیامهای قبلی",
     creatingChatWith: (firstName, lastName) => {
       return `در حال ایجاد گفتگو با ${firstName} ${lastName}`;
@@ -33,6 +34,8 @@ let strings = new LocalizedStrings({
     member: "عضو",
     you: "شما",
     addMember: "اضافه کردن عضو",
+    saveSettings: "ذخیره تغییرات",
+    groupSettings: "تنظیمات گروه",
     chatInfo: "اطلاعات چت",
     years: "سال",
     months: "ماه",

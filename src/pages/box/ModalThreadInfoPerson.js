@@ -5,13 +5,6 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {
-  threadCreate,
-  threadModalThreadInfoShowing,
-  threadParticipantList,
-  threadAddParticipant,
-  threadRemoveParticipant
-} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
@@ -25,9 +18,10 @@ import {ContactList, ContactListSelective} from "./_component/contactList";
 import date from "../../utils/date";
 
 //styling
-import {MdPerson, MdPhone} from "react-icons/lib/md";
+import {MdArrowBack, MdPerson, MdPhone} from "react-icons/lib/md";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
+import BoxModalThreadInfoGroup from "./ModalThreadInfoGroup";
 
 
 @connect()
@@ -35,50 +29,64 @@ export default class ModalThreadInfo extends Component {
 
   constructor(props) {
     super(props);
-
   }
 
   render() {
-    const {participants, thread, user} = this.props;
+    const {participants, thread, user, onClose, isShow} = this.props;
     let participant = participants;
-    if(participants) {
-      participant = participants.filter(e=>e.name !== user.name)[0]
+    if (participants) {
+      participant = participants.filter(e => e.name !== user.name)[0];
     }
     const participantImage = participant && participant.image;
     return (
-      <Container>
-        <Container relative>
+      <Modal isOpen={isShow} onClose={onClose}>
 
+        <ModalHeader>
+          <Heading h3>{strings.contactInfo}</Heading>
+        </ModalHeader>
+
+        <ModalBody>
           <Container>
-            <Avatar>
-              <AvatarImage src={participantImage ? participantImage : defaultAvatar} size="xlg"/>
-              <AvatarName>
-                <Heading h1>{thread.title}</Heading>
-                <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
-              </AvatarName>
-            </Avatar>
-          </Container>
+            <Container relative>
 
-          <Container bottomLeft>
-            <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-          </Container>
+              <Container>
+                <Avatar>
+                  <AvatarImage src={participantImage ? participantImage : defaultAvatar} size="xlg"/>
+                  <AvatarName>
+                    <Heading h1>{thread.title}</Heading>
+                    <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
+                  </AvatarName>
+                </Avatar>
+              </Container>
 
-        </Container>
+              <Container bottomLeft>
+                <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+              </Container>
 
-        <Gap y={20} block>
-          <Divider thick={2} color="gray"/>
-        </Gap>
+            </Container>
 
-        <Container>
-          <Container>
-            <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-            <Gap x={20}>
-              <Text inline>+98912000000</Text>
+            <Gap y={20} block>
+              <Divider thick={2} color="gray"/>
             </Gap>
-          </Container>
-        </Container>
 
-      </Container>
-    )
+            <Container>
+              <Container>
+                <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                <Gap x={20}>
+                  <Text inline>+98912000000</Text>
+                </Gap>
+              </Container>
+            </Container>
+
+          </Container>
+
+        </ModalBody>
+
+        <ModalFooter>
+          <Button text onClick={onClose}>{strings.close}</Button>
+        </ModalFooter>
+
+      </Modal>
+    );
   }
 }

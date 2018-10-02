@@ -145,7 +145,7 @@ export default class ModalCreateGroup extends Component {
           {step === constants.SELECT_CONTACT ?
             threadContacts.length > 1 ?
               <Button text onClick={this.onNext.bind(this)}>
-                <MdArrowForward size={i}/>
+                <MdArrowForward/>
               </Button>
               : ""
             :

@@ -13,7 +13,7 @@ import {
   CONTACT_LIST_SHOWING,
   THREAD_SHOWING,
   THREAD_MODAL_IMAGE_CAPTION_SHOWING,
-  THREAD_IMAGES_TO_CAPTION
+  THREAD_IMAGES_TO_CAPTION, THREAD_IMAGE_TO_UPLOAD, THREAD_META_UPDATE, THREAD_NAME_UPDATE
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -77,7 +77,7 @@ export const threadModalListShowing = (isShowing, message) => {
 };
 
 
-export const threadModalImageCaptionShowing = (isShowing) => {
+export const threadModalImageCaptionShowing = isShowing => {
   return dispatch => {
     return dispatch({
       type: THREAD_MODAL_IMAGE_CAPTION_SHOWING,
@@ -151,7 +151,7 @@ export const threadInfo = (threadId, contactIds) => {
 };
 
 export const threadFilesToUpload = (files, upload) => {
-  if(!upload) {
+  if (!upload) {
     let isAllImage = true;
     for (let file of files) {
       if (!~file.type.indexOf("image")) {
@@ -167,6 +167,28 @@ export const threadFilesToUpload = (files, upload) => {
     return dispatch({
       type: THREAD_FILES_TO_UPLOAD,
       payload: files
+    });
+  }
+};
+
+export const threadMetaUpdate = (meta, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    return dispatch({
+      type: THREAD_META_UPDATE,
+      payload: chatSDK.updateThreadInfo(meta, threadId)
+    });
+  }
+};
+
+export const threadRename = (newName, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    return dispatch({
+      type: THREAD_NAME_UPDATE,
+      payload: chatSDK.renameThread(newName, threadId)
     });
   }
 };

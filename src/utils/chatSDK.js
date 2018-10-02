@@ -66,6 +66,7 @@ export default class ChatSDK {
       this.onMessageEvents(msg.result.message, msg.type);
     });
   }
+
   _onFileUploadEvents() {
     this.chatAgent.on("fileUploadEvents", (msg) => {
       this.onFileUploadEvents(msg);
@@ -189,7 +190,7 @@ export default class ChatSDK {
       ...obj, ...{
         fileUniqueId: obj.content.file.uniqueId,
         metaData: {
-          file:{
+          file: {
             mimeType: file.type,
             originalName: file.name,
             link: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
@@ -208,6 +209,46 @@ export default class ChatSDK {
     };
     resolve(cancelFileUploadParams);
     this.chatAgent.cancelFileUpload(cancelFileUploadParams);
+  }
+
+  @promiseDecorator
+  uploadImage(resolve, reject, image, threadId) {
+    const params = {
+      image: image,
+      threadId
+    };
+    this.chatAgent.uploadImage(params, result => {
+      if (!this._onError(result, reject)) {
+        const image = result.result;
+        resolve(`${this.params.fileServer}/nzh/image?imageId=${image.id}&hashCode=${image.hashCode}`);
+      }
+    });
+  }
+
+  @promiseDecorator
+  updateThreadInfo(resolve, reject, customparams, threadId) {
+    const params = {
+      threadId,
+      ...customparams
+    };
+    this.chatAgent.updateThreadInfo(params, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result);
+      }
+    });
+  }
+
+  @promiseDecorator
+  renameThread(resolve, reject, newName, threadId) {
+    const params = {
+      title: newName,
+      threadId
+    };
+    this.chatAgent.renameThread(params, result => {
+      if (!this._onError(result, reject)) {
+        return resolve();
+      }
+    });
   }
 
   @promiseDecorator
@@ -360,9 +401,6 @@ export default class ChatSDK {
       }
     });
   }
-
-
-
 
 
 };
