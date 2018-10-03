@@ -20,7 +20,11 @@ import {
   THREAD_FILE_UPLOADING,
   MESSAGE_SENDING_ERROR,
   THREAD_SHOWING,
-  THREAD_MODAL_IMAGE_CAPTION_SHOWING, THREAD_IMAGES_TO_CAPTION, MESSAGE_FILE_UPLOAD_CANCEL, THREAD_IMAGE_TO_UPLOAD,
+  THREAD_MODAL_IMAGE_CAPTION_SHOWING,
+  THREAD_IMAGES_TO_CAPTION,
+  MESSAGE_FILE_UPLOAD_CANCEL,
+  THREAD_IMAGE_TO_UPLOAD,
+  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -215,6 +219,9 @@ export const threadMessageListReducer = (state = {
       return {...state, ...stateObject("PENDING", [], "messages")};
     case THREAD_GET_MESSAGE_LIST("PENDING"):
       return {...state, ...stateObject("PENDING")};
+    case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID("PENDING"):
+      return {...state, ...stateObject("SUCCESS", [], "messages")};
+    case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID("SUCCESS"):
     case THREAD_GET_MESSAGE_LIST("SUCCESS"):
       let newStateInit = {...state, ...stateObject("SUCCESS", action.payload.messages.reverse(), "messages")};
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};

@@ -14,6 +14,9 @@ export const buildPromiseMessage = (baseMessage, type) => {
   if (type === "PENDING") {
     return `${baseMessage}_PENDING`;
   }
+  if (type === "CANCELED") {
+    return `${baseMessage}_CANCELED`;
+  }
 };
 
 export const CHAT_GET_INSTANCE = buildPromiseMessage.bind(null, "CHAT_GET_INSTANCE");
@@ -37,6 +40,7 @@ export const THREAD_PARTICIPANT_ADD = buildPromiseMessage.bind(null, "THREAD_PAR
 export const THREAD_PARTICIPANT_REMOVE = buildPromiseMessage.bind(null, "THREAD_PARTICIPANT_REMOVE");
 export const THREAD_GET_MESSAGE_LIST = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST");
 export const THREAD_GET_MESSAGE_LIST_PARTIAL = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_PARTIAL");
+export const THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID");
 export const THREAD_CREATE = buildPromiseMessage.bind(null, "THREAD_CREATE");
 export const THREAD_GET_LIST = buildPromiseMessage.bind(null, "THREAD_GET_LIST");
 export const THREAD_NEW = "THREAD_NEW";

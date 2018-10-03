@@ -140,6 +140,46 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getThreadMessageListPartial(resolve, reject, threadId, messageId, loadAfter, count) {
+    const getThreadHistoryParams = {
+      count: count || 50,
+      threadId: threadId,
+      lastMessageId: messageId
+    };
+    if (loadAfter) {
+      getThreadHistoryParams.firstMessageId = messageId;
+      delete getThreadHistoryParams.lastMessageId;
+    }
+    this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve({
+          messages: result.result.history,
+          threadId: threadId,
+          messagesCount: result.result.contentCount,
+          hasNext: result.result.hasNext
+        });
+      }
+    });
+  }
+
+  @promiseDecorator
+  getThreadMessageListByMessageId(resolve, reject, threadId, msgId) {
+    let baseGetThreadHistoryParams = {
+      count: 50,
+      threadId: threadId
+    };
+
+    let historyMessageArray = [];
+    this.getThreadMessageListPartial(threadId, msgId, true, 25).then(result => {
+      historyMessageArray = [...historyMessageArray, ...result.messages];
+      this.getThreadMessageListPartial(threadId, msgId, false, 25).then(result => {
+        historyMessageArray = [...historyMessageArray, ...result.messages];
+        resolve({...result, ...{messages: historyMessageArray}});
+      }, reject);
+    }, reject);
+  }
+
+  @promiseDecorator
   getThreads(resolve, reject, threadIds) {
     let getThreadsParams = {
       count: 50,

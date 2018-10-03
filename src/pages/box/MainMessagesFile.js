@@ -130,7 +130,7 @@ export default class MainMessagesFile extends Component {
   }
 
   render() {
-    const {seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch} = this.props;
+    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch} = this.props;
     const {messageControlShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -142,6 +142,7 @@ export default class MainMessagesFile extends Component {
       <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
+        {highLighterFragment(message)}
         <Container relative>
           {isUploading(message) ?
             <div className={style.MainMessagesFile__Progress}

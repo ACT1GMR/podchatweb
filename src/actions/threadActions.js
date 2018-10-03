@@ -13,7 +13,11 @@ import {
   CONTACT_LIST_SHOWING,
   THREAD_SHOWING,
   THREAD_MODAL_IMAGE_CAPTION_SHOWING,
-  THREAD_IMAGES_TO_CAPTION, THREAD_IMAGE_TO_UPLOAD, THREAD_META_UPDATE, THREAD_NAME_UPDATE
+  THREAD_IMAGES_TO_CAPTION,
+  THREAD_IMAGE_TO_UPLOAD,
+  THREAD_META_UPDATE,
+  THREAD_NAME_UPDATE,
+  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -44,13 +48,35 @@ export const threadGetList = threadIds => {
   }
 };
 
-export const threadMessageGetList = (threadId, offset) => {
+export const threadMessageGetList = (threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chat.chatSDK;
     dispatch({
-      type: offset ? THREAD_GET_MESSAGE_LIST_PARTIAL() : THREAD_GET_MESSAGE_LIST(),
-      payload: chatSDK.getThreadMessageList(threadId, offset)
+      type: THREAD_GET_MESSAGE_LIST(),
+      payload: chatSDK.getThreadMessageList(threadId)
+    });
+  }
+};
+
+export const threadMessageGetListPartial = (threadId, msgId, loadBefore, count) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: THREAD_GET_MESSAGE_LIST_PARTIAL(),
+      payload: chatSDK.getThreadMessageListPartial(threadId, msgId, !loadBefore, count)
+    });
+  }
+};
+
+export const threadMessageGetListByMessageId = (threadId, msgId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(),
+      payload: chatSDK.getThreadMessageListByMessageId(threadId, msgId)
     });
   }
 };

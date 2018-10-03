@@ -9,14 +9,19 @@ import strings from "../../constants/localization";
 
 //actions
 import {messageSeen} from "../../actions/messageActions";
-import {threadMessageGetList, threadFilesToUpload} from "../../actions/threadActions";
+import {
+  threadMessageGetList,
+  threadFilesToUpload,
+  threadMessageGetListByMessageId,
+  threadMessageGetListPartial
+} from "../../actions/threadActions";
 
 //components
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 import Paper from "raduikit/src/paper";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 import Message from "raduikit/src/message";
 import {Text} from "raduikit/src/typography";
 import Gap from "raduikit/src/gap";
@@ -34,6 +39,8 @@ import {
 import style from "../../../styles/pages/box/MainMessages.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
+import {THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID} from "../../constants/actionTypes";
+import classnames from "classnames";
 
 function isMessageByMe(message, user) {
   if (message) {
@@ -98,8 +105,10 @@ export default class MainMessages extends Component {
     this.onScroll = this.onScroll.bind(this);
     this.seenMessages = [];
     this.onFileDrop = this.onFileDrop.bind(this);
+    this.state = {
+      highLightMessage: null
+    };
   }
-
 
   onScroll() {
     const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext} = this.props;
@@ -113,13 +122,14 @@ export default class MainMessages extends Component {
       this.position = scrollTop;
       if (scrollTop <= (scrollHeight / 3)) {
         if (!threadMessagesPartialFetching) {
-          this.props.dispatch(threadMessageGetList(threadMessages[0].threadId, (threadMessages.length / 50) * 50));
+          const message = threadMessages[0];
+          this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, true, 50));
         }
       }
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(oldProps) {
     let boxSceneMessages = this.boxSceneMessagesNode.current;
     if (boxSceneMessages) {
       const {threadMessages, user} = this.props;
@@ -138,6 +148,35 @@ export default class MainMessages extends Component {
         }
       }
     }
+    this.gotoMessage(this.pendingGoToId);
+  }
+
+  gotoMessage(pendingGoToId) {
+    if (pendingGoToId) {
+      const index = this.props.threadMessages.findIndex(e => e.id === pendingGoToId);
+      if (~index) {
+        document.getElementById(pendingGoToId).scrollIntoView();
+        this.setState({
+          highLightMessage: pendingGoToId
+        });
+        this.pendingGoToId = null;
+        setTimeout(() => {
+          this.setState({
+            highLightMessage: false
+          });
+        }, 1000);
+      }
+    }
+  }
+
+  goToMessageId(threadId, msgId) {
+    const {threadMessages} = this.props;
+    const index = threadMessages.findIndex(e => e.id === msgId);
+    if (~index) {
+      return this.gotoMessage(msgId);
+    }
+    this.pendingGoToId = msgId;
+    this.props.dispatch(threadMessageGetListByMessageId(threadId, msgId));
   }
 
   onDragOver(e) {
@@ -161,6 +200,7 @@ export default class MainMessages extends Component {
 
   render() {
     const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
+    const {highLightMessage} = this.state;
     if (threadMessagesFetching || threadFetching) {
       return (
         <Container className={style.MainMessages}>
@@ -231,13 +271,11 @@ export default class MainMessages extends Component {
     const replyFragment = (el) => {
       if (el.replyInfo) {
         return (
-          <Container>
-            <Text link={`#${el.replyInfo.repliedToMessageId}`}>
-              <Paper colorBackground borderRadius={5}>
-                <Text bold size="xs">{strings.replyTo}:</Text>
-                <Text italic size="xs">{el.replyInfo.repliedToMessage}</Text>
-              </Paper>
-            </Text>
+          <Container onClick={this.goToMessageId.bind(this, el.threadId, el.replyInfo.repliedToMessageId)}>
+            <Paper colorBackground borderRadius={5}>
+              <Text bold size="xs">{strings.replyTo}:</Text>
+              <Text italic size="xs">{el.replyInfo.repliedToMessage}</Text>
+            </Paper>
             <Gap block y={5}/>
           </Container>
         )
@@ -258,8 +296,20 @@ export default class MainMessages extends Component {
       }
       return "";
     };
+
+    const highLighterFragment = message => {
+      const classNames = classnames({
+        [style.MainMessages__Highlighter]: true,
+        [style["MainMessages__Highlighter--highlighted"]]: highLightMessage && highLightMessage === message.id
+      });
+      return (<Container className={classNames}>
+        <Container className={style.MainMessages__HighlighterBox}/>
+      </Container>);
+    };
+
     const messageArguments = message => {
       return {
+        highLighterFragment,
         seenFragment,
         editFragment,
         replyFragment,
@@ -270,6 +320,7 @@ export default class MainMessages extends Component {
         user
       }
     };
+
     const message = message => isFile(message) ?
       <MainMessagesFile {...messageArguments(message)}/>
       :
@@ -282,6 +333,7 @@ export default class MainMessages extends Component {
           <AvatarName bottom size="sm">{message.participant.name}</AvatarName>
         </Avatar>
       </Container>;
+
     return (
       <section className={style.MainMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
                onDragEnter={this.onDragEnter}

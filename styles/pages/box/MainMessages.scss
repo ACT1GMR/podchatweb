@@ -17,3 +17,26 @@
   width: 100%;
   height: 100%;
 }
+
+.MainMessages__Highlighter {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  z-index: -1;
+  trasition: opacity 0.1s ease 0s;
+  padding: 5px;
+  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.MainMessages__Highlighter--highlighted {
+  opacity: 1;
+}
+
+.MainMessages__HighlighterBox {
+  border-top: 3px solid $color-accent;
+  height: 100%;
+  border-radius: 7px;
+}

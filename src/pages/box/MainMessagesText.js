@@ -1,6 +1,7 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
 import "moment/locale/fa";
+import classnames from "classnames";
 import {connect} from "react-redux";
 import reactStringReplace from "react-string-replace";
 
@@ -13,7 +14,7 @@ import {threadModalListShowing} from "../../actions/threadActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 import {Text} from "raduikit/src/typography";
 import {
   MdDelete,
@@ -75,14 +76,16 @@ export default class MainMessagesText extends Component {
   }
 
   render() {
-    const {seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
+    const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
     const {messageControlShow} = this.state;
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
 
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={style.MainMessagesText}
+                 id={message.id}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
+        {highLighterFragment(message)}
         <Paper colorBackgroundLight borderRadius={5} hasShadow>
           {replyFragment(message)}
           {forwardFragment(message)}
