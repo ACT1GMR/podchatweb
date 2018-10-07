@@ -27,7 +27,7 @@ import {
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Gap from "../../../../uikit/src/gap";
+import Gap from "raduikit/src/gap";
 
 
 function getImage(metaData, isFromServer) {

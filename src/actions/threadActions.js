@@ -17,7 +17,7 @@ import {
   THREAD_IMAGE_TO_UPLOAD,
   THREAD_META_UPDATE,
   THREAD_NAME_UPDATE,
-  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID
+  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID, THREAD_LEFT_ASIDE_SHOWING, THREAD_SEARCH_MESSAGE, THREAD_GO_TO_MESSAGE
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
@@ -55,6 +55,26 @@ export const threadMessageGetList = (threadId) => {
     dispatch({
       type: THREAD_GET_MESSAGE_LIST(),
       payload: chatSDK.getThreadMessageList(threadId)
+    });
+  }
+};
+
+export const threadSearchMessage = (threadId, query) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chat.chatSDK;
+    dispatch({
+      type: THREAD_SEARCH_MESSAGE(),
+      payload: chatSDK.getThreadMessageListByQuery(threadId, query)
+    });
+  }
+};
+
+export const threadGoToMessageId = (threadId, messageId) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: THREAD_GO_TO_MESSAGE,
+      payload: {threadId, messageId}
     });
   }
 };
@@ -234,6 +254,15 @@ export const threadShowing = (isShowing) => {
   return dispatch => {
     return dispatch({
       type: THREAD_SHOWING,
+      payload: isShowing
+    });
+  }
+};
+
+export const threadLeftAsideShowing = isShowing => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_LEFT_ASIDE_SHOWING,
       payload: isShowing
     });
   }

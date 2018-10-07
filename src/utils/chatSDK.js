@@ -121,10 +121,21 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadMessageList(resolve, reject, threadId, offset) {
+  getThreadMessageListByQuery(resolve, reject, threadId, query, count) {
+    if (typeof query === "string" && !query.slice()) {
+      return resolve({
+        messages: [],
+        threadId: threadId,
+        messagesCount: 0,
+        hasNext: false,
+        reset: true
+      });
+    }
+
     const getThreadHistoryParams = {
-      count: 50,
-      offset: offset || 0,
+      count: count || 50,
+      order: "ASC",
+      query: query,
       threadId: threadId
     };
     this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
@@ -140,6 +151,26 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getThreadMessageList(resolve, reject, threadId, offset) {
+    const getThreadHistoryParams = {
+      count: 50,
+      offset: offset || 0,
+      threadId: threadId
+    };
+    this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve({
+          messages: result.result.history,
+          threadId: threadId,
+          messagesCount: result.result.contentCount,
+          hasPrevious: result.result.hasNext,
+          hasNext: false
+        });
+      }
+    });
+  }
+
+  @promiseDecorator
   getThreadMessageListPartial(resolve, reject, threadId, messageId, loadAfter, count) {
     const getThreadHistoryParams = {
       count: count || 50,
@@ -148,15 +179,17 @@ export default class ChatSDK {
     };
     if (loadAfter) {
       getThreadHistoryParams.firstMessageId = messageId;
+      getThreadHistoryParams.order = "ASC";
       delete getThreadHistoryParams.lastMessageId;
     }
     this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({
-          messages: result.result.history,
+          messages: loadAfter ? result.result.history.reverse() : result.result.history,
           threadId: threadId,
           messagesCount: result.result.contentCount,
-          hasNext: result.result.hasNext
+          hasNext: loadAfter ? result.result.hasNext : null,
+          hasPrevious: loadAfter ? null : result.result.hasNext
         });
       }
     });
@@ -172,9 +205,10 @@ export default class ChatSDK {
     let historyMessageArray = [];
     this.getThreadMessageListPartial(threadId, msgId, true, 25).then(result => {
       historyMessageArray = [...historyMessageArray, ...result.messages];
+      const hasNext = result.hasNext;
       this.getThreadMessageListPartial(threadId, msgId, false, 25).then(result => {
         historyMessageArray = [...historyMessageArray, ...result.messages];
-        resolve({...result, ...{messages: historyMessageArray}});
+        resolve({...result, ...{messages: historyMessageArray, hasNext, hasPrevious: result.hasNext}});
       }, reject);
     }, reject);
   }
@@ -209,7 +243,8 @@ export default class ChatSDK {
     });
     resolve({
       ...obj, ...{
-        message: content
+        message: content,
+        newMessage: true
       }
     })
   }

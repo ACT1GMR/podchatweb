@@ -1,28 +1,33 @@
 @import "_scope";
 @import "../../utils/responsive";
 
-.MainMessagesFile__FileContainer {
-  display: flex;
-  align-items: center;
+@mixin small() {
+
+  .MainMessagesFile__FileContainer {
+    display: flex;
+    align-items: center;
+  }
+
+  .MainMessagesFile__FileContainer--reverseDirection {
+    flex-direction: row-reverse;
+  }
+
+  .MainMessagesFile__FileName {
+    flex-grow: 1;
+    word-break: break-word;
+  }
+
+  .MainMessagesFile__FileControlIcon {
+    cursor: pointer;
+  }
+
+  .MainMessagesFile__Image {
+    max-width: 100%;
+    border-radius: 5px;
+  }
 }
 
-.MainMessagesFile__FileContainer--reverseDirection {
-  flex-direction: row-reverse;
-}
-
-.MainMessagesFile__FileName {
-  flex-grow: 1;
-  word-break: break-word;
-}
-
-.MainMessagesFile__FileControlIcon {
-  cursor: pointer;
-}
-
-.MainMessagesFile__Image {
-  max-width: 100%;
-  border-radius: 5px;
-}
+@include small();
 
 @include grid("md") {
   .MainMessagesFile__Image {
@@ -54,4 +59,8 @@
   box-shadow: 0 0 25px #f58220;
   font-size: $font-size-xsm;
   text-align: center;
+}
+
+.Box--small {
+  @include small();
 }

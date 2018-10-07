@@ -1,5 +1,11 @@
 // src/actions/messageActions.js
-import {THREAD_NEW, CHAT_GET_INSTANCE, THREAD_CHANGED, THREAD_FILE_UPLOADING} from "../constants/actionTypes";
+import {
+  THREAD_NEW,
+  CHAT_GET_INSTANCE,
+  THREAD_CHANGED,
+  THREAD_FILE_UPLOADING,
+  MESSAGE_NEW
+} from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
 export const chatSetInstance = config => {
@@ -24,6 +30,9 @@ export const chatSetInstance = config => {
         });
       },
       onMessageEvents: (message, type) => {
+        if(type === MESSAGE_NEW) {
+          message.newMessage = true;
+        }
         dispatch({
           type: type,
           payload: message

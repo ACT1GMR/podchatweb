@@ -2,6 +2,7 @@ import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
   fa: {
+    search: "جستجو",
     tryAgain: "تلاش دوباره",
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کنید!!",
     pleaseWriteHere: "اینجا بنویسید...",
@@ -65,6 +66,9 @@ let strings = new LocalizedStrings({
     createdAChat(person) {
       return `${person} چتی ساخت`
     },
+    noResult: "نتیجه ای وجود ندارد",
+    searchSomething: "کلمه ای تایپ کنید",
+    searchMessages: "جستجو پیامها"
   },
   it: {}
 });

@@ -14,6 +14,11 @@
   position: relative;
 }
 
+.Box__AsideLeft {
+  flex: 0 0 100%;
+  display: none;
+}
+
 .Box__Aside * {
   user-select: none;
 }
@@ -23,19 +28,38 @@
   position: relative;
 }
 
-.Box--isThreadShow .Box__Aside {
-  display: none;
+.Box--isThreadShow {
+  .Box__Aside {
+    display: none;
+  }
+
+  .Box__Main {
+    display: block;
+  }
 }
 
-.Box--isThreadShow .Box__Main {
-  display: block;
+.Box--isAsideLeftShow {
+  .Box__Aside {
+    display: none;
+  }
+
+  .Box__Main {
+    display: none;
+  }
+
+  .Box__AsideLeft {
+    display: block;
+  }
 }
 
 @include grid("md") {
-  .Box--isThreadShow .Box__Aside,
-  .Box--isThreadShow .Box__Main {
-    display: block;
+  .Box--isThreadShow {
+    .Box__Aside,
+    .Box__Main {
+      display: block;
+    }
   }
+
   .Box__Aside {
     flex: 0 0 30%;
     position: relative;
@@ -44,5 +68,16 @@
   .Box__Main {
     flex: 0 0 70%;
     position: relative;
+  }
+
+  .Box--isAsideLeftShow {
+    .Box__Main {
+      flex: 0 0 40%;
+      display: block;
+    }
+    .Box__AsideLeft {
+      flex: 0 0 30%;
+      display: block;
+    }
   }
 }

@@ -7,13 +7,13 @@ import strings from "../../constants/localization";
 import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
 
 //actions
-import {threadModalCreateGroupShowing, threadShowing} from "../../actions/threadActions";
+import {threadShowing, threadLeftAsideShowing} from "../../actions/threadActions";
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
 import {threadModalThreadInfoShowing} from "../../actions/threadActions";
 
 
 //UI components
-import {MdChevronLeft} from "react-icons/lib/md";
+import {MdChevronLeft, MdSearch} from "react-icons/lib/md";
 import {Text} from "raduikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
@@ -38,6 +38,7 @@ export default class BoxHeadThreadInfo extends Component {
     super(props);
     this.onShowInfoClick = this.onShowInfoClick.bind(this);
     this.onThreadHide = this.onThreadHide.bind(this);
+    this.onLeftAsideShow = this.onLeftAsideShow.bind(this);
   }
 
   onShowInfoClick() {
@@ -47,6 +48,11 @@ export default class BoxHeadThreadInfo extends Component {
   onThreadHide(e) {
     e.stopPropagation();
     this.props.dispatch(threadShowing(false));
+  }
+
+  onLeftAsideShow(e){
+    e.stopPropagation();
+    this.props.dispatch(threadLeftAsideShowing(true));
   }
 
   render() {
@@ -71,8 +77,13 @@ export default class BoxHeadThreadInfo extends Component {
               </AvatarName>
             </Avatar>
           </Container>
-          <Container className={style.MainHead__Back} centerLeft onClick={this.onThreadHide}>
-            <MdChevronLeft size={styleVar.iconSizeLg} color={styleVar.colorWhite}/>
+          <Container className={style.MainHead__Control} centerLeft onClick={this.onLeftAsideShow}>
+            <Container className={style.MainHead__SearchContainer} inline>
+              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite} className={style.MainHead__SearchButton}/>
+            </Container>
+            <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
+              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite} className={style.MainHead__BackButton}/>
+            </Container>
           </Container>
         </Container>
       )

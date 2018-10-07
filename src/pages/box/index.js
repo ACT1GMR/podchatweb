@@ -13,6 +13,7 @@ import {userGet} from "../../actions/userActions";
 //components
 import Aside from "./Aside";
 import Main from "./Main";
+import LeftAside from "./LeftAside";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
@@ -25,7 +26,8 @@ import style from "../../../styles/pages/box/index.scss";
   return {
     chatInstance: store.chat.chatSDK,
     user: store.user.user,
-    threadShowing: store.threadShowing
+    threadShowing: store.threadShowing,
+    leftAsideShowing: store.threadLeftAsideShowing
   };
 }, null, null, {withRef: true})
 export default class Box extends Component {
@@ -59,7 +61,7 @@ export default class Box extends Component {
   }
 
   render() {
-    const {chatInstance, user, threadShowing, customClassName} = this.props;
+    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing} = this.props;
     let classNames = classnames({
       [style.Box]: true,
       [customClassName]: customClassName
@@ -77,7 +79,8 @@ export default class Box extends Component {
     }
 
     classNames += ` ${classnames({
-      [style["Box--isThreadShow"]]: threadShowing
+      [style["Box--isThreadShow"]]: threadShowing,
+      [style["Box--isAsideLeftShow"]]: leftAsideShowing
     })}`;
 
     return (
@@ -87,6 +90,9 @@ export default class Box extends Component {
         </Container>
         <Container className={style.Box__Main}>
           <Main/>
+        </Container>
+        <Container className={style.Box__AsideLeft}>
+          <LeftAside/>
         </Container>
       </Container>
     );

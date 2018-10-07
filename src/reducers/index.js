@@ -19,7 +19,12 @@ import {
   threadParticipantRemoveReducer,
   threadModalMedialShowingReducer,
   threadShowingReducer,
-  threadImagesToCaptionReducer, threadModalImageCaptionShowingReducer
+  threadLeftAsideShowingReducer,
+  threadSearchMessageReducer,
+  threadImagesToCaptionReducer,
+  threadModalImageCaptionShowingReducer,
+  threadGoToMessageIdReducer,
+  threadGetMessageListByMessageIdReducer
 } from "./threadReducer";
 import {messageSendReducer, messageNewReducer, messageEditingReducer, messageEditReducer} from "./messageReducer";
 import chatReducer from "./chatReducer";
@@ -47,6 +52,10 @@ const rootReducer = {
   threadFilesToUpload: threadFilesToUploadReducer,
   threadImagesToCaption: threadImagesToCaptionReducer,
   threadShowing: threadShowingReducer,
+  threadLeftAsideShowing: threadLeftAsideShowingReducer,
+  threadSearchMessage: threadSearchMessageReducer,
+  threadGoToMessageId: threadGoToMessageIdReducer,
+  threadGetMessageListByMessageId: threadGetMessageListByMessageIdReducer,
   message: messageNewReducer,
   sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,

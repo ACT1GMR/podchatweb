@@ -1,0 +1,11 @@
+.LeftAsideHead {
+  height: 59px;
+  width: 100%;
+  align-items: center;
+  position: relative;
+  padding: 0 10px;
+  background-color: $color-accent;
+  border-right: 1px solid $color-accent-dark;
+  z-index: $z-index-1;
+  order: 1;
+}

@@ -14,7 +14,7 @@ import {threadModalListShowing} from "../../actions/threadActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
-import Container from "../../../../uikit/src/container";
+import Container from "raduikit/src/container";
 import {Text} from "raduikit/src/typography";
 import {
   MdDelete,

@@ -1,4 +1,10 @@
 import {
+  MESSAGE_NEW,
+  MESSAGE_SEEN,
+  MESSAGE_EDIT,
+  MESSAGE_SEND,
+  MESSAGE_SENDING_ERROR,
+  MESSAGE_FILE_UPLOAD_CANCEL,
   THREAD_CREATE,
   THREAD_GET_MESSAGE_LIST,
   THREAD_GET_MESSAGE_LIST_PARTIAL,
@@ -9,22 +15,15 @@ import {
   THREAD_MODAL_LIST_SHOWING,
   THREAD_MODAL_THREAD_INFO_SHOWING,
   THREAD_CHANGED,
-  MESSAGE_NEW,
-  MESSAGE_SEEN,
-  MESSAGE_EDIT,
-  CONTACT_LIST_SHOWING,
-  MESSAGE_SEND,
   THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
   THREAD_FILES_TO_UPLOAD,
   THREAD_FILE_UPLOADING,
-  MESSAGE_SENDING_ERROR,
   THREAD_SHOWING,
   THREAD_MODAL_IMAGE_CAPTION_SHOWING,
   THREAD_IMAGES_TO_CAPTION,
-  MESSAGE_FILE_UPLOAD_CANCEL,
-  THREAD_IMAGE_TO_UPLOAD,
-  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID,
+  THREAD_LEFT_ASIDE_SHOWING,
+  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID, THREAD_SEARCH_MESSAGE, THREAD_GO_TO_MESSAGE,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -114,9 +113,27 @@ export const threadModalImageCaptionShowingReducer = (state = false, action) => 
   }
 };
 
+export const threadGoToMessageIdReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_GO_TO_MESSAGE:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
 export const threadShowingReducer = (state = false, action) => {
   switch (action.type) {
     case THREAD_SHOWING:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const threadLeftAsideShowingReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_LEFT_ASIDE_SHOWING:
       return action.payload;
     default:
       return state;
@@ -156,6 +173,26 @@ export const threadsReducer = (state = {
   }
 };
 
+export const threadSearchMessageReducer = (state = {
+  messages: {
+    reset: true
+  },
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_SEARCH_MESSAGE("PENDING"):
+      return {...state, ...stateObject("PENDING", [], "messages")};
+    case THREAD_SEARCH_MESSAGE("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "messages")};
+    case THREAD_SEARCH_MESSAGE("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
 export const threadMessageListPartialReducer = (state = {
   fetching: false,
   fetched: false,
@@ -173,10 +210,28 @@ export const threadMessageListPartialReducer = (state = {
   }
 };
 
+export const threadGetMessageListByMessageIdReducer = (state = {
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID("PENDING"):
+      return {...state, ...stateObject("PENDING")};
+    case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS")};
+    case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
 export const threadMessageListReducer = (state = {
   messages: [],
   threadId: null,
   hasNext: false,
+  hasPrevious: false,
   fetching: false,
   fetched: false,
   error: false
@@ -187,9 +242,27 @@ export const threadMessageListReducer = (state = {
     }
   }
 
+  function removeDuplicate(state) {
+    let messages = [...state.messages];
+    const checkedIds = [];
+    const removeIndexes = [];
+    for (const message of messages) {
+      const index = checkedIds.findIndex(id => id === message.id);
+      if (~index) {
+        removeIndexes.push(index);
+      }
+      checkedIds.push(message.id);
+    }
+    removeIndexes.forEach(index => messages.splice(index, 1));
+    messages = messages.sort((a, b) => a.time - b.time);
+    state.messages = messages;
+    return state;
+  }
+
   function updateMessage(field, value, criteria, upsert, remove) {
     const messagesClone = [...state.messages];
     const uniqueId = action.payload.uniqueId;
+
     if (!checkForCurrentThread()) {
       return state;
     }
@@ -204,14 +277,22 @@ export const threadMessageListReducer = (state = {
           messagesClone[fileIndex] = value;
         }
       }
-      return {...state, ...stateObject("SUCCESS", messagesClone, "messages")};
+      return removeDuplicate({...state, ...stateObject("SUCCESS", messagesClone, "messages")});
     } else {
       if (upsert) {
         messagesClone.push(value);
-        return {...state, ...stateObject("SUCCESS", messagesClone, "messages")};
+        return removeDuplicate({...state, ...stateObject("SUCCESS", messagesClone, "messages")});
       }
       return state;
     }
+  }
+
+
+  let hasNext = state.hasNext;
+  let hasPrevious = state.hasPrevious;
+  if (action.payload) {
+    hasNext = action.payload.hasNext !== null ? action.payload.hasNext : state.hasNext;
+    hasPrevious = action.payload.hasPrevious !== null ? action.payload.hasPrevious : state.hasPrevious;
   }
 
   switch (action.type) {
@@ -223,9 +304,9 @@ export const threadMessageListReducer = (state = {
       return {...state, ...stateObject("SUCCESS", [], "messages")};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID("SUCCESS"):
     case THREAD_GET_MESSAGE_LIST("SUCCESS"):
-      let newStateInit = {...state, ...stateObject("SUCCESS", action.payload.messages.reverse(), "messages")};
+      let newStateInit = {...state, ...stateObject("SUCCESS", action.payload.messages, "messages")};
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
-      return {...newStateInit, ...{hasNext: action.payload.hasNext}};
+      return removeDuplicate({...newStateInit, ...{hasPrevious, hasNext}});
     case THREAD_GET_MESSAGE_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     case THREAD_FILE_UPLOADING:
@@ -233,9 +314,9 @@ export const threadMessageListReducer = (state = {
         return message.fileUniqueId === action.payload.uniqueId;
       });
     case THREAD_GET_MESSAGE_LIST_PARTIAL("SUCCESS"):
-      let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages.reverse(), ...state.messages], "messages")};
+      let newStatePartial = {...state, ...stateObject("SUCCESS", [...action.payload.messages, ...state.messages], "messages")};
       newStateInit = {...newStateInit, ...{threadId: action.payload.threadId}};
-      return {...newStatePartial, ...{hasNext: action.payload.hasNext}};
+      return removeDuplicate({...newStatePartial, ...{hasPrevious, hasNext}});
     case MESSAGE_SENDING_ERROR:
       return updateMessage("hasError", true);
     case MESSAGE_FILE_UPLOAD_CANCEL("SUCCESS"):
@@ -243,7 +324,7 @@ export const threadMessageListReducer = (state = {
         return message.fileUniqueId === action.payload.uniqueId;
       }, null, true);
     case MESSAGE_NEW:
-    case MESSAGE_SEND("SUCCESS"): {
+    case MESSAGE_SEND("SUCCESS"):
       if (!checkForCurrentThread()) {
         return state;
       }
@@ -254,8 +335,7 @@ export const threadMessageListReducer = (state = {
         }
         return updateMessage(null, action.payload, null, true);
       }
-      return {...state, messages: [...state.messages, action.payload]};
-    }
+      return removeDuplicate({...state, messages: [...state.messages, action.payload]});
     case MESSAGE_EDIT():
     case MESSAGE_SEEN:
       return updateMessage(null, action.payload, message => message.id === action.payload.id);

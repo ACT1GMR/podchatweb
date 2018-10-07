@@ -17,7 +17,8 @@ import {MdMenu, MdClose} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/AsidHead.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Container from "../../../../uikit/src/container";
+import Container from "raduikit/src/container";
+import utilsStlye from "../../../styles/utils/utils.scss";
 
 const statics = {
   headMenuSize: 59
@@ -81,18 +82,22 @@ export default class AsideHead extends Component {
   }
 
   render() {
-    const {menuItems, threadShowing} = this.props;
+    const {menuItems} = this.props;
     const {isOpen} = this.state;
     const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
+
     return (
       <Container className={style.AsideHead} ref={this.container}>
         <Notification/>
         {isOpen ? (
           <MdClose size={iconSize} onClick={this.onCloseMenu}
+                   className={utilsStlye["u-clickable"]}
                    style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         ) : (
-          <MdMenu size={iconSize} onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
+          <MdMenu size={iconSize}
+                  className={utilsStlye["u-clickable"]}
+                  onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         )}
 
         <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu} >

@@ -21,7 +21,7 @@ import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 import Paper from "raduikit/src/paper";
-import Container from "../../../../uikit/src/container";
+import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import {Text} from "raduikit/src/typography";
 import Gap from "raduikit/src/gap";
@@ -39,7 +39,6 @@ import {
 import style from "../../../styles/pages/box/MainMessages.scss";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
-import {THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID} from "../../constants/actionTypes";
 import classnames from "classnames";
 
 function isMessageByMe(message, user) {
@@ -89,11 +88,14 @@ function datePetrification(time) {
   return {
     threadMessages: store.threadMessages.messages,
     threadMessagesHasNext: store.threadMessages.hasNext,
+    threadMessagesHasPrevious: store.threadMessages.hasPrevious,
     threadMessagesFetching: store.threadMessages.fetching,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
+    threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
+    threadGoToMessageId: store.threadGoToMessageId,
+    threadFetching: store.thread.fetching,
     user: store.user.user,
-    contact: store.contactChatting.contact,
-    threadFetching: store.thread.fetching
+    contact: store.contactChatting.contact
   };
 })
 export default class MainMessages extends Component {
@@ -105,37 +107,52 @@ export default class MainMessages extends Component {
     this.onScroll = this.onScroll.bind(this);
     this.seenMessages = [];
     this.onFileDrop = this.onFileDrop.bind(this);
+    this.freeScroll = true;
     this.state = {
       highLightMessage: null
     };
   }
 
   onScroll() {
-    const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext} = this.props;
-    if (threadMessagesHasNext) {
+    const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext, threadMessagesHasPrevious} = this.props;
+    if (!this.freeScroll || threadMessagesPartialFetching) {
+      return false;
+    }
+    if (threadMessagesHasPrevious || threadMessagesHasNext) {
       const current = this.boxSceneMessagesNode.current;
       const scrollHeight = current.scrollHeight;
       const scrollTop = current.scrollTop;
-      if (scrollTop > this.position) {
-        return this.position = scrollTop;
-      }
-      this.position = scrollTop;
-      if (scrollTop <= (scrollHeight / 3)) {
-        if (!threadMessagesPartialFetching) {
-          const message = threadMessages[0];
-          this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, true, 50));
+      let goingToUp = scrollTop < this.lastPosition;
+      this.lastPosition = scrollTop;
+      let message;
+      let loadBefore = false;
+      if (goingToUp) {
+        if (threadMessagesHasPrevious) {
+          if (scrollTop <= (scrollHeight / 3)) {
+            message = threadMessages[0];
+            loadBefore = true;
+          }
         }
+      } else {
+        if (threadMessagesHasNext) {
+          if (scrollTop > (scrollHeight - (scrollHeight / 3))) {
+            message = threadMessages[threadMessages.length - 1];
+          }
+        }
+      }
+      if (message) {
+        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, loadBefore, 50));
       }
     }
   }
 
   componentDidUpdate(oldProps) {
-    let boxSceneMessages = this.boxSceneMessagesNode.current;
-    if (boxSceneMessages) {
+    let messagesNode = this.boxSceneMessagesNode.current;
+    if (messagesNode) {
       const {threadMessages, user} = this.props;
       const lastMessage = threadMessages[threadMessages.length - 1];
-      if (!this.lastMessage || this.lastMessage !== lastMessage.uniqueId) {
-        boxSceneMessages.scrollTop = boxSceneMessages.scrollHeight;
+      if (!this.lastMessage || (lastMessage.newMessage && this.lastMessage !== lastMessage.uniqueId)) {
+        messagesNode.scrollTop = messagesNode.scrollHeight;
         this.lastMessage = lastMessage.uniqueId;
       }
 
@@ -148,7 +165,14 @@ export default class MainMessages extends Component {
         }
       }
     }
-    this.gotoMessage(this.pendingGoToId);
+    const {threadGoToMessageId} = this.props;
+    if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
+      this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.messageId);
+    }
+    if (this.pendingGoToId) {
+      this.gotoMessage(this.pendingGoToId);
+      this.freeScroll = false;
+    }
   }
 
   gotoMessage(pendingGoToId) {
@@ -156,11 +180,12 @@ export default class MainMessages extends Component {
       const index = this.props.threadMessages.findIndex(e => e.id === pendingGoToId);
       if (~index) {
         document.getElementById(pendingGoToId).scrollIntoView();
+        this.pendingGoToId = null;
         this.setState({
           highLightMessage: pendingGoToId
         });
-        this.pendingGoToId = null;
         setTimeout(() => {
+          this.freeScroll = true;
           this.setState({
             highLightMessage: false
           });
@@ -199,9 +224,9 @@ export default class MainMessages extends Component {
   }
 
   render() {
-    const {threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
+    const {threadGetMessageListByMessageIdFetching, threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
     const {highLightMessage} = this.state;
-    if (threadMessagesFetching || threadFetching) {
+    if (threadMessagesFetching || threadFetching || threadGetMessageListByMessageIdFetching) {
       return (
         <Container className={style.MainMessages}>
           <Container center centerTextAlign style={{width: "100%"}}>
@@ -302,9 +327,11 @@ export default class MainMessages extends Component {
         [style.MainMessages__Highlighter]: true,
         [style["MainMessages__Highlighter--highlighted"]]: highLightMessage && highLightMessage === message.id
       });
-      return (<Container className={classNames}>
-        <Container className={style.MainMessages__HighlighterBox}/>
-      </Container>);
+      return (
+        <Container className={classNames}>
+          <Container className={style.MainMessages__HighlighterBox}/>
+        </Container>
+      );
     };
 
     const messageArguments = message => {

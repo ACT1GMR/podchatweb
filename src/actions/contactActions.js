@@ -8,7 +8,7 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   THREAD_CREATE
 } from "../constants/actionTypes";
-import {threadCreate, threadMessageGetList, threadShowing} from "./threadActions";
+import {threadCreate, threadShowing} from "./threadActions";
 
 export const contactGetList = () => {
   return (dispatch, getState) => {
