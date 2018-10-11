@@ -8,7 +8,7 @@ import {
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
-export const contactGetListReducer =  (state = {
+export const contactGetListReducer = (state = {
   contacts: [],
   fetching: false,
   fetched: false,
@@ -18,7 +18,13 @@ export const contactGetListReducer =  (state = {
     case CONTACT_GET_LIST("PENDING"):
       return {...state, ...stateObject("PENDING")};
     case CONTACT_GET_LIST("SUCCESS"):
-      return {...state, ...stateObject("SUCCESS", action.payload, "contacts")};
+      let contacts = action.payload;
+      if (contacts.length) {
+        contacts = contacts.sort((a, b) => {
+          return a.firstName.localeCompare(b.firstName)
+        });
+      }
+      return {...state, ...stateObject("SUCCESS", contacts, "contacts")};
     case CONTACT_GET_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
@@ -26,7 +32,7 @@ export const contactGetListReducer =  (state = {
   }
 };
 
-export const contactAdd =  (state = {
+export const contactAdd = (state = {
   contact: null,
   fetching: false,
   fetched: false,
@@ -44,7 +50,7 @@ export const contactAdd =  (state = {
   }
 };
 
-export const contactAddingReducer =  (state = {
+export const contactAddingReducer = (state = {
   isAdding: false
 }, action) => {
   switch (action.type) {
@@ -55,7 +61,7 @@ export const contactAddingReducer =  (state = {
   }
 };
 
-export const contactChattingReducer =  (state = {
+export const contactChattingReducer = (state = {
   contact: false
 }, action) => {
   switch (action.type) {
@@ -66,7 +72,7 @@ export const contactChattingReducer =  (state = {
   }
 };
 
-export const contactListShowingReducer =  (state = {
+export const contactListShowingReducer = (state = {
   isShow: false
 }, action) => {
   switch (action.type) {

@@ -247,6 +247,9 @@ export const threadMessageListReducer = (state = {
     const checkedIds = [];
     const removeIndexes = [];
     for (const message of messages) {
+      if(!message.id) {
+        continue;
+      }
       const index = checkedIds.findIndex(id => id === message.id);
       if (~index) {
         removeIndexes.push(index);

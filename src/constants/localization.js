@@ -8,8 +8,8 @@ let strings = new LocalizedStrings({
     pleaseWriteHere: "اینجا بنویسید...",
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
     add: "اضافه کردن",
-    addContact: "اضافه کردن اطلاعات تماس",
-    contactList: "لیست تماس ها",
+    addContact: "اضافه کردن مخاطب",
+    contactList: "لیست مخاطبین",
     cancel: "لغو",
     close: "بستن",
     startChat: "شروع گفتگو",
@@ -19,7 +19,7 @@ let strings = new LocalizedStrings({
     creatingChatWith: (firstName, lastName) => {
       return `در حال ایجاد گفتگو با ${firstName} ${lastName}`;
     },
-    thereIsNoChat: "چتی وجود ندارد",
+    thereIsNoChat: "گفتگویی وجود ندارد",
     select: "انتخاب",
     forwardTo: "انتخاب چت برای فرستادن",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
@@ -49,7 +49,7 @@ let strings = new LocalizedStrings({
     sentAFile: "فایلی فرستاد",
     remove: "حذف",
     groupInfo: "اطلاعات گروه",
-    contactInfo: "اطلاعات تماس",
+    contactInfo: "اطلاعات مخاطب",
     dropYourFileHere: "فایلاتون رو بندازید اینجا",
     imageText: "متن تصویر",
     send: "بفرست",

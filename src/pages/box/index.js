@@ -7,7 +7,7 @@ import classnames from "classnames";
 import strings from "../../constants/localization";
 
 //actions
-import {chatSetInstance} from "../../actions/chatActions";
+import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
 import {userGet} from "../../actions/userActions";
 
 //components
@@ -17,6 +17,13 @@ import LeftAside from "./LeftAside";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
+import ModalContactList from "./ModalContactList";
+import ModalAddContact from "./ModalAddContact";
+import ModalThreadList from "./ModalThreadList";
+import ModalCreateGroup from "./ModalCreateGroup";
+import ModalThreadInfo from "./ModalThreadInfo";
+import ModalMedia from "./ModalMedia";
+import ModalImageCaption from "./ModalImageCaption";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
@@ -24,7 +31,7 @@ import style from "../../../styles/pages/box/index.scss";
 
 @connect(store => {
   return {
-    chatInstance: store.chat.chatSDK,
+    chatInstance: store.chatInstance.chatSDK,
     user: store.user.user,
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing
@@ -37,15 +44,20 @@ export default class Box extends Component {
 
   componentDidUpdate(oldProps) {
     const {token} = this.props;
-    if (oldProps.token) {
-      if (oldProps.token !== token) {
+    const {token: oldToken} = oldProps;
+    if (oldToken) {
+      if (oldToken !== token) {
         this.setToken(token);
       }
     }
   }
 
   componentDidMount() {
-    this.props.dispatch(chatSetInstance(this.props));
+    const {small, dispatch} = this.props;
+    dispatch(chatSetInstance(this.props));
+    if(small){
+      dispatch(chatSmallVersion(small))
+    }
   }
 
   componentWillUpdate(chatInstance) {
@@ -61,9 +73,10 @@ export default class Box extends Component {
   }
 
   render() {
-    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing} = this.props;
+    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing, small} = this.props;
     let classNames = classnames({
       [style.Box]: true,
+      [style["Box--small"]]: small,
       [customClassName]: customClassName
     });
 
@@ -83,8 +96,21 @@ export default class Box extends Component {
       [style["Box--isAsideLeftShow"]]: leftAsideShowing
     })}`;
 
+    const popups = (
+      <Container>
+        <ModalContactList smallVersion={small}/>
+        <ModalAddContact smallVersion={small}/>
+        <ModalThreadList smallVersion={small}/>
+        <ModalCreateGroup smallVersion={small}/>
+        <ModalThreadInfo smallVersion={small}/>
+        <ModalMedia smallVersion={small}/>
+        <ModalImageCaption smallVersion={small}/>
+      </Container>
+    );
+
     return (
       <Container className={classNames}>
+        {popups}
         <Container className={style.Box__Aside}>
           <Aside/>
         </Container>

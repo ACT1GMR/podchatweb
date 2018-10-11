@@ -1,5 +1,5 @@
 @import "_scope";
-@import "../../utils/responsive";
+@import "../../mixin/responsive";
 
 .MainHead {
   height: 59px;
@@ -39,7 +39,7 @@
 
 @include grid("md") {
 
-  .MainHead__BackContainer {
+  :not(.MainHead__BackContainer--forceShow).MainHead__BackContainer {
     display: none;
   }
 

@@ -1,38 +1,27 @@
 @import "_scope";
-@import "../../utils/responsive";
+@import "../../mixin/responsive";
 
-@mixin small() {
-
-  .MainMessagesFile__FileContainer {
-    display: flex;
-    align-items: center;
-  }
-
-  .MainMessagesFile__FileContainer--reverseDirection {
-    flex-direction: row-reverse;
-  }
-
-  .MainMessagesFile__FileName {
-    flex-grow: 1;
-    word-break: break-word;
-  }
-
-  .MainMessagesFile__FileControlIcon {
-    cursor: pointer;
-  }
-
-  .MainMessagesFile__Image {
-    max-width: 100%;
-    border-radius: 5px;
-  }
+.MainMessagesFile__FileContainer {
+  display: flex;
+  align-items: center;
 }
 
-@include small();
+.MainMessagesFile__FileContainer--reverseDirection {
+  flex-direction: row-reverse;
+}
 
-@include grid("md") {
-  .MainMessagesFile__Image {
-    max-width: 400px;
-  }
+.MainMessagesFile__FileName {
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+.MainMessagesFile__FileControlIcon {
+  cursor: pointer;
+}
+
+.MainMessagesFile__Image {
+  max-width: 100%;
+  border-radius: 5px;
 }
 
 .MainMessagesFile__Progress {
@@ -61,6 +50,8 @@
   text-align: center;
 }
 
-.Box--small {
-  @include small();
+@include grid("md") {
+  :not(.MainMessagesFile__Image--smallVersion).MainMessagesFile__Image {
+    max-width: 400px;
+  }
 }

@@ -3,11 +3,8 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 
 //strings
-import strings from "../../constants/localization";
 
 //actions
-import {chatSetInstance} from "../../actions/chatActions";
-import {userGet} from "../../actions/userActions";
 
 //components
 import AsideHead from "./AsideHead";

@@ -12,6 +12,7 @@ import {messageEditing, messageSendingError, messageCancelFile, messageSendFile}
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
+import Image from "raduikit/src/image";
 import Container from "raduikit/src/container";
 import {Text} from "raduikit/src/typography";
 import Shape, {ShapeCircle} from "raduikit/src/shape";
@@ -28,15 +29,16 @@ import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
 import Gap from "raduikit/src/gap";
+import classnames from "classnames";
 
 
-function getImage(metaData, isFromServer) {
+function getImage(metaData, isFromServer, smallVersion) {
   let imageLink = metaData.link;
   let width = metaData.width;
   let height = metaData.height;
 
   const ratio = height / width;
-  const maxWidth = window.innerWidth <= 700 ? 190 : ratio >= 2 ? 200 : 300;
+  const maxWidth = smallVersion || window.innerWidth <= 700 ? 190 : ratio >= 2 ? 200 : 300;
   if (!isFromServer) {
     return {imageLink, width: maxWidth, height};
   }
@@ -64,7 +66,11 @@ function hasError(message) {
   }
 }
 
-@connect()
+@connect(store => {
+  return {
+    smallVersion: store.chatSmallVersion
+  };
+})
 export default class MainMessagesFile extends Component {
 
   constructor(props) {
@@ -130,14 +136,18 @@ export default class MainMessagesFile extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch} = this.props;
+    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion} = this.props;
     const {messageControlShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = ~metaData.mimeType.indexOf("image");
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
-    const imageSizeLink = isImage ? getImage(metaData, message.id) : false;
+    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion) : false;
     const isMsgByMe = isMessageByMe(message, user);
+    const mainMessagesFileImageClassNames = classnames({
+      [style.MainMessagesFile__Image]: true,
+      [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
+    });
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px"
                  onMouseOver={this.onMouseOver}
@@ -152,9 +162,9 @@ export default class MainMessagesFile extends Component {
           <Paper colorBackgroundLight borderRadius={5} hasShadow>
             {replyFragment(message)}
             {forwardFragment(message)}
-            <Container relative className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"]: ""}`}>
+            <Container relative className={`${mainMessagesFileImageClassNames} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"]: ""}`}>
               {isImage ?
-                <img className={style.MainMessagesFile__Image} src={imageSizeLink.imageLink}
+                <Image className={style.MainMessagesFile__Image} src={imageSizeLink.imageLink}
                      style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
                      onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/> :
 

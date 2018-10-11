@@ -27,17 +27,18 @@ import {
   threadGetMessageListByMessageIdReducer
 } from "./threadReducer";
 import {messageSendReducer, messageNewReducer, messageEditingReducer, messageEditReducer} from "./messageReducer";
-import chatReducer from "./chatReducer";
+import {chatSmallVersionReducer, chatInstanceReducer} from "./chatReducer";
 import userReducer from "./userReducer";
 
 const rootReducer = {
+  chatInstance: chatInstanceReducer,
+  chatSmallVersion: chatSmallVersionReducer,
   contactGetList: contactGetListReducer,
   contactListShowing: contactListShowingReducer,
   contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,
   contactAdding: contactAddingReducer,
   contactAdd: contactAdd,
   contactChatting: contactChattingReducer,
-  chat: chatReducer,
   thread: threadCreateReducer,
   threadMessages: threadMessageListReducer,
   threadMessagesPartial: threadMessageListPartialReducer,

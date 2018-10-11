@@ -97,12 +97,12 @@ export default class ModalCreateGroup extends Component {
   }
 
   render() {
-    const {contacts, isShow} = this.props;
+    const {contacts, isShow, smallVersion} = this.props;
     const {threadContacts, step, groupName} = this.state;
 
     let filteredContacts = contacts.filter(e => e.hasUser);
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.selectContacts}</Heading>

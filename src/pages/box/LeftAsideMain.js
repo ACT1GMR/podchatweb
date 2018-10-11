@@ -27,6 +27,7 @@ function datePetrification(time) {
 
 @connect(store => {
   return {
+    smallVersion: store.chatSmallVersion,
     thread: store.thread.thread,
     threadSearchMessagePending: store.threadSearchMessage.fetching,
     threadSearchMessages: store.threadSearchMessage.messages.messages,
@@ -84,10 +85,11 @@ export default class LeftAsideMain extends Component {
   }
 
   onSearchItemClicked(messageId) {
-    if(mobileCheck()) {
-      this.props.dispatch(threadLeftAsideShowing(false));
+    const {smallVersion, dispatch, thread} = this.props;
+    if (smallVersion || mobileCheck()) {
+      dispatch(threadLeftAsideShowing(false));
     }
-    this.props.dispatch(threadGoToMessageId(this.props.thread.id, messageId));
+    dispatch(threadGoToMessageId(thread.id, messageId));
   }
 
   render() {

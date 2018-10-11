@@ -13,13 +13,6 @@ import {threadMessageGetList} from "../../actions/threadActions";
 import MainHead from "./MainHead";
 import MainMessages from "./MainMessages";
 import MainFooter from "./MainFooter";
-import ModalContactList from "./ModalContactList";
-import ModalAddContact from "./ModalAddContact";
-import ModalThreadList from "./ModalThreadList";
-import ModalCreateGroup from "./ModalCreateGroup";
-import ModalThreadInfo from "./ModalThreadInfo";
-import ModalImageCaption from "./ModalImageCaption";
-import ModalMedia from "./ModalMedia";
 import Message from "raduikit/src/message";
 import Gap from "raduikit/src/gap";
 import {MdChat} from "react-icons/lib/md";
@@ -50,17 +43,7 @@ export default class Main extends Component {
 
   render() {
     const {threadId, threadFetching} = this.props;
-    const popups = (
-      <section>
-        <ModalContactList/>
-        <ModalAddContact/>
-        <ModalThreadList/>
-        <ModalCreateGroup/>
-        <ModalThreadInfo/>
-        <ModalMedia/>
-        <ModalImageCaption/>
-      </section>
-    );
+
     if (!threadId && !threadFetching) {
       return (
         <Container className={style.Main}>
@@ -73,7 +56,6 @@ export default class Main extends Component {
               <Button outlined onClick={() => this.props.dispatch(contactListShowing(true))}>{strings.contactList}</Button>
             </Container>
           </Container>
-          {popups}
         </Container>
       );
     }
@@ -82,7 +64,6 @@ export default class Main extends Component {
         <MainHead/>
         <MainMessages/>
         <MainFooter/>
-        {popups}
       </Container>
     );
   }

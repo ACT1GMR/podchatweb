@@ -28,6 +28,7 @@ const statics = {};
 
 @connect(store => {
   return {
+    smallVersion: store.chatSmallVersion,
     thread: store.thread.thread,
     threadShowing: store.threadShowing
   };
@@ -56,11 +57,16 @@ export default class BoxHeadThreadInfo extends Component {
   }
 
   render() {
-    const {thread, threadShowing} = this.props;
+    const {thread, threadShowing, smallVersion} = this.props;
     if (thread.id) {
       const classNames = classnames({
         [style.MainHead]: true,
+        [style["MainHead--small"]]: smallVersion,
         [style["MainHead--isThreadShow"]]: threadShowing
+      });
+      const mainHeadBackContainerClassNames = classnames({
+        [style.MainHead__BackContainer]: true,
+        [style["MainHead__BackContainer--forceShow"]]: smallVersion
       });
       return (
         <Container className={classNames} onClick={this.onShowInfoClick} relative>
@@ -81,7 +87,7 @@ export default class BoxHeadThreadInfo extends Component {
             <Container className={style.MainHead__SearchContainer} inline>
               <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite} className={style.MainHead__SearchButton}/>
             </Container>
-            <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
+            <Container className={mainHeadBackContainerClassNames} inline onClick={this.onThreadHide}>
               <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite} className={style.MainHead__BackButton}/>
             </Container>
           </Container>

@@ -1,7 +1,8 @@
 // src/actions/messageActions.js
 import {
-  THREAD_NEW,
   CHAT_GET_INSTANCE,
+  CHAT_SMALL_VERSION,
+  THREAD_NEW,
   THREAD_CHANGED,
   THREAD_FILE_UPLOADING,
   MESSAGE_NEW
@@ -18,7 +19,7 @@ export const chatSetInstance = config => {
       config,
       onThreadEvents: (thread, type) => {
         thread.changeType = type;
-        if(thread.changeType === THREAD_NEW) {
+        if (thread.changeType === THREAD_NEW) {
           return dispatch({
             type: THREAD_NEW,
             payload: thread
@@ -30,7 +31,7 @@ export const chatSetInstance = config => {
         });
       },
       onMessageEvents: (message, type) => {
-        if(type === MESSAGE_NEW) {
+        if (type === MESSAGE_NEW) {
           message.newMessage = true;
         }
         dispatch({
@@ -57,7 +58,16 @@ export const chatSetInstance = config => {
 export const chatUploadImage = (image, threadId, callBack) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     chatSDK.uploadImage(image, threadId).then(callBack);
+  }
+};
+
+export const chatSmallVersion = isSmall => {
+  return dispatch => {
+    return dispatch({
+      type: CHAT_SMALL_VERSION,
+      payload: isSmall
+    });
   }
 };

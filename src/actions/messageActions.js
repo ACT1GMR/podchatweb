@@ -10,7 +10,7 @@ import {
 export const messageSend = (text, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
       payload: chatSDK.sendMessage(text, threadId)
@@ -21,7 +21,7 @@ export const messageSend = (text, threadId) => {
 export const messageSendFile = (file, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
       payload: chatSDK.sendFileMessage(file, threadId)
@@ -32,7 +32,7 @@ export const messageSendFile = (file, threadId) => {
 export const messageCancelFile = (uniqueId, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_FILE_UPLOAD_CANCEL(),
       payload: chatSDK.cancelFileUpload(uniqueId, threadId)
@@ -61,7 +61,7 @@ export const messageSendingError = (threadId, uniqueId) => {
 export const messageEdit = (newText, id) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_EDIT(),
       payload: chatSDK.editMessage(newText, id)
@@ -72,7 +72,7 @@ export const messageEdit = (newText, id) => {
 export const messageForward = (threadId, messageUniqueId) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_FORWARD(),
       payload: chatSDK.forwardMessage(threadId, messageUniqueId)
@@ -83,7 +83,7 @@ export const messageForward = (threadId, messageUniqueId) => {
 export const messageReply = (replyText, id, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_EDIT(),
       payload: chatSDK.replyMessage(replyText, id, threadId)
@@ -103,7 +103,7 @@ export const messageNew = (message) => {
 export const messageSeen = (message) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEEN,
       payload: chatSDK.seenMessage(message.id, message.ownerId)

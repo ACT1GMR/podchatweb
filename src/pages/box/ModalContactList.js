@@ -11,7 +11,6 @@ import {contactListShowing, contactAdding, contactGetList, contactChatting} from
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 import Button from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
-import Message from "raduikit/src/message";
 import List, {ListItem} from "raduikit/src/list";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
@@ -59,9 +58,9 @@ export default class ModalContactList extends Component {
   }
 
   render() {
-    const {contacts, isShow} = this.props;
+    const {contacts, isShow, smallVersion} = this.props;
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)}  inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.contactList}</Heading>

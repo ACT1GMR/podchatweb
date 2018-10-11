@@ -243,6 +243,7 @@ export default class ChatSDK {
     });
     resolve({
       ...obj, ...{
+        time: Date.now(),
         message: content,
         newMessage: true
       }
@@ -263,6 +264,8 @@ export default class ChatSDK {
     });
     resolve({
       ...obj, ...{
+        newMessage: true,
+        time: Date.now(),
         fileUniqueId: obj.content.file.uniqueId,
         metaData: {
           file: {

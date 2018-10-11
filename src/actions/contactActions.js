@@ -13,7 +13,7 @@ import {threadCreate, threadShowing} from "./threadActions";
 export const contactGetList = () => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: CONTACT_GET_LIST(),
       payload: chatSDK.getContactList()
@@ -63,7 +63,7 @@ export const contactChatting = (contact) => {
 export const contactAdd = (mobilePhone, firstName, lastName) => {
   return (dispatch, getState) => {
     const state = getState();
-    const chatSDK = state.chat.chatSDK;
+    const chatSDK = state.chatInstance.chatSDK;
     chatSDK.addContact(mobilePhone, firstName, lastName).then(e => {
       dispatch({
         type: CONTACT_ADD("SUCCESS"),

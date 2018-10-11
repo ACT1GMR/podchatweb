@@ -24,8 +24,7 @@ export function ContactList(props) {
                   onSelect={onSelect ? () => onSelect(el.id) : null}
                   onDeselect={onDeselect ? () => onDeselect(el.id) : null}
                   invert={invert}
-                  active={activeList && activeList.indexOf(el.id) > -1}
-        >
+                  active={activeList && activeList.indexOf(el.id) > -1}>
           <Container relative>
             <Avatar>
               <AvatarImage src={el.image ? el.image : defaultAvatar}/>

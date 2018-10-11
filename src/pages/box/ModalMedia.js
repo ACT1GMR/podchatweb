@@ -8,12 +8,8 @@ import strings from "../../constants/localization";
 import {threadModalMediaShowing} from "../../actions/threadActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {InputText} from "raduikit/src/input";
-import Button from "raduikit/src/button";
-import {Heading} from "raduikit/src/typography";
-import Message from "raduikit/src/message";
-import Container from "raduikit/src/container";
+import Modal, {ModalBody} from "raduikit/src/modal";
+import Image from "raduikit/src/image";
 
 //styling
 import style from "../../../styles/pages/box/ModalMedia.scss";
@@ -34,12 +30,12 @@ export default class ModalAddContact extends Component {
   }
 
   render() {
-    const {object} = this.props;
+    const {object, smallVersion} = this.props;
     return (
-      <Modal isOpen={object.isShowing} onClose={this.onCancel.bind(this)}>
+      <Modal isOpen={object.isShowing} onClose={this.onCancel.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalBody>
-          <img className={style.ModalMedia__Img} src={object.src} style={{maxWidth: "100%"}}/>
+          <Image className={style.ModalMedia__Img} src={object.src} style={{maxWidth: "100%"}}/>
         </ModalBody>
 
       </Modal>

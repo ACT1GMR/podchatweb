@@ -50,9 +50,9 @@ export default class ModalContactList extends Component {
   }
 
   render() {
-    const {threads, isShow} = this.props;
+    const {threads, isShow, smallVersion} = this.props;
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.forwardTo}</Heading>

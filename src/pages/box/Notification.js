@@ -28,7 +28,7 @@ function isMessageByMe(message, user) {
   return {
     newMessage: store.message.message,
     user: store.user.user,
-    chatInstance: store.chat.chatSDK,
+    chatInstance: store.chatInstance.chatSDK,
   };
 })
 export default class Notification extends Component {

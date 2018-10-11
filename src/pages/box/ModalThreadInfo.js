@@ -48,9 +48,9 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, contacts, isShow, thread, user} = this.props;
+    const {participants, contacts, isShow, thread, user, smallVersion} = this.props;
     const isGroup = thread.group;
-    const commonProps = {participants, contacts, isShow, thread, user, onClose: this.onClose};
+    const commonProps = {participants, contacts, isShow, thread, user, onClose: this.onClose, smallVersion};
     return isGroup ? <ModalThreadInfoGroup {...commonProps}/> : <ModalThreadInfoPerson {...commonProps}/>;
   }
 }

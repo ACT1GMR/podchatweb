@@ -123,8 +123,7 @@ export default class MainFooterInputEditing extends Component {
             <Container className={style.MainFooterInputEditing__Content}>
               {editObject.image ?
                 <Container className={style.MainFooterInputEditing__ImageContainer} inline>
-                  <div className={style.MainFooterInputEditing__Image}
-                       style={{backgroundImage: `url(${editObject.image})`}}/>
+                  <Container className={style.MainFooterInputEditing__Image} style={{backgroundImage: `url(${editObject.image})`}}/>
                 </Container>
                 : ""}
               {editObject.text}

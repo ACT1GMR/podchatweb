@@ -72,9 +72,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
   }
 
   render() {
-    const {thread} = this.props;
     const {groupName, groupDesc, image} = this.state;
-    const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
     return (
       <Container>
         <Container relative>

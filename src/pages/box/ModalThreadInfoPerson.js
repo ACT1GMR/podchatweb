@@ -32,14 +32,14 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, thread, user, onClose, isShow} = this.props;
+    const {participants, thread, user, onClose, isShow, smallVersion} = this.props;
     let participant = participants;
     if (participants) {
       participant = participants.filter(e => e.name !== user.name)[0];
     }
     const participantImage = participant && participant.image;
     return (
-      <Modal isOpen={isShow} onClose={onClose}>
+      <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.contactInfo}</Heading>

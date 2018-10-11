@@ -14,6 +14,7 @@ import {Heading} from "raduikit/src/typography";
 import List, {ListItem} from "raduikit/src/list";
 import {InputText} from "raduikit/src/input";
 import Container from "raduikit/src/container";
+import Image from "raduikit/src/image";
 
 //styling
 import {messageSend} from "../../actions/messageActions";
@@ -63,12 +64,12 @@ export default class ModalImageCaption extends Component {
   }
 
   render() {
-    const {images, isShow} = this.props;
+    const {images, isShow, smallVersion} = this.props;
     const {comment} = this.state;
 
     return (
 
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.sendingImages}</Heading>
@@ -81,7 +82,7 @@ export default class ModalImageCaption extends Component {
                 <ListItem key={el.id} invert multiple>
                   <Container centerTextAlign>
 
-                    <img className={style.ModalImageCaption__Image} src={URL.createObjectURL(el)}/>
+                    <Image className={style.ModalImageCaption__Image} src={URL.createObjectURL(el)}/>
 
                   </Container>
                 </ListItem>

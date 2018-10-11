@@ -68,10 +68,10 @@ export default class ModalAddContact extends Component {
   }
 
   render() {
-    const {isAdding, contactAdd, contactAddPending, contactAddError} = this.props;
+    const {isAdding, contactAdd, contactAddPending, smallVersion} = this.props;
     const {mobilePhone, firstName, lastName} = this.state;
     return (
-      <Modal isOpen={isAdding} onClose={this.onCancel.bind(this)}>
+      <Modal isOpen={isAdding} onClose={this.onCancel.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.addContact}</Heading>

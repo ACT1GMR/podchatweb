@@ -89,7 +89,7 @@ module.exports = (e, argv) => {
     }
   } else {
     base.devtool = "source-map";
-    base.entry="./src/dev"
+    base.entry = "./src/dev";
   }
 
   return base;

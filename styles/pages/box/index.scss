@@ -1,4 +1,4 @@
-@import "../../utils/responsive";
+@import "../../mixin/responsive";
 
 .Box {
   display: flex;
@@ -53,24 +53,24 @@
 }
 
 @include grid("md") {
-  .Box--isThreadShow {
+  :not(.Box--small).Box--isThreadShow {
     .Box__Aside,
     .Box__Main {
       display: block;
     }
   }
 
-  .Box__Aside {
+  :not(.Box--small) > .Box__Aside {
     flex: 0 0 30%;
     position: relative;
   }
 
-  .Box__Main {
+  :not(.Box--small) > .Box__Main {
     flex: 0 0 70%;
     position: relative;
   }
 
-  .Box--isAsideLeftShow {
+  :not(.Box--small).Box--isAsideLeftShow {
     .Box__Main {
       flex: 0 0 40%;
       display: block;

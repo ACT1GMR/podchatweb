@@ -1,5 +1,6 @@
 // src/list/BoxSceneMessages
 import React, {Component} from "react";
+import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 import "moment/locale/fa";
 import date from "../../utils/date";
@@ -10,7 +11,6 @@ import strings from "../../constants/localization";
 //actions
 import {messageSeen} from "../../actions/messageActions";
 import {
-  threadMessageGetList,
   threadFilesToUpload,
   threadMessageGetListByMessageId,
   threadMessageGetListPartial
@@ -86,6 +86,7 @@ function datePetrification(time) {
 
 @connect(store => {
   return {
+    threadId: store.thread.thread.id,
     threadMessages: store.threadMessages.messages,
     threadMessagesHasNext: store.threadMessages.hasNext,
     threadMessagesHasPrevious: store.threadMessages.hasPrevious,
@@ -99,15 +100,18 @@ function datePetrification(time) {
   };
 })
 export default class MainMessages extends Component {
+  seenMessages = [];
+  lastMessage = null;
+  gotoBottom = true;
+  freeScroll = true;
+  lastPosition = null;
 
   constructor(props) {
     super(props);
     this.boxSceneMessagesNode = React.createRef();
     this.messageListNode = React.createRef();
     this.onScroll = this.onScroll.bind(this);
-    this.seenMessages = [];
     this.onFileDrop = this.onFileDrop.bind(this);
-    this.freeScroll = true;
     this.state = {
       highLightMessage: null
     };
@@ -119,7 +123,8 @@ export default class MainMessages extends Component {
       return false;
     }
     if (threadMessagesHasPrevious || threadMessagesHasNext) {
-      const current = this.boxSceneMessagesNode.current;
+      let current = this.boxSceneMessagesNode.current;
+      current = ReactDOM.findDOMNode(current);
       const scrollHeight = current.scrollHeight;
       const scrollTop = current.scrollTop;
       let goingToUp = scrollTop < this.lastPosition;
@@ -147,31 +152,42 @@ export default class MainMessages extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    let messagesNode = this.boxSceneMessagesNode.current;
+    let messagesNode = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
     if (messagesNode) {
-      const {threadMessages, user} = this.props;
+      const {threadMessages, user, threadId, threadGoToMessageId} = this.props;
+      const {threadId: oldThreadId, threadGoToMessageId: oldThreadGoToMessageId, threadMessages: oldThreadMessages} = oldProps;
       const lastMessage = threadMessages[threadMessages.length - 1];
-      if (!this.lastMessage || (lastMessage.newMessage && this.lastMessage !== lastMessage.uniqueId)) {
+      const gotoBottom = () => {
         messagesNode.scrollTop = messagesNode.scrollHeight;
         this.lastMessage = lastMessage.uniqueId;
-      }
-
-      if (lastMessage) {
-        if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
-          if (!lastMessage.seen && !isMessageByMe(lastMessage, user)) {
-            this.seenMessages.push(lastMessage.uniqueId);
-            this.props.dispatch(messageSeen(lastMessage));
+        if (lastMessage) {
+          if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
+            if (!lastMessage.seen && !isMessageByMe(lastMessage, user)) {
+              this.seenMessages.push(lastMessage.uniqueId);
+              this.props.dispatch(messageSeen(lastMessage));
+            }
           }
         }
+      };
+      if (this.pendingGoToId) {
+        this.gotoMessage(this.pendingGoToId);
+        this.freeScroll = false;
+      } else if (this.gotoBottom) {
+        if (oldThreadMessages !== threadMessages) {
+          if (threadMessages) {
+            gotoBottom();
+          }
+          this.gotoBottom = false;
+        }
+      } else if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
+        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.messageId);
+      } else {
+        if (oldThreadId !== threadId) {
+          this.gotoBottom = true;
+        } else if (lastMessage.newMessage && this.lastMessage !== lastMessage.uniqueId) {
+          gotoBottom();
+        }
       }
-    }
-    const {threadGoToMessageId} = this.props;
-    if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
-      this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.messageId);
-    }
-    if (this.pendingGoToId) {
-      this.gotoMessage(this.pendingGoToId);
-      this.freeScroll = false;
     }
   }
 
@@ -189,7 +205,7 @@ export default class MainMessages extends Component {
           this.setState({
             highLightMessage: false
           });
-        }, 1000);
+        }, 1500);
       }
     }
   }
@@ -362,10 +378,10 @@ export default class MainMessages extends Component {
       </Container>;
 
     return (
-      <section className={style.MainMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
-               onDragEnter={this.onDragEnter}
-               onDragOver={this.onDragOver}
-               onDrop={this.onFileDrop}>
+      <Container className={style.MainMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
+                 onDragEnter={this.onDragEnter}
+                 onDragOver={this.onDragOver}
+                 onDrop={this.onFileDrop}>
         {threadMessagesPartialFetching && partialLoading}
         <List ref={this.messageListNode}>
           {threadMessages.map(el => (
@@ -377,7 +393,7 @@ export default class MainMessages extends Component {
             </ListItem>
           ))}
         </List>
-      </section>
+      </Container>
     );
   }
 }

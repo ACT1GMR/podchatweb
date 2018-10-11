@@ -146,6 +146,10 @@ export default class ModalThreadInfo extends Component {
 
   onSaveSettings(){
     this.settingsRef.current.wrappedInstance.saveSettings();
+    this.setState({
+      step: constants.GROUP_INFO,
+      addMembers: []
+    });
   }
 
   onRemoveParticipant(id) {
@@ -154,7 +158,7 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, thread, user, isShow, contacts} = this.props;
+    const {participants, thread, user, isShow, contacts, smallVersion} = this.props;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
@@ -178,7 +182,7 @@ export default class ModalThreadInfo extends Component {
       )
     };
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{constants.GROUP_INFO === step? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
@@ -218,7 +222,6 @@ export default class ModalThreadInfo extends Component {
               <Gap y={20} block>
                 <Divider thick={2} color="gray"/>
               </Gap>
-
 
               <Container>
                 <ContactList invert selection contacts={participants} actions={conversationAction}/>
