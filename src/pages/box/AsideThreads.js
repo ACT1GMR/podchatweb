@@ -82,7 +82,6 @@ export default class AsideThreads extends Component {
 
   onThreadClick(thread) {
     this.props.dispatch(threadCreate(null, thread));
-    this.props.dispatch(threadShowing(true));
   }
 
   componentDidUpdate(oldProps) {

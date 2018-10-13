@@ -20,6 +20,7 @@ import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
 import Message from "raduikit/src/message";
 import date from "../../utils/date";
 import {mobileCheck} from "../../utils/helpers";
+import classnames from "classnames";
 
 function datePetrification(time) {
   return date.isToday(time) ? date.format(time, "HH:mm") : date.isWithinAWeek(time) ? date.format(time, "dddd HH:mm") : date.format(time, "YYYY-MM-DD  HH:mm");
@@ -94,9 +95,13 @@ export default class LeftAsideMain extends Component {
 
   render() {
     const {query} = this.state;
-    const {threadSearchMessages, threadSearchMessagePending, threadSearchMessagesReset} = this.props;
+    const {threadSearchMessages, threadSearchMessagePending, threadSearchMessagesReset, smallVersion} = this.props;
+    const classNames = classnames({
+      [style.LeftAsideMain]: true,
+      [style["LeftAsideMain--smallVersion"]]: smallVersion
+    });
     return (
-      <Container className={style.LeftAsideMain} ref={this.container}>
+      <Container className={classNames} ref={this.container}>
         <InputText onChange={this.onSearchQueryChange} value={query} placeholder={strings.search} ref={this.inputRef}/>
         {threadSearchMessagePending ?
           (

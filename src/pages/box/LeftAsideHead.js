@@ -17,12 +17,17 @@ import style from "../../../styles/pages/box/LeftAsideHead.scss";
 import styleVar from "./../../../styles/variables.scss";
 import Container from "raduikit/src/container";
 import utilsStlye from "../../../styles/utils/utils.scss";
+import classnames from "classnames";
 
 const statics = {
   headMenuSize: 59
 };
 
-@connect()
+@connect(store => {
+  return {
+    smallVersion: store.chatSmallVersion
+  }
+})
 export default class LeftAsideHead extends Component {
 
   constructor(props) {
@@ -35,8 +40,13 @@ export default class LeftAsideHead extends Component {
   }
 
   render() {
+    const {smallVersion} = this.props;
     const iconSize = styleVar.iconSizeMd.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
+    const classNames = classnames({
+      [style.LeftAsideHead]: true,
+      [style["LeftAsideHead--smallVersion"]]: smallVersion
+    });
     return (
       <Container className={style.LeftAsideHead} ref={this.container}>
         <Container inline onClick={this.onLeftAsideHide}>

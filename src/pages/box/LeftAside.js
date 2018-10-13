@@ -3,7 +3,6 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 
 //strings
-import strings from "../../constants/localization";
 
 //actions
 

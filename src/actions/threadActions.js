@@ -22,6 +22,7 @@ import {
 
 export const threadCreate = (contactId, thread, threadName) => {
   return (dispatch, getState) => {
+    dispatch(threadShowing(true));
     if (thread) {
       return dispatch({
         type: THREAD_CREATE("CACHE"),

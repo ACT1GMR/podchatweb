@@ -53,7 +53,6 @@ export default class ModalContactList extends Component {
   onStartChat(contact) {
     this.props.dispatch(contactChatting(contact));
     this.props.dispatch(threadCreate(contact.id));
-    this.props.dispatch(threadShowing(true));
     this.onClose();
   }
 

@@ -162,9 +162,9 @@ export default class MainMessagesFile extends Component {
           <Paper colorBackgroundLight borderRadius={5} hasShadow>
             {replyFragment(message)}
             {forwardFragment(message)}
-            <Container relative className={`${mainMessagesFileImageClassNames} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"]: ""}`}>
+            <Container relative className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"]: ""}`}>
               {isImage ?
-                <Image className={style.MainMessagesFile__Image} src={imageSizeLink.imageLink}
+                <Image className={mainMessagesFileImageClassNames} src={imageSizeLink.imageLink}
                      style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
                      onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/> :
 
