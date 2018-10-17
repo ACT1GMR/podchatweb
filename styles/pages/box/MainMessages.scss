@@ -3,11 +3,16 @@
   order: 2;
   position: relative;
   z-index: $z-index-1;
-  overflow-y: auto;
+  display: flex;
 }
 
 .MainMessages * {
   user-select: none;
+}
+
+.MainMessages__Messages {
+  flex: 1 1 0;
+  overflow-y: auto;
 }
 
 .MainMessages__Empty {

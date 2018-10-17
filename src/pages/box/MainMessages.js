@@ -13,10 +13,12 @@ import {messageSeen} from "../../actions/messageActions";
 import {
   threadFilesToUpload,
   threadMessageGetListByMessageId,
-  threadMessageGetListPartial
+  threadMessageGetListPartial,
+  threadMessageGetList
 } from "../../actions/threadActions";
 
 //components
+import {ButtonFloating} from "raduikit/src/button"
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
@@ -33,6 +35,7 @@ import {
   MdChatBubbleOutline,
   MdErrorOutline,
   MdSchedule,
+  MdExpandMore
 } from "react-icons/lib/md";
 
 //styling
@@ -112,22 +115,63 @@ export default class MainMessages extends Component {
     this.messageListNode = React.createRef();
     this.onScroll = this.onScroll.bind(this);
     this.onFileDrop = this.onFileDrop.bind(this);
+    this.onGotoBottom = this.onGotoBottom.bind(this);
     this.state = {
-      highLightMessage: null
+      highLightMessage: null,
+      gotoBottomButtonShowing: false
     };
+  }
+
+  onGotoBottom() {
+    const {dispatch, threadId, threadMessagesHasNext} = this.props;
+    const {gotoBottomButtonShowing} = this.state;
+    if (threadMessagesHasNext) {
+      dispatch(threadMessageGetList(threadId));
+      this.gotoBottom = true;
+    } else {
+      let messagesNode = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
+      messagesNode.scrollTop = messagesNode.scrollHeight;
+    }
+    if (gotoBottomButtonShowing) {
+      this.setState({
+        gotoBottomButtonShowing: false
+      });
+    }
   }
 
   onScroll() {
     const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext, threadMessagesHasPrevious} = this.props;
+    const {gotoBottomButtonShowing} = this.state;
     if (!this.freeScroll || threadMessagesPartialFetching) {
       return false;
     }
+    const current = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
+    const scrollTop = current.scrollTop + current.offsetHeight;
+    const goingToUp = scrollTop < this.lastPosition;
+    const scrollHeight = current.scrollHeight;
+    const gotoBottomButtonShowingThreshold = 100;
+    if ((scrollHeight - gotoBottomButtonShowingThreshold) >= scrollTop) {
+      if (!goingToUp || threadMessagesHasNext) {
+        if (!gotoBottomButtonShowing) {
+          this.setState({
+            gotoBottomButtonShowing: true
+          });
+        }
+      } else {
+        if (gotoBottomButtonShowing) {
+          this.setState({
+            gotoBottomButtonShowing: false
+          });
+        }
+      }
+    } else {
+      if (gotoBottomButtonShowing) {
+        this.setState({
+          gotoBottomButtonShowing: false
+        });
+      }
+    }
     if (threadMessagesHasPrevious || threadMessagesHasNext) {
-      let current = this.boxSceneMessagesNode.current;
-      current = ReactDOM.findDOMNode(current);
-      const scrollHeight = current.scrollHeight;
-      const scrollTop = current.scrollTop;
-      let goingToUp = scrollTop < this.lastPosition;
       this.lastPosition = scrollTop;
       let message;
       let loadBefore = false;
@@ -241,7 +285,7 @@ export default class MainMessages extends Component {
 
   render() {
     const {threadGetMessageListByMessageIdFetching, threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
-    const {highLightMessage} = this.state;
+    const {highLightMessage, gotoBottomButtonShowing} = this.state;
     if (threadMessagesFetching || threadFetching || threadGetMessageListByMessageIdFetching) {
       return (
         <Container className={style.MainMessages}>
@@ -378,21 +422,30 @@ export default class MainMessages extends Component {
       </Container>;
 
     return (
-      <Container className={style.MainMessages} ref={this.boxSceneMessagesNode} onScroll={this.onScroll}
+      <Container className={style.MainMessages} onScroll={this.onScroll}
                  onDragEnter={this.onDragEnter}
                  onDragOver={this.onDragOver}
                  onDrop={this.onFileDrop}>
         {threadMessagesPartialFetching && partialLoading}
-        <List ref={this.messageListNode}>
-          {threadMessages.map(el => (
-            <ListItem key={el.id || el.uniqueId} data={el}>
-              <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`}>
-                {!isMessageByMe(el, user) ? message(el) : avatar(el)}
-                {!isMessageByMe(el, user) ? avatar(el) : message(el)}
-              </Container>
-            </ListItem>
-          ))}
-        </List>
+        <Container className={style.MainMessages__Messages}
+                   ref={this.boxSceneMessagesNode}>
+          <List ref={this.messageListNode}>
+            {threadMessages.map(el => (
+              <ListItem key={el.id || el.uniqueId} data={el}>
+                <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`}>
+                  {!isMessageByMe(el, user) ? message(el) : avatar(el)}
+                  {!isMessageByMe(el, user) ? avatar(el) : message(el)}
+                </Container>
+              </ListItem>
+            ))}
+          </List>
+        </Container>
+        {gotoBottomButtonShowing ?
+          <ButtonFloating onClick={this.onGotoBottom} size="sm" position={{right: 0, bottom: 0}}>
+            <MdExpandMore size={style.iconSizeMd} style={{margin: "0 5px"}}/>
+          </ButtonFloating> :
+          ""}
+
       </Container>
     );
   }

@@ -9,6 +9,7 @@ import {auth} from "podauth";
 
 auth({
   clientId: "2051121e4348af52664cf7de0bda",
+  scope: "social:write",
   onNewToken: token => {
     render(
       <Provider store={store}>

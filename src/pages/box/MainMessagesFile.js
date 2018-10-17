@@ -68,7 +68,8 @@ function hasError(message) {
 
 @connect(store => {
   return {
-    smallVersion: store.chatSmallVersion
+    smallVersion: store.chatSmallVersion,
+    leftAsideShowing: store.threadLeftAsideShowing
   };
 })
 export default class MainMessagesFile extends Component {
@@ -136,13 +137,13 @@ export default class MainMessagesFile extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion} = this.props;
+    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing} = this.props;
     const {messageControlShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = ~metaData.mimeType.indexOf("image");
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
-    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion) : false;
+    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
     const isMsgByMe = isMessageByMe(message, user);
     const mainMessagesFileImageClassNames = classnames({
       [style.MainMessagesFile__Image]: true,

@@ -8,7 +8,7 @@ import strings from "../../constants/localization";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import Button from "raduikit/src/button";
+import {Button} from "raduikit/src/button";
 import Gap from "raduikit/src/Gap";
 import {Heading, Text} from "raduikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";

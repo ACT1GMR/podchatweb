@@ -10,7 +10,7 @@ import {contactAdd, contactAdding, contactChatting, contactListShowing} from "..
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
 import {InputText} from "raduikit/src/input";
-import Button from "raduikit/src/button";
+import {Button} from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import Message from "raduikit/src/message";
 import Container from "raduikit/src/container";

@@ -10,7 +10,7 @@ import {threadModalListShowing, threadCreate} from "../../actions/threadActions"
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import Button from "raduikit/src/button";
+import {Button} from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import List, {ListItem} from "raduikit/src/list";
 import {InputText} from "raduikit/src/input";

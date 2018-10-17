@@ -51,7 +51,7 @@ export default class BoxHeadThreadInfo extends Component {
     this.props.dispatch(threadShowing(false));
   }
 
-  onLeftAsideShow(e){
+  onLeftAsideShow(e) {
     e.stopPropagation();
     this.props.dispatch(threadLeftAsideShowing(true));
   }
@@ -81,10 +81,12 @@ export default class BoxHeadThreadInfo extends Component {
           </Container>
           <Container centerLeft onClick={this.onLeftAsideShow}>
             <Container className={style.MainHead__SearchContainer} inline>
-              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite} className={style.MainHead__SearchButton}/>
+              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}
+                        className={style.MainHead__SearchButton}/>
             </Container>
             <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
-              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite} className={style.MainHead__BackButton}/>
+              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}
+                             className={style.MainHead__BackButton}/>
             </Container>
           </Container>
         </Container>

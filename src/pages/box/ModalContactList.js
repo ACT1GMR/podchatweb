@@ -9,7 +9,7 @@ import {contactListShowing, contactAdding, contactGetList, contactChatting} from
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import Button from "raduikit/src/button";
+import {Button} from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import List, {ListItem} from "raduikit/src/list";
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";

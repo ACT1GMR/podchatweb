@@ -11,7 +11,7 @@ import {messageEditing} from "../../actions/messageActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import Button from "raduikit/src/button";
+import {Button} from "raduikit/src/button";
 import {Heading} from "raduikit/src/typography";
 import Message from "raduikit/src/message";
 import List, {ListItem} from "raduikit/src/list";

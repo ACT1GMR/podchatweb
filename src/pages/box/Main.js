@@ -16,7 +16,7 @@ import MainFooter from "./MainFooter";
 import Message from "raduikit/src/message";
 import Gap from "raduikit/src/gap";
 import {MdChat} from "react-icons/lib/md";
-import Button from "raduikit/src/button";
+import {Button} from "raduikit/src/button";
 import Container from "raduikit/src/container";
 
 //styling
