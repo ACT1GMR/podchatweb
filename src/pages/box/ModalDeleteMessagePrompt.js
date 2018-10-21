@@ -29,7 +29,7 @@ export default class ModalDeleteMessagePrompt extends Component {
 
   onRemove() {
     const {messageId, dispatch} = this.props;
-    dispatch(messageDelete(messageId));
+    dispatch(messageDelete(messageId, true));
     dispatch(messageModalDeletePrompt(false));
   }
 
