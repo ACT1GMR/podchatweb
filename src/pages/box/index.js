@@ -24,6 +24,7 @@ import ModalCreateGroup from "./ModalCreateGroup";
 import ModalThreadInfo from "./ModalThreadInfo";
 import ModalMedia from "./ModalMedia";
 import ModalImageCaption from "./ModalImageCaption";
+import ModalDeleteMessagePrompt from "./ModalDeleteMessagePrompt";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
@@ -98,6 +99,7 @@ export default class Box extends Component {
 
     const popups = (
       <Container>
+        <ModalDeleteMessagePrompt smallVersion={small}/>
         <ModalContactList smallVersion={small}/>
         <ModalAddContact smallVersion={small}/>
         <ModalThreadList smallVersion={small}/>

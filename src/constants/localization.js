@@ -54,6 +54,7 @@ let strings = new LocalizedStrings({
     imageText: "متن تصویر",
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
+    areYouSureAboutDeletingMessage: "از حذف این پیغام مطمئنید",
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {
         return string;

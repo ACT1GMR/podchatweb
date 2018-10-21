@@ -347,6 +347,19 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  deleteMessage(resolve, reject, messageId, deleteForAll) {
+    const deleteMessageParams = {
+      messageId,
+      deleteForAll
+    };
+    this.chatAgent.deleteMessage(deleteMessageParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
+
+  @promiseDecorator
   forwardMessage(resolve, reject, threadId, messageId) {
     const sendChatParams = {
       subjectId: threadId,

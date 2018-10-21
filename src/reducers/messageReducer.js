@@ -1,4 +1,11 @@
-import {MESSAGE_SEND, MESSAGE_EDITING, MESSAGE_EDIT, MESSAGE_NEW, MESSAGE_SEEN} from "../constants/actionTypes";
+import {
+  MESSAGE_SEND,
+  MESSAGE_EDITING,
+  MESSAGE_EDIT,
+  MESSAGE_NEW,
+  MESSAGE_SEEN,
+  MESSAGE_MODAL_DELETE_PROMPT_SHOWING, MESSAGE_DELETING
+} from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const messageSendReducer = (state = {
@@ -46,6 +53,24 @@ export const messageEditReducer = (state = {
   }
 };
 
+export const messageDeleteReducer = (state = {
+  deleteMessage: null,
+  fetching: true,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case MESSAGE_DELETING("PENDING"):
+      return {...state, ...stateObject("PENDING")};
+    case MESSAGE_DELETING("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS")};
+    case MESSAGE_DELETING("ERROR"):
+      return {...state, ...stateObject("ERROR")};
+    default:
+      return state;
+  }
+};
+
 export const messageNewReducer = (state = {
   message: null
 }, action) => {
@@ -63,6 +88,19 @@ export const messageSeenReducer = (state = {
   switch (action.type) {
     case MESSAGE_SEEN:
       return {...state, ...stateObject("SUCCESS", action.payload, "message")};
+    default:
+      return state;
+  }
+};
+
+
+export const messageModalDeletePromptReducer = (state = {
+  isShowing: false,
+  messageId: null
+}, action) => {
+  switch (action.type) {
+    case MESSAGE_MODAL_DELETE_PROMPT_SHOWING:
+      return action.payload;
     default:
       return state;
   }

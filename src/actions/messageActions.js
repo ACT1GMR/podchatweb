@@ -4,7 +4,11 @@ import {
   MESSAGE_EDIT,
   MESSAGE_NEW,
   MESSAGE_SEEN,
-  MESSAGE_FORWARD, MESSAGE_SENDING_ERROR, MESSAGE_FILE_UPLOAD, MESSAGE_FILE_UPLOAD_CANCEL
+  MESSAGE_FORWARD,
+  MESSAGE_SENDING_ERROR,
+  MESSAGE_FILE_UPLOAD,
+  MESSAGE_FILE_UPLOAD_CANCEL,
+  THREAD_MODAL_THREAD_INFO_SHOWING, MESSAGE_MODAL_DELETE_PROMPT_SHOWING, MESSAGE_DELETE, MESSAGE_DELETING
 } from "../constants/actionTypes";
 
 export const messageSend = (text, threadId) => {
@@ -69,6 +73,17 @@ export const messageEdit = (newText, id) => {
   }
 };
 
+export const messageDelete = (id, deleteForAll) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: MESSAGE_DELETING(),
+      payload: chatSDK.deleteMessage(id, deleteForAll)
+    });
+  }
+};
+
 export const messageForward = (threadId, messageUniqueId) => {
   return (dispatch, getState) => {
     const state = getState();
@@ -107,6 +122,19 @@ export const messageSeen = (message) => {
     dispatch({
       type: MESSAGE_SEEN,
       payload: chatSDK.seenMessage(message.id, message.ownerId)
+    });
+  }
+};
+
+
+export const messageModalDeletePrompt = (isShowing, messageId) => {
+  return dispatch => {
+    return dispatch({
+      type: MESSAGE_MODAL_DELETE_PROMPT_SHOWING,
+      payload: {
+        isShowing,
+        messageId
+      }
     });
   }
 };

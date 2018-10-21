@@ -2,6 +2,7 @@ import {
   MESSAGE_NEW,
   MESSAGE_SEEN,
   MESSAGE_EDIT,
+  MESSAGE_DELETE,
   MESSAGE_SEND,
   MESSAGE_SENDING_ERROR,
   MESSAGE_FILE_UPLOAD_CANCEL,
@@ -262,11 +263,11 @@ export const threadMessageListReducer = (state = {
     return state;
   }
 
-  function updateMessage(field, value, criteria, upsert, remove) {
+  function updateMessage(field, value, criteria, upsert, remove, checkanyway) {
     const messagesClone = [...state.messages];
     const uniqueId = action.payload.uniqueId;
 
-    if (!checkForCurrentThread()) {
+    if (!checkanyway && !checkForCurrentThread()) {
       return state;
     }
     let fileIndex = messagesClone.findIndex(criteria || (message => message.uniqueId === uniqueId));
@@ -342,6 +343,8 @@ export const threadMessageListReducer = (state = {
     case MESSAGE_EDIT():
     case MESSAGE_SEEN:
       return updateMessage(null, action.payload, message => message.id === action.payload.id);
+    case MESSAGE_DELETE:
+      return updateMessage(null, null, message => message.id === action.payload.id , null, true, true);
     default:
       return state;
   }

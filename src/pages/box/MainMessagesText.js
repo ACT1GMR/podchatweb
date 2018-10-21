@@ -8,7 +8,7 @@ import reactStringReplace from "react-string-replace";
 //strings
 
 //actions
-import {messageEditing} from "../../actions/messageActions";
+import {messageEditing, messageModalDeletePrompt} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 
 
@@ -17,6 +17,8 @@ import Paper, {PaperFooter} from "raduikit/src/paper";
 import Container from "raduikit/src/container";
 import {Text} from "raduikit/src/typography";
 import {
+  MdExpandLess,
+  MdExpandMore,
   MdDelete,
   MdEdit,
   MdReply,
@@ -42,50 +44,92 @@ export default class MainMessagesText extends Component {
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
     this.state = {
-      messageControlShow: false
+      messageControlShow: false,
+      messageTriggerShow: false
     };
   }
 
   onMouseOver() {
     this.setState({
-      messageControlShow: true
+      messageTriggerShow: true
     });
   }
 
   onMouseLeave() {
     this.setState({
+      messageTriggerShow: false
+    });
+  }
+
+  onMessageControlShow() {
+    this.setState({
+      messageControlShow: true
+    });
+  }
+
+  onMessageControlHide() {
+    this.setState({
       messageControlShow: false
     });
   }
 
-
   onEdit(message) {
     this.props.dispatch(messageEditing(message));
+    this.onMessageControlHide();
   }
 
   onDelete(id) {
-
+    this.props.dispatch(messageModalDeletePrompt(true, id));
+    this.onMessageControlHide();
   }
 
   onForward(message) {
     this.props.dispatch(threadModalListShowing(true, message));
+    this.onMessageControlHide();
   }
 
   onReply(message) {
     this.props.dispatch(messageEditing(message, "REPLYING"));
+    this.onMessageControlHide();
   }
 
   render() {
     const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
-    const {messageControlShow} = this.state;
-    const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
-
+    const {messageControlShow, messageTriggerShow} = this.state;
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={style.MainMessagesText}
                  id={message.id}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
         {highLighterFragment(message)}
+        {messageControlShow ?
+          <Container className={style.MainMessagesText__Control}>
+            <Container topLeft={isMessageByMe(message, user)} topRight={!isMessageByMe(message, user)}>
+              <MdExpandMore size={styleVar.iconSizeMd}
+                            className={style.MainMessagesText__TriggerIcon}
+                            style={{margin: "3px"}}
+                            onClick={this.onMessageControlHide.bind(this, message)}/>
+            </Container>
+            <Container center centerTextAlign style={{width: "100%"}}>
+              {isMessageByMe(message, user) &&
+              <Container inline>
+                {!message.editable && <MdEdit size={styleVar.iconSizeMd}
+                                             className={style.MainMessagesText__ControlIcon}
+                                             onClick={this.onEdit.bind(this, message)}/>}
+                <MdDelete size={styleVar.iconSizeMd}
+                          className={style.MainMessagesText__ControlIcon}
+                          onClick={this.onDelete.bind(this, message.id)}/>
+              </Container>
+              }
+              <MdForward size={styleVar.iconSizeMd}
+                         className={style.MainMessagesText__ControlIcon}
+                         onClick={this.onForward.bind(this, message)}/>
+              <MdReply size={styleVar.iconSizeMd}
+                       className={style.MainMessagesText__ControlIcon}
+                       onClick={this.onReply.bind(this, message)}/>
+            </Container>
+          </Container>
+          : ""}
         <Paper colorBackgroundLight borderRadius={5} hasShadow>
           {replyFragment(message)}
           {forwardFragment(message)}
@@ -96,24 +140,14 @@ export default class MainMessagesText extends Component {
             {seenFragment(message, user)}
             {editFragment(message)}
             {datePetrification(message.time)}
-            {message.id && messageControlShow ?
+            {message.id &&!messageControlShow ?
               <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
-                {isMessageByMe(message, user) &&
-                <Container inline>
-                  {message.editable && <MdEdit style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                                               className={iconClasses}
-                                               onClick={this.onEdit.bind(this, message)}/>}
-                  {message.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                                                  className={iconClasses}
-                                                  onClick={this.onDelete.bind(this, message.id)}/>}
-                </Container>
+                {!messageControlShow && messageTriggerShow ?
+                  <MdExpandLess size={styleVar.iconSizeMd}
+                                className={style.MainMessagesText__TriggerIcon}
+                                onClick={this.onMessageControlShow.bind(this, message)}/>
+                  : ""
                 }
-                <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                           className={iconClasses}
-                           onClick={this.onForward.bind(this, message)}/>
-                <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                         className={iconClasses}
-                         onClick={this.onReply.bind(this, message)}/>
               </Container> : ""
             }
           </PaperFooter>

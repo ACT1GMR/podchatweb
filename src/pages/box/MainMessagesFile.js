@@ -8,7 +8,13 @@ import {connect} from "react-redux";
 
 //actions
 import {threadModalListShowing, threadModalMediaShowing} from "../../actions/threadActions";
-import {messageEditing, messageSendingError, messageCancelFile, messageSendFile} from "../../actions/messageActions";
+import {
+  messageEditing,
+  messageSendingError,
+  messageCancelFile,
+  messageSendFile,
+  messageModalDeletePrompt
+} from "../../actions/messageActions";
 
 //components
 import Paper, {PaperFooter} from "raduikit/src/paper";
@@ -21,7 +27,7 @@ import {
   MdReply,
   MdForward,
   MdArrowDownward,
-  MdClose
+  MdClose, MdExpandLess, MdExpandMore, MdEdit
 } from "react-icons/lib/md";
 
 //styling
@@ -79,8 +85,33 @@ export default class MainMessagesFile extends Component {
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
     this.state = {
-      messageControlShow: false
+      messageControlShow: false,
+      messageTriggerShow: false
     };
+  }
+
+  onMouseOver() {
+    this.setState({
+      messageTriggerShow: true
+    });
+  }
+
+  onMouseLeave() {
+    this.setState({
+      messageTriggerShow: false
+    });
+  }
+
+  onMessageControlShow() {
+    this.setState({
+      messageControlShow: true
+    });
+  }
+
+  onMessageControlHide() {
+    this.setState({
+      messageControlShow: false
+    });
   }
 
   componentDidUpdate() {
@@ -96,18 +127,6 @@ export default class MainMessagesFile extends Component {
     }
   }
 
-  onMouseOver() {
-    this.setState({
-      messageControlShow: true
-    });
-  }
-
-  onMouseLeave() {
-    this.setState({
-      messageControlShow: false
-    });
-  }
-
   onDownload(metaData) {
     window.location.href = `${metaData.link}&downloadable=true`;
   }
@@ -116,20 +135,19 @@ export default class MainMessagesFile extends Component {
     this.props.dispatch(messageCancelFile(message.fileUniqueId, message.threadId));
   }
 
-  onEdit(id, message) {
-    this.props.dispatch(messageEditing(id, message));
-  }
-
   onDelete(id) {
-
+    this.props.dispatch(messageModalDeletePrompt(true, id));
+    this.onMessageControlHide();
   }
 
   onForward(message) {
     this.props.dispatch(threadModalListShowing(true, message));
+    this.onMessageControlHide();
   }
 
   onReply(message) {
     this.props.dispatch(messageEditing(message, "REPLYING"));
+    this.onMessageControlHide();
   }
 
   onModalMediaShow(metaData) {
@@ -138,11 +156,10 @@ export default class MainMessagesFile extends Component {
 
   render() {
     const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing} = this.props;
-    const {messageControlShow} = this.state;
+    const {messageControlShow, messageTriggerShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = ~metaData.mimeType.indexOf("image");
-    const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
     const isMsgByMe = isMessageByMe(message, user);
     const mainMessagesFileImageClassNames = classnames({
@@ -154,6 +171,32 @@ export default class MainMessagesFile extends Component {
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
         {highLighterFragment(message)}
+        {messageControlShow ?
+          <Container className={style.MainMessagesFile__Control}>
+            <Container topLeft={isMessageByMe(message, user)} topRight={!isMessageByMe(message, user)}>
+              <MdExpandMore size={styleVar.iconSizeMd}
+                            className={style.MainMessagesFile__TriggerIcon}
+                            style={{margin: "3px"}}
+                            onClick={this.onMessageControlHide.bind(this, message)}/>
+            </Container>
+            <Container center centerTextAlign style={{width: "100%"}}>
+              {isMessageByMe(message, user) &&
+                <MdDelete size={styleVar.iconSizeMd}
+                          className={style.MainMessagesFile__ControlIcon}
+                          onClick={this.onDelete.bind(this, message.id)}/>
+              }
+              <MdForward size={styleVar.iconSizeMd}
+                         className={style.MainMessagesFile__ControlIcon}
+                         onClick={this.onForward.bind(this, message)}/>
+              <MdReply size={styleVar.iconSizeMd}
+                       className={style.MainMessagesFile__ControlIcon}
+                       onClick={this.onReply.bind(this, message)}/>
+              <MdArrowDownward size={styleVar.iconSizeMd}
+                               className={style.MainMessagesFile__ControlIcon}
+                               onClick={this.onDownload.bind(this, metaData)}/>
+            </Container>
+          </Container>
+          : ""}
         <Container relative>
           {isUploading(message) ?
             <div className={style.MainMessagesFile__Progress}
@@ -204,25 +247,14 @@ export default class MainMessagesFile extends Component {
                 dispatch(messageSendFile(message.content.file.fileObject, message.threadId));
               })}
               {datePetrification(message.time)}
-              {message.id && messageControlShow ?
-                <Container inline left={isMsgByMe} right={!isMsgByMe} inSpace>
-                  {isMsgByMe &&
-                  <Container inline>
-                    {message.deletable && <MdDelete style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                                                    className={iconClasses}
-                                                    onClick={this.onDelete.bind(this, message.id)}/>}
-                  </Container>
+              {message.id &&!messageControlShow &&
+                <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
+                  {!messageControlShow && messageTriggerShow &&
+                    <MdExpandLess size={styleVar.iconSizeMd}
+                                  className={style.MainMessagesFile__TriggerIcon}
+                                  onClick={this.onMessageControlShow.bind(this, message)}/>
                   }
-                  <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                             className={iconClasses}
-                             onClick={this.onForward.bind(this, message)}/>
-                  <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                           className={iconClasses}
-                           onClick={this.onReply.bind(this, message)}/>
-                  <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}
-                                   className={iconClasses}
-                                   onClick={this.onDownload.bind(this, metaData)}/>
-                </Container> : ""
+                </Container>
               }
             </PaperFooter>
           </Paper>

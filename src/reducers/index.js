@@ -26,7 +26,14 @@ import {
   threadGoToMessageIdReducer,
   threadGetMessageListByMessageIdReducer
 } from "./threadReducer";
-import {messageSendReducer, messageNewReducer, messageEditingReducer, messageEditReducer} from "./messageReducer";
+import {
+  messageSendReducer,
+  messageNewReducer,
+  messageEditingReducer,
+  messageEditReducer,
+  messageModalDeletePromptReducer,
+  messageDeleteReducer
+} from "./messageReducer";
 import {chatSmallVersionReducer, chatInstanceReducer} from "./chatReducer";
 import userReducer from "./userReducer";
 
@@ -61,6 +68,8 @@ const rootReducer = {
   sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,
   messageEdit: messageEditReducer,
+  messageDelete: messageDeleteReducer,
+  messageModalDeletePrompt: messageModalDeletePromptReducer,
   user: userReducer,
 };
 

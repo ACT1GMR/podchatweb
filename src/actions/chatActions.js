@@ -5,7 +5,7 @@ import {
   THREAD_NEW,
   THREAD_CHANGED,
   THREAD_FILE_UPLOADING,
-  MESSAGE_NEW
+  MESSAGE_NEW, MESSAGE_DELETE
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 

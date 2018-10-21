@@ -12,7 +12,7 @@ auth({
   scope: "social:write",
   onNewToken: token => {
     render(
-      <Provider store={store}>
+      <Provider store={store} >
         <Box token={token}/>
       </Provider>,
       document.getElementById("app")
