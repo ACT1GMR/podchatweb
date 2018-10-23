@@ -1,7 +1,8 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
+import ReactDOM from "react-dom";
 import "moment/locale/fa";
-import {humanFileSize} from "../../utils/helpers";
+import {humanFileSize, mobileCheck} from "../../utils/helpers";
 import {connect} from "react-redux";
 
 //strings
@@ -32,7 +33,6 @@ import {
 
 //styling
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
-import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
 import Gap from "raduikit/src/gap";
 import classnames from "classnames";
@@ -84,13 +84,33 @@ export default class MainMessagesFile extends Component {
     super(props);
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
+    this.containerRef = React.createRef();
+    document.addEventListener('click', this.handleClickOutside.bind(this));
     this.state = {
       messageControlShow: false,
       messageTriggerShow: false
     };
   }
 
+  handleClickOutside(e) {
+    const {messageControlShow} = this.state;
+    if (!messageControlShow) {
+      return;
+    }
+    if (!this.containerRef.current) {
+      return;
+    }
+    const target = e.target;
+    const node = ReactDOM.findDOMNode(this.containerRef.current);
+    if (!node.contains(target)) {
+      this.onMessageControlHide();
+    }
+  }
+
   onMouseOver() {
+    if (mobileCheck()) {
+      return;
+    }
     this.setState({
       messageTriggerShow: true
     });
@@ -102,13 +122,18 @@ export default class MainMessagesFile extends Component {
     });
   }
 
-  onMessageControlShow() {
+  onMessageControlShow(isClick, e) {
     this.setState({
       messageControlShow: true
     });
   }
 
-  onMessageControlHide() {
+  onMessageControlHide(e) {
+    if (e) {
+      if(e.stopPropagation){
+        e.stopPropagation();
+      }
+    }
     this.setState({
       messageControlShow: false
     });
@@ -129,14 +154,15 @@ export default class MainMessagesFile extends Component {
 
   onDownload(metaData) {
     window.location.href = `${metaData.link}&downloadable=true`;
+    this.onMessageControlHide();
   }
 
   onCancel(message) {
     this.props.dispatch(messageCancelFile(message.fileUniqueId, message.threadId));
   }
 
-  onDelete(id) {
-    this.props.dispatch(messageModalDeletePrompt(true, id));
+  onDelete(message) {
+    this.props.dispatch(messageModalDeletePrompt(true, message));
     this.onMessageControlHide();
   }
 
@@ -166,8 +192,15 @@ export default class MainMessagesFile extends Component {
       [style.MainMessagesFile__Image]: true,
       [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
     });
+    const classNames = classnames({
+      [style.MainMessagesFile]: true,
+      [style["MainMessagesFile--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
+    });
     return (
-      <Container inline inSpace relative maxWidth="50%" minWidth="220px"
+      <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
+                 id={message.uuid}
+                 onClick={this.onMessageControlShow.bind(this)}
+                 ref={this.containerRef}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
         {highLighterFragment(message)}
@@ -177,13 +210,13 @@ export default class MainMessagesFile extends Component {
               <MdExpandMore size={styleVar.iconSizeMd}
                             className={style.MainMessagesFile__TriggerIcon}
                             style={{margin: "3px"}}
-                            onClick={this.onMessageControlHide.bind(this, message)}/>
+                            onClick={this.onMessageControlHide.bind(this)}/>
             </Container>
             <Container center centerTextAlign style={{width: "100%"}}>
               {isMessageByMe(message, user) &&
-                <MdDelete size={styleVar.iconSizeMd}
-                          className={style.MainMessagesFile__ControlIcon}
-                          onClick={this.onDelete.bind(this, message.id)}/>
+              <MdDelete size={styleVar.iconSizeMd}
+                        className={style.MainMessagesFile__ControlIcon}
+                        onClick={this.onDelete.bind(this, message)}/>
               }
               <MdForward size={styleVar.iconSizeMd}
                          className={style.MainMessagesFile__ControlIcon}
@@ -206,11 +239,12 @@ export default class MainMessagesFile extends Component {
           <Paper colorBackgroundLight borderRadius={5} hasShadow>
             {replyFragment(message)}
             {forwardFragment(message)}
-            <Container relative className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"]: ""}`}>
+            <Container relative
+                       className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"] : ""}`}>
               {isImage ?
                 <Image className={mainMessagesFileImageClassNames} src={imageSizeLink.imageLink}
-                     style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
-                     onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/> :
+                       style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
+                       onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/> :
 
                 <Container className={style.MainMessagesFile__FileName}>
                   <Text wordWrap="breakWord" bold>
@@ -247,15 +281,12 @@ export default class MainMessagesFile extends Component {
                 dispatch(messageSendFile(message.content.file.fileObject, message.threadId));
               })}
               {datePetrification(message.time)}
-              {message.id &&!messageControlShow &&
-                <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
-                  {!messageControlShow && messageTriggerShow &&
-                    <MdExpandLess size={styleVar.iconSizeMd}
-                                  className={style.MainMessagesFile__TriggerIcon}
-                                  onClick={this.onMessageControlShow.bind(this, message)}/>
-                  }
-                </Container>
-              }
+              <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace
+                         className={style.MainMessagesFile__OpenTriggerIconContainer}>
+                <MdExpandLess size={styleVar.iconSizeMd}
+                              className={style.MainMessagesFile__TriggerIcon}
+                              onClick={this.onMessageControlShow.bind(this)}/>
+              </Container>
             </PaperFooter>
           </Paper>
         </Container>

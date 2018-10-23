@@ -14,7 +14,7 @@ import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
 
 //styling
-import { MdCameraAlt} from "react-icons/lib/md";
+import {MdCameraAlt} from "react-icons/lib/md";
 import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
@@ -41,7 +41,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
     this.setState({
       groupName: thread.title,
       groupDesc: thread.description,
-      image: metaObject.image
+      image: thread.image
     });
   }
 
@@ -68,7 +68,13 @@ export default class ModalThreadInfoGroupSettings extends Component {
   saveSettings() {
     const {groupDesc, image, groupName} = this.state;
     const {thread} = this.props;
-    this.props.dispatch(threadMetaUpdate({description: groupDesc, image, title: groupName}, thread.id));
+    const baseObject = {
+      description: groupDesc, image, title: groupName
+    };
+    if (image) {
+      baseObject.image = image;
+    }
+    this.props.dispatch(threadMetaUpdate(baseObject, thread.id));
   }
 
   render() {

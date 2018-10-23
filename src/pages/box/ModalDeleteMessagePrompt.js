@@ -18,7 +18,7 @@ import Container from "raduikit/src/container";
 @connect(store => {
   return {
     isShowing: store.messageModalDeletePrompt.isShowing,
-    messageId: store.messageModalDeletePrompt.messageId
+    message: store.messageModalDeletePrompt.message
   };
 })
 export default class ModalDeleteMessagePrompt extends Component {
@@ -28,8 +28,8 @@ export default class ModalDeleteMessagePrompt extends Component {
   }
 
   onRemove() {
-    const {messageId, dispatch} = this.props;
-    dispatch(messageDelete(messageId, true));
+    const {message, dispatch} = this.props;
+    dispatch(messageDelete(message.id, message.editable));
     dispatch(messageModalDeletePrompt(false));
   }
 

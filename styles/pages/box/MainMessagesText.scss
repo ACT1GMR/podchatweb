@@ -13,11 +13,14 @@
 }
 
 .MainMessagesText__TriggerIcon,
-.MainMessagesText__ControlIcon
-{
+.MainMessagesText__ControlIcon {
   color: $color-gray-dark;
   cursor: pointer;
   transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.MainMessagesText__OpenTriggerIconContainer {
+  display: none;
 }
 
 .MainMessagesText__ControlIcon {
@@ -38,4 +41,10 @@
 
 .MainMessagesText__ControlIconContainer {
   width: 100%;
+}
+
+.MainMessagesText--triggerIconShow {
+  .MainMessagesText__OpenTriggerIconContainer {
+    display: block;
+  }
 }

@@ -124,11 +124,11 @@ export const threadModalListShowing = (isShowing, message) => {
 };
 
 
-export const threadModalImageCaptionShowing = isShowing => {
+export const threadModalImageCaptionShowing = (isShowing, inputNode) => {
   return dispatch => {
     return dispatch({
       type: THREAD_MODAL_IMAGE_CAPTION_SHOWING,
-      payload: isShowing
+      payload: {isShowing, inputNode}
     });
   }
 };
@@ -197,7 +197,7 @@ export const threadInfo = (threadId, contactIds) => {
   }
 };
 
-export const threadFilesToUpload = (files, upload) => {
+export const threadFilesToUpload = (files, upload, inputNode) => {
   if (!upload) {
     let isAllImage = true;
     for (let file of files) {
@@ -207,9 +207,12 @@ export const threadFilesToUpload = (files, upload) => {
       }
     }
     if (isAllImage) {
-      return threadImagesToCaption(files);
+      return threadImagesToCaption(files, inputNode);
     }
   }
+  setTimeout(() => {
+    inputNode.value = "";
+  }, 1000);
   return (dispatch) => {
     return dispatch({
       type: THREAD_FILES_TO_UPLOAD,
@@ -229,9 +232,9 @@ export const threadMetaUpdate = (meta, threadId) => {
   }
 };
 
-export const threadImagesToCaption = (images) => {
+export const threadImagesToCaption = (images, inputNode) => {
   return (dispatch) => {
-    dispatch(threadModalImageCaptionShowing(true));
+    dispatch(threadModalImageCaptionShowing(true, inputNode));
     return dispatch({
       type: THREAD_IMAGES_TO_CAPTION,
       payload: images

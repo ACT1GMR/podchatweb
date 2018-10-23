@@ -4,7 +4,8 @@ import {
   MESSAGE_EDIT,
   MESSAGE_NEW,
   MESSAGE_SEEN,
-  MESSAGE_MODAL_DELETE_PROMPT_SHOWING, MESSAGE_DELETING
+  MESSAGE_MODAL_DELETE_PROMPT_SHOWING,
+  MESSAGE_DELETING
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -96,7 +97,7 @@ export const messageSeenReducer = (state = {
 
 export const messageModalDeletePromptReducer = (state = {
   isShowing: false,
-  messageId: null
+  message: null
 }, action) => {
   switch (action.type) {
     case MESSAGE_MODAL_DELETE_PROMPT_SHOWING:

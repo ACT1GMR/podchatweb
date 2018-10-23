@@ -245,10 +245,12 @@ export default class MainMessages extends Component {
           highLightMessage: pendingGoToId
         });
         setTimeout(() => {
-          this.freeScroll = true;
           this.setState({
             highLightMessage: false
           });
+        }, 2500);
+        setTimeout(() => {
+          this.freeScroll = true;
         }, 1500);
       }
     }

@@ -124,7 +124,7 @@ export default class AsideThreads extends Component {
 
                 <Container relative>
                   <Avatar>
-                    <AvatarImage src={el.lastParticipantImage ? el.lastParticipantImage : defaultAvatar} customSize="50px"/>
+                    <AvatarImage src={el.image ? el.image : defaultAvatar} customSize="50px"/>
                     <AvatarName invert>
                       {getTitle(el.title)}
                       <AvatarText>

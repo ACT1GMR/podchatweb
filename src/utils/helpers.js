@@ -21,3 +21,14 @@ export function mobileCheck() {
   })(navigator.userAgent || navigator.vendor || window.opera);
   return check;
 }
+
+export function isNodeDescendant(parent, child) {
+  var node = child.parentNode;
+  while (node != null) {
+    if (node === parent) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+}

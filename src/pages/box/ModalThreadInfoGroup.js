@@ -144,7 +144,7 @@ export default class ModalThreadInfo extends Component {
     });
   }
 
-  onSaveSettings(){
+  onSaveSettings() {
     this.settingsRef.current.wrappedInstance.saveSettings();
     this.setState({
       step: constants.GROUP_INFO,
@@ -185,7 +185,8 @@ export default class ModalThreadInfo extends Component {
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
-          <Heading h3>{constants.GROUP_INFO === step? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
+          <Heading
+            h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -219,8 +220,17 @@ export default class ModalThreadInfo extends Component {
 
               </Container>
 
+              {thread.description &&
+                <Container>
+                  <Gap y={20} block>
+                    <Divider thick={1} color="gray"/>
+                  </Gap>
+                  <Text>{thread.description}</Text>
+                </Container>
+              }
+
               <Gap y={20} block>
-                <Divider thick={2} color="gray"/>
+                <Divider thick={1} color="gray"/>
               </Gap>
 
               <Container>
@@ -258,11 +268,11 @@ export default class ModalThreadInfo extends Component {
                 {strings.saveSettings}
               </Button>
               :
-            addMembers.length > 0 ?
-              <Button text onClick={this.onAddMember}>
-                {strings.add}
-              </Button>
-              : ""
+              addMembers.length > 0 ?
+                <Button text onClick={this.onAddMember}>
+                  {strings.add}
+                </Button>
+                : ""
           }
           <Button text onClick={this.onClose}>{strings.close}</Button>
           {step !== constants.GROUP_INFO ?

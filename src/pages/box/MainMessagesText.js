@@ -1,6 +1,8 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
+import ReactDOM from "react-dom";
 import "moment/locale/fa";
+import {mobileCheck} from "../../utils/helpers";
 import classnames from "classnames";
 import {connect} from "react-redux";
 import reactStringReplace from "react-string-replace";
@@ -43,13 +45,38 @@ export default class MainMessagesText extends Component {
     super(props);
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
+    this.containerRef = React.createRef();
+    document.addEventListener('click', this.handleClickOutside.bind(this));
     this.state = {
       messageControlShow: false,
       messageTriggerShow: false
     };
   }
 
+
+  onControlMouseOver(e) {
+
+  }
+
+  handleClickOutside(e) {
+    const {messageControlShow} = this.state;
+    if (!messageControlShow) {
+      return;
+    }
+    if (!this.containerRef.current) {
+      return;
+    }
+    const target = e.target;
+    const node = ReactDOM.findDOMNode(this.containerRef.current);
+    if (!node.contains(target)) {
+      this.onMessageControlHide();
+    }
+  }
+
   onMouseOver() {
+    if (mobileCheck()) {
+      return;
+    }
     this.setState({
       messageTriggerShow: true
     });
@@ -61,13 +88,18 @@ export default class MainMessagesText extends Component {
     });
   }
 
-  onMessageControlShow() {
+  onMessageControlShow(e) {
     this.setState({
       messageControlShow: true
     });
   }
 
-  onMessageControlHide() {
+  onMessageControlHide(e) {
+    if (e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+    }
     this.setState({
       messageControlShow: false
     });
@@ -78,8 +110,8 @@ export default class MainMessagesText extends Component {
     this.onMessageControlHide();
   }
 
-  onDelete(id) {
-    this.props.dispatch(messageModalDeletePrompt(true, id));
+  onDelete(message) {
+    this.props.dispatch(messageModalDeletePrompt(true, message));
     this.onMessageControlHide();
   }
 
@@ -96,9 +128,15 @@ export default class MainMessagesText extends Component {
   render() {
     const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
+    const classNames = classnames({
+      [style.MainMessagesText]: true,
+      [style["MainMessagesText--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
+    });
     return (
-      <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={style.MainMessagesText}
-                 id={message.id}
+      <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
+                 ref={this.containerRef}
+                 onClick={this.onMessageControlShow.bind(this)}
+                 id={message.uuid}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
         {highLighterFragment(message)}
@@ -108,17 +146,18 @@ export default class MainMessagesText extends Component {
               <MdExpandMore size={styleVar.iconSizeMd}
                             className={style.MainMessagesText__TriggerIcon}
                             style={{margin: "3px"}}
-                            onClick={this.onMessageControlHide.bind(this, message)}/>
+                            onClick={this.onMessageControlHide.bind(this)}/>
             </Container>
             <Container center centerTextAlign style={{width: "100%"}}>
               {isMessageByMe(message, user) &&
               <Container inline>
-                {!message.editable && <MdEdit size={styleVar.iconSizeMd}
+                {message.editable && <MdEdit size={styleVar.iconSizeMd}
                                              className={style.MainMessagesText__ControlIcon}
                                              onClick={this.onEdit.bind(this, message)}/>}
-                <MdDelete size={styleVar.iconSizeMd}
-                          className={style.MainMessagesText__ControlIcon}
-                          onClick={this.onDelete.bind(this, message.id)}/>
+                {<MdDelete size={styleVar.iconSizeMd}
+                           className={style.MainMessagesText__ControlIcon}
+                           onClick={this.onDelete.bind(this, message)}/>
+                }
               </Container>
               }
               <MdForward size={styleVar.iconSizeMd}
@@ -140,16 +179,12 @@ export default class MainMessagesText extends Component {
             {seenFragment(message, user)}
             {editFragment(message)}
             {datePetrification(message.time)}
-            {message.id &&!messageControlShow ?
-              <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace>
-                {!messageControlShow && messageTriggerShow ?
-                  <MdExpandLess size={styleVar.iconSizeMd}
-                                className={style.MainMessagesText__TriggerIcon}
-                                onClick={this.onMessageControlShow.bind(this, message)}/>
-                  : ""
-                }
-              </Container> : ""
-            }
+            <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace
+                       className={style.MainMessagesText__OpenTriggerIconContainer}>
+              <MdExpandLess size={styleVar.iconSizeMd}
+                            className={style.MainMessagesText__TriggerIcon}
+                            onClick={this.onMessageControlShow.bind(this)}/>
+            </Container>
           </PaperFooter>
         </Paper>
       </Container>

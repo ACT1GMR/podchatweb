@@ -22,7 +22,8 @@ import style from "../../../styles/pages/box/ModalImageCaption.scss";
 
 @connect(store => {
   return {
-    isShow: store.threadModalImageCaptionShowing,
+    isShow: store.threadModalImageCaptionShowing.isShowing,
+    inputNode: store.threadModalImageCaptionShowing.inputNode,
     images: store.threadImagesToCaption,
     threadId: store.thread.thread.id
   };
@@ -39,14 +40,14 @@ export default class ModalImageCaption extends Component {
   }
 
   onSend() {
-    const {threadId, dispatch, images} = this.props;
+    const {threadId, dispatch, images, inputNode} = this.props;
     const {comment} = this.state;
     if (comment) {
       if (comment.trim()) {
         dispatch(messageSend(comment, threadId));
       }
     }
-    dispatch(threadFilesToUpload(images, true));
+    dispatch(threadFilesToUpload(images, true, inputNode));
     this.onClose();
   }
 

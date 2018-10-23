@@ -1,6 +1,10 @@
 @import "_scope";
 @import "../../mixin/responsive";
 
+.MainMessagesFile {
+
+}
+
 .MainMessagesFile__FileContainer {
   display: flex;
   align-items: center;
@@ -62,8 +66,7 @@
 }
 
 .MainMessagesFile__TriggerIcon,
-.MainMessagesFile__ControlIcon
-{
+.MainMessagesFile__ControlIcon {
   color: $color-gray-dark;
   cursor: pointer;
   transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
@@ -81,10 +84,19 @@
   transform: scale(1.2);
 }
 
+.MainMessagesFile__OpenTriggerIconContainer {
+  display: none;
+}
+
 .MainMessagesFile__ControlIconContainer {
   width: 100%;
 }
 
+.MainMessagesFile--triggerIconShow {
+  .MainMessagesFile__OpenTriggerIconContainer {
+    display: block;
+  }
+}
 
 @include grid("md") {
   :not(.MainMessagesFile__Image--smallVersion).MainMessagesFile__Image {
