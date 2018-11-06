@@ -1,0 +1,17 @@
+@import "_scope";
+@import "../../mixin/responsive";
+
+.MainHeadThreadInfo {
+  max-width: calc(100% - 100px);
+  height: 100%;
+}
+
+@include grid("md") {
+
+  .MainHeadThreadInfo:not(.MainHeadThreadInfo--smallVersion) {
+    .MainHeadThreadInfo {
+      max-width: none;
+    }
+  }
+
+}

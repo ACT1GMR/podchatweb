@@ -22,13 +22,13 @@ export const messageSend = (text, threadId) => {
   }
 };
 
-export const messageSendFile = (file, threadId) => {
+export const messageSendFile = (file, threadId, caption) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.sendFileMessage(file, threadId)
+      payload: chatSDK.sendFileMessage(file, threadId, caption)
     });
   }
 };
@@ -84,13 +84,13 @@ export const messageDelete = (id, deleteForAll) => {
   }
 };
 
-export const messageForward = (threadId, messageUniqueId) => {
+export const messageForward = (threadId, messageId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_FORWARD(),
-      payload: chatSDK.forwardMessage(threadId, messageUniqueId)
+      payload: chatSDK.forwardMessage(threadId, messageId)
     });
   }
 };

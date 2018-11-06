@@ -3,30 +3,40 @@
   flex-direction: column;
 }
 
-.MainFooterInput__EditingBox {
+.MainFooterInput__EditBox {
+  background-color: $color-white;
+  padding: 9px 12px 11px 12px;
+  border-radius: 20px;
+}
 
+.MainFooterInput__EditBox--halfBorder {
+  border-radius: 0 0 20px 20px;
 }
 
 .MainFooterInput__InputBox {
   height: 41px;
 }
 
-.MainFooterInput__Input {
-  font: inherit;
-  color: inherit;
-  border: none;
-  padding: 10px;
-  width: 100%;
-  border-radius: 20px;
+.MainFooterInput__InputContainer {
+  background: none;
+  box-shadow: none;
+  margin: 0;
+  min-height: 0;
+  &:hover {
+    box-shadow: none;
+  }
 }
 
-.MainFooterInput__Input--halfBorder {
-  border-radius: 0 0 20px 20px;
+.MainFooterInput__Input {
+  padding: 0;
+  width: 100%;
 }
+
 
 .MainFooterInput__Button {
   position: absolute;
   left: 0;
+  top: 0;
   padding: 0 10px;
   border: none;
   color: #555;

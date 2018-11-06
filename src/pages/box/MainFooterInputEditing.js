@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 
 //actions
 import {messageEditing} from "../../actions/messageActions";
+import {threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
 import Paper from "raduikit/src/paper";
@@ -17,6 +18,7 @@ import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainFooterInputEditing.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
+import strings from "../../constants/localization";
 
 const constants = {
   replying: "REPLYING",
@@ -51,19 +53,23 @@ function getMessageEditingText(messageEditing) {
   if (messageEditing) {
     const message = messageEditing.message;
     if (message) {
-      if (message.metaData) {
-        const file = JSON.parse(message.metaData).file;
-        if (file) {
-          let width = file.width;
-          editObject.text = file.originalName;
-          if (width) {
-            editObject.image = getImage(file);
+      if(message instanceof Array) {
+        editObject.text = strings.messagesCount(message.length);
+      } else {
+        if (message.metaData) {
+          const file = JSON.parse(message.metaData).file;
+          if (file) {
+            let width = file.width;
+            editObject.text = file.originalName;
+            if (width) {
+              editObject.image = getImage(file);
+            }
+          } else {
+            editObject.text = message.message;
           }
         } else {
           editObject.text = message.message;
         }
-      } else {
-        editObject.text = message.message;
       }
     }
     return editObject;
@@ -83,20 +89,26 @@ export default class MainFooterInputEditing extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {messageEditing, setInputText} = this.props;
+    const {messageEditing, setInputText, dispatch} = this.props;
     if (messageEditing) {
       if (messageEditing.type !== constants.replying) {
         if (prevProps.messageEditing !== messageEditing) {
           if (messageEditing.type !== constants.replying && messageEditing.type !== constants.forwarding) {
             setInputText(messageEditing.message.message);
+          } else {
+            dispatch(threadIsSendingMessage(true));
           }
         }
       }
     }
   }
 
-  onCancelEditing(event, id) {
-    this.props.dispatch(messageEditing());
+  onCancelEditing() {
+    const {messageEditing: msgEditing, dispatch} = this.props;
+    if (msgEditing.type === constants.forwarding) {
+      dispatch(threadIsSendingMessage(false));
+    }
+    dispatch(messageEditing());
   }
 
   render() {
@@ -123,7 +135,8 @@ export default class MainFooterInputEditing extends Component {
             <Container className={style.MainFooterInputEditing__Content}>
               {editObject.image ?
                 <Container className={style.MainFooterInputEditing__ImageContainer} inline>
-                  <Container className={style.MainFooterInputEditing__Image} style={{backgroundImage: `url(${editObject.image})`}}/>
+                  <Container className={style.MainFooterInputEditing__Image}
+                             style={{backgroundImage: `url(${editObject.image})`}}/>
                 </Container>
                 : ""}
               {editObject.text}

@@ -55,6 +55,18 @@ let strings = new LocalizedStrings({
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
     areYouSureAboutDeletingMessage: "از حذف این پیغام مطمئنید",
+    ModalMediaClose: "بستن",
+    ModalMediaNext: "بعدی",
+    ModalMediaPrev: "قبلی",
+    ModalMediaError: "نمیتونم باز کنم این فایلو فکر کنم مشکل شبکست",
+    ModalMediaPlayStart: "شروع به نمایش خودکار",
+    ModalMediaPlayStop: "توقف نمایش خودکار",
+    ModalMediaFullScreen: "نمایش تمام صفحه",
+    ModalMediaThumbs: "تصاویر کوچک بند انگشتی",
+    ModalMediaZoom: "بزرگنمایی",
+    messagesCount(messagesCount){
+      return `${messagesCount} پیام`
+    },
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {
         return string;

@@ -5,7 +5,7 @@ import {
   THREAD_NEW,
   THREAD_CHANGED,
   THREAD_FILE_UPLOADING,
-  MESSAGE_NEW, MESSAGE_DELETE
+  MESSAGE_NEW, MESSAGE_DELETE, CHAT_MODAL_MEDIA_INSTANCE
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -68,6 +68,15 @@ export const chatSmallVersion = isSmall => {
     return dispatch({
       type: CHAT_SMALL_VERSION,
       payload: isSmall
+    });
+  }
+};
+
+export const chatModalMediaInstance = instance => {
+  return dispatch => {
+    return dispatch({
+      type: CHAT_MODAL_MEDIA_INSTANCE,
+      payload: instance
     });
   }
 };

@@ -49,7 +49,12 @@ function getImage(metaData, isFromServer, smallVersion) {
     return {imageLink, width: maxWidth, height};
   }
   height = Math.ceil(maxWidth * ratio);
-  return {imageLink: `${imageLink}&width=${maxWidth}&height=${height}`, width: maxWidth, height};
+  return {
+    imageLink: `${imageLink}&width=${maxWidth}&height=${height}`,
+    width: maxWidth,
+    height,
+    imageLinkOrig: imageLink
+  };
 }
 
 function isDownloadable(message) {
@@ -84,6 +89,7 @@ export default class MainMessagesFile extends Component {
     super(props);
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onMouseLeave = this.onMouseLeave.bind(this);
+    this.onImageClick = this.onImageClick.bind(this);
     this.containerRef = React.createRef();
     document.addEventListener('click', this.handleClickOutside.bind(this));
     this.state = {
@@ -107,6 +113,10 @@ export default class MainMessagesFile extends Component {
     }
   }
 
+  onImageClick(e) {
+    e.stopPropagation();
+  }
+
   onMouseOver() {
     if (mobileCheck()) {
       return;
@@ -123,6 +133,9 @@ export default class MainMessagesFile extends Component {
   }
 
   onMessageControlShow(isClick, e) {
+    if (isClick === true && !mobileCheck()) {
+      return;
+    }
     this.setState({
       messageControlShow: true
     });
@@ -130,7 +143,7 @@ export default class MainMessagesFile extends Component {
 
   onMessageControlHide(e) {
     if (e) {
-      if(e.stopPropagation){
+      if (e.stopPropagation) {
         e.stopPropagation();
       }
     }
@@ -199,7 +212,7 @@ export default class MainMessagesFile extends Component {
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
                  id={message.uuid}
-                 onClick={this.onMessageControlShow.bind(this)}
+                 onClick={this.onMessageControlShow.bind(this, true)}
                  ref={this.containerRef}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
@@ -232,9 +245,9 @@ export default class MainMessagesFile extends Component {
           : ""}
         <Container relative>
           {isUploading(message) ?
-            <div className={style.MainMessagesFile__Progress}
-                 style={{width: `${message.progress ? message.progress.progress : 0}%`}}
-                 title={`${message.progress && message.progress.progress}`}/>
+            <Container className={style.MainMessagesFile__Progress}
+                       style={{width: `${message.progress ? message.progress.progress : 0}%`}}
+                       title={`${message.progress && message.progress.progress}`}/>
             : ""}
           <Paper colorBackgroundLight borderRadius={5} hasShadow>
             {replyFragment(message)}
@@ -242,10 +255,27 @@ export default class MainMessagesFile extends Component {
             <Container relative
                        className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"] : ""}`}>
               {isImage ?
-                <Image className={mainMessagesFileImageClassNames} src={imageSizeLink.imageLink}
-                       style={{width: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}
-                       onClick={message.id && this.onModalMediaShow.bind(this, metaData)}/> :
+                <Container style={{width: `${imageSizeLink.width}px`}}>
 
+                  <Container className={style.MainMessagesFile__ImageContainer}>
+                    <Text link={imageSizeLink.imageLinkOrig}
+                          linkClearStyle
+                          data-options={`{"caption": "${message.message || ""}"}`}>
+                      <Image className={mainMessagesFileImageClassNames}
+                             onClick={this.onImageClick}
+                             src={imageSizeLink.imageLink}
+                             style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
+                    </Text>
+                  </Container>
+
+                  <Container>
+                    <Text wordWrap="breakWord" bold>
+                      {message.message}
+                    </Text>
+                  </Container>
+
+                </Container>
+                :
                 <Container className={style.MainMessagesFile__FileName}>
                   <Text wordWrap="breakWord" bold>
                     {metaData.originalName}

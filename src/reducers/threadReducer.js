@@ -24,7 +24,14 @@ import {
   THREAD_MODAL_IMAGE_CAPTION_SHOWING,
   THREAD_IMAGES_TO_CAPTION,
   THREAD_LEFT_ASIDE_SHOWING,
-  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID, THREAD_SEARCH_MESSAGE, THREAD_GO_TO_MESSAGE,
+  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID,
+  THREAD_SEARCH_MESSAGE,
+  THREAD_GO_TO_MESSAGE,
+  THREAD_IS_SENDING_MESSAGE,
+  THREAD_SELECT_MESSAGE_SHOWING,
+  THREAD_CHECKED_MESSAGE_LIST_EMPTY,
+  THREAD_CHECKED_MESSAGE_LIST_ADD,
+  THREAD_CHECKED_MESSAGE_LIST_REMOVE,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -114,6 +121,15 @@ export const threadModalImageCaptionShowingReducer = (state = false, action) => 
   }
 };
 
+export const threadSelectMessageShowingReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_SELECT_MESSAGE_SHOWING:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
 export const threadGoToMessageIdReducer = (state = false, action) => {
   switch (action.type) {
     case THREAD_GO_TO_MESSAGE:
@@ -135,6 +151,15 @@ export const threadShowingReducer = (state = false, action) => {
 export const threadLeftAsideShowingReducer = (state = false, action) => {
   switch (action.type) {
     case THREAD_LEFT_ASIDE_SHOWING:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const threadIsSendingMessageReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_IS_SENDING_MESSAGE:
       return action.payload;
     default:
       return state;
@@ -248,7 +273,7 @@ export const threadMessageListReducer = (state = {
     const checkedIds = [];
     const removeIndexes = [];
     for (const message of messages) {
-      if(!message.id) {
+      if (!message.id) {
         continue;
       }
       const index = checkedIds.findIndex(id => id === message.id);
@@ -344,7 +369,24 @@ export const threadMessageListReducer = (state = {
     case MESSAGE_SEEN:
       return updateMessage(null, action.payload, message => message.id === action.payload.id);
     case MESSAGE_DELETE:
-      return updateMessage(null, null, message => message.id === action.payload.id , null, true, true);
+      return updateMessage(null, null, message => message.id === action.payload.id, null, true, true);
+    default:
+      return state;
+  }
+};
+
+
+export const threadCheckedMessageListReducer = (state = [], action) => {
+  switch (action.type) {
+    case THREAD_CHECKED_MESSAGE_LIST_EMPTY:
+      return [];
+    case THREAD_CHECKED_MESSAGE_LIST_ADD:
+      return [...state, ...[action.payload]];
+    case THREAD_CHECKED_MESSAGE_LIST_REMOVE:
+      let messages = [...state];
+      let fileIndex = messages.findIndex((message => message.uniqueId === action.payload.uniqueId));
+      messages.splice(fileIndex, 1);
+      return messages;
     default:
       return state;
   }

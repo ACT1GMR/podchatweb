@@ -4,19 +4,17 @@ import {connect} from "react-redux";
 
 //strings
 import strings from "../../constants/localization";
-import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
 
 //actions
-import {threadShowing, threadLeftAsideShowing} from "../../actions/threadActions";
-import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
-import {threadModalThreadInfoShowing} from "../../actions/threadActions";
-
+import {threadShowing, threadLeftAsideShowing, threadSelectMessageShowing} from "../../actions/threadActions";
+import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../actions/threadActions";
 
 //UI components
-import {MdChevronLeft, MdSearch} from "react-icons/lib/md";
-import {Text} from "raduikit/src/typography";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
+import {MdChevronLeft, MdSearch, MdDone, MdClose} from "react-icons/lib/md";
 import Container from "raduikit/src/container";
+import MainHeadThreadInfo from "./MainHeadThreadInfo";
+import MainHeadBatchActions from "./MainHeadBatchActions";
+import {Text} from "raduikit/src/typography";
 
 //styling
 import style from "../../../styles/pages/box/MainHead.scss";
@@ -30,7 +28,9 @@ const statics = {};
   return {
     smallVersion: store.chatSmallVersion,
     thread: store.thread.thread,
-    threadShowing: store.threadShowing
+    threadShowing: store.threadShowing,
+    threadSelectMessageShowing: store.threadSelectMessageShowing,
+    threadCheckedMessageList: store.threadCheckedMessageList
   };
 })
 export default class BoxHeadThreadInfo extends Component {
@@ -40,6 +40,8 @@ export default class BoxHeadThreadInfo extends Component {
     this.onShowInfoClick = this.onShowInfoClick.bind(this);
     this.onThreadHide = this.onThreadHide.bind(this);
     this.onLeftAsideShow = this.onLeftAsideShow.bind(this);
+    this.onSelectMessagesHide = this.onSelectMessagesHide.bind(this);
+    this.onSelectMessagesShow = this.onSelectMessagesShow.bind(this);
   }
 
   onShowInfoClick() {
@@ -56,38 +58,61 @@ export default class BoxHeadThreadInfo extends Component {
     this.props.dispatch(threadLeftAsideShowing(true));
   }
 
+  onSelectMessagesShow(e) {
+    e.stopPropagation();
+    this.props.dispatch(threadSelectMessageShowing(true));
+  }
+
+
+  onSelectMessagesHide(e) {
+    e.stopPropagation();
+    const {dispatch} = this.props;
+    dispatch(threadSelectMessageShowing(false));
+    dispatch(threadCheckedMessageList(null, null, true));
+  }
+
   render() {
-    const {thread, threadShowing, smallVersion} = this.props;
+    const {thread, smallVersion, threadSelectMessageShowing, threadCheckedMessageList} = this.props;
     if (thread.id) {
       const classNames = classnames({
         [style.MainHead]: true,
-        [style["MainHead--smallVersion"]]: smallVersion,
-        [style["MainHead--isThreadShow"]]: threadShowing
+        [style["MainHead--smallVersion"]]: smallVersion
       });
       return (
         <Container className={classNames} onClick={this.onShowInfoClick} relative>
-          <Container className={style.MainHead__ThreadInfoContainer}>
-            <Avatar>
-              <AvatarImage src={thread.image ? thread.image : defaultAvatar}/>
-              <AvatarName>
-                <Text size="lg" invert overflow="ellipsis">{thread.title}</Text>
-                {thread.group ?
-                  <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
-                  :
-                  <Text size="xs" invert overflow="ellipsis">{strings.you}, {thread.title}</Text>
-                }
-              </AvatarName>
-            </Avatar>
-          </Container>
-          <Container centerLeft onClick={this.onLeftAsideShow}>
-            <Container className={style.MainHead__SearchContainer} inline>
-              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}
-                        className={style.MainHead__SearchButton}/>
-            </Container>
-            <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
-              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}
-                             className={style.MainHead__BackButton}/>
-            </Container>
+          {
+            threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
+          }
+          <Container centerLeft>
+
+            {
+              threadSelectMessageShowing &&
+              <Container>
+                <Container inline>
+                  <Text color="gray" light>{ strings.messagesCount(threadCheckedMessageList.length)}</Text>
+                </Container>
+                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
+                  <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                </Container>
+
+              </Container>
+            }
+
+            {
+              !threadSelectMessageShowing &&
+              <Container>
+                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
+                  <MdDone size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                </Container>
+                <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
+                  <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                </Container>
+                <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
+                  <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                </Container>
+              </Container>
+            }
+
           </Container>
         </Container>
       )

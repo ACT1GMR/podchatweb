@@ -20,11 +20,14 @@ import {
   threadModalMedialShowingReducer,
   threadShowingReducer,
   threadLeftAsideShowingReducer,
+  threadIsSendingMessageReducer,
   threadSearchMessageReducer,
   threadImagesToCaptionReducer,
   threadModalImageCaptionShowingReducer,
   threadGoToMessageIdReducer,
-  threadGetMessageListByMessageIdReducer
+  threadGetMessageListByMessageIdReducer,
+  threadSelectMessageShowingReducer,
+  threadCheckedMessageListReducer
 } from "./threadReducer";
 import {
   messageSendReducer,
@@ -61,9 +64,12 @@ const rootReducer = {
   threadImagesToCaption: threadImagesToCaptionReducer,
   threadShowing: threadShowingReducer,
   threadLeftAsideShowing: threadLeftAsideShowingReducer,
+  threadIsSendingMessage: threadIsSendingMessageReducer,
+  threadSelectMessageShowing: threadSelectMessageShowingReducer,
   threadSearchMessage: threadSearchMessageReducer,
   threadGoToMessageId: threadGoToMessageIdReducer,
   threadGetMessageListByMessageId: threadGetMessageListByMessageIdReducer,
+  threadCheckedMessageList: threadCheckedMessageListReducer,
   message: messageNewReducer,
   sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,

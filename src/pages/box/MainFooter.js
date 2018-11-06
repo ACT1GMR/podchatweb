@@ -18,16 +18,22 @@ import style from "../../../styles/pages/box/MainFooter.scss";
 export default class MainFooter extends Component {
   constructor(props) {
     super(props);
+    this.mainFooterInputRef = React.createRef();
+    this.sendMessage = this.sendMessage.bind(this);
+  }
+
+  sendMessage() {
+    this.mainFooterInputRef.current.getWrappedInstance().sendMessage();
   }
 
   render() {
     return (
       <Container className={style.MainFooter}>
         <Container className={style.MainFooter__Input}>
-          <MainFooterInput/>
+          <MainFooterInput ref={this.mainFooterInputRef}/>
         </Container>
         <Container className={style.MainFooter__Attachment}>
-          <MainFooterAttachment/>
+          <MainFooterAttachment sendMessage={this.sendMessage.bind(this)}/>
         </Container>
       </Container>
     );

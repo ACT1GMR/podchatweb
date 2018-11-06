@@ -7,7 +7,7 @@ import classnames from "classnames";
 import strings from "../../constants/localization";
 
 //actions
-import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
+import {chatSetInstance, chatSmallVersion, chatModalMediaInstance} from "../../actions/chatActions";
 import {userGet} from "../../actions/userActions";
 
 //components
@@ -17,17 +17,19 @@ import LeftAside from "./LeftAside";
 import Container from "raduikit/src/container";
 import Message from "raduikit/src/message";
 import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
+import {ModalMedia} from "raduikit/src/modal";
 import ModalContactList from "./ModalContactList";
 import ModalAddContact from "./ModalAddContact";
 import ModalThreadList from "./ModalThreadList";
 import ModalCreateGroup from "./ModalCreateGroup";
 import ModalThreadInfo from "./ModalThreadInfo";
-import ModalMedia from "./ModalMedia";
 import ModalImageCaption from "./ModalImageCaption";
 import ModalDeleteMessagePrompt from "./ModalDeleteMessagePrompt";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
+import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
+import {Text} from "raduikit/src/typography";
 
 
 @connect(store => {
@@ -35,7 +37,8 @@ import style from "../../../styles/pages/box/index.scss";
     chatInstance: store.chatInstance.chatSDK,
     user: store.user.user,
     threadShowing: store.threadShowing,
-    leftAsideShowing: store.threadLeftAsideShowing
+    leftAsideShowing: store.threadLeftAsideShowing,
+    threadImages: store.threadLeftAsideShowing
   };
 }, null, null, {withRef: true})
 export default class Box extends Component {
@@ -56,7 +59,7 @@ export default class Box extends Component {
   componentDidMount() {
     const {small, dispatch} = this.props;
     dispatch(chatSetInstance(this.props));
-    if(small){
+    if (small) {
       dispatch(chatSmallVersion(small))
     }
   }
@@ -73,8 +76,12 @@ export default class Box extends Component {
     }
   }
 
+  onModalMediaLoad(instance) {
+    this.props.dispatch(chatModalMediaInstance(instance));
+  }
+
   render() {
-    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing, small} = this.props;
+    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing, small, threadImages} = this.props;
     let classNames = classnames({
       [style.Box]: true,
       [style["Box--small"]]: small,
@@ -97,6 +104,20 @@ export default class Box extends Component {
       [style["Box--isAsideLeftShow"]]: leftAsideShowing
     })}`;
 
+    const modalMediaI18n = {
+      fa: {
+        CLOSE: strings.ModalMediaClose,
+        NEXT: strings.ModalMediaNext,
+        PREV: strings.ModalMediaPrev,
+        ERROR: strings.ModalMediaError,
+        PLAY_START: strings.ModalMediaPlayStart,
+        PLAY_STOP: strings.ModalMediaPlayStop,
+        FULL_SCREEN: strings.ModalMediaFullScreen,
+        THUMBS: strings.ModalMediaThumbs,
+        ZOOM: strings.ModalMediaZoom
+      }
+    };
+
     const popups = (
       <Container>
         <ModalDeleteMessagePrompt smallVersion={small}/>
@@ -107,6 +128,10 @@ export default class Box extends Component {
         <ModalThreadInfo smallVersion={small}/>
         <ModalMedia smallVersion={small}/>
         <ModalImageCaption smallVersion={small}/>
+        <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}
+                    lang="fa"
+                    i18n={modalMediaI18n}
+                    backFocus={false}/>
       </Container>
     );
 

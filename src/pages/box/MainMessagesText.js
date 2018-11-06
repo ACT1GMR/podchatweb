@@ -88,7 +88,10 @@ export default class MainMessagesText extends Component {
     });
   }
 
-  onMessageControlShow(e) {
+  onMessageControlShow(isClick, e) {
+    if (isClick === true && !mobileCheck()) {
+      return;
+    }
     this.setState({
       messageControlShow: true
     });
@@ -135,7 +138,7 @@ export default class MainMessagesText extends Component {
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
                  ref={this.containerRef}
-                 onClick={this.onMessageControlShow.bind(this)}
+                 onClick={this.onMessageControlShow.bind(this, true)}
                  id={message.uuid}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
@@ -172,7 +175,7 @@ export default class MainMessagesText extends Component {
         <Paper colorBackgroundLight borderRadius={5} hasShadow>
           {replyFragment(message)}
           {forwardFragment(message)}
-          <Text wordWrap="breakWord">
+          <Text wordWrap="breakWord" whiteSpace="preWrap">
             {urlify(message.message)}
           </Text>
           <PaperFooter>

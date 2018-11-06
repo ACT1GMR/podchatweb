@@ -251,12 +251,14 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  sendFileMessage(resolve, reject, file, threadId) {
+  sendFileMessage(resolve, reject, file, threadId, caption) {
     const sendChatParams = {
       threadId,
       file
     };
-
+    if(caption) {
+      sendChatParams.content = caption;
+    }
     const obj = this.chatAgent.sendFileMessage(sendChatParams, {
       onSent: result => {
         this._onError(result, reject);
@@ -265,6 +267,7 @@ export default class ChatSDK {
     resolve({
       ...obj, ...{
         newMessage: true,
+        message: caption,
         time: Date.now(),
         fileUniqueId: obj.content.file.uniqueId,
         metaData: {
@@ -363,7 +366,7 @@ export default class ChatSDK {
   forwardMessage(resolve, reject, threadId, messageId) {
     const sendChatParams = {
       subjectId: threadId,
-      content: JSON.stringify([messageId])
+      content: JSON.stringify(messageId instanceof Array ? messageId : [messageId])
     };
     this.chatAgent.forwardMessage(sendChatParams, {
       onSent() {

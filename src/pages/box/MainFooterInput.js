@@ -1,6 +1,7 @@
 // src/list/BoxScene.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import classnames from "classnames";
 import {mobileCheck} from "../../utils/helpers";
 
 //strings
@@ -14,15 +15,15 @@ import {
   messageReply,
   messageForward
 } from "../../actions/messageActions";
+import {threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
 import MainFooterInputEditing, {messageEditingCondition} from "./MainFooterInputEditing";
 import Container from "raduikit/src/container";
-import {MdChevronLeft} from "react-icons/lib/md";
+import {InputTextArea} from "raduikit/src/input";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";
-import styleVar from "./../../../styles/variables.scss";
 
 const constants = {
   replying: "REPLYING",
@@ -34,7 +35,7 @@ const constants = {
     messageEditing: store.messageEditing,
     threadId: store.thread.thread.id
   };
-})
+}, null, null, {withRef: true})
 export default class BoxSceneInput extends Component {
 
   constructor() {
@@ -48,23 +49,31 @@ export default class BoxSceneInput extends Component {
   }
 
   setInputText(text) {
+    const {dispatch} = this.props;
     this.setState({
       messageText: text
     });
+    if (text) {
+      if (text.trim()) {
+        return dispatch(threadIsSendingMessage(true));
+      }
+    }
+    dispatch(threadIsSendingMessage(false));
   }
 
   componentDidUpdate(prevProps) {
-    if(!mobileCheck()) {
-      const current = this.inputNode.current;
-      if (current) {
-        current.focus();
+    if (prevProps.threadId !== this.props.threadId) {
+      if (!mobileCheck()) {
+        const current = this.inputNode.current;
+        if (current) {
+          current.focus();
+        }
       }
     }
   }
 
-  onFormSubmit(msgEditing, evt) {
-    evt.preventDefault();
-    const {threadId, dispatch} = this.props;
+  sendMessage() {
+    const {threadId, dispatch, messageEditing: msgEditing} = this.props;
     const {messageText} = this.state;
     let isEmptyMessage = false;
     if (!messageText) {
@@ -74,7 +83,7 @@ export default class BoxSceneInput extends Component {
       isEmptyMessage = true;
     }
     if (msgEditing) {
-      const msgEditingId = msgEditing.message.id;
+      const msgEditingId = msgEditing.message instanceof Array ? msgEditing.message.map(e => e.id) : msgEditing.message.id;
       if (msgEditing.type === constants.replying) {
         if (isEmptyMessage) {
           return;
@@ -102,30 +111,29 @@ export default class BoxSceneInput extends Component {
   }
 
   onTextChange(event) {
-    this.setInputText(event.target.value);
+    this.setInputText(event.target.innerText);
   }
 
   render() {
     const {messageEditing} = this.props;
     const {messageText} = this.state;
-    const boxSceneInputClass = messageEditingCondition(messageEditing) ? `${style["MainFooterInput__Input--halfBorder"]} ${style.MainFooterInput__Input}` : style.MainFooterInput__Input;
+    const editBotClassNames = classnames({
+      [style.MainFooterInput__EditBox]: true,
+      [style["MainFooterInput__EditBox--halfBorder"]]: messageEditingCondition(messageEditing)
+    });
     return (
-      <Container className={boxSceneInputClass}>
+      <Container className={style.MainFooterInput}>
         <Container className={style.MainFooterInput__EditingBox}>
           <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
         </Container>
-        <Container relative className={style.MainFooterInput__EditBox}>
-          <form onSubmit={this.onFormSubmit.bind(this, messageEditing)}>
-            <input className={boxSceneInputClass}
-                   ref={this.inputNode}
-                   type="text"
-                   placeholder={strings.pleaseWriteHere}
-                   onChange={this.onTextChange}
-                   value={messageText}/>
-            <button type="submit" className={style.MainFooterInput__Button}>
-              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorTextLight} style={{margin: "0 4px"}}/>
-            </button>
-          </form>
+        <Container relative className={editBotClassNames}>
+          <InputTextArea
+            className={style.MainFooterInput__InputContainer}
+            inputClassName={style.MainFooterInput__Input}
+            ref={this.inputNode}
+            placeholder={strings.pleaseWriteHere}
+            onChange={this.onTextChange}
+            value={messageText}/>
         </Container>
       </Container>
     );

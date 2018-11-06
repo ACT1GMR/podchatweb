@@ -40,6 +40,14 @@
   opacity: 1;
 }
 
+.MainMessages__Tick {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .MainMessages__HighlighterBox {
   border-bottom: 3px solid $color-accent;
   height: 100%;

@@ -10,19 +10,25 @@ import {
   THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
   THREAD_FILES_TO_UPLOAD,
-  CONTACT_LIST_SHOWING,
   THREAD_SHOWING,
   THREAD_MODAL_IMAGE_CAPTION_SHOWING,
   THREAD_IMAGES_TO_CAPTION,
-  THREAD_IMAGE_TO_UPLOAD,
   THREAD_META_UPDATE,
-  THREAD_NAME_UPDATE,
-  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID, THREAD_LEFT_ASIDE_SHOWING, THREAD_SEARCH_MESSAGE, THREAD_GO_TO_MESSAGE
+  THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID,
+  THREAD_LEFT_ASIDE_SHOWING,
+  THREAD_SEARCH_MESSAGE,
+  THREAD_GO_TO_MESSAGE,
+  THREAD_IS_SENDING_MESSAGE,
+  THREAD_SELECT_MESSAGE_SHOWING,
+  THREAD_CHECKED_MESSAGE_LIST_REMOVE,
+  THREAD_CHECKED_MESSAGE_LIST_EMPTY, THREAD_CHECKED_MESSAGE_LIST_ADD
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName) => {
   return (dispatch, getState) => {
     dispatch(threadShowing(true));
+    dispatch(threadSelectMessageShowing(false));
+    dispatch(threadCheckedMessageList(null, null, true));
     if (thread) {
       return dispatch({
         type: THREAD_CREATE("CACHE"),
@@ -143,16 +149,6 @@ export const threadModalMediaShowing = (isShowing, object = {}) => {
   }
 };
 
-
-export const threadModalCreateGroupShowing = (isShowing) => {
-  return dispatch => {
-    return dispatch({
-      type: THREAD_MODAL_CREATE_GROUP_SHOWING,
-      payload: {isShowing}
-    });
-  }
-};
-
 export const threadModalThreadInfoShowing = (isShowing) => {
   return dispatch => {
     return dispatch({
@@ -173,7 +169,6 @@ export const threadAddParticipant = (threadId, contactIds) => {
     });
   }
 };
-
 
 export const threadRemoveParticipant = (threadId, participants) => {
   return (dispatch, getState) => {
@@ -197,7 +192,7 @@ export const threadInfo = (threadId, contactIds) => {
   }
 };
 
-export const threadFilesToUpload = (files, upload, inputNode) => {
+export const threadFilesToUpload = (files, upload, inputNode, caption) => {
   if (!upload) {
     let isAllImage = true;
     for (let file of files) {
@@ -216,7 +211,7 @@ export const threadFilesToUpload = (files, upload, inputNode) => {
   return (dispatch) => {
     return dispatch({
       type: THREAD_FILES_TO_UPLOAD,
-      payload: files
+      payload: {caption, files}
     });
   }
 };
@@ -257,6 +252,39 @@ export const threadLeftAsideShowing = isShowing => {
     return dispatch({
       type: THREAD_LEFT_ASIDE_SHOWING,
       payload: isShowing
+    });
+  }
+};
+
+export const threadSelectMessageShowing = isShowing => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_SELECT_MESSAGE_SHOWING,
+      payload: isShowing
+    });
+  }
+};
+
+export const threadCheckedMessageList = (addTo, message, empty) => {
+  return dispatch => {
+    if (empty) {
+      return dispatch({
+        type: THREAD_CHECKED_MESSAGE_LIST_EMPTY,
+        payload: null
+      });
+    }
+    return dispatch({
+      type: addTo ? THREAD_CHECKED_MESSAGE_LIST_ADD : THREAD_CHECKED_MESSAGE_LIST_REMOVE,
+      payload: message
+    });
+  }
+};
+
+export const threadIsSendingMessage = isSending => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_IS_SENDING_MESSAGE,
+      payload: isSending
     });
   }
 };

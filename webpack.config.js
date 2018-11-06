@@ -1,5 +1,6 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const getLocalIdent = require('css-loader/lib/getLocalIdent');
 const path = require("path");
 
 module.exports = (e, argv) => {
@@ -40,7 +41,12 @@ module.exports = (e, argv) => {
               loader: "css-loader",
               options: {
                 modules: true,
-                localIdentName: mode === "production" ? "[hash:base64:5]" : "[local]"
+                localIdentName: mode === "production" ? "[hash:base64:5]" : "[local]",
+                getLocalIdent: (loaderContext, localIdentName, localName, options) => {
+                  return loaderContext.resourcePath.includes('ModalMedia') ?
+                    localName :
+                    getLocalIdent(loaderContext, localIdentName, localName, options);
+                }
               }
             },
             {

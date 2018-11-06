@@ -14,7 +14,8 @@ import {
   threadFilesToUpload,
   threadMessageGetListByMessageId,
   threadMessageGetListPartial,
-  threadMessageGetList
+  threadMessageGetList,
+  threadCheckedMessageList
 } from "../../actions/threadActions";
 
 //components
@@ -98,6 +99,8 @@ function datePetrification(time) {
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
     threadGoToMessageId: store.threadGoToMessageId,
     threadFetching: store.thread.fetching,
+    threadSelectMessageShowing: store.threadSelectMessageShowing,
+    threadCheckedMessageList: store.threadCheckedMessageList,
     user: store.user.user,
     contact: store.contactChatting.contact
   };
@@ -275,6 +278,12 @@ export default class MainMessages extends Component {
     e.stopPropagation();
   }
 
+  onAddToCheckedMessage(message, isAdd, e) {
+    e.stopPropagation();
+    const {dispatch} = this.props;
+    dispatch(threadCheckedMessageList(isAdd, message));
+  }
+
   onFileDrop(e) {
     e.stopPropagation();
     e.preventDefault();
@@ -286,7 +295,17 @@ export default class MainMessages extends Component {
   }
 
   render() {
-    const {threadGetMessageListByMessageIdFetching, threadMessagesFetching, threadMessagesPartialFetching, threadMessages, threadFetching, contact, user} = this.props;
+    const {
+      threadGetMessageListByMessageIdFetching,
+      threadMessagesFetching,
+      threadMessagesPartialFetching,
+      threadMessages,
+      threadFetching,
+      threadSelectMessageShowing,
+      threadCheckedMessageList,
+      contact,
+      user
+    } = this.props;
     const {highLightMessage, gotoBottomButtonShowing} = this.state;
     if (threadMessagesFetching || threadFetching || threadGetMessageListByMessageIdFetching) {
       return (
@@ -395,6 +414,19 @@ export default class MainMessages extends Component {
         </Container>
       );
     };
+    const messageSelectedCondition = message => {
+      const fileIndex = threadCheckedMessageList.findIndex((msg => msg.uniqueId === message.uniqueId));
+      return fileIndex >= 0;
+    };
+    const messageTick = message => {
+      const isExisted = messageSelectedCondition(message);
+      const classNames = classnames({
+        [style.MainMessages__Tick]: true,
+        [style["MainMessages__Tick--selected"]]: isExisted
+      });
+      return <Container className={classNames} onClick={this.onAddToCheckedMessage.bind(this, message, !isExisted)}/>;
+
+    };
 
     const messageArguments = message => {
       return {
@@ -433,10 +465,11 @@ export default class MainMessages extends Component {
                    ref={this.boxSceneMessagesNode}>
           <List ref={this.messageListNode}>
             {threadMessages.map(el => (
-              <ListItem key={el.id || el.uniqueId} data={el}>
-                <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`}>
+              <ListItem key={el.id || el.uniqueId} data={el} active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
+                <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`} relative>
                   {!isMessageByMe(el, user) ? message(el) : avatar(el)}
                   {!isMessageByMe(el, user) ? avatar(el) : message(el)}
+                  {threadSelectMessageShowing && messageTick(el)}
                 </Container>
               </ListItem>
             ))}

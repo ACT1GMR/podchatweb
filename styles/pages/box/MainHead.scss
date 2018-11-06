@@ -22,11 +22,6 @@
   background-color: $color-accent-dark;
 }
 
-.MainHead__ThreadInfoContainer {
-  max-width: calc(100% - 100px);
-  height: 100%;
-}
-
 .MainHead__BackContainer,
 .MainHead__SearchContainer {
   padding: 18px 9px;
@@ -36,9 +31,6 @@
 
   .MainHead:not(.MainHead--smallVersion) {
     border-right: 1px solid $color-accent-dark;
-    .MainHead__ThreadInfoContainer {
-      max-width: none;
-    }
     .MainHead__BackContainer {
       display: none;
     }

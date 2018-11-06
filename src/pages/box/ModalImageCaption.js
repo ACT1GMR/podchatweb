@@ -42,12 +42,15 @@ export default class ModalImageCaption extends Component {
   onSend() {
     const {threadId, dispatch, images, inputNode} = this.props;
     const {comment} = this.state;
-    if (comment) {
-      if (comment.trim()) {
-        dispatch(messageSend(comment, threadId));
+    const isBiggerThanOne = images.length > 1;
+    if (isBiggerThanOne) {
+      if (comment) {
+        if (comment.trim()) {
+          dispatch(messageSend(comment, threadId));
+        }
       }
     }
-    dispatch(threadFilesToUpload(images, true, inputNode));
+    dispatch(threadFilesToUpload(images, true, inputNode, !isBiggerThanOne && comment ? comment : null));
     this.onClose();
   }
 
