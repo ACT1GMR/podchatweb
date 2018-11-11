@@ -10,7 +10,7 @@ import {threadShowing, threadLeftAsideShowing, threadSelectMessageShowing} from 
 import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../actions/threadActions";
 
 //UI components
-import {MdChevronLeft, MdSearch, MdDone, MdClose} from "react-icons/lib/md";
+import {MdChevronLeft, MdSearch, MdCheckCircle, MdClose} from "react-icons/lib/md";
 import Container from "raduikit/src/container";
 import MainHeadThreadInfo from "./MainHeadThreadInfo";
 import MainHeadBatchActions from "./MainHeadBatchActions";
@@ -102,7 +102,7 @@ export default class BoxHeadThreadInfo extends Component {
               !threadSelectMessageShowing &&
               <Container>
                 <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
-                  <MdDone size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                  <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
                 </Container>
                 <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
                   <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>

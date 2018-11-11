@@ -23,6 +23,7 @@ import Container from "raduikit/src/container";
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
 import classnames from "classnames";
+import {messageModalDeletePrompt} from "../../actions/messageActions";
 
 const statics = {};
 
@@ -50,7 +51,8 @@ export default class MainHeadBatchActions extends Component {
 
   onDelete(e) {
     e.stopPropagation();
-    this.props.dispatch(threadShowing(false));
+    const {dispatch, threadCheckedMessageList} = this.props;
+    dispatch(messageModalDeletePrompt(true, threadCheckedMessageList));
   }
 
   render() {

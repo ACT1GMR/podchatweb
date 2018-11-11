@@ -54,7 +54,12 @@ let strings = new LocalizedStrings({
     imageText: "متن تصویر",
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
-    areYouSureAboutDeletingMessage: "از حذف این پیغام مطمئنید",
+    areYouSureAboutDeletingMessage(messagesCount){
+      if(!messagesCount) {
+        return "از حذف این پیغام مطمئنید";
+      }
+      return `از حذف ${messagesCount} پیام مطمئنید`
+    },
     ModalMediaClose: "بستن",
     ModalMediaNext: "بعدی",
     ModalMediaPrev: "قبلی",
@@ -66,6 +71,12 @@ let strings = new LocalizedStrings({
     ModalMediaZoom: "بزرگنمایی",
     messagesCount(messagesCount){
       return `${messagesCount} پیام`
+    },
+    thereIsNoContactWithThisKeyword(keyword){
+      if(!keyword && !keyword.trim()) {
+        return 'مخاطبی با مشخصات وارد شده یافت نشد...'
+      }
+      return `مخاطبی با مشخصات "${keyword}" وجود ندارد `;
     },
     prettifyDateString(string) {
       if (~string.indexOf("پیش")) {

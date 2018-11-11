@@ -6,6 +6,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {messageDelete, messageModalDeletePrompt} from "../../actions/messageActions";
+import {threadCheckedMessageList, threadSelectMessageShowing} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalFooter} from "raduikit/src/modal";
@@ -29,8 +30,16 @@ export default class ModalDeleteMessagePrompt extends Component {
 
   onRemove() {
     const {message, dispatch} = this.props;
-    dispatch(messageDelete(message.id, message.editable));
+    if (message instanceof Array) {
+      for (const msg of message) {
+        dispatch(messageDelete(msg.id, msg.editable));
+      }
+    } else {
+      dispatch(messageDelete(message.id, message.editable));
+    }
     dispatch(messageModalDeletePrompt(false));
+    dispatch(threadSelectMessageShowing(false));
+    dispatch(threadCheckedMessageList(null, null, true));
   }
 
   onCancel() {
@@ -38,13 +47,15 @@ export default class ModalDeleteMessagePrompt extends Component {
   }
 
   render() {
-    const {isShowing, smallVersion} = this.props;
+    const {isShowing, smallVersion, message} = this.props;
+    const isBatchMessage = message instanceof Array;
     return (
       <Modal isOpen={isShowing} onClose={this.onCancel.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalBody>
           <Container centerTextAlign>
-            <Text bold size="lg">{strings.areYouSureAboutDeletingMessage}؟</Text>
+            <Text bold
+                  size="lg">{strings.areYouSureAboutDeletingMessage(isBatchMessage ? message.length : null)}؟</Text>
           </Container>
         </ModalBody>
 
