@@ -34,10 +34,12 @@ export default class ChatSDK {
     this.onMessageEvents = props.onMessageEvents;
     this.onFileUploadEvents = props.onFileUploadEvents;
     this.onChatReady = props.onChatReady;
+    this.onChatState = props.onChatState;
     this._onMessageEvents();
     this._onThreadEvents();
     this._onFileUploadEvents();
     this._onChatReady();
+    this._onChatState();
     this._onChatError();
   }
 
@@ -83,6 +85,12 @@ export default class ChatSDK {
           onTokenExpire();
         }, expireTokenTimeOut || (1000 * 60 * 10));
       }
+    });
+  }
+
+  _onChatState() {
+    this.chatAgent.on("chatState", e => {
+      this.onChatState(e);
     });
   }
 
@@ -256,7 +264,7 @@ export default class ChatSDK {
       threadId,
       file
     };
-    if(caption) {
+    if (caption) {
       sendChatParams.content = caption;
     }
     const obj = this.chatAgent.sendFileMessage(sendChatParams, {
@@ -442,7 +450,6 @@ export default class ChatSDK {
       count: 50,
       offset: 0
     };
-
     if (typeof name === "string") {
       getContactsParams.name = name;
     }

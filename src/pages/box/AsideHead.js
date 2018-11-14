@@ -12,6 +12,7 @@ import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from 
 //UI components
 import Notification from "./Notification";
 import {Dropdown, DropdownItem} from "raduikit/src/menu";
+import {Text} from "raduikit/src/typography";
 import {MdMenu, MdClose} from "react-icons/lib/md";
 
 //styling
@@ -27,7 +28,9 @@ const statics = {
 @connect(store => {
   return {
     threads: store.threadList.threads,
-    threadId: store.thread.thread.id
+    threadId: store.thread.thread.id,
+    chatState: store.chatState,
+    chatInstance: store.chatInstance.chatSDK
   };
 })
 export default class AsideHead extends Component {
@@ -57,14 +60,15 @@ export default class AsideHead extends Component {
     this.container = React.createRef();
     this.onCloseMenu = this.onCloseMenu.bind(this);
     this.onOpenMenu = this.onOpenMenu.bind(this);
+    this.onRetryClick = this.onRetryClick.bind(this);
   }
 
   onMenuSelect(type) {
     if (type === CONTACT_ADDING) {
       this.props.dispatch(contactAdding(true));
-    } else if (type ===  CONTACT_LIST_SHOWING){
+    } else if (type === CONTACT_LIST_SHOWING) {
       this.props.dispatch(contactListShowing(true));
-    } else if( type === CONTACT_MODAL_CREATE_GROUP_SHOWING) {
+    } else if (type === CONTACT_MODAL_CREATE_GROUP_SHOWING) {
       this.props.dispatch(contactModalCreateGroupShowing(true));
     }
   }
@@ -81,14 +85,20 @@ export default class AsideHead extends Component {
     })
   }
 
+  onRetryClick(){
+    this.props.chatInstance.chatAgent.reconnect();
+  }
+
   render() {
-    const {menuItems} = this.props;
+    const {menuItems, chatState} = this.props;
     const {isOpen} = this.state;
     const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
-
+    const isReconnecting = chatState.socketState == 1 && !chatState.deviceRegister;
+    const isConnected = chatState.socketState == 1 && chatState.deviceRegister ;
+    const isDisconnected = chatState.socketState == 3 ;
     return (
-      <Container className={style.AsideHead} ref={this.container}>
+      <Container className={style.AsideHead} ref={this.container} relative>
         <Notification/>
         {isOpen ? (
           <MdClose size={iconSize} onClick={this.onCloseMenu}
@@ -99,8 +109,19 @@ export default class AsideHead extends Component {
                   className={utilsStlye["u-clickable"]}
                   onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         )}
+        <Container centerRight className={style.AsideHead__ConnectionHandlerContainer}>
+          <Container inline>
+            <Text size="lg" color="gray" light bold>{isConnected ? strings.podchat : isReconnecting ?  `${strings.chatState.reconnecting}...` : `${strings.chatState.networkDisconnected}...`}</Text>
+          </Container>
+          {isDisconnected &&
+          <Container inline onClick={this.onRetryClick}>
+            <Text size="xs" color="gray" light linkStyle>{strings.tryAgain}</Text>
+          </Container>
+          }
 
-        <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu} >
+        </Container>
+
+        <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu}>
           {menuItems.map(el => (
             <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)} invert>{el.name}</DropdownItem>
           ))}

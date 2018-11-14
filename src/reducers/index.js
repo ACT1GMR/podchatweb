@@ -37,11 +37,12 @@ import {
   messageModalDeletePromptReducer,
   messageDeleteReducer
 } from "./messageReducer";
-import {chatSmallVersionReducer, chatInstanceReducer} from "./chatReducer";
+import {chatSmallVersionReducer, chatInstanceReducer, chatStateReducer} from "./chatReducer";
 import userReducer from "./userReducer";
 
 const rootReducer = {
   chatInstance: chatInstanceReducer,
+  chatState: chatStateReducer,
   chatSmallVersion: chatSmallVersionReducer,
   contactGetList: contactGetListReducer,
   contactListShowing: contactListShowingReducer,

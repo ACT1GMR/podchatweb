@@ -6,7 +6,7 @@ import {
   CONTACT_LIST_SHOWING,
   CONTACT_CHATTING,
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
-  THREAD_CREATE
+  THREAD_CREATE, THREAD_GET_MESSAGE_LIST
 } from "../constants/actionTypes";
 import {threadCreate, threadShowing} from "./threadActions";
 

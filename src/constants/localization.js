@@ -2,6 +2,7 @@ import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
   fa: {
+    podchat: "پادچت",
     search: "جستجو",
     tryAgain: "تلاش دوباره",
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کنید!!",
@@ -92,7 +93,11 @@ let strings = new LocalizedStrings({
     },
     noResult: "نتیجه ای وجود ندارد",
     searchSomething: "کلمه ای تایپ کنید",
-    searchMessages: "جستجو پیامها"
+    searchMessages: "جستجو پیامها",
+    chatState: {
+      networkDisconnected: "در انتظار شبکه",
+      reconnecting: "اتصال به شبکه"
+    }
   },
   it: {}
 });

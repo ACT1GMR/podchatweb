@@ -1,3 +1,5 @@
+import {THREAD_GET_LIST} from "../constants/actionTypes";
+
 export function humanFileSize(bytes, si) {
   const thresh = si ? 1000 : 1024;
   if (Math.abs(bytes) < thresh) {
@@ -94,4 +96,37 @@ export function avatarNameGenerator(firstName, lastName) {
   }
   return getColor(`${firstName[0]}${lastName[1]}`);
 
+}
+
+
+export function serverCachePromise(dispatch, actionType, func, params) {
+  function success(result) {
+    dispatch({
+      type: actionType("SUCCESS"),
+      payload: result.result
+    });
+  }
+
+  function error(error) {
+    dispatch({
+      type: actionType("ERROR"),
+      payload: error
+    });
+  }
+
+  function pending() {
+    dispatch({
+      type: actionType("PENDING"),
+      payload: null
+    });
+  }
+
+  func.apply(null, params).then(result => {
+    pending();
+    success(result);
+    if (result.cache) {
+      pending();
+      func.apply(null, params).then(success, error);
+    }
+  }, error);
 }

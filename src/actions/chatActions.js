@@ -5,7 +5,7 @@ import {
   THREAD_NEW,
   THREAD_CHANGED,
   THREAD_FILE_UPLOADING,
-  MESSAGE_NEW, MESSAGE_DELETE, CHAT_MODAL_MEDIA_INSTANCE
+  MESSAGE_NEW, CHAT_STATE, CHAT_MODAL_MEDIA_INSTANCE
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -43,6 +43,12 @@ export const chatSetInstance = config => {
         dispatch({
           type: THREAD_FILE_UPLOADING,
           payload: message
+        });
+      },
+      onChatState(e) {
+        dispatch({
+          type: CHAT_STATE,
+          payload: e
         });
       },
       onChatReady(e) {

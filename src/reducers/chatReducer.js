@@ -1,4 +1,4 @@
-import {CHAT_GET_INSTANCE, CHAT_SMALL_VERSION, THREAD_MODAL_LIST_SHOWING} from "../constants/actionTypes";
+import {CHAT_GET_INSTANCE, CHAT_SMALL_VERSION, CHAT_STATE} from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const chatInstanceReducer = (state = {
@@ -28,3 +28,12 @@ export const chatSmallVersionReducer = (state = false, action) => {
   }
 };
 
+
+export const chatStateReducer = (state = false, action) => {
+  switch (action.type) {
+    case CHAT_STATE:
+      return action.payload;
+    default:
+      return state;
+  }
+};
