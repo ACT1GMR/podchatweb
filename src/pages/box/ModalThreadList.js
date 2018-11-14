@@ -19,7 +19,7 @@ import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
 
 //styling
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 const constants = {
   forwarding: "FORWARDING"
@@ -66,7 +66,7 @@ export default class ModalContactList extends Component {
                   <Container relative>
 
                     <Avatar>
-                      <AvatarImage src={el.image ? el.image : defaultAvatar}/>
+                      <AvatarImage src={el.image} text={avatarNameGenerator(el.title).letter} textBg={avatarNameGenerator(el.title).color}/>
                       <AvatarName>{el.title}</AvatarName>
                     </Avatar>
 

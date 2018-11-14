@@ -41,9 +41,9 @@ import {
 
 //styling
 import style from "../../../styles/pages/box/MainMessages.scss";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 import classnames from "classnames";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 function isMessageByMe(message, user) {
   if (message) {
@@ -450,7 +450,7 @@ export default class MainMessages extends Component {
     const avatar = message =>
       <Container inline inSpace style={{visibility: hiddenLastOwner(message, threadMessages), maxWidth: "50px"}}>
         <Avatar>
-          <AvatarImage src={message.participant.image || defaultAvatar}/>
+          <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter} textBg={avatarNameGenerator(message.participant.name).color}/>
           <AvatarName bottom size="sm">{message.participant.name}</AvatarName>
         </Avatar>
       </Container>;

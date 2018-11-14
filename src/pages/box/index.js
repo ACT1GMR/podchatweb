@@ -30,6 +30,7 @@ import ModalDeleteMessagePrompt from "./ModalDeleteMessagePrompt";
 import style from "../../../styles/pages/box/index.scss";
 import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
 import {Text} from "raduikit/src/typography";
+import {threadCreate} from "../../actions/threadActions";
 
 
 @connect(store => {
@@ -76,8 +77,8 @@ export default class Box extends Component {
     }
   }
 
-  onModalMediaLoad(instance) {
-    this.props.dispatch(chatModalMediaInstance(instance));
+  createThread(userId, idType) {
+    this.props.dispatch(threadCreate(userId, null, null, idType));
   }
 
   render() {

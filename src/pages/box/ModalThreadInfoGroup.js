@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 
 //strings
 import strings from "../../constants/localization";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //actions
 import {
@@ -23,7 +24,6 @@ import {ContactList, ContactListSelective} from "./_component/contactList";
 
 //styling
 import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings} from "react-icons/lib/md";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
 import Modal from "raduikit/src/modal";
@@ -196,7 +196,7 @@ export default class ModalThreadInfo extends Component {
 
                 <Container>
                   <Avatar>
-                    <AvatarImage src={thread.image ? thread.image : defaultAvatar} size="xlg"/>
+                    <AvatarImage src={thread.image} size="xlg" text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
                     <AvatarName>
                       <Heading h1>{thread.title}</Heading>
                       <Text>{participants.length} {strings.member}</Text>

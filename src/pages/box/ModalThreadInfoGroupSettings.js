@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -15,7 +16,6 @@ import Container from "raduikit/src/container";
 
 //styling
 import {MdCameraAlt} from "react-icons/lib/md";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
@@ -78,7 +78,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
   }
 
   render() {
-    const {groupName, groupDesc, image} = this.state;
+    const {groupName, groupDesc, image, thread} = this.state;
     return (
       <Container>
         <Container relative>
@@ -96,7 +96,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
                                  className={style.ModalThreadInfoGroupSettings__ImageIcon}/>
                   </Container>
                 </Container>
-                <AvatarImage src={image ? image : defaultAvatar} size="xlg"/>
+                <AvatarImage src={image} size="xlg" text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
               </Container>
               <AvatarName>
                 <InputText onChange={this.groupNameChange.bind(this)}

@@ -32,3 +32,66 @@ export function isNodeDescendant(parent, child) {
   }
   return false;
 }
+
+export function avatarNameGenerator(firstName, lastName) {
+  const colorLogic = {
+    "0-20": "#d30850",
+    "20-40": "#96cef3",
+    "40-60": "#ffc900",
+    "60-80": "#2e5f68",
+    "80-100": "#20c174",
+    "100-120": "#608fff",
+    "120-200": "#7fa196",
+
+    "1500-1550": "#d30850",
+    "1550-1600": "#20c174",
+    "1600-1620": "#ffc900",
+    "1620-1680": "#2e5f68",
+    "1680-1700": "#96cef3",
+    "1700-1750": "#608fff",
+    "1750-1800": "#7fa196"
+  };
+  if (!firstName) {
+    return {
+      letter: "",
+      color: colorLogic['1500-1550']
+    }
+  }
+
+  function getColor(letter) {
+    let code = letter.charCodeAt(0);
+    if (letter.length > 1) {
+      code = code - (code - letter[1].charCodeAt(0));
+    }
+    for (const range in colorLogic) {
+      const split = range.split('-');
+      const lowRange = +split[0];
+      const highRange = +split[1];
+      if (code >= lowRange && code < highRange) {
+        return {
+          letter,
+          color: colorLogic[range]
+        }
+      }
+    }
+    return {
+      letter,
+      color: colorLogic['1500-1550']
+    }
+  }
+
+  if (!firstName) {
+    return;
+  }
+
+
+  if (!lastName) {
+    const split = firstName.split(" ");
+    if (split.length <= 1) {
+      return getColor(firstName[0]);
+    }
+    return getColor(`${split[0][0]}${split[1][0]}`);
+  }
+  return getColor(`${firstName[0]}${lastName[1]}`);
+
+}

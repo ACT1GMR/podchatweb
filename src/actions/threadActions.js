@@ -24,7 +24,7 @@ import {
   THREAD_CHECKED_MESSAGE_LIST_EMPTY, THREAD_CHECKED_MESSAGE_LIST_ADD
 } from "../constants/actionTypes";
 
-export const threadCreate = (contactId, thread, threadName) => {
+export const threadCreate = (contactId, thread, threadName, idType) => {
   return (dispatch, getState) => {
     dispatch(threadShowing(true));
     dispatch(threadSelectMessageShowing(false));
@@ -39,7 +39,7 @@ export const threadCreate = (contactId, thread, threadName) => {
     const chatSDK = state.chatInstance.chatSDK;
     return dispatch({
       type: THREAD_CREATE(),
-      payload: chatSDK.createThread(contactId, threadName)
+      payload: chatSDK.createThread(contactId, threadName, idType)
     });
   }
 };

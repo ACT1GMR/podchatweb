@@ -1,12 +1,13 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
 
 //actions
-import {threadCreate, threadGetList, threadShowing} from "../../actions/threadActions";
+import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "raduikit/src/avatar";
@@ -21,7 +22,6 @@ import date from "../../utils/date";
 
 //styling
 import style from "../../../styles/pages/box/AsideThreads.scss";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import Message from "raduikit/src/message";
 import classnames from "classnames";
 
@@ -58,6 +58,9 @@ function getTitle(title) {
     return `${title.slice(0, 30)}...`;
   }
   return title;
+}
+function getBg(el) {
+  console.log(avatarNameGenerator(el.title));
 }
 
 @connect(store => {
@@ -124,7 +127,7 @@ export default class AsideThreads extends Component {
 
                 <Container relative>
                   <Avatar>
-                    <AvatarImage src={el.image ? el.image : defaultAvatar} customSize="50px"/>
+                    <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter} textBg={avatarNameGenerator(el.title).color}/>
                     <AvatarName invert>
                       {getTitle(el.title)}
                       <AvatarText>

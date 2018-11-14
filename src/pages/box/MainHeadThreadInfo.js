@@ -15,8 +15,8 @@ import Container from "raduikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/MainHeadThreadInfo.scss";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import classnames from "classnames";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 const statics = {};
 
@@ -48,7 +48,7 @@ export default class BoxHeadThreadInfo extends Component {
       return (
         <Container className={classNames} onClick={this.onShowInfoClick} relative>
           <Avatar>
-            <AvatarImage src={thread.image ? thread.image : defaultAvatar}/>
+            <AvatarImage src={thread.image} text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
             <AvatarName>
               <Text size="lg" invert overflow="ellipsis">{thread.title}</Text>
               {thread.group ?

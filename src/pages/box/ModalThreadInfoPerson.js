@@ -18,10 +18,9 @@ import {ContactList, ContactListSelective} from "./_component/contactList";
 import date from "../../utils/date";
 
 //styling
-import {MdArrowBack, MdPerson, MdPhone} from "react-icons/lib/md";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
+import { MdPerson, MdPhone} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
-import BoxModalThreadInfoGroup from "./ModalThreadInfoGroup";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 
 @connect()
@@ -51,7 +50,7 @@ export default class ModalThreadInfo extends Component {
 
               <Container>
                 <Avatar>
-                  <AvatarImage src={participantImage ? participantImage : defaultAvatar} size="xlg"/>
+                  <AvatarImage src={participantImage} size="xlg" text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
                   <AvatarName>
                     <Heading h1>{thread.title}</Heading>
                     <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>

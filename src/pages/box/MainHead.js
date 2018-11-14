@@ -19,7 +19,6 @@ import {Text} from "raduikit/src/typography";
 //styling
 import style from "../../../styles/pages/box/MainHead.scss";
 import styleVar from "./../../../styles/variables.scss";
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
 import classnames from "classnames";
 
 const statics = {};

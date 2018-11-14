@@ -18,13 +18,13 @@ import Message from "raduikit/src/message";
 import {MdClose, MdSearch} from "react-icons/lib/md";
 
 //styling
-import {threadCreate, threadShowing} from "../../actions/threadActions";
+import {threadCreate} from "../../actions/threadActions";
 
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png"
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
 import Gap from "raduikit/src/gap";
 import {InputText} from "raduikit/src/input";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 function isContains(flds, keyword, arr) {
   const fields = flds.split('|');
@@ -157,7 +157,7 @@ export default class ModalContactList extends Component {
                 <ListItem key={el.id} selection invert>
                   <Container relative>
                     <Avatar>
-                      <AvatarImage src={el.linkedUser && el.linkedUser.image ? el.linkedUser.image : defaultAvatar}/>
+                      <AvatarImage src={el.linkedUser && el.linkedUser.image} text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter} textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
                       <AvatarName>{el.firstName} {el.lastName}</AvatarName>
                     </Avatar>
 

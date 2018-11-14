@@ -19,7 +19,7 @@ import Container from "raduikit/src/container";
 import {MdArrowForward} from "react-icons/lib/md";
 
 //styling
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -120,7 +120,7 @@ export default class ModalCreateGroup extends Component {
                     <Container>
 
                       <Avatar>
-                        <AvatarImage src={el.image ? el.image : defaultAvatar}/>
+                        <AvatarImage src={el.image}  text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter} textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
                         <AvatarName>{el.firstName} {el.lastName}</AvatarName>
                       </Avatar>
 

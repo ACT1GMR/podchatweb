@@ -1,12 +1,13 @@
 // src/box/_component/contactList
 import React from "react";
+import {avatarNameGenerator} from "../../../utils/helpers";
+
 //components
 import List, {ListItem} from "raduikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
 import Container from "raduikit/src/container";
 
 //styling
-import defaultAvatar from "../../../../styles/images/_common/default-avatar.png";
 
 export function ContactList(props) {
   const {hasUser, contacts, activeList, onSelect, onDeselect, activeWithTick, actions, selection, invert, multiple} = props;
@@ -27,7 +28,7 @@ export function ContactList(props) {
                   active={activeList && activeList.indexOf(el.id) > -1}>
           <Container relative>
             <Avatar>
-              <AvatarImage src={el.image ? el.image : defaultAvatar}/>
+              <AvatarImage src={el.image} text={avatarNameGenerator(el.name ? el.name  : `${el.firstName} ${el.lastName}`).letter} textBg={avatarNameGenerator(el.name ? el.name  : `${el.firstName} ${el.lastName}`).color}/>
               <AvatarName>{el.name ? el.name  : `${el.firstName} ${el.lastName}`}</AvatarName>
             </Avatar>
 
