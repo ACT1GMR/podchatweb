@@ -104,10 +104,6 @@ export default class ChatSDK {
     this.chatAgent.setToken(token);
   }
 
-  updateToken(token) {
-    this.chatAgent.setToekn(token);
-  }
-
   @promiseDecorator
   createThread(resolve, reject, params, threadName, idType) {
     let invitees = [{"id": params, "idType": idType || "TO_BE_USER_CONTACT_ID"}];

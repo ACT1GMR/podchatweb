@@ -17,7 +17,6 @@ import Container from "raduikit/src/container";
 //styling
 import {MdCameraAlt} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
-import utilsStlye from "../../../styles/utils/utils.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
 import {InputText} from "raduikit/src/input";
 import {chatUploadImage} from "../../actions/chatActions";
@@ -78,7 +77,8 @@ export default class ModalThreadInfoGroupSettings extends Component {
   }
 
   render() {
-    const {groupName, groupDesc, image, thread} = this.state;
+    const {groupName, groupDesc, image} = this.state;
+    const {thread} = this.props;
     return (
       <Container>
         <Container relative>

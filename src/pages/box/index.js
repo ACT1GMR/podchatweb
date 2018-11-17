@@ -7,7 +7,8 @@ import classnames from "classnames";
 import strings from "../../constants/localization";
 
 //actions
-import {chatSetInstance, chatSmallVersion, chatModalMediaInstance} from "../../actions/chatActions";
+import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
+import {threadCreate} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
 //components
@@ -29,9 +30,6 @@ import ModalDeleteMessagePrompt from "./ModalDeleteMessagePrompt";
 //styling
 import style from "../../../styles/pages/box/index.scss";
 import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
-import {Text} from "raduikit/src/typography";
-import {threadCreate} from "../../actions/threadActions";
-
 
 @connect(store => {
   return {
@@ -50,6 +48,7 @@ export default class Box extends Component {
   componentDidUpdate(oldProps) {
     const {token} = this.props;
     const {token: oldToken} = oldProps;
+    this.createThread = this.createThread.bind(this);
     if (oldToken) {
       if (oldToken !== token) {
         this.setToken(token);
