@@ -259,7 +259,10 @@ export default class MainMessages extends Component {
     }
   }
 
-  goToMessageId(threadId, msgId) {
+  goToMessageId(threadId, msgId, isDeleted) {
+    if (isDeleted) {
+      return;
+    }
     const {threadMessages} = this.props;
     const index = threadMessages.findIndex(e => e.id === msgId);
     if (~index) {
@@ -376,11 +379,15 @@ export default class MainMessages extends Component {
     };
     const replyFragment = (el) => {
       if (el.replyInfo) {
+        const replyInfo = el.replyInfo;
+        const meta = JSON.parse(replyInfo.metadata || "");
+        const text = replyInfo.message ? replyInfo.message : meta && meta.file && meta.file.name ? meta.file.name : "";
         return (
-          <Container onClick={this.goToMessageId.bind(this, el.threadId, el.replyInfo.repliedToMessageId)}>
+          <Container
+            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.repliedToMessageId, replyInfo.deleted)}>
             <Paper colorBackground borderRadius={5}>
               <Text bold size="xs">{strings.replyTo}:</Text>
-              <Text italic size="xs">{el.replyInfo.repliedToMessage}</Text>
+              <Text italic size="xs">{text && text.length > 30 ? `${text.slice(0, 30)}...` : text}</Text>
             </Paper>
             <Gap block y={5}/>
           </Container>
@@ -450,7 +457,8 @@ export default class MainMessages extends Component {
     const avatar = message =>
       <Container inline inSpace style={{visibility: hiddenLastOwner(message, threadMessages), maxWidth: "50px"}}>
         <Avatar>
-          <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter} textBg={avatarNameGenerator(message.participant.name).color}/>
+          <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
+                       textBg={avatarNameGenerator(message.participant.name).color}/>
           <AvatarName bottom size="sm">{message.participant.name}</AvatarName>
         </Avatar>
       </Container>;
@@ -465,7 +473,8 @@ export default class MainMessages extends Component {
                    ref={this.boxSceneMessagesNode}>
           <List ref={this.messageListNode}>
             {threadMessages.map(el => (
-              <ListItem key={el.id || el.uniqueId} data={el} active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
+              <ListItem key={el.id || el.uniqueId} data={el}
+                        active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
                 <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`} relative>
                   {!isMessageByMe(el, user) ? message(el) : avatar(el)}
                   {!isMessageByMe(el, user) ? avatar(el) : message(el)}
