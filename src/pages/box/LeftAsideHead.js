@@ -9,13 +9,13 @@ import strings from "../../constants/localization";
 import {threadLeftAsideShowing} from "../../actions/threadActions";
 
 //UI components
-import {Text} from "raduikit/src/typography";
+import {Text} from "../../../../uikit/src/typography";
 import {MdClose} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/LeftAsideHead.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 import utilsStlye from "../../../styles/utils/utils.scss";
 import classnames from "classnames";
 

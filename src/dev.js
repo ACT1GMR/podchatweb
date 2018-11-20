@@ -6,6 +6,7 @@ import "../styles/main.scss";
 import "../styles/layout/defualt.scss";
 import Box from "./pages/box";
 import {auth} from "podauth";
+import {BrowserRouter} from "react-router-dom";
 
 auth({
   clientId: "2051121e4348af52664cf7de0bda",
@@ -13,7 +14,9 @@ auth({
   onNewToken: token => {
     render(
       <Provider store={store} >
-        <Box token={token}/>
+        <BrowserRouter>
+          <Box token={token}/>
+        </BrowserRouter>
       </Provider>,
       document.getElementById("app")
     );

@@ -15,9 +15,9 @@ import {threadModalListShowing} from "../../actions/threadActions";
 
 
 //components
-import Paper, {PaperFooter} from "raduikit/src/paper";
-import Container from "raduikit/src/container";
-import {Text} from "raduikit/src/typography";
+import Paper, {PaperFooter} from "../../../../uikit/src/paper";
+import Container from "../../../../uikit/src/container";
+import {Text} from "../../../../uikit/src/typography";
 import {
   MdExpandLess,
   MdExpandMore,

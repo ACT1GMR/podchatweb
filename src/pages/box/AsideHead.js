@@ -11,14 +11,14 @@ import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from 
 
 //UI components
 import Notification from "./Notification";
-import {Dropdown, DropdownItem} from "raduikit/src/menu";
-import {Text} from "raduikit/src/typography";
+import {Dropdown, DropdownItem} from "../../../../uikit/src/menu";
+import {Text} from "../../../../uikit/src/typography";
 import {MdMenu, MdClose} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/AsidHead.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 import utilsStlye from "../../../styles/utils/utils.scss";
 
 const statics = {

@@ -1,6 +1,7 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -11,10 +12,10 @@ import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../acti
 
 //UI components
 import {MdChevronLeft, MdSearch, MdCheckCircle, MdClose} from "react-icons/lib/md";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 import MainHeadThreadInfo from "./MainHeadThreadInfo";
 import MainHeadBatchActions from "./MainHeadBatchActions";
-import {Text} from "raduikit/src/typography";
+import {Text} from "../../../../uikit/src/typography";
 
 //styling
 import style from "../../../styles/pages/box/MainHead.scss";
@@ -32,7 +33,7 @@ const statics = {};
     threadCheckedMessageList: store.threadCheckedMessageList
   };
 })
-export default class BoxHeadThreadInfo extends Component {
+class MainHead extends Component {
 
   constructor(props) {
     super(props);
@@ -48,8 +49,10 @@ export default class BoxHeadThreadInfo extends Component {
   }
 
   onThreadHide(e) {
+    const {dispatch, history} = this.props;
     e.stopPropagation();
-    this.props.dispatch(threadShowing(false));
+    dispatch(threadShowing(false));
+    history.push("/");
   }
 
   onLeftAsideShow(e) {
@@ -119,3 +122,5 @@ export default class BoxHeadThreadInfo extends Component {
     return ""
   }
 }
+
+export default withRouter(MainHead);

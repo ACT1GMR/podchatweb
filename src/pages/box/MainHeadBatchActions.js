@@ -17,7 +17,7 @@ import {threadModalThreadInfoShowing} from "../../actions/threadActions";
 
 //UI components
 import {MdForward, MdDelete} from "react-icons/lib/md";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";

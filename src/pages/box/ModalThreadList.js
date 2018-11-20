@@ -10,13 +10,13 @@ import {threadCreate} from "../../actions/threadActions";
 import {messageEditing} from "../../actions/messageActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {Button} from "raduikit/src/button";
-import {Heading} from "raduikit/src/typography";
-import Message from "raduikit/src/message";
-import List, {ListItem} from "raduikit/src/list";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import {Button} from "../../../../uikit/src/button";
+import {Heading} from "../../../../uikit/src/typography";
+import Message from "../../../../uikit/src/message";
+import List, {ListItem} from "../../../../uikit/src/list";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import {avatarNameGenerator} from "../../utils/helpers";
@@ -31,7 +31,7 @@ const constants = {
     message: store.threadModalListShowing.message,
     threads: store.threadList.threads
   };
-})
+}, null, null, {withRef: true})
 export default class ModalContactList extends Component {
 
   constructor(props) {
@@ -66,7 +66,8 @@ export default class ModalContactList extends Component {
                   <Container relative>
 
                     <Avatar>
-                      <AvatarImage src={el.image} text={avatarNameGenerator(el.title).letter} textBg={avatarNameGenerator(el.title).color}/>
+                      <AvatarImage src={el.image} text={avatarNameGenerator(el.title).letter}
+                                   textBg={avatarNameGenerator(el.title).color}/>
                       <AvatarName>{el.title}</AvatarName>
                     </Avatar>
 

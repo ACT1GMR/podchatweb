@@ -18,11 +18,11 @@ import {
 } from "../../actions/messageActions";
 
 //components
-import Paper, {PaperFooter} from "raduikit/src/paper";
-import Image from "raduikit/src/image";
-import Container from "raduikit/src/container";
-import {Text} from "raduikit/src/typography";
-import Shape, {ShapeCircle} from "raduikit/src/shape";
+import Paper, {PaperFooter} from "../../../../uikit/src/paper";
+import Image from "../../../../uikit/src/image";
+import Container from "../../../../uikit/src/container";
+import {Text} from "../../../../uikit/src/typography";
+import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
 import {
   MdDelete,
   MdReply,
@@ -34,7 +34,7 @@ import {
 //styling
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Gap from "raduikit/src/gap";
+import Gap from "../../../../uikit/src/gap";
 import classnames from "classnames";
 
 

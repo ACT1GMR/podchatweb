@@ -9,13 +9,13 @@ import {contactGetList, contactModalCreateGroupShowing} from "../../actions/cont
 import {threadModalListShowing, threadCreate} from "../../actions/threadActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {Button} from "raduikit/src/button";
-import {Heading} from "raduikit/src/typography";
-import List, {ListItem} from "raduikit/src/list";
-import {InputText} from "raduikit/src/input";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import {Button} from "../../../../uikit/src/button";
+import {Heading} from "../../../../uikit/src/typography";
+import List, {ListItem} from "../../../../uikit/src/list";
+import {InputText} from "../../../../uikit/src/input";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
 import {MdArrowForward} from "react-icons/lib/md";
 
 //styling
@@ -31,14 +31,14 @@ const constants = {
     isShow: store.contactModalCreateGroupShowing.isShow,
     contacts: store.contactGetList.contacts
   };
-})
+}, null, null, {withRef: true})
 export default class ModalCreateGroup extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       threadContacts: [],
-      groupName:"",
+      groupName: "",
       step: constants.SELECT_CONTACT
     };
     this.onAdd = this.onAdd.bind(this);
@@ -120,7 +120,8 @@ export default class ModalCreateGroup extends Component {
                     <Container>
 
                       <Avatar>
-                        <AvatarImage src={el.image}  text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter} textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
+                        <AvatarImage src={el.image} text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
+                                     textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
                         <AvatarName>{el.firstName} {el.lastName}</AvatarName>
                       </Avatar>
 

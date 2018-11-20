@@ -19,15 +19,15 @@ import {
 } from "../../actions/threadActions";
 
 //components
-import {ButtonFloating} from "raduikit/src/button"
-import List, {ListItem} from "raduikit/src/list"
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
-import Paper from "raduikit/src/paper";
-import Container from "raduikit/src/container";
-import Message from "raduikit/src/message";
-import {Text} from "raduikit/src/typography";
-import Gap from "raduikit/src/gap";
+import {ButtonFloating} from "../../../../uikit/src/button"
+import List, {ListItem} from "../../../../uikit/src/list"
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Paper from "../../../../uikit/src/paper";
+import Container from "../../../../uikit/src/container";
+import Message from "../../../../uikit/src/message";
+import {Text} from "../../../../uikit/src/typography";
+import Gap from "../../../../uikit/src/gap";
 import MainMessagesFile from "./MainMessagesFile";
 import MainMessagesText from "./MainMessagesText"
 import {
@@ -380,7 +380,11 @@ export default class MainMessages extends Component {
     const replyFragment = (el) => {
       if (el.replyInfo) {
         const replyInfo = el.replyInfo;
-        const meta = JSON.parse(replyInfo.metadata || "");
+        let meta = "";
+        try {
+          meta = JSON.parse(replyInfo.metadata);
+        } catch(e) {
+        }
         const text = replyInfo.message ? replyInfo.message : meta && meta.file && meta.file.name ? meta.file.name : "";
         return (
           <Container

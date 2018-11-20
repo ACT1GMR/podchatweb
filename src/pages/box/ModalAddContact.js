@@ -8,12 +8,12 @@ import strings from "../../constants/localization";
 import {contactAdd, contactAdding, contactChatting, contactListShowing} from "../../actions/contactActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {InputText} from "raduikit/src/input";
-import {Button} from "raduikit/src/button";
-import {Heading} from "raduikit/src/typography";
-import Message from "raduikit/src/message";
-import Container from "raduikit/src/container";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import {InputText} from "../../../../uikit/src/input";
+import {Button} from "../../../../uikit/src/button";
+import {Heading} from "../../../../uikit/src/typography";
+import Message from "../../../../uikit/src/message";
+import Container from "../../../../uikit/src/container";
 
 
 //styling
@@ -25,7 +25,7 @@ import Container from "raduikit/src/container";
     contactAddPending: store.contactAdd.fetching,
     contactAddError: store.contactAdd.fetching
   };
-})
+}, null, null, {withRef: true})
 export default class ModalAddContact extends Component {
 
   constructor(props) {
@@ -57,7 +57,7 @@ export default class ModalAddContact extends Component {
     this.props.dispatch(contactAdd(mobilePhone, firstName, lastName));
   }
 
-  onCancel() {
+  onClose() {
     this.props.dispatch(contactAdding(false));
   }
 
@@ -71,7 +71,7 @@ export default class ModalAddContact extends Component {
     const {isAdding, contactAdd, contactAddPending, smallVersion} = this.props;
     const {mobilePhone, firstName, lastName} = this.state;
     return (
-      <Modal isOpen={isAdding} onClose={this.onCancel.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isAdding} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
           <Heading h3>{strings.addContact}</Heading>
@@ -87,7 +87,7 @@ export default class ModalAddContact extends Component {
 
         <ModalFooter>
           <Button text loading={contactAddPending} onClick={this.onSubmit.bind(this)}>{strings.add}</Button>
-          <Button text onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
+          <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
           {contactAdd && !contactAdd.linkedUser &&
           (
             <Container inline>

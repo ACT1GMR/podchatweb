@@ -9,7 +9,7 @@ import {connect} from "react-redux";
 //components
 import AsideHead from "./AsideHead";
 import AsideThreads from "./AsideThreads";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/Aside.scss";

@@ -4,11 +4,14 @@ import {Provider} from "react-redux";
 import store from "./store/index";
 import "../styles/main.scss";
 import Box from "./pages/box";
+import {BrowserRouter} from "react-router-dom";
 
 function PodchatJSX(props) {
   return (
     <Provider store={store}>
-      <Box {...props}/>
+      <BrowserRouter>
+        <Box {...props}/>
+      </BrowserRouter>
     </Provider>
   );
 }

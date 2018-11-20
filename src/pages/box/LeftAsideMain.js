@@ -9,15 +9,15 @@ import strings from "../../constants/localization";
 import {threadLeftAsideShowing, threadSearchMessage, threadGoToMessageId} from "../../actions/threadActions";
 
 //UI components
-import {InputText} from "raduikit/src/input";
-import {Text} from "raduikit/src/typography";
+import {InputText} from "../../../../uikit/src/input";
+import {Text} from "../../../../uikit/src/typography";
 
 //styling
 import style from "../../../styles/pages/box/LeftAsideMain.scss";
-import Container from "raduikit/src/container";
-import List, {ListItem} from "raduikit/src/list";
-import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
-import Message from "raduikit/src/message";
+import Container from "../../../../uikit/src/container";
+import List, {ListItem} from "../../../../uikit/src/list";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Message from "../../../../uikit/src/message";
 import date from "../../utils/date";
 import {mobileCheck} from "../../utils/helpers";
 import classnames from "classnames";

@@ -9,9 +9,9 @@ import {messageEditing} from "../../actions/messageActions";
 import {threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
-import Paper from "raduikit/src/paper";
-import Container from "raduikit/src/container";
-import {Text} from "raduikit/src/typography";
+import Paper from "../../../../uikit/src/paper";
+import Container from "../../../../uikit/src/container";
+import {Text} from "../../../../uikit/src/typography";
 import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/lib/md";
 
 //styling

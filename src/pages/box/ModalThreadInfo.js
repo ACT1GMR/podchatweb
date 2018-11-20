@@ -19,7 +19,7 @@ import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
     thread: store.thread.thread,
     contacts: store.contactGetList.contacts
   };
-})
+}, null, null, {withRef: true})
 export default class ModalThreadInfo extends Component {
 
   constructor(props) {

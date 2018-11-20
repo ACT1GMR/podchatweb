@@ -9,10 +9,10 @@ import {messageDelete, messageModalDeletePrompt} from "../../actions/messageActi
 import {threadCheckedMessageList, threadSelectMessageShowing} from "../../actions/threadActions";
 
 //UI components
-import Modal, {ModalBody, ModalFooter} from "raduikit/src/modal";
-import {Button} from "raduikit/src/button";
-import {Text} from "raduikit/src/typography";
-import Container from "raduikit/src/container";
+import Modal, {ModalBody, ModalFooter} from "../../../../uikit/src/modal";
+import {Button} from "../../../../uikit/src/button";
+import {Text} from "../../../../uikit/src/typography";
+import Container from "../../../../uikit/src/container";
 
 
 //styling
@@ -21,7 +21,7 @@ import Container from "raduikit/src/container";
     isShowing: store.messageModalDeletePrompt.isShowing,
     message: store.messageModalDeletePrompt.message
   };
-})
+}, null, null, {withRef: true})
 export default class ModalDeleteMessagePrompt extends Component {
 
   constructor(props) {
@@ -42,7 +42,7 @@ export default class ModalDeleteMessagePrompt extends Component {
     dispatch(threadCheckedMessageList(null, null, true));
   }
 
-  onCancel() {
+  onClose() {
     this.props.dispatch(messageModalDeletePrompt(false));
   }
 
@@ -50,7 +50,7 @@ export default class ModalDeleteMessagePrompt extends Component {
     const {isShowing, smallVersion, message} = this.props;
     const isBatchMessage = message instanceof Array;
     return (
-      <Modal isOpen={isShowing} onClose={this.onCancel.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalBody>
           <Container centerTextAlign>
@@ -61,7 +61,7 @@ export default class ModalDeleteMessagePrompt extends Component {
 
         <ModalFooter>
           <Button text onClick={this.onRemove.bind(this)}>{strings.remove}</Button>
-          <Button text onClick={this.onCancel.bind(this)}>{strings.cancel}</Button>
+          <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
         </ModalFooter>
 
       </Modal>

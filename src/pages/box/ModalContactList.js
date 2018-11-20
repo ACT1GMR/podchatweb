@@ -8,13 +8,13 @@ import strings from "../../constants/localization";
 import {contactListShowing, contactAdding, contactGetList, contactChatting} from "../../actions/contactActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {Button} from "raduikit/src/button";
-import {Heading} from "raduikit/src/typography";
-import List, {ListItem} from "raduikit/src/list";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
-import Message from "raduikit/src/message";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import {Button} from "../../../../uikit/src/button";
+import {Heading} from "../../../../uikit/src/typography";
+import List, {ListItem} from "../../../../uikit/src/list";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
+import Message from "../../../../uikit/src/message";
 import {MdClose, MdSearch} from "react-icons/lib/md";
 
 //styling
@@ -22,8 +22,8 @@ import {threadCreate} from "../../actions/threadActions";
 
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
-import Gap from "raduikit/src/gap";
-import {InputText} from "raduikit/src/input";
+import Gap from "../../../../uikit/src/gap";
+import {InputText} from "../../../../uikit/src/input";
 import {avatarNameGenerator} from "../../utils/helpers";
 
 function isContains(flds, keyword, arr) {
@@ -50,7 +50,7 @@ function isContains(flds, keyword, arr) {
     isShow: store.contactListShowing.isShow,
     contacts: store.contactGetList.contacts
   };
-})
+}, null, null, {withRef: true})
 export default class ModalContactList extends Component {
 
   constructor(props) {

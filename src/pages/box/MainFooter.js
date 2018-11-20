@@ -9,7 +9,7 @@ import {connect} from "react-redux";
 //components
 import MainFooterInput from "./MainFooterInput";
 import MainFooterAttachment from "./MainFooterAttachment";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/MainFooter.scss";

@@ -9,9 +9,9 @@ import strings from "../../constants/localization";
 import {threadModalThreadInfoShowing} from "../../actions/threadActions";
 
 //UI components
-import {Text} from "raduikit/src/typography";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
+import {Text} from "../../../../uikit/src/typography";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/MainHeadThreadInfo.scss";

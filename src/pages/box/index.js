@@ -1,6 +1,7 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {BrowserRouter, Route, withRouter} from "react-router-dom";
 import classnames from "classnames";
 
 //strings
@@ -8,17 +9,17 @@ import strings from "../../constants/localization";
 
 //actions
 import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreate, threadShowing} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
 //components
 import Aside from "./Aside";
 import Main from "./Main";
 import LeftAside from "./LeftAside";
-import Container from "raduikit/src/container";
-import Message from "raduikit/src/message";
-import Loading, {LoadingBlinkDots} from "raduikit/src/loading";
-import {ModalMedia} from "raduikit/src/modal";
+import Container from "../../../../uikit/src/container";
+import Message from "../../../../uikit/src/message";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import {ModalMedia} from "../../../../uikit/src/modal";
 import ModalContactList from "./ModalContactList";
 import ModalAddContact from "./ModalAddContact";
 import ModalThreadList from "./ModalThreadList";
@@ -28,6 +29,7 @@ import ModalImageCaption from "./ModalImageCaption";
 import ModalDeleteMessagePrompt from "./ModalDeleteMessagePrompt";
 
 //styling
+
 import style from "../../../styles/pages/box/index.scss";
 import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
 
@@ -40,20 +42,47 @@ import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.sc
     threadImages: store.threadLeftAsideShowing
   };
 }, null, null, {withRef: true})
-export default class Box extends Component {
+class Box extends Component {
   constructor(props) {
     super(props);
+    this.createThread = this.createThread.bind(this);
+    this.modalDeleteMessagePromptRef = React.createRef(this.modalDeleteMessagePromptRef);
+    this.modalContactListRef = React.createRef(this.modalContactListRef);
+    this.modalAddContactRef = React.createRef(this.modalAddContactRef);
+    this.modalThreadListRef = React.createRef(this.modalThreadListRef);
+    this.modalCreateGroupRef = React.createRef(this.modalCreateGroupRef);
+    this.modalThreadInfoRef = React.createRef(this.modalThreadInfoRef);
+    this.modalMediaRef = React.createRef(this.modalMediaRef);
+    this.modalImageCaptionRef = React.createRef(this.modalImageCaptionRef);
   }
 
   componentDidUpdate(oldProps) {
-    const {token} = this.props;
+    const {token, location} = this.props;
     const {token: oldToken} = oldProps;
-    this.createThread = this.createThread.bind(this);
+    if (oldProps.location.pathname !== location.pathname) {
+      if (location.pathname === "/") {
+        this.resetChat();
+      }
+    }
     if (oldToken) {
       if (oldToken !== token) {
         this.setToken(token);
       }
     }
+  }
+
+  resetChat() {
+    const {dispatch} = this.props;
+    dispatch(threadShowing(false));
+    const closeModal = modal=> modal.current.getWrappedInstance().onClose();
+    closeModal(this.modalDeleteMessagePromptRef);
+    closeModal(this.modalContactListRef);
+    closeModal(this.modalAddContactRef);
+    closeModal(this.modalThreadListRef);
+    closeModal(this.modalCreateGroupRef);
+    closeModal(this.modalThreadInfoRef);
+    closeModal(this.modalImageCaptionRef);
+    this.modalMediaRef.current.close();
   }
 
   componentDidMount() {
@@ -105,30 +134,20 @@ export default class Box extends Component {
     })}`;
 
     const modalMediaI18n = {
-      fa: {
-        CLOSE: strings.ModalMediaClose,
-        NEXT: strings.ModalMediaNext,
-        PREV: strings.ModalMediaPrev,
-        ERROR: strings.ModalMediaError,
-        PLAY_START: strings.ModalMediaPlayStart,
-        PLAY_STOP: strings.ModalMediaPlayStop,
-        FULL_SCREEN: strings.ModalMediaFullScreen,
-        THUMBS: strings.ModalMediaThumbs,
-        ZOOM: strings.ModalMediaZoom
-      }
+      fa: strings.modalMedia
     };
 
     const popups = (
       <Container>
-        <ModalDeleteMessagePrompt smallVersion={small}/>
-        <ModalContactList smallVersion={small}/>
-        <ModalAddContact smallVersion={small}/>
-        <ModalThreadList smallVersion={small}/>
-        <ModalCreateGroup smallVersion={small}/>
-        <ModalThreadInfo smallVersion={small}/>
-        <ModalMedia smallVersion={small}/>
-        <ModalImageCaption smallVersion={small}/>
+        <ModalDeleteMessagePrompt smallVersion={small} ref={this.modalDeleteMessagePromptRef}/>
+        <ModalContactList smallVersion={small} ref={this.modalContactListRef}/>
+        <ModalAddContact smallVersion={small} ref={this.modalAddContactRef}/>
+        <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>
+        <ModalCreateGroup smallVersion={small} ref={this.modalCreateGroupRef}/>
+        <ModalThreadInfo smallVersion={small} ref={this.modalThreadInfoRef}/>
+        <ModalImageCaption smallVersion={small} ref={this.modalImageCaptionRef}/>
         <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}
+                    ref={this.modalMediaRef}
                     lang="fa"
                     i18n={modalMediaI18n}
                     backFocus={false}/>
@@ -151,3 +170,5 @@ export default class Box extends Component {
     );
   }
 }
+
+export default withRouter(Box);

@@ -61,15 +61,17 @@ let strings = new LocalizedStrings({
       }
       return `از حذف ${messagesCount} پیام مطمئنید`
     },
-    ModalMediaClose: "بستن",
-    ModalMediaNext: "بعدی",
-    ModalMediaPrev: "قبلی",
-    ModalMediaError: "نمیتونم باز کنم این فایلو فکر کنم مشکل شبکست",
-    ModalMediaPlayStart: "شروع به نمایش خودکار",
-    ModalMediaPlayStop: "توقف نمایش خودکار",
-    ModalMediaFullScreen: "نمایش تمام صفحه",
-    ModalMediaThumbs: "تصاویر کوچک بند انگشتی",
-    ModalMediaZoom: "بزرگنمایی",
+    modalMedia:{
+      CLOSE: "بستن",
+      NEXT: "بعدی",
+      PREV: "قبلی",
+      ERROR: "نمیتونم باز کنم این فایلو فکر کنم مشکل شبکست",
+      PLAY_START: "شروع به نمایش خودکار",
+      PLAY_STOP: "توقف نمایش خودکار",
+      FULL_SCREEN: "نمایش تمام صفحه",
+      THUMBS: "تصاویر کوچک بند انگشتی",
+      ZOOM: "بزرگنمایی",
+    },
     messagesCount(messagesCount){
       return `${messagesCount} پیام`
     },

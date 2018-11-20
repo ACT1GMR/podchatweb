@@ -11,14 +11,14 @@ import {
 } from "../../actions/threadActions";
 
 //UI components
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import {MdCameraAlt} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
-import {InputText} from "raduikit/src/input";
+import {InputText} from "../../../../uikit/src/input";
 import {chatUploadImage} from "../../actions/chatActions";
 
 @connect(null, null, null, {withRef: true})

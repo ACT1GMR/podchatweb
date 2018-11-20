@@ -9,7 +9,7 @@ import {connect} from "react-redux";
 //components
 import LeftAsideHead from "./LeftAsideHead";
 import LeftAsideMain from "./LeftAsideMain";
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/LeftAside.scss";

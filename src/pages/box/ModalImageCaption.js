@@ -8,13 +8,13 @@ import strings from "../../constants/localization";
 import {threadFilesToUpload, threadModalImageCaptionShowing} from "../../actions/threadActions";
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {Button} from "raduikit/src/button";
-import {Heading} from "raduikit/src/typography";
-import List, {ListItem} from "raduikit/src/list";
-import {InputText} from "raduikit/src/input";
-import Container from "raduikit/src/container";
-import Image from "raduikit/src/image";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import {Button} from "../../../../uikit/src/button";
+import {Heading} from "../../../../uikit/src/typography";
+import List, {ListItem} from "../../../../uikit/src/list";
+import {InputText} from "../../../../uikit/src/input";
+import Container from "../../../../uikit/src/container";
+import Image from "../../../../uikit/src/image";
 
 //styling
 import {messageSend} from "../../actions/messageActions";
@@ -27,7 +27,7 @@ import style from "../../../styles/pages/box/ModalImageCaption.scss";
     images: store.threadImagesToCaption,
     threadId: store.thread.thread.id
   };
-})
+}, null, null, {withRef: true})
 export default class ModalImageCaption extends Component {
 
   constructor(props) {

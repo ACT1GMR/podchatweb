@@ -10,7 +10,7 @@ import {
 } from "../../actions/messageActions";
 
 //components
-import Container from "raduikit/src/container";
+import Container from "../../../../uikit/src/container";
 import {MdAttachFile, MdChevronLeft} from "react-icons/lib/md";
 
 //styling

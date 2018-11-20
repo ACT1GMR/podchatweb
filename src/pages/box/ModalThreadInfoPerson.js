@@ -7,13 +7,13 @@ import strings from "../../constants/localization";
 //actions
 
 //UI components
-import Modal, {ModalBody, ModalHeader, ModalFooter} from "raduikit/src/modal";
-import {Button} from "raduikit/src/button";
-import Gap from "raduikit/src/Gap";
-import {Heading, Text} from "raduikit/src/typography";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
-import Divider from "raduikit/src/divider";
+import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import {Button} from "../../../../uikit/src/button";
+import Gap from "../../../../uikit/src/Gap";
+import {Heading, Text} from "../../../../uikit/src/typography";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
+import Divider from "../../../../uikit/src/divider";
 import {ContactList, ContactListSelective} from "./_component/contactList";
 import date from "../../utils/date";
 
@@ -23,7 +23,7 @@ import styleVar from "./../../../styles/variables.scss";
 import {avatarNameGenerator} from "../../utils/helpers";
 
 
-@connect()
+@connect(null, null, null, {withRef: true})
 export default class ModalThreadInfo extends Component {
 
   constructor(props) {

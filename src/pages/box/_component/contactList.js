@@ -3,9 +3,9 @@ import React from "react";
 import {avatarNameGenerator} from "../../../utils/helpers";
 
 //components
-import List, {ListItem} from "raduikit/src/list"
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
+import List, {ListItem} from "../../../../../uikit/src/list"
+import Avatar, {AvatarImage, AvatarName} from "../../../../../uikit/src/avatar";
+import Container from "../../../../../uikit/src/container";
 
 //styling
 

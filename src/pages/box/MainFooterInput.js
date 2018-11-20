@@ -19,8 +19,8 @@ import {threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
 import MainFooterInputEditing, {messageEditingCondition} from "./MainFooterInputEditing";
-import Container from "raduikit/src/container";
-import {InputTextArea} from "raduikit/src/input";
+import Container from "../../../../uikit/src/container";
+import {InputTextArea} from "../../../../uikit/src/input";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";

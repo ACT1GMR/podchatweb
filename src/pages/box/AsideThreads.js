@@ -2,6 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
+import {Link} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -10,19 +11,19 @@ import strings from "../../constants/localization";
 import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
-import Avatar, {AvatarImage, AvatarName, AvatarText} from "raduikit/src/avatar";
-import List, {ListItem} from "raduikit/src/list";
-import Shape, {ShapeCircle} from "raduikit/src/shape";
-import Container from "raduikit/src/container";
-import LoadingBlinkDots from "raduikit/src/loading/LoadingBlinkDots";
-import Loading from "raduikit/src/loading";
-import {Text} from "raduikit/src/typography";
-import Gap from "raduikit/src/gap";
+import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
+import List, {ListItem} from "../../../../uikit/src/list";
+import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
+import Container from "../../../../uikit/src/container";
+import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
+import Loading from "../../../../uikit/src/loading";
+import {Text} from "../../../../uikit/src/typography";
+import Gap from "../../../../uikit/src/gap";
 import date from "../../utils/date";
 
 //styling
 import style from "../../../styles/pages/box/AsideThreads.scss";
-import Message from "raduikit/src/message";
+import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
 
 function sliceMessage(message, to) {
@@ -53,12 +54,14 @@ function isFile(message) {
     }
   }
 }
+
 function getTitle(title) {
-  if(title.length >= 30) {
+  if (title.length >= 30) {
     return `${title.slice(0, 30)}...`;
   }
   return title;
 }
+
 function getBg(el) {
   console.log(avatarNameGenerator(el.title));
 }
@@ -122,57 +125,60 @@ export default class AsideThreads extends Component {
         <Container className={classNames}>
           <List>
             {threads.map(el => (
-              <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
-                        active={activeThread === el.id}>
+              <Link to="thread">
+                <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+                          active={activeThread === el.id}>
 
-                <Container relative>
-                  <Avatar>
-                    <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter} textBg={avatarNameGenerator(el.title).color}/>
-                    <AvatarName invert>
-                      {getTitle(el.title)}
-                      <AvatarText>
-                        {el.group ?
-                          el.lastMessage || el.lastMessageVO ?
-                            <Container>
-                              <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
-                              {isFile(el.lastMessageVO) ?
+                  <Container relative>
+                    <Avatar>
+                      <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                   textBg={avatarNameGenerator(el.title).color}/>
+                      <AvatarName invert>
+                        {getTitle(el.title)}
+                        <AvatarText>
+                          {el.group ?
+                            el.lastMessage || el.lastMessageVO ?
+                              <Container>
+                                <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
+                                {isFile(el.lastMessageVO) ?
+                                  <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
+                                  :
+                                  <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
+                                }
+                              </Container>
+                              :
+                              <Text size="sm" inline
+                                    color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
+                            :
+                            el.lastMessage || el.lastMessageVO ?
+                              isFile(el.lastMessageVO) ?
                                 <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                 :
-                                <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
-                              }
-                            </Container>
-                            :
-                            <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
-                          :
-                          el.lastMessage || el.lastMessageVO ?
-                            isFile(el.lastMessageVO) ?
-                              <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
+                                <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
                               :
-                              <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
-                            :
-                            <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
-                        }
-                        {el.lastMessageVO || el.time ?
-                          <Container topLeft>
-                            <Text size="xs"
-                                  color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
-                          </Container>
-                          : ""}
+                              <Text size="sm" inline
+                                    color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
+                          }
+                          {el.lastMessageVO || el.time ?
+                            <Container topLeft>
+                              <Text size="xs"
+                                    color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
+                            </Container>
+                            : ""}
 
-                      </AvatarText>
-                    </AvatarName>
-                  </Avatar>
-                  {el.unreadCount && activeThread !== el.id ?
-                    <Container absolute centerLeft>
-                      <Gap y={10} block/>
-                      <Shape color="accent">
-                        <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                      </Shape>
-                    </Container> : ""}
-                </Container>
-              </ListItem>
+                        </AvatarText>
+                      </AvatarName>
+                    </Avatar>
+                    {el.unreadCount && activeThread !== el.id ?
+                      <Container absolute centerLeft>
+                        <Gap y={10} block/>
+                        <Shape color="accent">
+                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                        </Shape>
+                      </Container> : ""}
+                  </Container>
+                </ListItem>
+              </Link>
             ))}
           </List>
         </Container>

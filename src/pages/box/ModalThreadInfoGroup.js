@@ -14,22 +14,22 @@ import {
 
 //UI components
 import ModalThreadInfoGroupSettings from "./ModalThreadInfoGroupSettings";
-import {Button} from "raduikit/src/button";
-import Gap from "raduikit/src/Gap";
-import {Heading, Text} from "raduikit/src/typography";
-import Avatar, {AvatarImage, AvatarName} from "raduikit/src/avatar";
-import Container from "raduikit/src/container";
-import Divider from "raduikit/src/divider";
+import {Button} from "../../../../uikit/src/button";
+import Gap from "../../../../uikit/src/Gap";
+import {Heading, Text} from "../../../../uikit/src/typography";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Container from "../../../../uikit/src/container";
+import Divider from "../../../../uikit/src/divider";
 import {ContactList, ContactListSelective} from "./_component/contactList";
 
 //styling
 import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
-import Modal from "raduikit/src/modal";
-import ModalHeader from "raduikit/src/modal/ModalHeader";
-import ModalBody from "raduikit/src/modal/ModalBody";
-import ModalFooter from "raduikit/src/modal/ModalFooter";
+import Modal from "../../../../uikit/src/modal";
+import ModalHeader from "../../../../uikit/src/modal/ModalHeader";
+import ModalBody from "../../../../uikit/src/modal/ModalBody";
+import ModalFooter from "../../../../uikit/src/modal/ModalFooter";
 
 
 const constants = {
@@ -43,7 +43,7 @@ const constants = {
     threadParticipantAdd: store.threadParticipantAdd.thread,
     threadParticipantRemove: store.threadParticipantRemove.thread,
   }
-})
+}, null, null, {withRef: true})
 export default class ModalThreadInfo extends Component {
 
   constructor(props) {
