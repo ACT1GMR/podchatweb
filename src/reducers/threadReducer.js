@@ -381,7 +381,7 @@ export const threadCheckedMessageListReducer = (state = [], action) => {
     case THREAD_CHECKED_MESSAGE_LIST_EMPTY:
       return [];
     case THREAD_CHECKED_MESSAGE_LIST_ADD:
-      return [...state, ...[action.payload]];
+      return [...state, ...[action.payload]].sort((a, b) => a.time - b.time);
     case THREAD_CHECKED_MESSAGE_LIST_REMOVE:
       let messages = [...state];
       let fileIndex = messages.findIndex((message => message.uniqueId === action.payload.uniqueId));

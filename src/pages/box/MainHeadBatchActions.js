@@ -56,7 +56,7 @@ export default class MainHeadBatchActions extends Component {
   }
 
   render() {
-    const {smallVersion} = this.props;
+    const {smallVersion, threadCheckedMessageList} = this.props;
     const classNames = classnames({
       [style.MainHeadBatchActions]: true,
       [style["MainHeadBatchActions--smallVersion"]]: smallVersion
@@ -64,12 +64,16 @@ export default class MainHeadBatchActions extends Component {
     return (
       <Container className={classNames} centerRight>
 
-        <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
-          <MdForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-        </Container>
-        <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
-          <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-        </Container>
+        {threadCheckedMessageList && threadCheckedMessageList.length ?
+        <Container>
+          <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
+            <MdForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+          </Container>
+          <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
+            <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+          </Container>
+        </Container> : ""
+        }
 
       </Container>
     )
