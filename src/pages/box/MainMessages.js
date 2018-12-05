@@ -153,20 +153,23 @@ export default class MainMessages extends Component {
     const goingToUp = scrollTop < this.lastPosition;
     const scrollHeight = current.scrollHeight;
     const gotoBottomButtonShowingThreshold = 100;
-    if ((scrollHeight - gotoBottomButtonShowingThreshold) >= scrollTop) {
-      if (!goingToUp || threadMessagesHasNext) {
-        if (!gotoBottomButtonShowing) {
-          this.setState({
-            gotoBottomButtonShowing: true
-          });
-        }
-      } else {
-        if (gotoBottomButtonShowing) {
-          this.setState({
-            gotoBottomButtonShowing: false
-          });
+    if (goingToUp || threadMessagesHasNext) {
+      if (goingToUp) {
+        if (scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
+          if (!gotoBottomButtonShowing) {
+            this.setState({
+              gotoBottomButtonShowing: true
+            });
+          }
+        } else {
+          if (!gotoBottomButtonShowing) {
+            this.setState({
+              gotoBottomButtonShowing: true
+            });
+          }
         }
       }
+
     } else {
       if (gotoBottomButtonShowing) {
         this.setState({
@@ -174,6 +177,7 @@ export default class MainMessages extends Component {
         });
       }
     }
+
     if (threadMessagesHasPrevious || threadMessagesHasNext) {
       this.lastPosition = scrollTop;
       let message;
@@ -195,14 +199,16 @@ export default class MainMessages extends Component {
       if (message) {
         this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, loadBefore, 50));
       }
+    } else {
+      this.lastPosition = scrollTop;
     }
   }
 
   componentDidUpdate(oldProps) {
     let messagesNode = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
     if (messagesNode) {
-      const {threadMessages, user, threadId, threadGoToMessageId} = this.props;
-      const {threadId: oldThreadId, threadGoToMessageId: oldThreadGoToMessageId, threadMessages: oldThreadMessages} = oldProps;
+      const {threadMessages, user, threadId, threadGoToMessageId, threadMessagesFetching} = this.props;
+      const {threadId: oldThreadId, threadMessagesFetching: oldThreadMessagesFetching, threadMessages: oldThreadMessages} = oldProps;
       const lastMessage = threadMessages[threadMessages.length - 1];
       const gotoBottom = () => {
         messagesNode.scrollTop = messagesNode.scrollHeight;
@@ -233,6 +239,10 @@ export default class MainMessages extends Component {
           this.gotoBottom = true;
         } else if (lastMessage.newMessage && this.lastMessage !== lastMessage.uniqueId) {
           gotoBottom();
+        } else if (oldThreadId === threadId) {
+          if (oldThreadMessagesFetching !== threadMessagesFetching) {
+            gotoBottom();
+          }
         }
       }
     }
@@ -383,7 +393,7 @@ export default class MainMessages extends Component {
         let meta = "";
         try {
           meta = JSON.parse(replyInfo.metadata);
-        } catch(e) {
+        } catch (e) {
         }
         const text = replyInfo.message ? replyInfo.message : meta && meta.file && meta.file.name ? meta.file.name : "";
         return (

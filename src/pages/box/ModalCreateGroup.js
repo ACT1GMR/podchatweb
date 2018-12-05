@@ -64,8 +64,9 @@ export default class ModalCreateGroup extends Component {
   onClose() {
     this.props.dispatch(contactModalCreateGroupShowing(false));
     this.setState({
-      step: constants.SELECT_CONTACT
-    })
+      step: constants.SELECT_CONTACT,
+      threadContacts: []
+    });
   }
 
   onAdd() {

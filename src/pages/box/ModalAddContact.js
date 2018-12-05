@@ -43,7 +43,7 @@ export default class ModalAddContact extends Component {
       if (oldProps.contactAdd !== this.props.contactAdd) {
         if (isAdding) {
           if (contactAdd.linkedUser) {
-            dispatch(contactAdding(false));
+            this.onClose();
             dispatch(contactListShowing(false));
             dispatch(contactChatting(contactAdd));
           }
@@ -59,6 +59,11 @@ export default class ModalAddContact extends Component {
 
   onClose() {
     this.props.dispatch(contactAdding(false));
+    this.setState({
+      mobilePhone: "",
+      firstName: "",
+      lastName: ""
+    });
   }
 
   onFieldChange(field, event) {

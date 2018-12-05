@@ -50,6 +50,7 @@ export const THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID = buildPromiseMessage.bind(nu
 export const THREAD_CREATE = buildPromiseMessage.bind(null, "THREAD_CREATE");
 export const THREAD_GET_LIST = buildPromiseMessage.bind(null, "THREAD_GET_LIST");
 export const THREAD_NEW = "THREAD_NEW";
+export const THREAD_REMOVED_FROM = "THREAD_REMOVED_FROM";
 export const THREAD_CHANGED = "THREAD_CHANGED";
 export const THREAD_MODAL_LIST_SHOWING = "THREAD_MODAL_LIST_SHOWING";
 export const THREAD_MODAL_IMAGE_CAPTION_SHOWING = "THREAD_MODAL_IMAGE_CAPTION_SHOWING";

@@ -31,7 +31,7 @@ import {
   THREAD_SELECT_MESSAGE_SHOWING,
   THREAD_CHECKED_MESSAGE_LIST_EMPTY,
   THREAD_CHECKED_MESSAGE_LIST_ADD,
-  THREAD_CHECKED_MESSAGE_LIST_REMOVE,
+  THREAD_CHECKED_MESSAGE_LIST_REMOVE, THREAD_REMOVED_FROM,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -194,6 +194,13 @@ export const threadsReducer = (state = {
     }
     case THREAD_GET_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
+    case THREAD_REMOVED_FROM:
+      let threads = [...state.threads];
+      let index = threads.findIndex(thread => thread.id === action.payload);
+      if (~index) {
+        threads.splice(index, 1);
+      }
+      return {...state, ...stateObject("SUCCESS", sortThreads(threads), "threads")};
     default:
       return state;
   }

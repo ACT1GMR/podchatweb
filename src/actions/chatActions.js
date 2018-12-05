@@ -5,7 +5,7 @@ import {
   THREAD_NEW,
   THREAD_CHANGED,
   THREAD_FILE_UPLOADING,
-  MESSAGE_NEW, CHAT_STATE, CHAT_MODAL_MEDIA_INSTANCE
+  MESSAGE_NEW, CHAT_STATE, CHAT_MODAL_MEDIA_INSTANCE, THREAD_REMOVED_FROM
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -18,6 +18,12 @@ export const chatSetInstance = config => {
     const chatSDKInstance = new ChatSDK({
       config,
       onThreadEvents: (thread, type) => {
+        if(type === THREAD_REMOVED_FROM) {
+          return dispatch({
+            type: THREAD_REMOVED_FROM,
+            payload: thread
+          });
+        }
         thread.changeType = type;
         if (thread.changeType === THREAD_NEW) {
           return dispatch({

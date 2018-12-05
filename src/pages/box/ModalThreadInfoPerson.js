@@ -36,6 +36,9 @@ export default class ModalThreadInfo extends Component {
     if (participants) {
       participant = participants.filter(e => e.name !== user.name)[0];
     }
+    if(!participant) {
+      participant = {};
+    }
     const participantImage = participant && participant.image;
     return (
       <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion}>
@@ -50,7 +53,7 @@ export default class ModalThreadInfo extends Component {
 
               <Container>
                 <Avatar>
-                  <AvatarImage src={participantImage} size="xlg" text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
+                  <AvatarImage src={participantImage} size="xlg" text={avatarNameGenerator(participant.contactName).letter} textBg={avatarNameGenerator(participant.contactName).color}/>
                   <AvatarName>
                     <Heading h1>{thread.title}</Heading>
                     <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
@@ -72,7 +75,7 @@ export default class ModalThreadInfo extends Component {
               <Container>
                 <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                 <Gap x={20}>
-                  <Text inline>+98912000000</Text>
+                  <Text inline>{participant && participant.cellphoneNumber ? participant.cellphoneNumber : strings.unknown}</Text>
                 </Gap>
               </Container>
             </Container>

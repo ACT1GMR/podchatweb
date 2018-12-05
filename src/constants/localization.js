@@ -25,6 +25,7 @@ let strings = new LocalizedStrings({
     forwardTo: "انتخاب چت برای فرستادن",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
+    unknown: "نامشخص",
     firstName: "نام",
     groupName: "نام گروه",
     lastName: "نام خانوادگی",
