@@ -26,7 +26,7 @@ import ModalThreadList from "./ModalThreadList";
 import ModalCreateGroup from "./ModalCreateGroup";
 import ModalThreadInfo from "./ModalThreadInfo";
 import ModalImageCaption from "./ModalImageCaption";
-import ModalDeleteMessagePrompt from "./ModalDeleteMessagePrompt";
+import ModalPrompt from "./ModalPrompt";
 
 //styling
 
@@ -139,7 +139,7 @@ class Box extends Component {
 
     const popups = (
       <Container>
-        <ModalDeleteMessagePrompt smallVersion={small} ref={this.modalDeleteMessagePromptRef}/>
+        <ModalPrompt smallVersion={small} ref={this.modalDeleteMessagePromptRef}/>
         <ModalContactList smallVersion={small} ref={this.modalContactListRef}/>
         <ModalAddContact smallVersion={small} ref={this.modalAddContactRef}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>

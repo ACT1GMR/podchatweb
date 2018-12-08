@@ -5,7 +5,10 @@ import {
   THREAD_NEW,
   THREAD_CHANGED,
   THREAD_FILE_UPLOADING,
-  MESSAGE_NEW, CHAT_STATE, CHAT_MODAL_MEDIA_INSTANCE, THREAD_REMOVED_FROM
+  MESSAGE_NEW,
+  CHAT_STATE,
+  CHAT_MODAL_PROMPT_SHOWING,
+  THREAD_REMOVED_FROM
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -84,11 +87,16 @@ export const chatSmallVersion = isSmall => {
   }
 };
 
-export const chatModalMediaInstance = instance => {
+export const chatModalPrompt = (isShowing, message, onApply, onCancel) => {
   return dispatch => {
     return dispatch({
-      type: CHAT_MODAL_MEDIA_INSTANCE,
-      payload: instance
+      type: CHAT_MODAL_PROMPT_SHOWING,
+      payload: {
+        isShowing,
+        message,
+        onApply,
+        onCancel
+      }
     });
   }
 };

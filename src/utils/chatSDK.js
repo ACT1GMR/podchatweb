@@ -439,6 +439,16 @@ export default class ChatSDK {
     });
   }
 
+  @promiseDecorator
+  removeContact(resolve, reject, contactId) {
+    const removeContactParam = {id: contactId};
+    this.chatAgent.removeContacts(removeContactParam, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
+
 
   @promiseDecorator
   getContactList(resolve, reject, name) {

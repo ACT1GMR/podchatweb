@@ -4,7 +4,7 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   CONTACT_ADDING,
   CONTACT_ADD,
-  CONTACT_CHATTING
+  CONTACT_CHATTING, CONTACT_EDIT
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -51,11 +51,17 @@ export const contactAdd = (state = {
 };
 
 export const contactAddingReducer = (state = {
-  isAdding: false
+  isShowing: false,
+  editMode: false,
+  contactEdit: null
 }, action) => {
   switch (action.type) {
     case CONTACT_ADDING:
-      return {isAdding: action.payload};
+      return {
+        isShowing: action.payload.isShowing,
+        editMode: action.payload.editMode,
+        contactEdit: action.payload.contactEdit
+      };
     default:
       return state;
   }

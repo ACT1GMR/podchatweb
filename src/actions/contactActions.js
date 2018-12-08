@@ -6,7 +6,7 @@ import {
   CONTACT_LIST_SHOWING,
   CONTACT_CHATTING,
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
-  THREAD_CREATE, THREAD_GET_MESSAGE_LIST
+  THREAD_CREATE, THREAD_GET_MESSAGE_LIST, CONTACT_REMOVE, CONTACT_EDIT
 } from "../constants/actionTypes";
 import {threadCreate, threadShowing} from "./threadActions";
 
@@ -22,11 +22,11 @@ export const contactGetList = () => {
 };
 
 
-export const contactAdding = (isAdding) => {
+export const contactAdding = (isShowing, contactEdit) => {
   return dispatch => {
     return dispatch({
       type: CONTACT_ADDING,
-      payload: isAdding
+      payload: {isShowing, contactEdit}
     });
   }
 };
@@ -82,6 +82,16 @@ export const contactAdd = (mobilePhone, firstName, lastName) => {
     dispatch({
       type: CONTACT_ADD("PENDING"),
       payload: null
+    });
+  }
+};
+
+export const contactRemove = contactId => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.removeContact(contactId).then(e => {
+      dispatch(contactGetList());
     });
   }
 };

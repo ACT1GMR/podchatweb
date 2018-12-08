@@ -1,4 +1,9 @@
-import {CHAT_GET_INSTANCE, CHAT_SMALL_VERSION, CHAT_STATE} from "../constants/actionTypes";
+import {
+  CHAT_GET_INSTANCE, CHAT_MODAL_PROMPT_SHOWING,
+  CHAT_SMALL_VERSION,
+  CHAT_STATE,
+  MESSAGE_MODAL_DELETE_PROMPT_SHOWING
+} from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const chatInstanceReducer = (state = {
@@ -32,6 +37,22 @@ export const chatSmallVersionReducer = (state = false, action) => {
 export const chatStateReducer = (state = false, action) => {
   switch (action.type) {
     case CHAT_STATE:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const chatModalPromptReducer = (state = {
+  isShowing: false,
+  message: null,
+  onApply: e => {
+  },
+  onCancel: e => {
+  }
+}, action) => {
+  switch (action.type) {
+    case CHAT_MODAL_PROMPT_SHOWING:
       return action.payload;
     default:
       return state;

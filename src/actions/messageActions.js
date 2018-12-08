@@ -125,16 +125,3 @@ export const messageSeen = (message) => {
     });
   }
 };
-
-
-export const messageModalDeletePrompt = (isShowing, message) => {
-  return dispatch => {
-    return dispatch({
-      type: MESSAGE_MODAL_DELETE_PROMPT_SHOWING,
-      payload: {
-        isShowing,
-        message
-      }
-    });
-  }
-};

@@ -2,6 +2,7 @@ import {
   contactAddingReducer,
   contactGetListReducer,
   contactAdd,
+  contactEditReducer,
   contactListShowingReducer,
   contactModalCreateGroupShowingReducer,
   contactChattingReducer
@@ -34,21 +35,22 @@ import {
   messageNewReducer,
   messageEditingReducer,
   messageEditReducer,
-  messageModalDeletePromptReducer,
   messageDeleteReducer
 } from "./messageReducer";
-import {chatSmallVersionReducer, chatInstanceReducer, chatStateReducer} from "./chatReducer";
+import {chatSmallVersionReducer, chatInstanceReducer, chatStateReducer, chatModalPromptReducer} from "./chatReducer";
 import userReducer from "./userReducer";
 
 const rootReducer = {
   chatInstance: chatInstanceReducer,
   chatState: chatStateReducer,
+  chatModalPrompt: chatModalPromptReducer,
   chatSmallVersion: chatSmallVersionReducer,
   contactGetList: contactGetListReducer,
   contactListShowing: contactListShowingReducer,
   contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,
   contactAdding: contactAddingReducer,
   contactAdd: contactAdd,
+  contactEdit: contactEditReducer,
   contactChatting: contactChattingReducer,
   thread: threadCreateReducer,
   threadMessages: threadMessageListReducer,
@@ -76,7 +78,6 @@ const rootReducer = {
   messageEditing: messageEditingReducer,
   messageEdit: messageEditReducer,
   messageDelete: messageDeleteReducer,
-  messageModalDeletePrompt: messageModalDeletePromptReducer,
   user: userReducer,
 };
 

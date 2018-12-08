@@ -93,16 +93,3 @@ export const messageSeenReducer = (state = {
       return state;
   }
 };
-
-
-export const messageModalDeletePromptReducer = (state = {
-  isShowing: false,
-  message: null
-}, action) => {
-  switch (action.type) {
-    case MESSAGE_MODAL_DELETE_PROMPT_SHOWING:
-      return action.payload;
-    default:
-      return state;
-  }
-};

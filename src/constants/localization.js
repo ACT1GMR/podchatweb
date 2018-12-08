@@ -10,6 +10,9 @@ let strings = new LocalizedStrings({
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
     add: "اضافه کردن",
     addContact: "اضافه کردن مخاطب",
+    editContact: contact => {
+      return `اصلاح مخاطب ${contact.firstName} ${contact.lastName}`;
+    },
     contactList: "لیست مخاطبین",
     cancel: "لغو",
     close: "بستن",
@@ -56,13 +59,19 @@ let strings = new LocalizedStrings({
     imageText: "متن تصویر",
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
-    areYouSureAboutDeletingMessage(messagesCount){
-      if(!messagesCount) {
+    areYouSureAboutDeletingMessage(messagesCount) {
+      if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";
       }
       return `از حذف ${messagesCount} پیام مطمئنید`
     },
-    modalMedia:{
+    areYouSureAboutDeletingContact(contactName) {
+      if (contactName) {
+        return `میخواهید "${contactName}" را حذف کنید`;
+      }
+      return `از حذف این مخاطب مطمئنید`
+    },
+    modalMedia: {
       CLOSE: "بستن",
       NEXT: "بعدی",
       PREV: "قبلی",
@@ -73,11 +82,11 @@ let strings = new LocalizedStrings({
       THUMBS: "تصاویر کوچک بند انگشتی",
       ZOOM: "بزرگنمایی",
     },
-    messagesCount(messagesCount){
+    messagesCount(messagesCount) {
       return `${messagesCount} پیام`
     },
-    thereIsNoContactWithThisKeyword(keyword){
-      if(!keyword && !keyword.trim()) {
+    thereIsNoContactWithThisKeyword(keyword) {
+      if (!keyword && !keyword.trim()) {
         return 'مخاطبی با مشخصات وارد شده یافت نشد...'
       }
       return `مخاطبی با مشخصات "${keyword}" وجود ندارد `;
@@ -97,6 +106,7 @@ let strings = new LocalizedStrings({
     noResult: "نتیجه ای وجود ندارد",
     searchSomething: "کلمه ای تایپ کنید",
     searchMessages: "جستجو پیامها",
+    edit: "اصلاح",
     chatState: {
       networkDisconnected: "در انتظار شبکه",
       reconnecting: "اتصال به شبکه"

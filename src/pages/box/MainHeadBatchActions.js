@@ -11,7 +11,7 @@ import {
   threadShowing,
   threadLeftAsideShowing,
   threadSelectMessageShowing,
-  threadModalListShowing
+  threadModalListShowing, threadCheckedMessageList
 } from "../../actions/threadActions";
 import {threadModalThreadInfoShowing} from "../../actions/threadActions";
 
@@ -23,7 +23,8 @@ import Container from "../../../../uikit/src/container";
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
 import classnames from "classnames";
-import {messageModalDeletePrompt} from "../../actions/messageActions";
+import {messageDelete} from "../../actions/messageActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 const statics = {};
 
@@ -51,8 +52,22 @@ export default class MainHeadBatchActions extends Component {
 
   onDelete(e) {
     e.stopPropagation();
-    const {dispatch, threadCheckedMessageList} = this.props;
-    dispatch(messageModalDeletePrompt(true, threadCheckedMessageList));
+    const {dispatch, threadCheckedMessageList: message} = this.props;
+    const isBatchMessage = message instanceof Array;
+    const text = strings.areYouSureAboutDeletingMessage(isBatchMessage ? message.length : null);
+    dispatch(chatModalPrompt(true, `${text}؟`, () => {
+      const {threadCheckedMessageList: message, dispatch} = this.props;
+      if (message instanceof Array) {
+        for (const msg of message) {
+          dispatch(messageDelete(msg.id, msg.editable));
+        }
+      } else {
+        dispatch(messageDelete(message.id, message.editable));
+      }
+      dispatch(chatModalPrompt());
+      dispatch(threadSelectMessageShowing(false));
+      dispatch(threadCheckedMessageList(null, null, true));
+    }));
   }
 
   render() {
@@ -65,14 +80,14 @@ export default class MainHeadBatchActions extends Component {
       <Container className={classNames} centerRight>
 
         {threadCheckedMessageList && threadCheckedMessageList.length ?
-        <Container>
-          <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
-            <MdForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-          </Container>
-          <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
-            <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-          </Container>
-        </Container> : ""
+          <Container>
+            <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
+              <MdForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+            </Container>
+            <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
+              <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+            </Container>
+          </Container> : ""
         }
 
       </Container>

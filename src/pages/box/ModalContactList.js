@@ -5,7 +5,14 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {contactListShowing, contactAdding, contactGetList, contactChatting} from "../../actions/contactActions";
+import {
+  contactListShowing,
+  contactAdding,
+  contactGetList,
+  contactChatting,
+  contactRemove,
+  contactEdit
+} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -15,10 +22,11 @@ import List, {ListItem} from "../../../../uikit/src/list";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
-import {MdClose, MdSearch} from "react-icons/lib/md";
+import {MdClose, MdDelete, MdSearch, MdEdit} from "react-icons/lib/md";
 
 //styling
 import {threadCreate} from "../../actions/threadActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
@@ -28,7 +36,7 @@ import {avatarNameGenerator} from "../../utils/helpers";
 
 function isContains(flds, keyword, arr) {
   const fields = flds.split('|');
-  if(!keyword || !keyword.trim()) {
+  if (!keyword || !keyword.trim()) {
     return arr;
   }
 
@@ -83,10 +91,33 @@ export default class ModalContactList extends Component {
     this.onContactSearchClick(false);
   }
 
+  onRemove(contact, e) {
+    e.stopPropagation();
+    this.onClose();
+    const {dispatch} = this.props;
+    const text = strings.areYouSureAboutDeletingContact(`${contact.firstName} ${contact.lastName}`);
+    dispatch(chatModalPrompt(true, `${text}؟`, () => {
+      dispatch(contactRemove(contact.id));
+      dispatch(chatModalPrompt());
+      dispatch(contactListShowing(true));
+    }, () => dispatch(contactListShowing(true))));
+  }
+
+  onEdit(contact, e) {
+    e.stopPropagation();
+    const {dispatch} = this.props;
+    dispatch(contactAdding(true, {
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      mobilePhone: contact.cellphoneNumber
+    }));
+    this.onClose();
+  }
+
   onClose() {
     this.props.dispatch(contactListShowing(false));
     this.onContactSearchClick(false);
-    this.onSearchQueryChange("")
+    this.onSearchQueryChange("");
   }
 
   onStartChat(contact) {
@@ -105,7 +136,6 @@ export default class ModalContactList extends Component {
     this.setState({
       query: e.target ? e.target.value : e
     });
-
   }
 
   render() {
@@ -155,20 +185,28 @@ export default class ModalContactList extends Component {
             <List>
               {contactsFilter.map(el => (
                 <ListItem key={el.id} selection invert>
-                  <Container relative>
+                  <Container relative onClick={el.hasUser && this.onStartChat.bind(this, el)}>
                     <Avatar>
-                      <AvatarImage src={el.linkedUser && el.linkedUser.image} text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter} textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
+                      <AvatarImage src={el.linkedUser && el.linkedUser.image}
+                                   text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
+                                   textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
                       <AvatarName>{el.firstName} {el.lastName}</AvatarName>
                     </Avatar>
 
-                    <Container absolute centerLeft>
-                      {el.hasUser ? (
-                        <Button onClick={this.onStartChat.bind(this, el)} text>
-                          {strings.startChat}
-                        </Button>
-                      ) : (
-                        <Button text disabled>{strings.isNotPodUser}</Button>
-                      )}
+                    <Container centerLeft>
+                      {el.hasUser ?
+                        <Container className={style.ModalContactList__ActionButtonContainer}>
+                          <Container className={style.ModalContactList__ActionButton}
+                                     onClick={this.onEdit.bind(this, el)}>
+                            <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+                          </Container>
+                          <Container className={style.ModalContactList__ActionButton} inline
+                                     onClick={this.onRemove.bind(this, el)}>
+                            <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+                          </Container>
+                        </Container>
+                        : <Button text disabled>{strings.isNotPodUser}</Button>
+                      }
                     </Container>
 
                   </Container>
