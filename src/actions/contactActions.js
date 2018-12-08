@@ -60,7 +60,7 @@ export const contactChatting = (contact) => {
   }
 };
 
-export const contactAdd = (mobilePhone, firstName, lastName) => {
+export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
@@ -69,6 +69,9 @@ export const contactAdd = (mobilePhone, firstName, lastName) => {
         type: CONTACT_ADD("SUCCESS"),
         payload: e
       });
+      if(editMode) {
+        return dispatch(contactListShowing(true));
+      }
       if (e.linkedUser) {
         dispatch(threadCreate(e.id, null, true));
         dispatch(threadShowing(true));

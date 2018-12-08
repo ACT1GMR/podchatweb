@@ -43,10 +43,13 @@ export default class ModalAddContact extends Component {
     if (contactAdd) {
       if (oldProps.contactAdd !== contactAdd) {
         if (isShowing) {
+
           if (contactAdd.linkedUser) {
             this.onClose();
-            dispatch(contactListShowing(false));
-            dispatch(contactChatting(contactAdd));
+            if(!contactEdit) {
+              dispatch(contactListShowing(false));
+              dispatch(contactChatting(contactAdd));
+            }
           }
         }
       }
@@ -64,7 +67,8 @@ export default class ModalAddContact extends Component {
 
   onSubmit() {
     const {mobilePhone, firstName, lastName} = this.state;
-    this.props.dispatch(contactAdd(mobilePhone, firstName, lastName));
+    const {contactEdit} = this.props;
+    this.props.dispatch(contactAdd(mobilePhone, firstName, lastName, contactEdit));
   }
 
   onClose() {
@@ -103,7 +107,8 @@ export default class ModalAddContact extends Component {
         </ModalBody>
 
         <ModalFooter>
-          <Button text loading={contactAddPending} onClick={this.onSubmit.bind(this)}>{contactEdit ? strings.edit : strings.add}</Button>
+          <Button text loading={contactAddPending}
+                  onClick={this.onSubmit.bind(this)}>{contactEdit ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
           {contactAdd && !contactAdd.linkedUser &&
           (
