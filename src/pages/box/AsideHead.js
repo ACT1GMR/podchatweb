@@ -1,10 +1,12 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
 import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP} from "../../constants/routes";
 
 //actions
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
@@ -33,7 +35,7 @@ const statics = {
     chatInstance: store.chatInstance.chatSDK
   };
 })
-export default class AsideHead extends Component {
+class AsideHead extends Component {
 
   static defaultProps = {
     menuItems: [
@@ -64,12 +66,16 @@ export default class AsideHead extends Component {
   }
 
   onMenuSelect(type) {
+    const {history} = this.props;
     if (type === CONTACT_ADDING) {
       this.props.dispatch(contactAdding(true));
+      history.push(ROUTE_ADD_CONTACT);
     } else if (type === CONTACT_LIST_SHOWING) {
       this.props.dispatch(contactListShowing(true));
+      history.push(ROUTE_CONTACTS);
     } else if (type === CONTACT_MODAL_CREATE_GROUP_SHOWING) {
       this.props.dispatch(contactModalCreateGroupShowing(true));
+      history.push(ROUTE_CREATE_GROUP);
     }
   }
 
@@ -130,3 +136,5 @@ export default class AsideHead extends Component {
     )
   }
 }
+
+export default withRouter(AsideHead);

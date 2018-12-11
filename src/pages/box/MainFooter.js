@@ -9,6 +9,7 @@ import {connect} from "react-redux";
 //components
 import MainFooterInput from "./MainFooterInput";
 import MainFooterAttachment from "./MainFooterAttachment";
+import MainFooterEmoji from "./MainFooterInputEmoji";
 import Container from "../../../../uikit/src/container";
 
 //styling

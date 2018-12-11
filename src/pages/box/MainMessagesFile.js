@@ -36,6 +36,7 @@ import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "./../../../styles/variables.scss";
 import Gap from "../../../../uikit/src/gap";
 import classnames from "classnames";
+import {Link, withRouter} from "react-router-dom";
 
 
 function getImage(metaData, isFromServer, smallVersion) {
@@ -83,7 +84,7 @@ function hasError(message) {
     leftAsideShowing: store.threadLeftAsideShowing
   };
 })
-export default class MainMessagesFile extends Component {
+class MainMessagesFile extends Component {
 
   constructor(props) {
     super(props);
@@ -194,7 +195,7 @@ export default class MainMessagesFile extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing} = this.props;
+    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing, location} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -256,7 +257,6 @@ export default class MainMessagesFile extends Component {
                        className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"] : ""}`}>
               {isImage ?
                 <Container style={{width: `${imageSizeLink.width}px`}}>
-
                   <Container className={style.MainMessagesFile__ImageContainer}>
                     <Text link={imageSizeLink.imageLinkOrig}
                           linkClearStyle
@@ -267,7 +267,6 @@ export default class MainMessagesFile extends Component {
                              style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
                     </Text>
                   </Container>
-
                   <Container>
                     <Text wordWrap="breakWord" bold>
                       {message.message}
@@ -324,3 +323,5 @@ export default class MainMessagesFile extends Component {
     );
   }
 }
+
+export default withRouter(MainMessagesFile);

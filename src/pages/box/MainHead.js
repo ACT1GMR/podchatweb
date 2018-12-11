@@ -1,7 +1,7 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {withRouter} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -74,49 +74,50 @@ class MainHead extends Component {
   }
 
   render() {
-    const {thread, smallVersion, threadSelectMessageShowing, threadCheckedMessageList} = this.props;
+    const {thread, smallVersion, threadSelectMessageShowing, threadCheckedMessageList, location} = this.props;
     if (thread.id) {
       const classNames = classnames({
         [style.MainHead]: true,
         [style["MainHead--smallVersion"]]: smallVersion
       });
       return (
-        <Container className={classNames} onClick={this.onShowInfoClick} relative>
-          {
-            threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
-          }
-          <Container centerLeft>
 
+          <Container className={classNames} onClick={this.onShowInfoClick} relative>
             {
-              threadSelectMessageShowing &&
-              <Container>
-                <Container inline>
-                  <Text color="gray" light>{ strings.messagesCount(threadCheckedMessageList.length)}</Text>
-                </Container>
-                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
-                  <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-
-              </Container>
+              threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
             }
+            <Container centerLeft>
 
-            {
-              !threadSelectMessageShowing &&
-              <Container>
-                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
-                  <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-                <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
-                  <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-                <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
-                  <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-              </Container>
-            }
+              {
+                threadSelectMessageShowing &&
+                <Container>
+                  <Container inline>
+                    <Text color="gray" light>{ strings.messagesCount(threadCheckedMessageList.length)}</Text>
+                  </Container>
+                  <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
+                    <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                  </Container>
 
+                </Container>
+              }
+
+              {
+                !threadSelectMessageShowing &&
+                <Container>
+                  <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
+                    <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                  </Container>
+                  <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
+                    <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                  </Container>
+                  <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
+                    <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                  </Container>
+                </Container>
+              }
+
+            </Container>
           </Container>
-        </Container>
       )
     }
     return ""

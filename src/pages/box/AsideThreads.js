@@ -6,6 +6,7 @@ import {Link} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
+import {ROTE_THREAD} from "../../constants/routes";
 
 //actions
 import {threadCreate, threadGetList} from "../../actions/threadActions";
@@ -62,10 +63,6 @@ function getTitle(title) {
   return title;
 }
 
-function getBg(el) {
-  console.log(avatarNameGenerator(el.title));
-}
-
 @connect(store => {
   return {
     threads: store.threadList.threads,
@@ -83,7 +80,6 @@ export default class AsideThreads extends Component {
 
   componentDidMount() {
     this.props.dispatch(threadGetList());
-
   }
 
   onThreadClick(thread) {
@@ -125,7 +121,7 @@ export default class AsideThreads extends Component {
         <Container className={classNames}>
           <List>
             {threads.map(el => (
-              <Link to="thread">
+              <Link to={ROTE_THREAD}>
                 <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
 

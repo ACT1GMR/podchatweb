@@ -1,11 +1,12 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
 
 //actions
-import {contactGetList, contactModalCreateGroupShowing} from "../../actions/contactActions";
+import {contactAdding, contactGetList, contactModalCreateGroupShowing} from "../../actions/contactActions";
 import {threadModalListShowing, threadCreate} from "../../actions/threadActions";
 
 //UI components
@@ -20,6 +21,7 @@ import {MdArrowForward} from "react-icons/lib/md";
 
 //styling
 import {avatarNameGenerator} from "../../utils/helpers";
+import {ROUTE_ADD_CONTACT, ROUTE_CREATE_GROUP, ROTE_THREAD} from "../../constants/routes";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -32,7 +34,7 @@ const constants = {
     contacts: store.contactGetList.contacts
   };
 }, null, null, {withRef: true})
-export default class ModalCreateGroup extends Component {
+class ModalCreateGroup extends Component {
 
   constructor(props) {
     super(props);
@@ -47,7 +49,13 @@ export default class ModalCreateGroup extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(contactGetList());
+    const {isShow, dispatch, match} = this.props;
+    dispatch(contactGetList());
+    if(!isShow) {
+      if(match.path === ROUTE_CREATE_GROUP) {
+        dispatch(contactModalCreateGroupShowing(true));
+      }
+    }
   }
 
   onNext() {
@@ -57,16 +65,22 @@ export default class ModalCreateGroup extends Component {
   }
 
   onCreate(groupName) {
-    this.props.dispatch(threadCreate(this.state.threadContacts, null, groupName));
-    this.onClose();
+    const {dispatch, history} = this.props;
+    dispatch(threadCreate(this.state.threadContacts, null, groupName));
+    history.push(ROTE_THREAD);
+    this.onClose(false, true);
   }
 
-  onClose() {
-    this.props.dispatch(contactModalCreateGroupShowing(false));
+  onClose(e, noHistory) {
+    const {dispatch, history} = this.props;
+    dispatch(contactModalCreateGroupShowing(false));
     this.setState({
       step: constants.SELECT_CONTACT,
       threadContacts: []
     });
+    if(!noHistory){
+      history.push("/");
+    }
   }
 
   onAdd() {
@@ -160,3 +174,5 @@ export default class ModalCreateGroup extends Component {
     )
   }
 }
+
+export default withRouter(ModalCreateGroup);

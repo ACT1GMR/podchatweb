@@ -24,6 +24,7 @@ import {InputTextArea} from "../../../../uikit/src/input";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";
+import MainFooterInputEmoji from "./MainFooterInputEmoji";
 
 const constants = {
   replying: "REPLYING",
@@ -127,13 +128,18 @@ export default class BoxSceneInput extends Component {
           <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
         </Container>
         <Container relative className={editBotClassNames}>
-          <InputTextArea
-            className={style.MainFooterInput__InputContainer}
-            inputClassName={style.MainFooterInput__Input}
-            ref={this.inputNode}
-            placeholder={strings.pleaseWriteHere}
-            onChange={this.onTextChange}
-            value={messageText}/>
+          <Container className={style.MainFooterInput__EditBoxInputContainer}>
+            <InputTextArea
+              className={style.MainFooterInput__InputContainer}
+              inputClassName={style.MainFooterInput__Input}
+              ref={this.inputNode}
+              placeholder={strings.pleaseWriteHere}
+              onChange={this.onTextChange}
+              value={messageText}></InputTextArea>
+          </Container>
+          <Container className={style.MainFooterInput__EditBoxEmojiContainer} centerLeft>
+            <MainFooterInputEmoji/>
+          </Container>
         </Container>
       </Container>
     );

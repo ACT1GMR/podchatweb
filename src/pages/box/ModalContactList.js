@@ -23,6 +23,7 @@ import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
 import {MdClose, MdDelete, MdSearch, MdEdit} from "react-icons/lib/md";
+import {withRouter} from "react-router-dom";
 
 //styling
 import {threadCreate} from "../../actions/threadActions";
@@ -33,6 +34,7 @@ import styleVar from "../../../styles/variables.scss";
 import Gap from "../../../../uikit/src/gap";
 import {InputText} from "../../../../uikit/src/input";
 import {avatarNameGenerator} from "../../utils/helpers";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROTE_THREAD} from "../../constants/routes";
 
 function isContains(flds, keyword, arr) {
   const fields = flds.split('|');
@@ -59,7 +61,7 @@ function isContains(flds, keyword, arr) {
     contacts: store.contactGetList.contacts
   };
 }, null, null, {withRef: true})
-export default class ModalContactList extends Component {
+class ModalContactList extends Component {
 
   constructor(props) {
     super(props);
@@ -83,47 +85,61 @@ export default class ModalContactList extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(contactGetList());
+    const {match, dispatch, isShow} = this.props;
+    dispatch(contactGetList());
+    if (!isShow) {
+      if (match.path === ROUTE_CONTACTS) {
+        dispatch(contactListShowing(true));
+      }
+    }
   }
 
   onAdd() {
+    const {history} = this.props;
     this.props.dispatch(contactAdding(true));
     this.onContactSearchClick(false);
+    history.push(ROUTE_ADD_CONTACT);
   }
 
   onRemove(contact, e) {
     e.stopPropagation();
-    this.onClose();
     const {dispatch} = this.props;
     const text = strings.areYouSureAboutDeletingContact(`${contact.firstName} ${contact.lastName}`);
     dispatch(chatModalPrompt(true, `${text}؟`, () => {
       dispatch(contactRemove(contact.id));
       dispatch(chatModalPrompt());
-      dispatch(contactListShowing(true));
+      dispatch(contactGetList());
     }, () => dispatch(contactListShowing(true))));
   }
 
   onEdit(contact, e) {
     e.stopPropagation();
-    const {dispatch} = this.props;
+    const {dispatch, history} = this.props;
     dispatch(contactAdding(true, {
       firstName: contact.firstName,
       lastName: contact.lastName,
       mobilePhone: contact.cellphoneNumber
     }));
-    this.onClose();
+    history.push(ROUTE_ADD_CONTACT);
+    this.onClose(false, true);
   }
 
-  onClose() {
-    this.props.dispatch(contactListShowing(false));
+  onClose(e, noHistory) {
+    const {history, dispatch} = this.props;
+    dispatch(contactListShowing(false));
     this.onContactSearchClick(false);
     this.onSearchQueryChange("");
+    if (!noHistory) {
+      history.push("/");
+    }
   }
 
   onStartChat(contact) {
-    this.props.dispatch(contactChatting(contact));
-    this.props.dispatch(threadCreate(contact.id));
-    this.onClose();
+    const {history, dispatch} = this.props;
+    dispatch(contactChatting(contact));
+    dispatch(threadCreate(contact.id));
+    this.onClose(true);
+    history.push(ROTE_THREAD);
   }
 
   onContactSearchClick(isOpen) {
@@ -240,3 +256,5 @@ export default class ModalContactList extends Component {
     )
   }
 }
+
+export default withRouter(ModalContactList);

@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -14,6 +15,7 @@ import {Button} from "../../../../uikit/src/button";
 import {Heading} from "../../../../uikit/src/typography";
 import Message from "../../../../uikit/src/message";
 import Container from "../../../../uikit/src/container";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROTE_THREAD} from "../../constants/routes";
 
 
 //styling
@@ -27,7 +29,7 @@ import Container from "../../../../uikit/src/container";
     contactAddError: store.contactAdd.fetching
   };
 }, null, null, {withRef: true})
-export default class ModalAddContact extends Component {
+class ModalAddContact extends Component {
 
   constructor(props) {
     super(props);
@@ -38,29 +40,39 @@ export default class ModalAddContact extends Component {
     }
   }
 
+  componentDidMount() {
+    const {contactEdit, isShowing, match, dispatch} = this.props;
+    if (contactEdit) {
+      this.setState({
+        mobilePhone: contactEdit.mobilePhone,
+        firstName: contactEdit.firstName,
+        lastName: contactEdit.lastName
+      });
+    }
+    if (!isShowing) {
+      if (match.path === ROUTE_ADD_CONTACT) {
+        dispatch(contactAdding(true));
+      }
+    }
+  }
+
   componentDidUpdate(oldProps) {
-    const {contactAdd, isShowing, dispatch, contactEdit} = this.props;
+    const {contactAdd, isShowing, dispatch, contactEdit, history} = this.props;
     if (contactAdd) {
       if (oldProps.contactAdd !== contactAdd) {
         if (isShowing) {
-
           if (contactAdd.linkedUser) {
             this.onClose();
-            if(!contactEdit) {
+            if (!contactEdit) {
               dispatch(contactListShowing(false));
               dispatch(contactChatting(contactAdd));
+              history.push(ROTE_THREAD);
+            } else {
+              history.push(ROUTE_CONTACTS);
+              dispatch(contactListShowing(true));
             }
           }
         }
-      }
-    }
-    if (contactEdit) {
-      if (oldProps.contactEdit !== contactEdit) {
-        this.setState({
-          mobilePhone: contactEdit.mobilePhone,
-          firstName: contactEdit.firstName,
-          lastName: contactEdit.lastName
-        });
       }
     }
   }
@@ -71,13 +83,17 @@ export default class ModalAddContact extends Component {
     this.props.dispatch(contactAdd(mobilePhone, firstName, lastName, contactEdit));
   }
 
-  onClose() {
-    this.props.dispatch(contactAdding(false));
+  onClose(e, noHistory) {
+    const {history, dispatch} = this.props;
+    dispatch(contactAdding(false));
     this.setState({
       mobilePhone: "",
       firstName: "",
       lastName: ""
     });
+    if (!noHistory) {
+      history.push("/");
+    }
   }
 
   onFieldChange(field, event) {
@@ -126,3 +142,5 @@ export default class ModalAddContact extends Component {
     )
   }
 }
+
+export default withRouter(ModalAddContact);

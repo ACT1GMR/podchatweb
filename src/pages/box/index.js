@@ -6,6 +6,7 @@ import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP, ROTE_THREAD_INFO} from "../../constants/routes";
 
 //actions
 import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
@@ -47,11 +48,7 @@ class Box extends Component {
     super(props);
     this.createThread = this.createThread.bind(this);
     this.modalDeleteMessagePromptRef = React.createRef(this.modalDeleteMessagePromptRef);
-    this.modalContactListRef = React.createRef(this.modalContactListRef);
-    this.modalAddContactRef = React.createRef(this.modalAddContactRef);
     this.modalThreadListRef = React.createRef(this.modalThreadListRef);
-    this.modalCreateGroupRef = React.createRef(this.modalCreateGroupRef);
-    this.modalThreadInfoRef = React.createRef(this.modalThreadInfoRef);
     this.modalMediaRef = React.createRef(this.modalMediaRef);
     this.modalImageCaptionRef = React.createRef(this.modalImageCaptionRef);
   }
@@ -74,13 +71,9 @@ class Box extends Component {
   resetChat() {
     const {dispatch} = this.props;
     dispatch(threadShowing(false));
-    const closeModal = modal=> modal.current.getWrappedInstance().onClose();
+    const closeModal = modal => modal.current.getWrappedInstance().onClose();
     closeModal(this.modalDeleteMessagePromptRef);
-    closeModal(this.modalContactListRef);
-    closeModal(this.modalAddContactRef);
     closeModal(this.modalThreadListRef);
-    closeModal(this.modalCreateGroupRef);
-    closeModal(this.modalThreadInfoRef);
     closeModal(this.modalImageCaptionRef);
     this.modalMediaRef.current.close();
   }
@@ -110,7 +103,7 @@ class Box extends Component {
   }
 
   render() {
-    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing, small, threadImages} = this.props;
+    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing, small, location} = this.props;
     let classNames = classnames({
       [style.Box]: true,
       [style["Box--small"]]: small,
@@ -139,18 +132,18 @@ class Box extends Component {
 
     const popups = (
       <Container>
-        <ModalPrompt smallVersion={small} ref={this.modalDeleteMessagePromptRef}/>
-        <ModalContactList smallVersion={small} ref={this.modalContactListRef}/>
-        <ModalAddContact smallVersion={small} ref={this.modalAddContactRef}/>
+        <Route exact path={ROUTE_CREATE_GROUP} render={props => <ModalCreateGroup smallVersion={small}/>}/>
+        <Route exact path={ROUTE_CONTACTS} render={props => <ModalContactList smallVersion={small}/>}/>
+        <Route exact path={ROUTE_ADD_CONTACT} render={props => <ModalAddContact smallVersion={small}/>}/>
+        <Route exact path={ROTE_THREAD_INFO} render={props => <ModalThreadInfo smallVersion={small}/>}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>
-        <ModalCreateGroup smallVersion={small} ref={this.modalCreateGroupRef}/>
-        <ModalThreadInfo smallVersion={small} ref={this.modalThreadInfoRef}/>
         <ModalImageCaption smallVersion={small} ref={this.modalImageCaptionRef}/>
         <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}
                     ref={this.modalMediaRef}
                     lang="fa"
                     i18n={modalMediaI18n}
                     backFocus={false}/>
+        <ModalPrompt smallVersion={small} ref={this.modalDeleteMessagePromptRef}/>
       </Container>
     );
 

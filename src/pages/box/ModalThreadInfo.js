@@ -10,6 +10,8 @@ import {
 //UI components
 import ModalThreadInfoGroup from "./ModalThreadInfoGroup"
 import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
+import {withRouter} from "react-router-dom";
+import {ROTE_THREAD_INFO} from "../../constants/routes";
 
 @connect(store => {
   return {
@@ -20,7 +22,7 @@ import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
     contacts: store.contactGetList.contacts
   };
 }, null, null, {withRef: true})
-export default class ModalThreadInfo extends Component {
+class ModalThreadInfo extends Component {
 
   constructor(props) {
     super(props);
@@ -28,10 +30,16 @@ export default class ModalThreadInfo extends Component {
   }
 
   componentDidMount() {
-    const {thread, dispatch} = this.props;
+    const {thread, dispatch, match, isShow} = this.props;
     if (thread.id) {
       dispatch(threadParticipantList(thread.id));
+      if (!isShow) {
+        if (match.path === ROTE_THREAD_INFO) {
+          dispatch(threadModalThreadInfoShowing(true));
+        }
+      }
     }
+
   }
 
   componentDidUpdate(oldProps) {
@@ -44,7 +52,9 @@ export default class ModalThreadInfo extends Component {
   }
 
   onClose() {
-    this.props.dispatch(threadModalThreadInfoShowing(false));
+    const {dispatch, history} = this.props;
+    dispatch(threadModalThreadInfoShowing());
+    history.goBack();
   }
 
   render() {
@@ -54,3 +64,5 @@ export default class ModalThreadInfo extends Component {
     return isGroup ? <ModalThreadInfoGroup {...commonProps}/> : <ModalThreadInfoPerson {...commonProps}/>;
   }
 }
+
+export default withRouter(ModalThreadInfo);

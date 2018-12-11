@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {Route} from "react-router-dom";
 
 //strings
+import {ROTE_THREAD} from "../../constants/routes";
 import strings from "../../constants/localization";
 
 //actions
@@ -62,7 +63,7 @@ export default class Main extends Component {
       );
     }
     return (
-      <Route path="/thread" render={props => {
+      <Route exact path={ROTE_THREAD} render={props => {
         return (
           <Container className={style.Main}>
             <MainHead/>

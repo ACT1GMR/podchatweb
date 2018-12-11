@@ -2,7 +2,6 @@ import {
   contactAddingReducer,
   contactGetListReducer,
   contactAdd,
-  contactEditReducer,
   contactListShowingReducer,
   contactModalCreateGroupShowingReducer,
   contactChattingReducer
@@ -50,7 +49,6 @@ const rootReducer = {
   contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,
   contactAdding: contactAddingReducer,
   contactAdd: contactAdd,
-  contactEdit: contactEditReducer,
   contactChatting: contactChattingReducer,
   thread: threadCreateReducer,
   threadMessages: threadMessageListReducer,
