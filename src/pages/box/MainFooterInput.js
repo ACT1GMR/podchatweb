@@ -37,7 +37,7 @@ const constants = {
     threadId: store.thread.thread.id
   };
 }, null, null, {withRef: true})
-export default class BoxSceneInput extends Component {
+export default class MainFooterInput extends Component {
 
   constructor() {
     super();
@@ -135,7 +135,7 @@ export default class BoxSceneInput extends Component {
               ref={this.inputNode}
               placeholder={strings.pleaseWriteHere}
               onChange={this.onTextChange}
-              value={messageText}></InputTextArea>
+              value={messageText}/>
           </Container>
           <Container className={style.MainFooterInput__EditBoxEmojiContainer} centerLeft>
             <MainFooterInputEmoji/>

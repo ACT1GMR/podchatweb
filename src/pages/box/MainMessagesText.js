@@ -175,7 +175,7 @@ export default class MainMessagesText extends Component {
         <Paper colorBackgroundLight borderRadius={5} hasShadow>
           {replyFragment(message)}
           {forwardFragment(message)}
-          <Text wordWrap="breakWord" whiteSpace="preWrap">
+          <Text isHTML wordWrap="breakWord" whiteSpace="preWrap">
             {urlify(message.message)}
           </Text>
           <PaperFooter>

@@ -62,7 +62,7 @@ module.exports = (e, argv) => {
           test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
           use: [
             {
-              loader: "url-loader?limit=10000000"
+              loader: "url-loader?limit=8000"
             }
           ]
         }

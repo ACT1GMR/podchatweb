@@ -27,7 +27,8 @@ import {
   threadGoToMessageIdReducer,
   threadGetMessageListByMessageIdReducer,
   threadSelectMessageShowingReducer,
-  threadCheckedMessageListReducer
+  threadCheckedMessageListReducer,
+  threadEmojiShowingReducer
 } from "./threadReducer";
 import {
   messageSendReducer,
@@ -52,6 +53,7 @@ const rootReducer = {
   contactChatting: contactChattingReducer,
   thread: threadCreateReducer,
   threadMessages: threadMessageListReducer,
+  threadEmojiShowing: threadEmojiShowingReducer,
   threadMessagesPartial: threadMessageListPartialReducer,
   threadModalListShowing: threadModalListShowingReducer,
   threadModalThreadInfoShowing: threadModalThreadInfoShowingReducer,

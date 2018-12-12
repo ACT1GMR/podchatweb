@@ -6,12 +6,12 @@ import {connect} from "react-redux";
 
 //actions
 import {
-  messageSendFile
-} from "../../actions/messageActions";
+  threadEmojiShowing
+} from "../../actions/threadActions";
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdSentimentSatisfied} from "react-icons/lib/md";
+import {MdSentimentVerySatisfied} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInputEmoji.scss";
@@ -19,6 +19,7 @@ import styleVar from "../../../styles/variables.scss";
 
 @connect(store => {
   return {
+    emojiShowing: store.threadEmojiShowing,
     threadFilesToUpload: store.threadFilesToUpload,
     threadId: store.thread.thread.id,
     isSendingText: store.threadIsSendingMessage
@@ -28,6 +29,7 @@ export default class MainFooterAttachment extends Component {
 
   constructor() {
     super();
+    this.onClick = this.onClick.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -40,13 +42,17 @@ export default class MainFooterAttachment extends Component {
   }
 
   onClick() {
+    const {dispatch, emojiShowing} = this.props;
+    const showing = !emojiShowing;
+    dispatch(threadEmojiShowing(showing));
   }
 
   render() {
     const {isSendingText} = this.props;
     return (
       <Container inline className={style.MainFooterInputEmoji} relative onClick={this.onClick}>
-        <MdSentimentSatisfied size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
+        <MdSentimentVerySatisfied size={styleVar.iconSizeMd} color={styleVar.colorAccentDark}
+                                  style={{margin: "3px 4px"}}/>
       </Container>
     );
   }

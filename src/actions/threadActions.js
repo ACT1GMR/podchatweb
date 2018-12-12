@@ -21,7 +21,7 @@ import {
   THREAD_IS_SENDING_MESSAGE,
   THREAD_SELECT_MESSAGE_SHOWING,
   THREAD_CHECKED_MESSAGE_LIST_REMOVE,
-  THREAD_CHECKED_MESSAGE_LIST_EMPTY, THREAD_CHECKED_MESSAGE_LIST_ADD, CONTACT_GET_LIST
+  THREAD_CHECKED_MESSAGE_LIST_EMPTY, THREAD_CHECKED_MESSAGE_LIST_ADD, CONTACT_GET_LIST, THREAD_EMOJI_SHOWING
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName, idType) => {
@@ -237,11 +237,19 @@ export const threadImagesToCaption = (images, inputNode) => {
   }
 };
 
-
 export const threadShowing = (isShowing) => {
   return dispatch => {
     return dispatch({
       type: THREAD_SHOWING,
+      payload: isShowing
+    });
+  }
+};
+
+export const threadEmojiShowing = isShowing => {
+  return dispatch => {
+    return dispatch({
+      type: THREAD_EMOJI_SHOWING,
       payload: isShowing
     });
   }

@@ -31,7 +31,7 @@ import {
   THREAD_SELECT_MESSAGE_SHOWING,
   THREAD_CHECKED_MESSAGE_LIST_EMPTY,
   THREAD_CHECKED_MESSAGE_LIST_ADD,
-  THREAD_CHECKED_MESSAGE_LIST_REMOVE, THREAD_REMOVED_FROM,
+  THREAD_CHECKED_MESSAGE_LIST_REMOVE, THREAD_REMOVED_FROM, THREAD_EMOJI_SHOWING,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -151,6 +151,15 @@ export const threadShowingReducer = (state = false, action) => {
 export const threadLeftAsideShowingReducer = (state = false, action) => {
   switch (action.type) {
     case THREAD_LEFT_ASIDE_SHOWING:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const threadEmojiShowingReducer = (state = false, action) => {
+  switch (action.type) {
+    case THREAD_EMOJI_SHOWING:
       return action.payload;
     default:
       return state;

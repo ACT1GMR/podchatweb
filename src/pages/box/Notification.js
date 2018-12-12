@@ -14,7 +14,7 @@ import {threadCreate} from "../../actions/threadActions";
 //components
 
 //styling
-import defaultAvatar from "../../../styles/images/_common/default-avatar.png";
+const defaultAvatar = "../../../styles/images/_common/default-avatar.png";
 
 function isMessageByMe(message, user) {
   if (user) {
