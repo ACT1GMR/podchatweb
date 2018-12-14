@@ -31,8 +31,8 @@ export default class MainFooter extends Component {
     this.mainFooterInputRef.current.getWrappedInstance().sendMessage();
   }
 
-  setInputText(value) {
-    this.mainFooterInputRef.current.getWrappedInstance().setInputText(value);
+  setInputText(value, append) {
+    this.mainFooterInputRef.current.getWrappedInstance().setInputText(value, append);
   }
 
   render() {

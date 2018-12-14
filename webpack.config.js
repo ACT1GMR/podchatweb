@@ -43,7 +43,7 @@ module.exports = (e, argv) => {
                 modules: true,
                 localIdentName: mode === "production" ? "[hash:base64:5]" : "[local]",
                 getLocalIdent: (loaderContext, localIdentName, localName, options) => {
-                  return loaderContext.resourcePath.includes('ModalMedia') ?
+                  return loaderContext.resourcePath.includes('ModalMedia') || loaderContext.resourcePath.includes('emoji')?
                     localName :
                     getLocalIdent(loaderContext, localIdentName, localName, options);
                 }

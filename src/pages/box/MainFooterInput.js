@@ -49,10 +49,15 @@ export default class MainFooterInput extends Component {
     };
   }
 
-  setInputText(text) {
+  setInputText(text, append) {
     const {dispatch} = this.props;
+    const {messageText} = this.state;
+    let newText = text;
+    if (append) {
+      newText = messageText + newText
+    }
     this.setState({
-      messageText: text
+      messageText: newText
     });
     if (text) {
       if (text.trim()) {
@@ -112,7 +117,7 @@ export default class MainFooterInput extends Component {
   }
 
   onTextChange(event) {
-    this.setInputText(event.target.innerText);
+    this.setInputText(event.target.innerHTML);
   }
 
   render() {

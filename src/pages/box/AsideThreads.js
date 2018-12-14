@@ -139,7 +139,7 @@ export default class AsideThreads extends Component {
                                 {isFile(el.lastMessageVO) ?
                                   <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                   :
-                                  <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
+                                  <Text isHTML size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
                                 }
                               </Container>
                               :
@@ -150,7 +150,7 @@ export default class AsideThreads extends Component {
                               isFile(el.lastMessageVO) ?
                                 <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                 :
-                                <Text size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
+                                <Text isHTML size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
                               :
                               <Text size="sm" inline
                                     color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>

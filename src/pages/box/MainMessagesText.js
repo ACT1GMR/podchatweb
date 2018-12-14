@@ -1,6 +1,7 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
+import ReactDOMServer from "react-dom/server";
 import "moment/locale/fa";
 import {mobileCheck} from "../../utils/helpers";
 import classnames from "classnames";
@@ -34,7 +35,7 @@ import styleVar from "./../../../styles/variables.scss";
 
 function urlify(text) {
   return reactStringReplace(text, /(https?:\/\/[^\s]+)/g, (match, i) => (
-    <Text link={match} target="_blank" wordWrap="breakWord">{match}</Text>
+    ReactDOMServer.renderToStaticMarkup(<Text link={match} target="_blank" wordWrap="breakWord">{match}</Text>)
   ));
 }
 
