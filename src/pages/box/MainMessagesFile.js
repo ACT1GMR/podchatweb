@@ -1,20 +1,22 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
+import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
 import {humanFileSize, mobileCheck} from "../../utils/helpers";
-import {connect} from "react-redux";
 
 //strings
+import strings from "../../constants/localization";
 
 //actions
+import {chatModalPrompt} from "../../actions/chatActions";
 import {threadModalListShowing, threadModalMediaShowing} from "../../actions/threadActions";
 import {
   messageEditing,
   messageSendingError,
   messageCancelFile,
-  messageSendFile,
-  messageModalDeletePrompt
+  messageSendFile, messageDelete
 } from "../../actions/messageActions";
 
 //components
@@ -36,7 +38,6 @@ import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "./../../../styles/variables.scss";
 import Gap from "../../../../uikit/src/gap";
 import classnames from "classnames";
-import {Link, withRouter} from "react-router-dom";
 
 
 function getImage(metaData, isFromServer, smallVersion) {
@@ -176,7 +177,11 @@ class MainMessagesFile extends Component {
   }
 
   onDelete(message) {
-    this.props.dispatch(messageModalDeletePrompt(true, message));
+    const {dispatch} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
+      dispatch(messageDelete(message.id, message.editable));
+      dispatch(chatModalPrompt());
+    }));
     this.onMessageControlHide();
   }
 

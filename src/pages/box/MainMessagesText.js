@@ -9,9 +9,11 @@ import {connect} from "react-redux";
 import reactStringReplace from "react-string-replace";
 
 //strings
+import strings from "../../constants/localization";
 
 //actions
-import {messageEditing, messageModalDeletePrompt} from "../../actions/messageActions";
+import {chatModalPrompt} from "../../actions/chatActions";
+import {messageDelete, messageEditing} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 
 
@@ -30,7 +32,6 @@ import {
 
 //styling
 import style from "../../../styles/pages/box/MainMessagesText.scss";
-import utilsStyle from "../../../styles/utils/utils.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 function urlify(text) {
@@ -52,11 +53,6 @@ export default class MainMessagesText extends Component {
       messageControlShow: false,
       messageTriggerShow: false
     };
-  }
-
-
-  onControlMouseOver(e) {
-
   }
 
   handleClickOutside(e) {
@@ -115,7 +111,11 @@ export default class MainMessagesText extends Component {
   }
 
   onDelete(message) {
-    this.props.dispatch(messageModalDeletePrompt(true, message));
+    const {dispatch} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
+      dispatch(messageDelete(message.id, message.editable));
+      dispatch(chatModalPrompt());
+    }));
     this.onMessageControlHide();
   }
 

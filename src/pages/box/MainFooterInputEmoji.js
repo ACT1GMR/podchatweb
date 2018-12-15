@@ -11,7 +11,7 @@ import {
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdSentimentVerySatisfied} from "react-icons/lib/md";
+import {MdSentimentVerySatisfied, MdSentimentSatisfied} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInputEmoji.scss";
@@ -32,15 +32,6 @@ export default class MainFooterAttachment extends Component {
     this.onClick = this.onClick.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
-  }
-
-  onAttachmentChange(evt) {
-  }
-
-  sendFiles(filesObject) {
-  }
-
   onClick() {
     const {dispatch, emojiShowing} = this.props;
     const showing = !emojiShowing;
@@ -48,11 +39,18 @@ export default class MainFooterAttachment extends Component {
   }
 
   render() {
-    const {isSendingText} = this.props;
+    const {emojiShowing} = this.props;
     return (
       <Container inline className={style.MainFooterInputEmoji} relative onClick={this.onClick}>
-        <MdSentimentVerySatisfied size={styleVar.iconSizeMd} color={styleVar.colorAccentDark}
-                                  style={{margin: "3px 4px"}}/>
+        {emojiShowing ?
+          <MdSentimentVerySatisfied size={styleVar.iconSizeMd}
+                                    color={styleVar.colorAccentDark}
+                                    style={{margin: "3px 4px"}}/>
+          :
+          <MdSentimentSatisfied size={styleVar.iconSizeMd}
+                                color={styleVar.colorGrayDark}
+                                style={{margin: "3px 4px"}}/>
+        }
       </Container>
     );
   }
