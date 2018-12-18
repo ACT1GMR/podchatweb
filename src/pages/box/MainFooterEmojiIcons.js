@@ -7,13 +7,9 @@ import classnames from 'classnames';
 //strings
 
 //actions
-import {
-  messageSendFile
-} from "../../actions/messageActions";
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdSentimentVerySatisfied} from "react-icons/lib/md";
 
 //styling
 import emojiStyle from "../../../styles/utils/emoji.scss";
@@ -29,9 +25,7 @@ const emojies = [
     name: "common-telegram"
   }];
 
-@connect(store => {
-  return {};
-})
+@connect()
 export default class MainFooterEmojiIcons extends Component {
 
   constructor() {
@@ -41,7 +35,9 @@ export default class MainFooterEmojiIcons extends Component {
   componentDidUpdate(prevProps) {
   }
 
-  onEmojiClick(el, emoji) {
+  onEmojiClick(el, emoji, e) {
+    e.preventDefault();
+    e.stopPropagation();
     const {setInputText} = this.props;
     const classNames = classnames({
       [emojiStyle.emoji]: true,

@@ -28,9 +28,13 @@ import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
 
 function sliceMessage(message, to) {
-  if (message) {
-    if (message.length >= 15) {
-      return `${message.slice(0, to || 15)}...`;
+  const tag = document.createElement("p");
+  tag.innerHTML = message;
+  const text = tag.innerText;
+  const childElementCount = tag.childElementCount * 1.5;
+  if (text) {
+    if ((text.length + childElementCount)  >= 15) {
+      return `${text.slice(0, to || 15)}...`;
     }
   }
   return message;
@@ -62,6 +66,14 @@ function getTitle(title) {
   }
   return title;
 }
+
+const sanitizeRule = {
+  allowedTags: ["img"],
+  allowedAttributes: {
+    img: ["src", "style", "class"]
+  },
+  allowedSchemes: ["data"]
+};
 
 @connect(store => {
   return {
@@ -139,7 +151,7 @@ export default class AsideThreads extends Component {
                                 {isFile(el.lastMessageVO) ?
                                   <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                   :
-                                  <Text isHTML size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage)}</Text>
+                                  <Text isHTML size="sm" inline color="gray" dark sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
                                 }
                               </Container>
                               :
@@ -150,7 +162,9 @@ export default class AsideThreads extends Component {
                               isFile(el.lastMessageVO) ?
                                 <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                 :
-                                <Text isHTML size="sm" inline color="gray" dark>{sliceMessage(el.lastMessage, 30)}</Text>
+                                <Text isHTML size="sm" inline color="gray"
+                                      sanitizeRule={sanitizeRule}
+                                      dark>{sliceMessage(el.lastMessage, 30)}</Text>
                               :
                               <Text size="sm" inline
                                     color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>

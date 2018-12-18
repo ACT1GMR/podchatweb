@@ -29,6 +29,7 @@ export const threadCreate = (contactId, thread, threadName, idType) => {
     dispatch(threadShowing(true));
     dispatch(threadSelectMessageShowing(false));
     dispatch(threadCheckedMessageList(null, null, true));
+    dispatch(threadEmojiShowing(false));
     if (thread) {
       return dispatch({
         type: THREAD_CREATE("CACHE"),

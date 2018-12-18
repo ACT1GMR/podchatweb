@@ -488,8 +488,9 @@ export default class MainMessages extends Component {
           <List ref={this.messageListNode}>
             {threadMessages.map(el => (
               <ListItem key={el.id || el.uniqueId} data={el}
+                        noPadding
                         active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
-                <Container leftTextAlign={!isMessageByMe(el, user)} inSpace id={`${el.id || el.uniqueId}`} relative>
+                <Container leftTextAlign={!isMessageByMe(el, user)} id={`${el.id || el.uniqueId}`} relative>
                   {!isMessageByMe(el, user) ? message(el) : avatar(el)}
                   {!isMessageByMe(el, user) ? avatar(el) : message(el)}
                   {threadSelectMessageShowing && messageTick(el)}

@@ -43,7 +43,7 @@ module.exports = (e, argv) => {
                 modules: true,
                 localIdentName: mode === "production" ? "[hash:base64:5]" : "[local]",
                 getLocalIdent: (loaderContext, localIdentName, localName, options) => {
-                  return loaderContext.resourcePath.includes('ModalMedia') || loaderContext.resourcePath.includes('emoji')?
+                  return loaderContext.resourcePath.includes('ModalMedia') || loaderContext.resourcePath.includes('emoji') ?
                     localName :
                     getLocalIdent(loaderContext, localIdentName, localName, options);
                 }
@@ -62,7 +62,11 @@ module.exports = (e, argv) => {
           test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
           use: [
             {
-              loader: "url-loader?limit=8000"
+              loader: "url-loader",
+              options: {
+                limit: 8000,
+                name: "assets/[hash].[ext]"
+              }
             }
           ]
         }

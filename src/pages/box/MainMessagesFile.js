@@ -30,7 +30,8 @@ import {
   MdReply,
   MdForward,
   MdArrowDownward,
-  MdClose, MdExpandLess, MdExpandMore, MdEdit
+  MdPlayArrow,
+  MdClose, MdExpandLess, MdExpandMore
 } from "react-icons/lib/md";
 
 //styling
@@ -205,6 +206,7 @@ class MainMessagesFile extends Component {
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = ~metaData.mimeType.indexOf("image");
+    const isVideo = ~metaData.mimeType.indexOf("video");
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
     const isMsgByMe = isMessageByMe(message, user);
     const mainMessagesFileImageClassNames = classnames({
@@ -281,6 +283,11 @@ class MainMessagesFile extends Component {
                 </Container>
                 :
                 <Container className={style.MainMessagesFile__FileName}>
+                  {isVideo &&
+                  <video controls id={`video-${message.id}`} style={{display: "none"}}>
+                    <source src={metaData.link} type={metaData.mimeType}/>
+                  </video>
+                  }
                   <Text wordWrap="breakWord" bold>
                     {metaData.originalName}
                   </Text>
@@ -293,11 +300,16 @@ class MainMessagesFile extends Component {
                 {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
                   <Gap x={10}>
                     <Shape color="accent" size="lg"
-                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData) : this.onCancel.bind(this, message)}>
+                           onClick={isDownloadable(message) ? !isVideo && this.onDownload.bind(this, metaData) : this.onCancel.bind(this, message)}>
                       <ShapeCircle>
                         {isUploading(message) || hasError(message) ?
                           <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
                           : isDownloadable(message) ?
+                            isVideo ?
+                              <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
+                                <MdPlayArrow style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                              </Text>
+                              :
                             <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
                         }
                       </ShapeCircle>

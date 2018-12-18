@@ -11,7 +11,7 @@ import {
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdSentimentVerySatisfied, MdSentimentSatisfied} from "react-icons/lib/md";
+import {MdSentimentVerySatisfied, MdClose} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInputEmoji.scss";
@@ -43,12 +43,12 @@ export default class MainFooterAttachment extends Component {
     return (
       <Container inline className={style.MainFooterInputEmoji} relative onClick={this.onClick}>
         {emojiShowing ?
-          <MdSentimentVerySatisfied size={styleVar.iconSizeMd}
+          <MdClose size={styleVar.iconSizeMd}
                                     color={styleVar.colorAccentDark}
                                     style={{margin: "3px 4px"}}/>
           :
-          <MdSentimentSatisfied size={styleVar.iconSizeMd}
-                                color={styleVar.colorGrayDark}
+          <MdSentimentVerySatisfied size={styleVar.iconSizeMd}
+                                color={styleVar.colorAccentDark}
                                 style={{margin: "3px 4px"}}/>
         }
       </Container>

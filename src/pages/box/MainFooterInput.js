@@ -31,6 +31,27 @@ const constants = {
   forwarding: "FORWARDING"
 };
 
+const sanitizeRule = {
+  allowedTags: ["img", "br"],
+  transformTags: {
+    "div": "br",
+  },
+  allowedAttributes: {
+    img: ["src", "style", "class"]
+  },
+  allowedSchemes: ["data"],
+  exclusiveFilter: function (frame) {
+    if (frame.tag === "img") {
+      if (!frame.attribs.class) {
+        return true
+      }
+      if (!~frame.attribs.class.indexOf("emoji")) {
+        return true;
+      }
+    }
+  }
+};
+
 @connect(store => {
   return {
     messageEditing: store.messageEditing,
@@ -59,8 +80,8 @@ export default class MainFooterInput extends Component {
     this.setState({
       messageText: newText
     });
-    if (text) {
-      if (text.trim()) {
+    if (newText) {
+      if (newText.trim()) {
         return dispatch(threadIsSendingMessage(true));
       }
     }
@@ -136,6 +157,7 @@ export default class MainFooterInput extends Component {
           <Container className={style.MainFooterInput__EditBoxInputContainer}>
             <InputTextArea
               className={style.MainFooterInput__InputContainer}
+              sanitizeRule={sanitizeRule}
               inputClassName={style.MainFooterInput__Input}
               ref={this.inputNode}
               placeholder={strings.pleaseWriteHere}
