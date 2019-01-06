@@ -31,7 +31,8 @@ const constants = {
 @connect(store => {
   return {
     isShow: store.contactModalCreateGroupShowing.isShow,
-    contacts: store.contactGetList.contacts
+    contacts: store.contactGetList.contacts,
+    chatInstance: store.chatInstance.chatSDK
   };
 }, null, null, {withRef: true})
 class ModalCreateGroup extends Component {
@@ -49,12 +50,21 @@ class ModalCreateGroup extends Component {
   }
 
   componentDidMount() {
-    const {isShow, dispatch, match} = this.props;
-    dispatch(contactGetList());
-    if(!isShow) {
-      if(match.path === ROUTE_CREATE_GROUP) {
+    const {isShow, dispatch, match, chatInstance} = this.props;
+    if (chatInstance) {
+      dispatch(contactGetList());
+    }
+    if (!isShow) {
+      if (match.path === ROUTE_CREATE_GROUP) {
         dispatch(contactModalCreateGroupShowing(true));
       }
+    }
+  }
+
+  componentDidUpdate(oldProps) {
+    const {dispatch, chatInstance} = this.props;
+    if (oldProps.chatInstance !== chatInstance) {
+      dispatch(contactGetList());
     }
   }
 
@@ -78,7 +88,7 @@ class ModalCreateGroup extends Component {
       step: constants.SELECT_CONTACT,
       threadContacts: []
     });
-    if(!noHistory){
+    if (!noHistory) {
       history.push("/");
     }
   }

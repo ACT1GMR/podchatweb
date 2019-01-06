@@ -337,6 +337,19 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  muteThread(resolve, reject, threadId, mute) {
+    const params = {
+      subjectId: threadId
+    };
+    this.chatAgent[mute ? "muteThread" : "unMuteThread"](params, result => {
+      if (!this._onError(result, reject)) {
+        return resolve();
+      }
+    });
+  }
+
+
+  @promiseDecorator
   editMessage(resolve, reject, content, messageId) {
     const sendChatParams = {
       messageId,
@@ -440,6 +453,31 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  blockContact(resolve, reject, contactId, block) {
+    const blockContactParam = {
+      [block ? "contactId" : "blockId"]: contactId
+    };
+    this.chatAgent[block ? "block" : "unblock"](blockContactParam, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve();
+      }
+    });
+  }
+
+  @promiseDecorator
+  getBlockList(resolve, reject) {
+    const getContactsParams = {
+      count: 50,
+      offset: 0
+    };
+    this.chatAgent.getBlocked(getContactsParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.blockedUsers);
+      }
+    });
+  }
+
+  @promiseDecorator
   removeContact(resolve, reject, contactId) {
     const removeContactParam = {id: contactId};
     this.chatAgent.removeContacts(removeContactParam, (result) => {
@@ -449,6 +487,36 @@ export default class ChatSDK {
     });
   }
 
+  @promiseDecorator
+  unblockContact(resolve, reject, blockId) {
+    const unblockContactParam = {blockId};
+    this.chatAgent.unblock(unblockContactParam, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
+
+
+  @promiseDecorator
+  leaveThread(resolve, reject, threadId) {
+    const leaveThreadParam = {threadId};
+    this.chatAgent.leaveThread(leaveThreadParam, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
+
+  @promiseDecorator
+  spamPvThread(resolve, reject, threadId) {
+    const reportSpamPv = {threadId};
+    this.chatAgent.spamPvThread(reportSpamPv, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
 
   @promiseDecorator
   getContactList(resolve, reject, name) {
@@ -461,7 +529,9 @@ export default class ChatSDK {
     }
     this.chatAgent.getContacts(getContactsParams, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.contacts);
+        this.getBlockList(getContactsParams).then(blockedResult => {
+          return resolve(result.result.contacts.concat(blockedResult));
+        });
       }
     });
   }

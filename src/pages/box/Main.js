@@ -1,10 +1,10 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Route} from "react-router-dom";
+import {Route, withRouter} from "react-router-dom";
 
 //strings
-import {ROTE_THREAD} from "../../constants/routes";
+import {ROTE_THREAD, ROUTE_ADD_CONTACT, ROUTE_CONTACTS} from "../../constants/routes";
 import strings from "../../constants/localization";
 
 //actions
@@ -29,18 +29,33 @@ import styleVar from "../../../styles/variables.scss";
 @connect(store => {
   return {
     threadId: store.thread.thread.id,
-    threadFetching: store.thread.fetching
+    threadFetching: store.thread.fetching,
+    threadShowing: store.threadShowing
   };
 })
-export default class Main extends Component {
+class Main extends Component {
   constructor(props) {
     super(props);
+    this.onContactListShow = this.onContactListShow.bind(this);
+    this.onAddMember = this.onAddMember.bind(this);
   }
 
   componentDidUpdate(oldProps) {
     if (this.props.threadId) {
       this.props.dispatch(threadMessageGetList(this.props.threadId));
     }
+  }
+
+  onContactListShow(){
+    const {history, dispatch} = this.props;
+    dispatch(contactListShowing(true));
+    history.push(ROUTE_CONTACTS);
+  }
+
+  onAddMember(){
+    const {history, dispatch} = this.props;
+    dispatch(contactAdding(true));
+    history.push(ROUTE_ADD_CONTACT);
   }
 
   render() {
@@ -54,9 +69,8 @@ export default class Main extends Component {
             <Gap y={10} block/>
             <MdChat size={48} style={{color: styleVar.colorAccent}}/>
             <Container>
-              <Button outlined onClick={() => this.props.dispatch(contactAdding(true))}>{strings.addContact}</Button>
-              <Button outlined
-                      onClick={() => this.props.dispatch(contactListShowing(true))}>{strings.contactList}</Button>
+              <Button outlined onClick={this.onAddMember}>{strings.addContact}</Button>
+              <Button outlined onClick={this.onContactListShow}>{strings.contactList}</Button>
             </Container>
           </Container>
         </Container>
@@ -76,3 +90,5 @@ export default class Main extends Component {
     );
   }
 }
+
+export default withRouter(Main);

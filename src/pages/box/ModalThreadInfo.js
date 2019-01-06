@@ -12,6 +12,7 @@ import ModalThreadInfoGroup from "./ModalThreadInfoGroup"
 import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
 import {withRouter} from "react-router-dom";
 import {ROTE_THREAD_INFO} from "../../constants/routes";
+import {contactGetList} from "../../actions/contactActions";
 
 @connect(store => {
   return {
@@ -51,10 +52,12 @@ class ModalThreadInfo extends Component {
     }
   }
 
-  onClose() {
+  onClose(dontGoBack) {
     const {dispatch, history} = this.props;
     dispatch(threadModalThreadInfoShowing());
-    history.goBack();
+    if (!dontGoBack) {
+      history.goBack();
+    }
   }
 
   render() {

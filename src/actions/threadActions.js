@@ -21,7 +21,11 @@ import {
   THREAD_IS_SENDING_MESSAGE,
   THREAD_SELECT_MESSAGE_SHOWING,
   THREAD_CHECKED_MESSAGE_LIST_REMOVE,
-  THREAD_CHECKED_MESSAGE_LIST_EMPTY, THREAD_CHECKED_MESSAGE_LIST_ADD, CONTACT_GET_LIST, THREAD_EMOJI_SHOWING
+  THREAD_CHECKED_MESSAGE_LIST_EMPTY,
+  THREAD_CHECKED_MESSAGE_LIST_ADD,
+  CONTACT_GET_LIST,
+  THREAD_EMOJI_SHOWING,
+  THREAD_NOTIFICATION, THREAD_LEAVE, THREAD_REMOVED_FROM, THREAD_CREATE_INIT
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName, idType) => {
@@ -41,6 +45,19 @@ export const threadCreate = (contactId, thread, threadName, idType) => {
     return dispatch({
       type: THREAD_CREATE(),
       payload: chatSDK.createThread(contactId, threadName, idType)
+    });
+  }
+};
+
+export const threadInit = () => {
+  return (dispatch) => {
+    dispatch(threadShowing(false));
+    dispatch(threadSelectMessageShowing(false));
+    dispatch(threadCheckedMessageList(null, null, true));
+    dispatch(threadEmojiShowing(false));
+    return dispatch({
+      type: THREAD_CREATE_INIT,
+      payload: null
     });
   }
 };
@@ -79,10 +96,39 @@ export const threadSearchMessage = (threadId, query) => {
 };
 
 export const threadGoToMessageId = (threadId, messageId) => {
-  return (dispatch, getState) => {
+  return dispatch => {
     dispatch({
       type: THREAD_GO_TO_MESSAGE,
       payload: {threadId, messageId}
+    });
+  }
+};
+
+export const threadSpamPv = (threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.spamPvThread(threadId).then(e=>{
+      dispatch(threadInit());
+      return dispatch({
+        type: THREAD_REMOVED_FROM,
+        payload: threadId
+      });
+    });
+
+  }
+};
+
+export const threadLeave = threadId => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.leaveThread(threadId).then(e => {
+      dispatch(threadInit());
+      dispatch({
+        type: THREAD_REMOVED_FROM,
+        payload: threadId
+      });
     });
   }
 };
@@ -109,7 +155,7 @@ export const threadMessageGetListByMessageId = (threadId, msgId) => {
   }
 };
 
-export const threadParticipantList = (threadId) => {
+export const threadParticipantList = threadId => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
@@ -119,7 +165,6 @@ export const threadParticipantList = (threadId) => {
     });
   }
 };
-
 
 export const threadModalListShowing = (isShowing, message) => {
   return dispatch => {
@@ -294,6 +339,17 @@ export const threadIsSendingMessage = isSending => {
     return dispatch({
       type: THREAD_IS_SENDING_MESSAGE,
       payload: isSending
+    });
+  }
+};
+
+export const threadNotification = (threadId, mute) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return dispatch({
+      type: THREAD_NOTIFICATION,
+      payload: chatSDK.muteThread(threadId, mute)
     });
   }
 };

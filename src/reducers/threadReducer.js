@@ -27,11 +27,12 @@ import {
   THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID,
   THREAD_SEARCH_MESSAGE,
   THREAD_GO_TO_MESSAGE,
+  THREAD_SPAM_PV,
   THREAD_IS_SENDING_MESSAGE,
   THREAD_SELECT_MESSAGE_SHOWING,
   THREAD_CHECKED_MESSAGE_LIST_EMPTY,
   THREAD_CHECKED_MESSAGE_LIST_ADD,
-  THREAD_CHECKED_MESSAGE_LIST_REMOVE, THREAD_REMOVED_FROM, THREAD_EMOJI_SHOWING,
+  THREAD_CHECKED_MESSAGE_LIST_REMOVE, THREAD_REMOVED_FROM, THREAD_EMOJI_SHOWING, THREAD_CREATE_INIT,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -42,6 +43,8 @@ export const threadCreateReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
+    case THREAD_CREATE_INIT:
+      return {...state, ...stateObject("SUCCESS", {}, "thread")};
     case THREAD_CREATE("PENDING"):
       return {...state, ...stateObject("PENDING", {}, "thread")};
     case THREAD_NEW:
@@ -420,6 +423,42 @@ export const threadParticipantListReducer = (state = {
     case THREAD_PARTICIPANT_GET_LIST("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload, "participants")};
     case THREAD_PARTICIPANT_GET_LIST("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadSpamPVReducer = (state = {
+  thread: null,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_SPAM_PV("PENDING"):
+      return {...state, ...stateObject("PENDING", state.participants, "thread")};
+    case THREAD_SPAM_PV("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
+    case THREAD_SPAM_PV("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadLeaveReducer = (state = {
+  thread: null,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_SPAM_PV("PENDING"):
+      return {...state, ...stateObject("PENDING", state.participants, "thread")};
+    case THREAD_SPAM_PV("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "thread")};
+    case THREAD_SPAM_PV("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;

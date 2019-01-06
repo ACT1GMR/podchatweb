@@ -7,7 +7,12 @@ import {Link, withRouter} from "react-router-dom";
 import strings from "../../constants/localization";
 
 //actions
-import {threadShowing, threadLeftAsideShowing, threadSelectMessageShowing} from "../../actions/threadActions";
+import {
+  threadShowing,
+  threadLeftAsideShowing,
+  threadSelectMessageShowing,
+  threadInit
+} from "../../actions/threadActions";
 import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../actions/threadActions";
 
 //UI components
@@ -49,9 +54,10 @@ class MainHead extends Component {
   }
 
   onThreadHide(e) {
-    const {dispatch, history} = this.props;
     e.stopPropagation();
+    const {dispatch, history} = this.props;
     dispatch(threadShowing(false));
+    dispatch(threadInit());
     history.push("/");
   }
 
@@ -64,7 +70,6 @@ class MainHead extends Component {
     e.stopPropagation();
     this.props.dispatch(threadSelectMessageShowing(true));
   }
-
 
   onSelectMessagesHide(e) {
     e.stopPropagation();
@@ -82,42 +87,42 @@ class MainHead extends Component {
       });
       return (
 
-          <Container className={classNames} onClick={this.onShowInfoClick} relative>
+        <Container className={classNames} onClick={this.onShowInfoClick} relative>
+          {
+            threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
+          }
+          <Container centerLeft>
+
             {
-              threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
+              threadSelectMessageShowing &&
+              <Container>
+                <Container inline>
+                  <Text color="gray" light>{strings.messagesCount(threadCheckedMessageList.length)}</Text>
+                </Container>
+                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
+                  <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                </Container>
+
+              </Container>
             }
-            <Container centerLeft>
 
-              {
-                threadSelectMessageShowing &&
-                <Container>
-                  <Container inline>
-                    <Text color="gray" light>{ strings.messagesCount(threadCheckedMessageList.length)}</Text>
-                  </Container>
-                  <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
-                    <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                  </Container>
-
+            {
+              !threadSelectMessageShowing &&
+              <Container>
+                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
+                  <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
                 </Container>
-              }
-
-              {
-                !threadSelectMessageShowing &&
-                <Container>
-                  <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
-                    <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                  </Container>
-                  <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
-                    <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                  </Container>
-                  <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
-                    <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                  </Container>
+                <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
+                  <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
                 </Container>
-              }
+                <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
+                  <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                </Container>
+              </Container>
+            }
 
-            </Container>
           </Container>
+        </Container>
       )
     }
     return ""

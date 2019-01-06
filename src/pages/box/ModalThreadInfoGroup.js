@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -8,11 +9,12 @@ import {avatarNameGenerator} from "../../utils/helpers";
 //actions
 import {
   threadAddParticipant,
-  threadCreate, threadParticipantList,
+  threadCreate, threadLeave, threadModalThreadInfoShowing, threadNotification, threadParticipantList,
   threadRemoveParticipant
 } from "../../actions/threadActions";
 
 //UI components
+import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
 import ModalThreadInfoGroupSettings from "./ModalThreadInfoGroupSettings";
 import {Button} from "../../../../uikit/src/button";
 import Gap from "../../../../uikit/src/Gap";
@@ -21,15 +23,17 @@ import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Divider from "../../../../uikit/src/divider";
 import {ContactList, ContactListSelective} from "./_component/contactList";
-
-//styling
-import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings} from "react-icons/lib/md";
-import styleVar from "./../../../styles/variables.scss";
-import utilsStlye from "../../../styles/utils/utils.scss";
 import Modal from "../../../../uikit/src/modal";
 import ModalHeader from "../../../../uikit/src/modal/ModalHeader";
 import ModalBody from "../../../../uikit/src/modal/ModalBody";
 import ModalFooter from "../../../../uikit/src/modal/ModalFooter";
+import List, {ListItem} from "../../../../uikit/src/list";
+import {chatModalPrompt} from "../../actions/chatActions";
+
+//styling
+import styleVar from "./../../../styles/variables.scss";
+import utilsStlye from "../../../styles/utils/utils.scss";
+import {ROTE_THREAD} from "../../constants/routes";
 
 
 const constants = {
@@ -44,7 +48,7 @@ const constants = {
     threadParticipantRemove: store.threadParticipantRemove.thread,
   }
 }, null, null, {withRef: true})
-export default class ModalThreadInfo extends Component {
+class ModalThreadInfoGroup extends Component {
 
   constructor(props) {
     super(props);
@@ -61,6 +65,8 @@ export default class ModalThreadInfo extends Component {
     this.onSettingsSelect = this.onSettingsSelect.bind(this);
     this.onPrevious = this.onPrevious.bind(this);
     this.onSaveSettings = this.onSaveSettings.bind(this);
+    this.onLeaveSelect = this.onLeaveSelect.bind(this);
+    this.onNotificationSelect = this.onNotificationSelect.bind(this);
   }
 
   componentDidUpdate(oldProps) {
@@ -131,17 +137,32 @@ export default class ModalThreadInfo extends Component {
   }
 
   onStartChat(id) {
+    this.props.history.push(ROTE_THREAD);
     this.props.dispatch(threadCreate(id));
-    this.onClose();
+    this.onClose(true);
   }
 
-  onClose() {
+  onClose(dontGoBack) {
     const {onClose} = this.props;
-    onClose();
+    onClose(dontGoBack);
     this.setState({
       step: constants.GROUP_INFO,
       addMembers: []
     });
+  }
+
+  onLeaveSelect() {
+    const {dispatch, thread} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutLeavingGroup(thread.title)}؟`, () => {
+      dispatch(threadLeave(thread.id));
+      dispatch(threadModalThreadInfoShowing());
+      dispatch(chatModalPrompt());
+    }, null, strings.leave));
+  }
+
+  onNotificationSelect() {
+    const {thread, dispatch} = this.props;
+    dispatch(threadNotification(thread.id, !thread.mute));
   }
 
   onSaveSettings() {
@@ -152,9 +173,12 @@ export default class ModalThreadInfo extends Component {
     });
   }
 
-  onRemoveParticipant(id) {
+  onRemoveParticipant(participant) {
     const {thread, dispatch} = this.props;
-    dispatch(threadRemoveParticipant(thread.id, [id]));
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(participant.name)}؟`, () => {
+      dispatch(threadRemoveParticipant(thread.id, [participant.id]));
+      dispatch(chatModalPrompt());
+    }, null));
   }
 
   render() {
@@ -173,7 +197,7 @@ export default class ModalThreadInfo extends Component {
             {strings.startChat}
           </Button>
           {thread.inviter && thread.group && user.id === thread.inviter.id ? (
-            <Button onClick={this.onRemoveParticipant.bind(this, participant.id)} text size="sm">
+            <Button onClick={this.onRemoveParticipant.bind(this, participant)} text size="sm">
               {strings.remove}
             </Button>
           ) : ""}
@@ -185,8 +209,7 @@ export default class ModalThreadInfo extends Component {
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
         <ModalHeader>
-          <Heading
-            h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
+          <Heading h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -196,7 +219,8 @@ export default class ModalThreadInfo extends Component {
 
                 <Container>
                   <Avatar>
-                    <AvatarImage src={thread.image} size="xlg" text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
+                    <AvatarImage src={thread.image} size="xlg" text={avatarNameGenerator(thread.title).letter}
+                                 textBg={avatarNameGenerator(thread.title).color}/>
                     <AvatarName>
                       <Heading h1>{thread.title}</Heading>
                       <Text>{participants.length} {strings.member}</Text>
@@ -207,9 +231,13 @@ export default class ModalThreadInfo extends Component {
                 <Container bottomLeft>
                   {isOwner ?
                     <Container inline>
-                      <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                                  onClick={this.onAddMemberSelect}/>
-                      <Gap x={5}/>
+                      {filteredContacts.length &&
+                      <Container inline>
+                        <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
+                                    onClick={this.onAddMemberSelect}/>
+                        <Gap x={5}/>
+                      </Container>
+                      }
                       <MdSettings size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
                                   onClick={this.onSettingsSelect}/>
                       <Gap x={5}/>
@@ -221,13 +249,57 @@ export default class ModalThreadInfo extends Component {
               </Container>
 
               {thread.description &&
-                <Container>
-                  <Gap y={20} block>
-                    <Divider thick={1} color="gray"/>
-                  </Gap>
-                  <Text>{thread.description}</Text>
-                </Container>
+              <Container>
+                <Gap y={20} block>
+                  <Divider thick={1} color="gray"/>
+                </Gap>
+                <Text>{thread.description}</Text>
+              </Container>
               }
+
+              <Gap y={20} block>
+                <Divider thick={1} color="gray"/>
+              </Gap>
+
+              <Container>
+                <List>
+                  {
+                    isOwner && filteredContacts.length &&
+                    <ListItem selection invert onSelect={this.onAddMemberSelect}>
+                      <Container relative>
+                        <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text>{strings.addMember}</Text>
+                        </Gap>
+                      </Container>
+                    </ListItem>
+                  }
+                  <ListItem selection invert onSelect={this.onLeaveSelect}>
+                    <Container relative>
+                      <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.leaveGroup}</Text>
+                      </Gap>
+                    </Container>
+                  </ListItem>
+
+                  <ListItem selection invert onSelect={this.onNotificationSelect}>
+
+                    <Container relative>
+                      <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.notification}</Text>
+                      </Gap>
+                      <Container centerLeft>
+                        <Gap x={5}>
+                          <Text size="sm"
+                                color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
+                        </Gap>
+                      </Container>
+                    </Container>
+                  </ListItem>
+                </List>
+              </Container>
 
               <Gap y={20} block>
                 <Divider thick={1} color="gray"/>
@@ -286,3 +358,5 @@ export default class ModalThreadInfo extends Component {
     );
   }
 }
+
+export default withRouter(ModalThreadInfoGroup);

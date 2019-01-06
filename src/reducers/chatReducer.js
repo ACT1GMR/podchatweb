@@ -1,5 +1,6 @@
 import {
-  CHAT_GET_INSTANCE, CHAT_MODAL_PROMPT_SHOWING,
+  CHAT_GET_INSTANCE,
+  CHAT_MODAL_PROMPT_SHOWING,
   CHAT_SMALL_VERSION,
   CHAT_STATE,
   MESSAGE_MODAL_DELETE_PROMPT_SHOWING
@@ -46,6 +47,7 @@ export const chatStateReducer = (state = false, action) => {
 export const chatModalPromptReducer = (state = {
   isShowing: false,
   message: null,
+  confirmText: null,
   onApply: e => {
   },
   onCancel: e => {

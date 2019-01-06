@@ -4,12 +4,13 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   CONTACT_ADDING,
   CONTACT_ADD,
-  CONTACT_CHATTING, CONTACT_EDIT
+  CONTACT_CHATTING, CONTACT_EDIT, CONTACT_GET_BLOCK_LIST
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
 export const contactGetListReducer = (state = {
   contacts: [],
+  init: true,
   fetching: false,
   fetched: false,
   error: false
@@ -26,6 +27,30 @@ export const contactGetListReducer = (state = {
       }
       return {...state, ...stateObject("SUCCESS", contacts, "contacts")};
     case CONTACT_GET_LIST("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const contactGetBlockedListReducer = (state = {
+  blocked: [],
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case CONTACT_GET_BLOCK_LIST("PENDING"):
+      return {...state, ...stateObject("PENDING")};
+    case CONTACT_GET_BLOCK_LIST("SUCCESS"):
+      let contacts = action.payload;
+      if (contacts.length) {
+        contacts = contacts.sort((a, b) => {
+          return a.firstName.localeCompare(b.firstName)
+        });
+      }
+      return {...state, ...stateObject("SUCCESS", contacts, "blocked")};
+    case CONTACT_GET_BLOCK_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;

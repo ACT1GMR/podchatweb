@@ -10,6 +10,7 @@ import {connect} from "react-redux";
 import MainFooterInput from "./MainFooterInput";
 import MainFooterAttachment from "./MainFooterAttachment";
 import MainFooterEmojiIcons from "./MainFooterEmojiIcons";
+import MainFooterSpam from "./MainFooterSpam";
 import Container from "../../../../uikit/src/container";
 
 //styling
@@ -39,6 +40,9 @@ export default class MainFooter extends Component {
     const {emojiShowing} = this.props;
     return (
       <Container className={style.MainFooter}>
+        <Container className={style.MainFooter__SpamContainer}>
+          <MainFooterSpam/>
+        </Container>
         <Container className={style.MainFooter__InputContainer}>
           <Container className={style.MainFooter__Input}>
             <MainFooterInput ref={this.mainFooterInputRef}/>

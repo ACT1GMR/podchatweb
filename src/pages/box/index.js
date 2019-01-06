@@ -103,33 +103,17 @@ class Box extends Component {
   }
 
   render() {
-    const {chatInstance, user, threadShowing, customClassName, leftAsideShowing, small, location} = this.props;
+    const {threadShowing, customClassName, leftAsideShowing, small} = this.props;
     let classNames = classnames({
+      [customClassName]: customClassName,
       [style.Box]: true,
       [style["Box--small"]]: small,
-      [customClassName]: customClassName
-    });
-
-    if (!chatInstance || !user) {
-      return (
-        <Container className={classNames}>
-          <Container center centerTextAlign className={style.Box__MessageContainer}>
-            <Message size="lg">{strings.waitingForChatInstance}</Message>
-            <Loading hasSpace><LoadingBlinkDots/></Loading>
-          </Container>
-        </Container>
-      );
-    }
-
-    classNames += ` ${classnames({
       [style["Box--isThreadShow"]]: threadShowing,
       [style["Box--isAsideLeftShow"]]: leftAsideShowing
-    })}`;
-
+    });
     const modalMediaI18n = {
       fa: strings.modalMedia
     };
-
     const popups = (
       <Container>
         <Route exact path={ROUTE_CREATE_GROUP} render={props => <ModalCreateGroup smallVersion={small}/>}/>

@@ -71,6 +71,18 @@ let strings = new LocalizedStrings({
       }
       return `از حذف این مخاطب مطمئنید`
     },
+    areYouSureAboutUnblockingContact(contactName) {
+      if (contactName) {
+        return `میخواهید "${contactName}" را از لیست سیاه خارج کنید`;
+      }
+      return `از خارج کردن این مخاطب از لیست سیاه مطمئنید`
+    },
+    areYouSureAboutLeavingGroup(threadName) {
+      return `میخواهید گروه "${threadName}" را ترک کنید`;
+    },
+    areYouSureAboutRemovingMember(participantName) {
+      return `میخواهید "${participantName}" از گروه حذف کنید`;
+    },
     modalMedia: {
       CLOSE: "بستن",
       NEXT: "بعدی",
@@ -107,10 +119,26 @@ let strings = new LocalizedStrings({
     searchSomething: "کلمه ای تایپ کنید",
     searchMessages: "جستجو پیامها",
     edit: "اصلاح",
+    block: "مسدود سازی",
+    notification: "اعلانات",
+    blocked: "مسدود شده",
+    active: "فعال",
+    inActive: "غیرفعال",
+    reportSpam: "اعلام گفتگو حجو",
+    areYouSureToDoIt: "از انجام این کار مطمئنید",
+    leaveGroup: "ترک گروه",
     chatState: {
       networkDisconnected: "در انتظار شبکه",
-      reconnecting: "اتصال به شبکه"
-    }
+      reconnecting: "اتصال به شبکه",
+      connectingToChat: "در حال اتصال"
+    },
+    waitingForContact: "در حال دریافت مخاطبین",
+    noContactPleaseAddFirst: "مخاطبی وجود ندارد کسی را اضافه کنید",
+    signedOut: "خروج",
+    selectMessage: "پیامی را انتخاب کنید",
+    unBlock: "رفع مسدودی",
+    accept: "قبول",
+    leave: "ترک"
   },
   it: {}
 });

@@ -39,7 +39,7 @@ export default class ModalPrompt extends Component {
   }
 
   render() {
-    const {isShowing, smallVersion, message, onApply} = this.props;
+    const {isShowing, smallVersion, message, onApply, confirmText} = this.props;
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
 
@@ -51,7 +51,7 @@ export default class ModalPrompt extends Component {
         </ModalBody>
 
         <ModalFooter>
-          <Button text onClick={onApply}>{strings.remove}</Button>
+          <Button text onClick={onApply}>{confirmText || strings.remove}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
         </ModalFooter>
 

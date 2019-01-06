@@ -12,6 +12,7 @@ import {ROTE_THREAD} from "../../constants/routes";
 import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
+import {MdGroup} from "react-icons/lib/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
@@ -26,6 +27,7 @@ import date from "../../utils/date";
 import style from "../../../styles/pages/box/AsideThreads.scss";
 import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
+import styleVar from "../../../styles/variables.scss";
 
 function sliceMessage(message, to) {
   const tag = document.createElement("p");
@@ -33,7 +35,7 @@ function sliceMessage(message, to) {
   const text = tag.innerText;
   const childElementCount = tag.childElementCount * 1.5;
   if (text) {
-    if ((text.length + childElementCount)  >= 15) {
+    if ((text.length + childElementCount) >= 15) {
       return `${text.slice(0, to || 15)}...`;
     }
   }
@@ -61,6 +63,9 @@ function isFile(message) {
 }
 
 function getTitle(title) {
+  if (!title) {
+    return "";
+  }
   if (title.length >= 30) {
     return `${title.slice(0, 30)}...`;
   }
@@ -79,7 +84,8 @@ const sanitizeRule = {
   return {
     threads: store.threadList.threads,
     threadsFetching: store.threadList.fetching,
-    threadId: store.thread.thread.id
+    threadId: store.thread.thread.id,
+    chatInstance: store.chatInstance.chatSDK
   };
 })
 export default class AsideThreads extends Component {
@@ -90,15 +96,15 @@ export default class AsideThreads extends Component {
     this.state = {activeThread: null};
   }
 
-  componentDidMount() {
-    this.props.dispatch(threadGetList());
-  }
-
   onThreadClick(thread) {
     this.props.dispatch(threadCreate(null, thread));
   }
 
   componentDidUpdate(oldProps) {
+    const {chatInstance} = this.props;
+    if (oldProps.chatInstance !== chatInstance) {
+      this.props.dispatch(threadGetList());
+    }
     if (oldProps.threadId !== this.props.threadId) {
       this.setState({
         activeThread: this.props.threadId
@@ -107,20 +113,22 @@ export default class AsideThreads extends Component {
   }
 
   render() {
-    const {threads, threadsFetching, threadShowing} = this.props;
+    const {threads, threadsFetching, threadShowing, chatInstance} = this.props;
     const {activeThread} = this.state;
     const classNames = classnames({
       [style.AsideThreads]: true,
       [style["AsideThreads--isThreadShow"]]: threadShowing
     });
-    if (threadsFetching) {
+    let filteredThreads = threads;
+    if (threadsFetching || !chatInstance) {
       return (
         <section className={classNames}>
           <Loading hasSpace><LoadingBlinkDots invert rtl/></Loading>
         </section>
       )
     } else {
-      if (!threads.length) {
+      filteredThreads = filteredThreads.filter(thread => thread.participantCount > 1 || thread.group);
+      if (!filteredThreads.length) {
         return (
           <section className={classNames}>
             <Container center centerTextAlign>
@@ -132,7 +140,7 @@ export default class AsideThreads extends Component {
       return (
         <Container className={classNames}>
           <List>
-            {threads.map(el => (
+            {filteredThreads.map(el => (
               <Link to={ROTE_THREAD}>
                 <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
@@ -142,6 +150,12 @@ export default class AsideThreads extends Component {
                       <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
                                    textBg={avatarNameGenerator(el.title).color}/>
                       <AvatarName invert>
+                        {el.group &&
+                        <Container inline>
+                          <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          <Gap x={2}/>
+                        </Container>
+                        }
                         {getTitle(el.title)}
                         <AvatarText>
                           {el.group ?
@@ -151,7 +165,8 @@ export default class AsideThreads extends Component {
                                 {isFile(el.lastMessageVO) ?
                                   <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                   :
-                                  <Text isHTML size="sm" inline color="gray" dark sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
+                                  <Text isHTML size="sm" inline color="gray" dark
+                                        sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
                                 }
                               </Container>
                               :

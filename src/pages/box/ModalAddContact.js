@@ -61,16 +61,16 @@ class ModalAddContact extends Component {
     if (contactAdd) {
       if (oldProps.contactAdd !== contactAdd) {
         if (isShowing) {
-          if (contactAdd.linkedUser) {
-            this.onClose();
-            if (!contactEdit) {
+          if (!contactEdit) {
+            if (contactAdd.linkedUser) {
+              this.onClose();
               dispatch(contactListShowing(false));
               dispatch(contactChatting(contactAdd));
               history.push(ROTE_THREAD);
-            } else {
-              history.push(ROUTE_CONTACTS);
-              dispatch(contactListShowing(true));
             }
+          } else {
+            history.push(ROUTE_CONTACTS);
+            dispatch(contactListShowing(true));
           }
         }
       }

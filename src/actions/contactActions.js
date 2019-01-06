@@ -8,7 +8,7 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   THREAD_CREATE, THREAD_GET_MESSAGE_LIST, CONTACT_REMOVE, CONTACT_EDIT
 } from "../constants/actionTypes";
-import {threadCreate, threadShowing} from "./threadActions";
+import {threadCreate, threadParticipantList, threadShowing} from "./threadActions";
 
 export const contactGetList = () => {
   return (dispatch, getState) => {
@@ -17,6 +17,17 @@ export const contactGetList = () => {
     dispatch({
       type: CONTACT_GET_LIST(),
       payload: chatSDK.getContactList()
+    });
+  }
+};
+
+export const contactGetBlockList = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: CONTACT_GET_LIST(),
+      payload: chatSDK.getBlockList()
     });
   }
 };
@@ -40,7 +51,6 @@ export const contactListShowing = (isShowing) => {
   }
 };
 
-
 export const contactModalCreateGroupShowing = (isShowing) => {
   return dispatch => {
     return dispatch({
@@ -50,12 +60,31 @@ export const contactModalCreateGroupShowing = (isShowing) => {
   }
 };
 
-
 export const contactChatting = (contact) => {
   return dispatch => {
     return dispatch({
       type: CONTACT_CHATTING,
       payload: contact
+    });
+  }
+};
+
+export const contactBlock = (contactId, block, thread) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.blockContact(contactId, block).then(() => {
+      dispatch(threadParticipantList(thread.id));
+    });
+  }
+};
+
+export const contactUnblock = blockId => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.unblockContact(blockId).then(e => {
+      dispatch(contactGetList());
     });
   }
 };
@@ -69,7 +98,7 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
         type: CONTACT_ADD("SUCCESS"),
         payload: e
       });
-      if(editMode) {
+      if (editMode) {
         return dispatch(contactListShowing(true));
       }
       if (e.linkedUser) {

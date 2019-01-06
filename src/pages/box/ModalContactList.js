@@ -11,22 +11,22 @@ import {
   contactGetList,
   contactChatting,
   contactRemove,
-  contactEdit
+  contactUnblock
 } from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
 import {Button} from "../../../../uikit/src/button";
-import {Heading} from "../../../../uikit/src/typography";
+import {Heading, Text} from "../../../../uikit/src/typography";
 import List, {ListItem} from "../../../../uikit/src/list";
-import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
-import {MdClose, MdDelete, MdSearch, MdEdit} from "react-icons/lib/md";
+import {MdClose, MdDelete, MdSearch, MdEdit, MdPersonAdd} from "react-icons/lib/md";
 import {withRouter} from "react-router-dom";
 
 //styling
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreate, threadGetList} from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 import style from "../../../styles/pages/box/ModalContactList.scss";
@@ -35,6 +35,7 @@ import Gap from "../../../../uikit/src/gap";
 import {InputText} from "../../../../uikit/src/input";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROTE_THREAD} from "../../constants/routes";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 
 function isContains(flds, keyword, arr) {
   const fields = flds.split('|');
@@ -58,7 +59,9 @@ function isContains(flds, keyword, arr) {
 @connect(store => {
   return {
     isShow: store.contactListShowing.isShow,
-    contacts: store.contactGetList.contacts
+    contacts: store.contactGetList.contacts,
+    contactsFetching: store.contactGetList.fetching,
+    chatInstance: store.chatInstance.chatSDK
   };
 }, null, null, {withRef: true})
 class ModalContactList extends Component {
@@ -73,8 +76,14 @@ class ModalContactList extends Component {
   }
 
   componentDidUpdate(oldProps) {
+    const {chatInstance, dispatch} = this.props;
+    if (oldProps.chatInstance !== chatInstance) {
+      dispatch(contactGetList());
+    }
     if (oldProps.isShow !== this.props.isShow) {
-      this.props.dispatch(contactGetList());
+      if (chatInstance) {
+        dispatch(contactGetList());
+      }
     }
     if (this.state.searchInput) {
       const current = this.inputRef.current;
@@ -85,8 +94,10 @@ class ModalContactList extends Component {
   }
 
   componentDidMount() {
-    const {match, dispatch, isShow} = this.props;
-    dispatch(contactGetList());
+    const {match, dispatch, isShow, chatInstance} = this.props;
+    if (chatInstance) {
+      dispatch(contactGetList());
+    }
     if (!isShow) {
       if (match.path === ROUTE_CONTACTS) {
         dispatch(contactListShowing(true));
@@ -110,6 +121,17 @@ class ModalContactList extends Component {
       dispatch(chatModalPrompt());
       dispatch(contactGetList());
     }, () => dispatch(contactListShowing(true))));
+  }
+
+  onUnblock(contact, e) {
+    e.stopPropagation();
+    const {dispatch} = this.props;
+    const text = strings.areYouSureAboutUnblockingContact(`${contact.firstName} ${contact.lastName}`);
+    dispatch(chatModalPrompt(true, `${text}؟`, () => {
+      dispatch(contactUnblock(contact.blockId));
+      dispatch(chatModalPrompt());
+      dispatch(contactGetList());
+    }, () => dispatch(contactListShowing(true))), strings.unBlock);
   }
 
   onEdit(contact, e) {
@@ -155,8 +177,9 @@ class ModalContactList extends Component {
   }
 
   render() {
-    const {contacts, isShow, smallVersion} = this.props;
+    const {contacts, isShow, smallVersion, contactsFetching, chatInstance} = this.props;
     const {searchInput, query} = this.state;
+    const showLoading = contactsFetching;
     let contactsFilter = contacts;
     if (searchInput) {
       contactsFilter = isContains('firstName|lastName|cellphoneNumber', query, contacts);
@@ -202,15 +225,36 @@ class ModalContactList extends Component {
               {contactsFilter.map(el => (
                 <ListItem key={el.id} selection invert>
                   <Container relative onClick={el.hasUser && this.onStartChat.bind(this, el)}>
-                    <Avatar>
-                      <AvatarImage src={el.linkedUser && el.linkedUser.image}
-                                   text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
-                                   textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
-                      <AvatarName>{el.firstName} {el.lastName}</AvatarName>
-                    </Avatar>
+
+                    <Container maxWidth="calc(100% - 75px)">
+                      <Avatar>
+                        <AvatarImage src={el.linkedUser && el.linkedUser.image}
+                                     text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
+                                     textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
+                        <AvatarName>
+                          {el.firstName} {el.lastName}
+                          {
+                            (!el.hasUser || el.blockId)
+                            &&
+                            <AvatarText>
+                              <Text size="xs" inline
+                                    color={el.blockId ? "red" : "accent"}>{el.blockId ? strings.blocked : strings.isNotPodUser}</Text>
+                            </AvatarText>
+                          }
+
+                        </AvatarName>
+                      </Avatar>
+                    </Container>
 
                     <Container centerLeft>
-                      {el.hasUser ?
+                      {el.blockId ?
+                        <Container className={style.ModalContactList__ActionButtonContainer}>
+                          <Container
+                            className={`${style.ModalContactList__ActionButton} ${style["ModalContactList__ActionButton--single"]}`}
+                            onClick={this.onUnblock.bind(this, el)}>
+                            <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+                          </Container>
+                        </Container> :
                         <Container className={style.ModalContactList__ActionButtonContainer}>
                           <Container className={style.ModalContactList__ActionButton}
                                      onClick={this.onEdit.bind(this, el)}>
@@ -221,7 +265,6 @@ class ModalContactList extends Component {
                             <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
                           </Container>
                         </Container>
-                        : <Button text disabled>{strings.isNotPodUser}</Button>
                       }
                     </Container>
 
@@ -230,7 +273,6 @@ class ModalContactList extends Component {
               ))}
             </List>
             :
-
             searchInput ?
               <Container relative>
                 <Gap y={5}>
@@ -240,9 +282,16 @@ class ModalContactList extends Component {
                 </Gap>
               </Container>
               :
-              <Container center>
-                <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
-              </Container>
+              showLoading || !chatInstance ?
+                <Container centerTextAlign className={style.ModalContactList__Loading}>
+                  <Loading hasSpace><LoadingBlinkDots/></Loading>
+                  <Text>{strings.waitingForContact}...</Text>
+                </Container>
+                :
+                <Container centerTextAlign className={style.ModalContactList__Loading}>
+                  <Text>{strings.noContactPleaseAddFirst}</Text>
+                  <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
+                </Container>
           }
 
         </ModalBody>

@@ -168,7 +168,11 @@ class MainMessagesFile extends Component {
     }
   }
 
-  onDownload(metaData) {
+  onDownload(metaData, isVideo, e) {
+    e.stopPropagation();
+    if (isVideo) {
+      return;
+    }
     window.location.href = `${metaData.link}&downloadable=true`;
     this.onMessageControlHide();
   }
@@ -300,7 +304,7 @@ class MainMessagesFile extends Component {
                 {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
                   <Gap x={10}>
                     <Shape color="accent" size="lg"
-                           onClick={isDownloadable(message) ? !isVideo && this.onDownload.bind(this, metaData) : this.onCancel.bind(this, message)}>
+                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, isVideo) : this.onCancel.bind(this, message)}>
                       <ShapeCircle>
                         {isUploading(message) || hasError(message) ?
                           <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
@@ -310,7 +314,7 @@ class MainMessagesFile extends Component {
                                 <MdPlayArrow style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
                               </Text>
                               :
-                            <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
+                              <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
                         }
                       </ShapeCircle>
                     </Shape>

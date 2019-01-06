@@ -1,30 +1,31 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
-import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
 
 //actions
 import {
-  threadShowing,
-  threadLeftAsideShowing,
   threadSelectMessageShowing,
   threadModalListShowing, threadCheckedMessageList
 } from "../../actions/threadActions";
-import {threadModalThreadInfoShowing} from "../../actions/threadActions";
+import {messageDelete} from "../../actions/messageActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
 import {MdForward, MdDelete} from "react-icons/lib/md";
+import Gap from "../../../../uikit/src/gap";
 import Container from "../../../../uikit/src/container";
+import {Text} from "../../../../uikit/src/typography";
 
 //styling
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
-import classnames from "classnames";
-import {messageDelete} from "../../actions/messageActions";
-import {chatModalPrompt} from "../../actions/chatActions";
+
+
+
 
 const statics = {};
 
@@ -87,7 +88,12 @@ export default class MainHeadBatchActions extends Component {
             <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
               <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
             </Container>
-          </Container> : ""
+          </Container> :
+          <Container>
+            <Gap x={10}>
+              <Text invert>{strings.selectMessage}</Text>
+            </Gap>
+          </Container>
         }
 
       </Container>

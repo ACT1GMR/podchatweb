@@ -20,13 +20,12 @@ import style from "../../../styles/pages/box/MainHeadThreadInfo.scss";
 import classnames from "classnames";
 import {avatarNameGenerator} from "../../utils/helpers";
 
-const statics = {};
-
 @connect(store => {
   return {
     smallVersion: store.chatSmallVersion,
     thread: store.thread.thread,
-    threadShowing: store.threadShowing
+    threadShowing: store.threadShowing,
+    participantsFetching: store.threadParticipantList.fetching,
   };
 })
 class BoxHeadThreadInfo extends Component {
@@ -41,7 +40,7 @@ class BoxHeadThreadInfo extends Component {
   }
 
   render() {
-    const {thread, smallVersion} = this.props;
+    const {thread, smallVersion, participantsFetching} = this.props;
     if (thread.id) {
       const classNames = classnames({
         [style.MainHeadThreadInfo]: true,

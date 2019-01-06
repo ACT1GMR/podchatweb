@@ -87,7 +87,7 @@ export const chatSmallVersion = isSmall => {
   }
 };
 
-export const chatModalPrompt = (isShowing, message, onApply, onCancel) => {
+export const chatModalPrompt = (isShowing, message, onApply, onCancel, confirmText) => {
   return dispatch => {
     return dispatch({
       type: CHAT_MODAL_PROMPT_SHOWING,
@@ -95,7 +95,8 @@ export const chatModalPrompt = (isShowing, message, onApply, onCancel) => {
         isShowing,
         message,
         onApply,
-        onCancel
+        onCancel,
+        confirmText
       }
     });
   }

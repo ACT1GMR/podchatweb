@@ -28,7 +28,7 @@ import {
   threadGetMessageListByMessageIdReducer,
   threadSelectMessageShowingReducer,
   threadCheckedMessageListReducer,
-  threadEmojiShowingReducer
+  threadEmojiShowingReducer, threadSpamPVReducer, threadLeaveReducer
 } from "./threadReducer";
 import {
   messageSendReducer,
@@ -73,6 +73,8 @@ const rootReducer = {
   threadGoToMessageId: threadGoToMessageIdReducer,
   threadGetMessageListByMessageId: threadGetMessageListByMessageIdReducer,
   threadCheckedMessageList: threadCheckedMessageListReducer,
+  threadSpamPV: threadSpamPVReducer,
+  threadLeave: threadLeaveReducer,
   message: messageNewReducer,
   sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,

@@ -13,6 +13,7 @@
 
 .MainMessages__Messages {
   flex: 1 1 0;
+  overflow: hidden;
   overflow-y: auto;
 }
 

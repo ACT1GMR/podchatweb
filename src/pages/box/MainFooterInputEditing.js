@@ -139,7 +139,9 @@ export default class MainFooterInputEditing extends Component {
                              style={{backgroundImage: `url(${editObject.image})`}}/>
                 </Container>
                 : ""}
-              <Text size="sm" isHTML>{editObject.text}</Text>
+              <Container inline>
+                <Text size="sm" isHTML>{editObject.text}</Text>
+              </Container>
             </Container>
 
             <Container>
