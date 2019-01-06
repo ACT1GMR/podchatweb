@@ -5,6 +5,8 @@
   padding: 0 10px;
   flex: 1 1 0;
   background-color: $color-white;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 @include grid("md") {

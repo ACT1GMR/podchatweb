@@ -5,7 +5,6 @@ import {connect} from "react-redux";
 import strings from "../../constants/localization";
 
 //actions
-import {messageModalDeletePrompt} from "../../actions/messageActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
@@ -14,8 +13,8 @@ import {Button} from "../../../../uikit/src/button";
 import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
 
-
 //styling
+
 @connect(store => {
   return {
     isShowing: store.chatModalPrompt.isShowing,

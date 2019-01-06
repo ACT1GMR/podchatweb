@@ -6,6 +6,8 @@
 
 .MainFooterInputEditing__Content {
   flex-grow: 1;
+  max-height: 40px;
+  overflow-y: hidden;
 }
 
 .MainFooterInputEditing__ImageContainer {

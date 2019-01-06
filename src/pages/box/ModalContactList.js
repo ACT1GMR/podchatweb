@@ -1,8 +1,11 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {
@@ -13,6 +16,8 @@ import {
   contactRemove,
   contactUnblock
 } from "../../actions/contactActions";
+import {threadCreate} from "../../actions/threadActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -22,20 +27,15 @@ import List, {ListItem} from "../../../../uikit/src/list";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
-import {MdClose, MdDelete, MdSearch, MdEdit, MdPersonAdd} from "react-icons/lib/md";
-import {withRouter} from "react-router-dom";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Gap from "../../../../uikit/src/gap";
+import {InputText} from "../../../../uikit/src/input";
 
 //styling
-import {threadCreate, threadGetList} from "../../actions/threadActions";
-import {chatModalPrompt} from "../../actions/chatActions";
+import {MdClose, MdDelete, MdSearch, MdEdit, MdPersonAdd} from "react-icons/lib/md";
 
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
-import Gap from "../../../../uikit/src/gap";
-import {InputText} from "../../../../uikit/src/input";
-import {avatarNameGenerator} from "../../utils/helpers";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROTE_THREAD} from "../../constants/routes";
-import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 
 function isContains(flds, keyword, arr) {
   const fields = flds.split('|');
@@ -161,7 +161,7 @@ class ModalContactList extends Component {
     dispatch(contactChatting(contact));
     dispatch(threadCreate(contact.id));
     this.onClose(true);
-    history.push(ROTE_THREAD);
+    history.push(ROUTE_THREAD);
   }
 
   onContactSearchClick(isOpen) {

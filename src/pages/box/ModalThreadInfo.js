@@ -1,18 +1,17 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {withRouter} from "react-router-dom";
 
 //actions
 import {
   threadModalThreadInfoShowing,
   threadParticipantList,
 } from "../../actions/threadActions";
+import {ROUTE_THREAD_INFO} from "../../constants/routes";
 
 //UI components
 import ModalThreadInfoGroup from "./ModalThreadInfoGroup"
 import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
-import {withRouter} from "react-router-dom";
-import {ROTE_THREAD_INFO} from "../../constants/routes";
-import {contactGetList} from "../../actions/contactActions";
 
 @connect(store => {
   return {
@@ -35,7 +34,7 @@ class ModalThreadInfo extends Component {
     if (thread.id) {
       dispatch(threadParticipantList(thread.id));
       if (!isShow) {
-        if (match.path === ROTE_THREAD_INFO) {
+        if (match.path === ROUTE_THREAD_INFO) {
           dispatch(threadModalThreadInfoShowing(true));
         }
       }
@@ -55,9 +54,10 @@ class ModalThreadInfo extends Component {
   onClose(dontGoBack) {
     const {dispatch, history} = this.props;
     dispatch(threadModalThreadInfoShowing());
-    if (!dontGoBack) {
-      history.goBack();
+    if (dontGoBack === true) {
+      return;
     }
+    history.goBack();
   }
 
   render() {

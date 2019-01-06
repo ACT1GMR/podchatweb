@@ -9,17 +9,17 @@ import strings from "../../constants/localization";
 import {
   threadMetaUpdate
 } from "../../actions/threadActions";
+import {chatUploadImage} from "../../actions/chatActions";
 
 //UI components
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
+import {InputText} from "../../../../uikit/src/input";
 
 //styling
 import {MdCameraAlt} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
-import {InputText} from "../../../../uikit/src/input";
-import {chatUploadImage} from "../../actions/chatActions";
 
 @connect(null, null, null, {withRef: true})
 export default class ModalThreadInfoGroupSettings extends Component {

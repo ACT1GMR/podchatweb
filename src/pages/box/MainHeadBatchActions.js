@@ -1,4 +1,5 @@
-// src/list/Avatar.scss.js
+// /src/pages/MainHeadBatchActions
+
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
@@ -15,19 +16,14 @@ import {messageDelete} from "../../actions/messageActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
-import {MdForward, MdDelete} from "react-icons/lib/md";
 import Gap from "../../../../uikit/src/gap";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
 
 //styling
+import {MdForward, MdDelete} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
-
-
-
-
-const statics = {};
 
 @connect(store => {
   return {

@@ -18,13 +18,14 @@ import {
 import {threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
+import MainFooterInputEmoji from "./MainFooterInputEmoji";
 import MainFooterInputEditing, {messageEditingCondition} from "./MainFooterInputEditing";
 import Container from "../../../../uikit/src/container";
 import {InputTextArea} from "../../../../uikit/src/input";
 
+
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";
-import MainFooterInputEmoji from "./MainFooterInputEmoji";
 
 const constants = {
   replying: "REPLYING",

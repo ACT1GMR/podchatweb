@@ -1,6 +1,8 @@
 // src/
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import date from "../../utils/date";
+import {mobileCheck} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -11,15 +13,13 @@ import {threadLeftAsideShowing, threadSearchMessage, threadGoToMessageId} from "
 //UI components
 import {InputText} from "../../../../uikit/src/input";
 import {Text} from "../../../../uikit/src/typography";
-
-//styling
-import style from "../../../styles/pages/box/LeftAsideMain.scss";
 import Container from "../../../../uikit/src/container";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Message from "../../../../uikit/src/message";
-import date from "../../utils/date";
-import {mobileCheck} from "../../utils/helpers";
+
+//styling
+import style from "../../../styles/pages/box/LeftAsideMain.scss";
 import classnames from "classnames";
 
 function datePetrification(time) {

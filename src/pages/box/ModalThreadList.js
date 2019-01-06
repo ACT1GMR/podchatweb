@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -19,7 +20,6 @@ import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 
 //styling
-import {avatarNameGenerator} from "../../utils/helpers";
 
 const constants = {
   forwarding: "FORWARDING"

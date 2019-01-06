@@ -1,8 +1,8 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import ReactDOMServer from 'react-dom/server';
-import classnames from 'classnames';
+import ReactDOMServer from "react-dom/server";
+import classnames from "classnames";
 
 //strings
 

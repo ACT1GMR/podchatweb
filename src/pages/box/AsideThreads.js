@@ -6,7 +6,7 @@ import {Link} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
-import {ROTE_THREAD} from "../../constants/routes";
+import {ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {threadCreate, threadGetList} from "../../actions/threadActions";
@@ -30,7 +30,9 @@ import classnames from "classnames";
 import styleVar from "../../../styles/variables.scss";
 
 function sliceMessage(message, to) {
-  const tag = document.createElement("p");
+  return message;
+  //TODO: maybe cause of failure on Aside design due overflow
+/*  const tag = document.createElement("p");
   tag.innerHTML = message;
   const text = tag.innerText;
   const childElementCount = tag.childElementCount * 1.5;
@@ -39,7 +41,7 @@ function sliceMessage(message, to) {
       return `${text.slice(0, to || 15)}...`;
     }
   }
-  return message;
+  return message;*/
 }
 
 function prettifyMessageDate(passedTime) {
@@ -141,7 +143,7 @@ export default class AsideThreads extends Component {
         <Container className={classNames}>
           <List>
             {filteredThreads.map(el => (
-              <Link to={ROTE_THREAD}>
+              <Link to={ROUTE_THREAD}>
                 <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
 

@@ -11,9 +11,9 @@ import {
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdSentimentVerySatisfied, MdClose} from "react-icons/lib/md";
 
 //styling
+import {MdSentimentVerySatisfied, MdClose} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainFooterInputEmoji.scss";
 import styleVar from "../../../styles/variables.scss";
 

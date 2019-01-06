@@ -4,6 +4,7 @@ import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {contactAdd, contactAdding, contactChatting, contactListShowing} from "../../actions/contactActions";
@@ -15,7 +16,6 @@ import {Button} from "../../../../uikit/src/button";
 import {Heading} from "../../../../uikit/src/typography";
 import Message from "../../../../uikit/src/message";
 import Container from "../../../../uikit/src/container";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROTE_THREAD} from "../../constants/routes";
 
 
 //styling
@@ -66,7 +66,7 @@ class ModalAddContact extends Component {
               this.onClose();
               dispatch(contactListShowing(false));
               dispatch(contactChatting(contactAdd));
-              history.push(ROTE_THREAD);
+              history.push(ROUTE_THREAD);
             }
           } else {
             history.push(ROUTE_CONTACTS);

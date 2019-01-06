@@ -1,12 +1,17 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {BrowserRouter, Route, withRouter} from "react-router-dom";
+import {Route, withRouter} from "react-router-dom";
 import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP, ROTE_THREAD_INFO} from "../../constants/routes";
+import {
+  ROUTE_ADD_CONTACT,
+  ROUTE_CONTACTS,
+  ROUTE_CREATE_GROUP,
+  ROUTE_THREAD_INFO
+} from "../../constants/routes";
 
 //actions
 import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
@@ -18,8 +23,6 @@ import Aside from "./Aside";
 import Main from "./Main";
 import LeftAside from "./LeftAside";
 import Container from "../../../../uikit/src/container";
-import Message from "../../../../uikit/src/message";
-import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import {ModalMedia} from "../../../../uikit/src/modal";
 import ModalContactList from "./ModalContactList";
 import ModalAddContact from "./ModalAddContact";
@@ -30,7 +33,6 @@ import ModalImageCaption from "./ModalImageCaption";
 import ModalPrompt from "./ModalPrompt";
 
 //styling
-
 import style from "../../../styles/pages/box/index.scss";
 import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
 
@@ -119,7 +121,7 @@ class Box extends Component {
         <Route exact path={ROUTE_CREATE_GROUP} render={props => <ModalCreateGroup smallVersion={small}/>}/>
         <Route exact path={ROUTE_CONTACTS} render={props => <ModalContactList smallVersion={small}/>}/>
         <Route exact path={ROUTE_ADD_CONTACT} render={props => <ModalAddContact smallVersion={small}/>}/>
-        <Route exact path={ROTE_THREAD_INFO} render={props => <ModalThreadInfo smallVersion={small}/>}/>
+        <Route exact path={ROUTE_THREAD_INFO} render={props => <ModalThreadInfo smallVersion={small}/>}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>
         <ModalImageCaption smallVersion={small} ref={this.modalImageCaptionRef}/>
         <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}

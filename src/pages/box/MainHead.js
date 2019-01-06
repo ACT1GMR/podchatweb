@@ -17,10 +17,12 @@ import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../acti
 
 //UI components
 import {MdChevronLeft, MdSearch, MdCheckCircle, MdClose} from "react-icons/lib/md";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Container from "../../../../uikit/src/container";
 import MainHeadThreadInfo from "./MainHeadThreadInfo";
 import MainHeadBatchActions from "./MainHeadBatchActions";
 import {Text} from "../../../../uikit/src/typography";
+import Gap from "../../../../uikit/src/gap";
 
 //styling
 import style from "../../../styles/pages/box/MainHead.scss";
@@ -79,53 +81,59 @@ class MainHead extends Component {
   }
 
   render() {
-    const {thread, smallVersion, threadSelectMessageShowing, threadCheckedMessageList, location} = this.props;
-    if (thread.id) {
-      const classNames = classnames({
-        [style.MainHead]: true,
-        [style["MainHead--smallVersion"]]: smallVersion
-      });
-      return (
-
-        <Container className={classNames} onClick={this.onShowInfoClick} relative>
-          {
+    const {thread, smallVersion, threadSelectMessageShowing, threadCheckedMessageList} = this.props;
+    const showLoading = !thread.id;
+    const classNames = classnames({
+      [style.MainHead]: true,
+      [style["MainHead--smallVersion"]]: smallVersion
+    });
+    return (
+      <Container className={classNames} onClick={this.onShowInfoClick} relative>
+        {
+          showLoading ?
+            <Container>
+              <Gap y={15}>
+                <Text color="gray" light inline>{strings.waitingForGettingContactInfo}</Text>
+                <Loading inline><LoadingBlinkDots size="sm" invert/></Loading>
+              </Gap>
+            </Container>
+            :
             threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
+        }
+        {!showLoading &&
+        <Container centerLeft>
+          {
+            threadSelectMessageShowing &&
+            <Container>
+              <Container inline>
+                <Text color="gray" light>{strings.messagesCount(threadCheckedMessageList.length)}</Text>
+              </Container>
+              <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
+                <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+              </Container>
+
+            </Container>
           }
-          <Container centerLeft>
 
-            {
-              threadSelectMessageShowing &&
-              <Container>
-                <Container inline>
-                  <Text color="gray" light>{strings.messagesCount(threadCheckedMessageList.length)}</Text>
-                </Container>
-                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesHide}>
-                  <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-
+          {
+            !threadSelectMessageShowing &&
+            <Container>
+              <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
+                <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
               </Container>
-            }
-
-            {
-              !threadSelectMessageShowing &&
-              <Container>
-                <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
-                  <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-                <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
-                  <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
-                <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
-                  <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-                </Container>
+              <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
+                <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
               </Container>
-            }
+              <Container className={style.MainHead__BackContainer} inline onClick={this.onThreadHide}>
+                <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+              </Container>
+            </Container>
+          }
 
-          </Container>
         </Container>
-      )
-    }
-    return ""
+        }
+      </Container>
+    )
   }
 }
 

@@ -8,6 +8,8 @@ import {connect} from "react-redux";
 import {
   messageSendFile
 } from "../../actions/messageActions";
+import {threadFilesToUpload} from "../../actions/threadActions";
+
 
 //components
 import Container from "../../../../uikit/src/container";
@@ -16,7 +18,6 @@ import {MdAttachFile, MdChevronLeft} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/MainFooterAttachment.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {threadFilesToUpload} from "../../actions/threadActions";
 
 @connect(store => {
   return {

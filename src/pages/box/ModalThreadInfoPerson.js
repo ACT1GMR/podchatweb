@@ -1,5 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {avatarNameGenerator} from "../../utils/helpers";
+
 
 //strings
 import strings from "../../constants/localization";
@@ -23,8 +25,6 @@ import date from "../../utils/date";
 //styling
 import {MdPerson, MdPhone, MdBlock, MdNotifications} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
-import {avatarNameGenerator} from "../../utils/helpers";
-
 
 @connect(store => {
   return {

@@ -2,8 +2,10 @@
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import {connect} from "react-redux";
+import classnames from "classnames";
 import "moment/locale/fa";
 import date from "../../utils/date";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -29,7 +31,9 @@ import Message from "../../../../uikit/src/message";
 import {Text} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
 import MainMessagesFile from "./MainMessagesFile";
-import MainMessagesText from "./MainMessagesText"
+import MainMessagesText from "./MainMessagesText";
+
+//styling
 import {
   MdDoneAll,
   MdDone,
@@ -38,13 +42,8 @@ import {
   MdSchedule,
   MdExpandMore
 } from "react-icons/lib/md";
-
-//styling
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
-import classnames from "classnames";
-import {avatarNameGenerator} from "../../utils/helpers";
-
 function isMessageByMe(message, user) {
   if (message) {
     if (message) {

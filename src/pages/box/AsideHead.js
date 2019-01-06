@@ -13,15 +13,15 @@ import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP} from "../../const
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
 
 //UI components
+import {MdMenu, MdClose} from "react-icons/lib/md";
 import Notification from "./Notification";
 import {Dropdown, DropdownItem} from "../../../../uikit/src/menu";
 import {Text} from "../../../../uikit/src/typography";
-import {MdMenu, MdClose} from "react-icons/lib/md";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/AsidHead.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Container from "../../../../uikit/src/container";
 import utilsStlye from "../../../styles/utils/utils.scss";
 
 const statics = {

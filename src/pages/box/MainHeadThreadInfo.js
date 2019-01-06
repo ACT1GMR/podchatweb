@@ -5,7 +5,7 @@ import {Link, withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
-import {ROTE_THREAD_INFO} from "../../constants/routes";
+import {ROUTE_THREAD_INFO} from "../../constants/routes";
 
 //actions
 import {threadModalThreadInfoShowing} from "../../actions/threadActions";
@@ -47,7 +47,7 @@ class BoxHeadThreadInfo extends Component {
         [style["MainHeadThreadInfo--smallVersion"]]: smallVersion
       });
       return (
-        <Link to={ROTE_THREAD_INFO}>
+        <Link to={ROUTE_THREAD_INFO}>
           <Container className={classNames} onClick={this.onShowInfoClick} relative>
             <Avatar>
               <AvatarImage src={thread.image} text={avatarNameGenerator(thread.title).letter}

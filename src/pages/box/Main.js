@@ -4,7 +4,13 @@ import {connect} from "react-redux";
 import {Route, withRouter} from "react-router-dom";
 
 //strings
-import {ROTE_THREAD, ROUTE_ADD_CONTACT, ROUTE_CONTACTS} from "../../constants/routes";
+import {
+  ROUTE_THREAD,
+  ROUTE_THREAD_INFO,
+  ROUTE_ADD_CONTACT,
+  ROUTE_CONTACTS,
+  ROUTE_CREATE_GROUP
+} from "../../constants/routes";
 import strings from "../../constants/localization";
 
 //actions
@@ -41,7 +47,7 @@ class Main extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    if (this.props.threadId) {
+    if (oldProps.threadId !== this.props.threadId) {
       this.props.dispatch(threadMessageGetList(this.props.threadId));
     }
   }
@@ -76,8 +82,9 @@ class Main extends Component {
         </Container>
       );
     }
+    const regex = new RegExp(`${ROUTE_THREAD}|${ROUTE_THREAD_INFO}|${ROUTE_ADD_CONTACT}|${ROUTE_CREATE_GROUP}`);
     return (
-      <Route exact path={ROTE_THREAD} render={props => {
+      <Route exact path={regex} render={props => {
         return (
           <Container className={style.Main}>
             <MainHead/>

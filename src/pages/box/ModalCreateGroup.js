@@ -1,27 +1,28 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
+import {ROUTE_CREATE_GROUP, ROUTE_THREAD, ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 //actions
 import {contactAdding, contactGetList, contactModalCreateGroupShowing} from "../../actions/contactActions";
-import {threadModalListShowing, threadCreate} from "../../actions/threadActions";
+import {threadCreate} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import {Button} from "../../../../uikit/src/button";
-import {Heading} from "../../../../uikit/src/typography";
+import {Heading, Text} from "../../../../uikit/src/typography";
 import List, {ListItem} from "../../../../uikit/src/list";
 import {InputText} from "../../../../uikit/src/input";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
-import {MdArrowForward} from "react-icons/lib/md";
 
 //styling
-import {avatarNameGenerator} from "../../utils/helpers";
-import {ROUTE_ADD_CONTACT, ROUTE_CREATE_GROUP, ROTE_THREAD} from "../../constants/routes";
+import {MdArrowForward} from "react-icons/lib/md";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -32,6 +33,7 @@ const constants = {
   return {
     isShow: store.contactModalCreateGroupShowing.isShow,
     contacts: store.contactGetList.contacts,
+    contactsFetching: store.contactGetList.fetching,
     chatInstance: store.chatInstance.chatSDK
   };
 }, null, null, {withRef: true})
@@ -77,7 +79,7 @@ class ModalCreateGroup extends Component {
   onCreate(groupName) {
     const {dispatch, history} = this.props;
     dispatch(threadCreate(this.state.threadContacts, null, groupName));
-    history.push(ROTE_THREAD);
+    history.push(ROUTE_THREAD);
     this.onClose(false, true);
   }
 
@@ -94,7 +96,9 @@ class ModalCreateGroup extends Component {
   }
 
   onAdd() {
-
+    const {history, dispatch} = this.props;
+    dispatch(contactAdding(true));
+    history.push(ROUTE_ADD_CONTACT);
   }
 
   onSelect(id) {
@@ -122,8 +126,9 @@ class ModalCreateGroup extends Component {
   }
 
   render() {
-    const {contacts, isShow, smallVersion} = this.props;
+    const {contacts, isShow, smallVersion, chatInstance, contactsFetching} = this.props;
     const {threadContacts, step, groupName} = this.state;
+    const showLoading = contactsFetching;
 
     let filteredContacts = contacts.filter(e => e.hasUser);
     return (
@@ -155,9 +160,16 @@ class ModalCreateGroup extends Component {
                 ))}
               </List>
               :
-              <Container center>
-                <Button text onClick={this.onAdd}>{strings.add}</Button>
-              </Container>
+              showLoading || !chatInstance ?
+                <Container centerTextAlign>
+                  <Loading hasSpace><LoadingBlinkDots/></Loading>
+                  <Text>{strings.waitingForContact}...</Text>
+                </Container>
+                :
+                <Container centerTextAlign>
+                  <Text>{strings.noContactPleaseAddFirst}</Text>
+                  <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
+                </Container>
             :
             <InputText onChange={this.groupNameChange.bind(this)}
                        value={groupName}

@@ -1,6 +1,7 @@
 // src/
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
@@ -9,15 +10,15 @@ import strings from "../../constants/localization";
 import {threadLeftAsideShowing} from "../../actions/threadActions";
 
 //UI components
-import {Text} from "../../../../uikit/src/typography";
 import {MdClose} from "react-icons/lib/md";
+import {Text} from "../../../../uikit/src/typography";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/LeftAsideHead.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Container from "../../../../uikit/src/container";
 import utilsStlye from "../../../styles/utils/utils.scss";
-import classnames from "classnames";
+
 
 const statics = {
   headMenuSize: 59

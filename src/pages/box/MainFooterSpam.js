@@ -9,14 +9,14 @@ import strings from "../../constants/localization";
 //actions
 import {contactGetList} from "../../actions/contactActions";
 import {threadParticipantList, threadSpamPv} from "../../actions/threadActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 //components
 import Container from "../../../../uikit/src/container";
+import Text from "../../../../uikit/src/typography/Text";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterSpam.scss";
-import Text from "../../../../uikit/src/typography/Text";
-import {chatModalPrompt} from "../../actions/chatActions";
 
 
 function showSpam(props) {

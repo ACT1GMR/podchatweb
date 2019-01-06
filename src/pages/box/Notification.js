@@ -6,7 +6,6 @@ import Push from "push.js";
 import MetaTags from "react-meta-tags";
 
 //strings
-import strings from "../../constants/localization";
 
 //actions
 import {threadCreate} from "../../actions/threadActions";

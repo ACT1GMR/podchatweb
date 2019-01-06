@@ -16,7 +16,6 @@ import {chatModalPrompt} from "../../actions/chatActions";
 import {messageDelete, messageEditing} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 
-
 //components
 import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";

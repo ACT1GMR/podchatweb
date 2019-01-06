@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 
 //strings
+import strings from "../../constants/localization";
 
 //actions
 import {messageEditing} from "../../actions/messageActions";
@@ -12,13 +13,12 @@ import {threadIsSendingMessage} from "../../actions/threadActions";
 import Paper from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
-import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/lib/md";
 
 //styling
+import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainFooterInputEditing.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
-import strings from "../../constants/localization";
 
 const constants = {
   replying: "REPLYING",

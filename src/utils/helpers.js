@@ -85,8 +85,7 @@ export function avatarNameGenerator(firstName, lastName) {
   if (!firstName) {
     return;
   }
-
-
+  firstName = firstName.trim();
   if (!lastName) {
     const split = firstName.split(" ");
     if (split.length <= 1) {

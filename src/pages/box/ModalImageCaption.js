@@ -6,6 +6,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {threadFilesToUpload, threadModalImageCaptionShowing} from "../../actions/threadActions";
+import {messageSend} from "../../actions/messageActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -17,7 +18,6 @@ import Container from "../../../../uikit/src/container";
 import Image from "../../../../uikit/src/image";
 
 //styling
-import {messageSend} from "../../actions/messageActions";
 import style from "../../../styles/pages/box/ModalImageCaption.scss";
 
 @connect(store => {

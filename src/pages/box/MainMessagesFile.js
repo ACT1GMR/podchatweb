@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
 import {humanFileSize, mobileCheck} from "../../utils/helpers";
+import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
@@ -25,6 +26,9 @@ import Image from "../../../../uikit/src/image";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
+import Gap from "../../../../uikit/src/gap";
+
+//styling
 import {
   MdDelete,
   MdReply,
@@ -33,12 +37,8 @@ import {
   MdPlayArrow,
   MdClose, MdExpandLess, MdExpandMore
 } from "react-icons/lib/md";
-
-//styling
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "./../../../styles/variables.scss";
-import Gap from "../../../../uikit/src/gap";
-import classnames from "classnames";
 
 
 function getImage(metaData, isFromServer, smallVersion) {
@@ -287,10 +287,10 @@ class MainMessagesFile extends Component {
                 </Container>
                 :
                 <Container className={style.MainMessagesFile__FileName}>
-                  {isVideo &&
+                  {isVideo ?
                   <video controls id={`video-${message.id}`} style={{display: "none"}}>
                     <source src={metaData.link} type={metaData.mimeType}/>
-                  </video>
+                  </video> : ""
                   }
                   <Text wordWrap="breakWord" bold>
                     {metaData.originalName}
@@ -328,7 +328,7 @@ class MainMessagesFile extends Component {
             <PaperFooter>
               {seenFragment(message, () => {
                 this.onCancel(message);
-                dispatch(messageSendFile(message.content.file.fileObject, message.threadId));
+                dispatch(messageSendFile(message.content.file.fileObject, message.threadId, message.message));
               })}
               {datePetrification(message.time)}
               <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace

@@ -14,7 +14,6 @@ import {
 } from "../../actions/threadActions";
 
 //UI components
-import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
 import ModalThreadInfoGroupSettings from "./ModalThreadInfoGroupSettings";
 import {Button} from "../../../../uikit/src/button";
 import Gap from "../../../../uikit/src/Gap";
@@ -31,9 +30,9 @@ import List, {ListItem} from "../../../../uikit/src/list";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 //styling
+import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
-import {ROTE_THREAD} from "../../constants/routes";
 
 
 const constants = {
@@ -137,9 +136,8 @@ class ModalThreadInfoGroup extends Component {
   }
 
   onStartChat(id) {
-    this.props.history.push(ROTE_THREAD);
+    this.onClose();
     this.props.dispatch(threadCreate(id));
-    this.onClose(true);
   }
 
   onClose(dontGoBack) {

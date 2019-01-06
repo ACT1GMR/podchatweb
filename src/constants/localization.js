@@ -133,6 +133,7 @@ let strings = new LocalizedStrings({
       connectingToChat: "در حال اتصال"
     },
     waitingForContact: "در حال دریافت مخاطبین",
+    waitingForGettingContactInfo: "دریافت اطلاعات مخاطب",
     noContactPleaseAddFirst: "مخاطبی وجود ندارد کسی را اضافه کنید",
     signedOut: "خروج",
     selectMessage: "پیامی را انتخاب کنید",
