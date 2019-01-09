@@ -33,10 +33,8 @@ const constants = {
 };
 
 const sanitizeRule = {
-  allowedTags: ["img", "br"],
-  transformTags: {
-    "div": "br",
-  },
+  allowedTags: ["img", "br", "div"],
+
   allowedAttributes: {
     img: ["src", "style", "class"]
   },
@@ -139,7 +137,7 @@ export default class MainFooterInput extends Component {
   }
 
   onTextChange(event) {
-    this.setInputText(event.target.innerHTML);
+    this.setInputText(event);
   }
 
   render() {
@@ -165,7 +163,7 @@ export default class MainFooterInput extends Component {
               onChange={this.onTextChange}
               value={messageText}/>
           </Container>
-          <Container className={style.MainFooterInput__EditBoxEmojiContainer} centerLeft>
+          <Container centerLeft>
             <MainFooterInputEmoji/>
           </Container>
         </Container>

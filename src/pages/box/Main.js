@@ -52,13 +52,13 @@ class Main extends Component {
     }
   }
 
-  onContactListShow(){
+  onContactListShow() {
     const {history, dispatch} = this.props;
     dispatch(contactListShowing(true));
     history.push(ROUTE_CONTACTS);
   }
 
-  onAddMember(){
+  onAddMember() {
     const {history, dispatch} = this.props;
     dispatch(contactAdding(true));
     history.push(ROUTE_ADD_CONTACT);
@@ -82,17 +82,17 @@ class Main extends Component {
         </Container>
       );
     }
-    const regex = new RegExp(`${ROUTE_THREAD}|${ROUTE_THREAD_INFO}|${ROUTE_ADD_CONTACT}|${ROUTE_CREATE_GROUP}`);
     return (
-      <Route exact path={regex} render={props => {
-        return (
-          <Container className={style.Main}>
-            <MainHead/>
-            <MainMessages/>
-            <MainFooter/>
-          </Container>
-        )
-      }}>
+      <Route path={[`${ROUTE_THREAD}`, `/`]}
+             render={props => {
+               return (
+                 <Container className={style.Main}>
+                   <MainHead/>
+                   <MainMessages/>
+                   <MainFooter/>
+                 </Container>
+               )
+             }}>
       </Route>
     );
   }

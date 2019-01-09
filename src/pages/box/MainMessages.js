@@ -152,8 +152,8 @@ export default class MainMessages extends Component {
     const goingToUp = scrollTop < this.lastPosition;
     const scrollHeight = current.scrollHeight;
     const gotoBottomButtonShowingThreshold = 100;
-    if (goingToUp || threadMessagesHasNext) {
-      if (goingToUp) {
+    if (!goingToUp || threadMessagesHasNext) {
+      if (!goingToUp) {
         if (scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
           if (!gotoBottomButtonShowing) {
             this.setState({
@@ -161,14 +161,13 @@ export default class MainMessages extends Component {
             });
           }
         } else {
-          if (!gotoBottomButtonShowing) {
+          if (gotoBottomButtonShowing) {
             this.setState({
-              gotoBottomButtonShowing: true
+              gotoBottomButtonShowing: false
             });
           }
         }
       }
-
     } else {
       if (gotoBottomButtonShowing) {
         this.setState({

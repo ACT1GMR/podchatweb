@@ -124,7 +124,7 @@ let strings = new LocalizedStrings({
     blocked: "مسدود شده",
     active: "فعال",
     inActive: "غیرفعال",
-    reportSpam: "اعلام گفتگو حجو",
+    reportSpam: "اعلام گفتگو هجو",
     areYouSureToDoIt: "از انجام این کار مطمئنید",
     leaveGroup: "ترک گروه",
     chatState: {
