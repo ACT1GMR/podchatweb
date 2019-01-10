@@ -396,6 +396,7 @@ export default class MainMessages extends Component {
         const text = replyInfo.message ? replyInfo.message : meta && meta.file && meta.file.name ? meta.file.name : "";
         return (
           <Container
+            cursor="pointer"
             onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.repliedToMessageId, replyInfo.deleted)}>
             <Paper colorBackground borderRadius={5}>
               <Text bold size="xs">{strings.replyTo}:</Text>
@@ -410,7 +411,7 @@ export default class MainMessages extends Component {
     const forwardFragment = (el) => {
       if (el.forwardInfo) {
         return (
-          <Container>
+          <Container >
             <Paper colorBackground borderRadius={5}>
               <Text italic size="xs">{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
@@ -477,6 +478,7 @@ export default class MainMessages extends Component {
 
     return (
       <Container className={style.MainMessages} onScroll={this.onScroll}
+                 userSelect="none"
                  onDragEnter={this.onDragEnter}
                  onDragOver={this.onDragOver}
                  onDrop={this.onFileDrop}>

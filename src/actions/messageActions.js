@@ -44,11 +44,11 @@ export const messageCancelFile = (uniqueId, threadId) => {
   }
 };
 
-export const messageEditing = (message, type) => {
+export const messageEditing = (message, type, threadId) => {
   return (dispatch) => {
     dispatch({
       type: MESSAGE_EDITING,
-      payload: message ? {message, type} : null
+      payload: message ? {message, type, threadId} : null
     });
   }
 };

@@ -22,6 +22,7 @@ export const contactGetListReducer = (state = {
       let contacts = action.payload;
       if (contacts.length) {
         contacts = contacts.sort((a, b) => {
+          if(!a.firstName) {return}
           return a.firstName.localeCompare(b.firstName)
         });
       }

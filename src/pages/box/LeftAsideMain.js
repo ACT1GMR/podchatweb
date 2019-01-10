@@ -105,7 +105,7 @@ export default class LeftAsideMain extends Component {
         <InputText onChange={this.onSearchQueryChange} value={query} placeholder={strings.search} ref={this.inputRef}/>
         {threadSearchMessagePending ?
           (
-            <Container relative>
+            <Container relative userSelect="none">
               <Container topCenter>
                 <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
               </Container>
@@ -116,7 +116,7 @@ export default class LeftAsideMain extends Component {
               <List>
                 {threadSearchMessages.map(el => (
                   <ListItem key={el.id} onSelect={this.onSearchItemClicked.bind(this, el.id)} selection invert>
-                    <Container relative>
+                    <Container relative userSelect="none">
                       <Container inline>
                         <Text wordWrap="breakWord"
                               size="sm">{el.message.length > 30 ? `${el.message.slice(0, 30)}...` : el.message}</Text>

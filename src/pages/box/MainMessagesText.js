@@ -34,9 +34,10 @@ import style from "../../../styles/pages/box/MainMessagesText.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 function urlify(text) {
-  return reactStringReplace(text, /(https?:\/\/[^\s]+)/g, (match, i) => (
-    ReactDOMServer.renderToStaticMarkup(<Text link={match} target="_blank" wordWrap="breakWord">{match}</Text>)
-  ));
+  var urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, function (url) {
+    return ReactDOMServer.renderToStaticMarkup(<Text link={url} target="_blank" wordWrap="breakWord">{url}</Text>)
+  })
 }
 
 @connect()
@@ -175,9 +176,11 @@ export default class MainMessagesText extends Component {
         <Paper colorBackgroundLight borderRadius={5} hasShadow>
           {replyFragment(message)}
           {forwardFragment(message)}
-          <Text isHTML wordWrap="breakWord" whiteSpace="preWrap">
-            {urlify(message.message)}
-          </Text>
+          <Container userSelect="text">
+            <Text isHTML wordWrap="breakWord" whiteSpace="preWrap">
+              {urlify(message.message)}
+            </Text>
+          </Container>
           <PaperFooter>
             {seenFragment(message, user)}
             {editFragment(message)}

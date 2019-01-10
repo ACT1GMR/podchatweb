@@ -49,7 +49,7 @@ export default class LeftAsideHead extends Component {
       [style["LeftAsideHead--smallVersion"]]: smallVersion
     });
     return (
-      <Container className={classNames} ref={this.container}>
+      <Container className={classNames} ref={this.container} userSelect="none">
         <Container inline onClick={this.onLeftAsideHide}>
           <MdClose size={iconSize}
                    className={utilsStlye["u-clickable"]}

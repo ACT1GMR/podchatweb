@@ -106,7 +106,7 @@ class ModalAddContact extends Component {
     const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
     const {mobilePhone, firstName, lastName} = this.state;
     return (
-      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
         <ModalHeader>
           <Heading h3>{contactEdit ? strings.editContact(contactEdit) : strings.addContact}</Heading>

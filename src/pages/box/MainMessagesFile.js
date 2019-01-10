@@ -213,13 +213,13 @@ class MainMessagesFile extends Component {
     const isVideo = ~metaData.mimeType.indexOf("video");
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
     const isMsgByMe = isMessageByMe(message, user);
-    const mainMessagesFileImageClassNames = classnames({
-      [style.MainMessagesFile__Image]: true,
-      [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
-    });
     const classNames = classnames({
       [style.MainMessagesFile]: true,
       [style["MainMessagesFile--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
+    });
+    const mainMessagesFileImageClassNames = classnames({
+      [style.MainMessagesFile__Image]: true,
+      [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
     });
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}

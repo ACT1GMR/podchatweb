@@ -67,7 +67,7 @@ export default class ModalThreadInfo extends Component {
     const contact = contacts.filter(contact => contact.id === participant.contactId)[0];
     const participantImage = thread && thread.image;
     return (
-      <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
         <ModalHeader>
           <Heading h3>{strings.contactInfo}</Heading>
@@ -98,10 +98,10 @@ export default class ModalThreadInfo extends Component {
             <Gap y={20} block>
               <Divider thick={2} color="gray"/>
             </Gap>
-            <List>
+            {contact ? <List>
 
               <ListItem invert>
-                {contact && contact.cellphoneNumber &&
+                {contact.cellphoneNumber &&
                 <Container>
                   <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                   <Gap x={20}>
@@ -112,7 +112,7 @@ export default class ModalThreadInfo extends Component {
               </ListItem>
 
               <ListItem invert>
-                {contact && contact.linkedUser && contact.linkedUser.name &&
+                {contact.linkedUser && contact.linkedUser.name &&
                 <Container>
                   <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                   <Gap x={20}>
@@ -121,7 +121,8 @@ export default class ModalThreadInfo extends Component {
                 </Container>
                 }
               </ListItem>
-            </List>
+            </List> : ""}
+
 
             <Container>
 

@@ -204,7 +204,7 @@ class ModalThreadInfoGroup extends Component {
       )
     };
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
         <ModalHeader>
           <Heading h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
@@ -229,12 +229,12 @@ class ModalThreadInfoGroup extends Component {
                 <Container bottomLeft>
                   {isOwner ?
                     <Container inline>
-                      {filteredContacts.length &&
+                      {filteredContacts.length ?
                       <Container inline>
                         <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
                                     onClick={this.onAddMemberSelect}/>
                         <Gap x={5}/>
-                      </Container>
+                      </Container> : ""
                       }
                       <MdSettings size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
                                   onClick={this.onSettingsSelect}/>
@@ -262,7 +262,7 @@ class ModalThreadInfoGroup extends Component {
               <Container>
                 <List>
                   {
-                    isOwner && filteredContacts.length &&
+                    isOwner && filteredContacts.length ?
                     <ListItem selection invert onSelect={this.onAddMemberSelect}>
                       <Container relative>
                         <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
@@ -270,7 +270,7 @@ class ModalThreadInfoGroup extends Component {
                           <Text>{strings.addMember}</Text>
                         </Gap>
                       </Container>
-                    </ListItem>
+                    </ListItem> : ""
                   }
                   <ListItem selection invert onSelect={this.onLeaveSelect}>
                     <Container relative>

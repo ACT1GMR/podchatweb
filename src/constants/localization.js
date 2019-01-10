@@ -104,6 +104,9 @@ let strings = new LocalizedStrings({
       return `مخاطبی با مشخصات "${keyword}" وجود ندارد `;
     },
     prettifyDateString(string) {
+      if (string === "دیروز") {
+        return string;
+      }
       if (~string.indexOf("پیش")) {
         return string;
       }

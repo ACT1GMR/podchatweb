@@ -70,7 +70,7 @@ export default class MainFooterInput extends Component {
   }
 
   setInputText(text, append) {
-    const {dispatch} = this.props;
+    const {dispatch, messageEditing} = this.props;
     const {messageText} = this.state;
     let newText = text;
     if (append) {
@@ -84,11 +84,34 @@ export default class MainFooterInput extends Component {
         return dispatch(threadIsSendingMessage(true));
       }
     }
+    if (messageEditing) {
+      if (messageEditing.type === constants.forwarding) {
+        return;
+      }
+    }
     dispatch(threadIsSendingMessage(false));
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.threadId !== this.props.threadId) {
+    const {dispatch, threadId, messageEditing: msgEditing} = this.props;
+    if (msgEditing !== prevProps.messageEditing) {
+      const current = this.inputNode.current;
+      if (current) {
+        current.focus();
+      }
+    }
+    if (prevProps.threadId !== threadId) {
+      if (msgEditing) {
+        let emptyEditingCondition = msgEditing.type !== constants.forwarding || msgEditing.threadId ? msgEditing.threadId !== threadId : false;
+        if (emptyEditingCondition) {
+          dispatch(messageEditing());
+          this.setInputText();
+          dispatch(threadIsSendingMessage(false));
+        }
+      } else {
+        this.setInputText();
+        dispatch(threadIsSendingMessage(false));
+      }
       if (!mobileCheck()) {
         const current = this.inputNode.current;
         if (current) {

@@ -40,7 +40,7 @@ export default class ModalPrompt extends Component {
   render() {
     const {isShowing, smallVersion, message, onApply, confirmText} = this.props;
     return (
-      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
         <ModalBody>
           <Container centerTextAlign>

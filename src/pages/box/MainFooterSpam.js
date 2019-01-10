@@ -145,7 +145,7 @@ export default class MainFooterSpam extends Component {
     const classNames = classnames(classNamesObject);
     return (
       showSpamming ?
-        <Container className={classNames}>
+        <Container className={classNames} userSelect="none">
           <Container centerTextAlign onClick={this.reportSpamClick}>
             <Text linkStyle color="accent" bold>
               {strings.reportSpam}
@@ -153,7 +153,7 @@ export default class MainFooterSpam extends Component {
           </Container>
         </Container>
         :
-        <Container className={classNames}>
+        <Container className={classNames} userSelect="none">
           <Container className={style.MainFooterSpam__BlockedTextContainer}>
             <Text linkStyle color="accent" bold>
               {strings.unBlock}

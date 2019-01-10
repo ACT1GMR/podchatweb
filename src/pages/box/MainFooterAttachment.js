@@ -58,6 +58,7 @@ export default class MainFooterAttachment extends Component {
   }
 
   onClick() {
+    console.log('reached')
     const {isSendingText, sendMessage} = this.props;
     if (isSendingText) {
       sendMessage();
@@ -67,7 +68,7 @@ export default class MainFooterAttachment extends Component {
   render() {
     const {isSendingText} = this.props;
     return (
-      <Container inline className={style.MainFooterAttachment} relative onClick={this.onClick}>
+      <Container inline className={style.MainFooterAttachment} relative onClick={this.onClick.bind(this)}>
         {
           isSendingText ?
             <Container>

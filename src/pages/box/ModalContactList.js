@@ -185,7 +185,7 @@ class ModalContactList extends Component {
       contactsFilter = isContains('firstName|lastName|cellphoneNumber', query, contacts);
     }
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}>
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
         <ModalHeader>
           <Container relative>

@@ -132,7 +132,7 @@ export default class MainFooterInputEditing extends Component {
               }
             </Container>
 
-            <Container className={style.MainFooterInputEditing__Content}>
+            <Container className={style.MainFooterInputEditing__Content} userSelect="none">
               {editObject.image ?
                 <Container className={style.MainFooterInputEditing__ImageContainer} inline>
                   <Container className={style.MainFooterInputEditing__Image}
