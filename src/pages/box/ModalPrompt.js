@@ -18,6 +18,7 @@ import Container from "../../../../uikit/src/container";
 @connect(store => {
   return {
     isShowing: store.chatModalPrompt.isShowing,
+    confirmText: store.chatModalPrompt.confirmText,
     message: store.chatModalPrompt.message,
     onApply: store.chatModalPrompt.onApply,
     onCancel: store.chatModalPrompt.onCancel
@@ -40,7 +41,7 @@ export default class ModalPrompt extends Component {
   render() {
     const {isShowing, smallVersion, message, onApply, confirmText} = this.props;
     return (
-      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none" wrapContent>
 
         <ModalBody>
           <Container centerTextAlign>

@@ -72,6 +72,7 @@
   border-radius: 0 0 5px 5px;
   background-color: lighten($color-background, 3%);
   z-index: 1;
+  border-top: 1px solid $color-background;
 }
 
 .MainMessagesFile__TriggerIcon,
@@ -99,6 +100,8 @@
 
 .MainMessagesFile__ControlIconContainer {
   width: 100%;
+  text-align: center;
+  margin-top: 18px;
 }
 
 .MainMessagesFile--triggerIconShow {

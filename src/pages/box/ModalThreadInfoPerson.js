@@ -14,7 +14,7 @@ import {threadNotification} from "../../actions/threadActions";
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
 import {Button} from "../../../../uikit/src/button";
-import Gap from "../../../../uikit/src/Gap";
+import Gap from "../../../../uikit/src/gap";
 import {Heading, Text} from "../../../../uikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
@@ -56,7 +56,7 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, thread, user, onClose, isShow, smallVersion, contacts} = this.props;
+    const {participants, thread, user, onClose, isShow, smallVersion, contacts, participantsFetching} = this.props;
     let participant = participants;
     if (participants) {
       participant = participants.filter(e => e.name !== user.name)[0];
@@ -98,7 +98,7 @@ export default class ModalThreadInfo extends Component {
             <Gap y={20} block>
               <Divider thick={2} color="gray"/>
             </Gap>
-            {contact ? <List>
+            {contact && !participantsFetching ? <List>
 
               <ListItem invert>
                 {contact.cellphoneNumber &&
@@ -127,7 +127,7 @@ export default class ModalThreadInfo extends Component {
             <Container>
 
               {
-                contact &&
+                contact && !participantsFetching &&
                 <Container>
                   <Gap y={20} block>
                     <Divider thick={2} color="gray"/>

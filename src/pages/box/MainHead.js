@@ -16,7 +16,7 @@ import {
 import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../actions/threadActions";
 
 //UI components
-import {MdChevronLeft, MdSearch, MdCheckCircle, MdClose} from "react-icons/lib/md";
+import {MdChevronLeft, MdSearch, MdCheck, MdClose} from "react-icons/lib/md";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Container from "../../../../uikit/src/container";
 import MainHeadThreadInfo from "./MainHeadThreadInfo";
@@ -119,7 +119,7 @@ class MainHead extends Component {
             !threadSelectMessageShowing &&
             <Container>
               <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
-                <MdCheckCircle size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+                <MdCheck size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
               </Container>
               <Container className={style.MainHead__SearchContainer} inline onClick={this.onLeftAsideShow}>
                 <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>

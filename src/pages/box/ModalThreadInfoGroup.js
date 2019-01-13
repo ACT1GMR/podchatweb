@@ -14,9 +14,10 @@ import {
 } from "../../actions/threadActions";
 
 //UI components
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import ModalThreadInfoGroupSettings from "./ModalThreadInfoGroupSettings";
 import {Button} from "../../../../uikit/src/button";
-import Gap from "../../../../uikit/src/Gap";
+import Gap from "../../../../uikit/src/gap";
 import {Heading, Text} from "../../../../uikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
@@ -180,7 +181,7 @@ class ModalThreadInfoGroup extends Component {
   }
 
   render() {
-    const {participants, thread, user, isShow, contacts, smallVersion} = this.props;
+    const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching} = this.props;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
@@ -204,10 +205,12 @@ class ModalThreadInfoGroup extends Component {
       )
     };
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
+          <Heading
+            h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -230,11 +233,11 @@ class ModalThreadInfoGroup extends Component {
                   {isOwner ?
                     <Container inline>
                       {filteredContacts.length ?
-                      <Container inline>
-                        <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                                    onClick={this.onAddMemberSelect}/>
-                        <Gap x={5}/>
-                      </Container> : ""
+                        <Container inline>
+                          <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
+                                      onClick={this.onAddMemberSelect}/>
+                          <Gap x={5}/>
+                        </Container> : ""
                       }
                       <MdSettings size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
                                   onClick={this.onSettingsSelect}/>
@@ -251,6 +254,7 @@ class ModalThreadInfoGroup extends Component {
                 <Gap y={20} block>
                   <Divider thick={1} color="gray"/>
                 </Gap>
+                <Text color="accent" size="sm">{strings.description} :</Text>
                 <Text>{thread.description}</Text>
               </Container>
               }
@@ -263,14 +267,14 @@ class ModalThreadInfoGroup extends Component {
                 <List>
                   {
                     isOwner && filteredContacts.length ?
-                    <ListItem selection invert onSelect={this.onAddMemberSelect}>
-                      <Container relative>
-                        <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                        <Gap x={20}>
-                          <Text>{strings.addMember}</Text>
-                        </Gap>
-                      </Container>
-                    </ListItem> : ""
+                      <ListItem selection invert onSelect={this.onAddMemberSelect}>
+                        <Container relative>
+                          <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                          <Gap x={20}>
+                            <Text>{strings.addMember}</Text>
+                          </Gap>
+                        </Container>
+                      </ListItem> : ""
                   }
                   <ListItem selection invert onSelect={this.onLeaveSelect}>
                     <Container relative>
@@ -304,7 +308,14 @@ class ModalThreadInfoGroup extends Component {
               </Gap>
 
               <Container>
-                <ContactList invert selection contacts={participants} actions={conversationAction}/>
+                {participantsFetching ?
+                  <Container centerTextAlign>
+                    <Loading hasSpace><LoadingBlinkDots/></Loading>
+                    <Text>{strings.waitingForContact}...</Text>
+                  </Container>
+                  :
+                  <ContactList invert selection contacts={participants} actions={conversationAction}/>
+                }
               </Container>
             </Container>
             :

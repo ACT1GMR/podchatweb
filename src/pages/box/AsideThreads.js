@@ -143,8 +143,8 @@ export default class AsideThreads extends Component {
         <Container className={classNames}>
           <List>
             {filteredThreads.map(el => (
-              <Link to={ROUTE_THREAD}>
-                <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+              <Link to={ROUTE_THREAD} key={el.id}>
+                <ListItem onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
 
                   <Container relative>

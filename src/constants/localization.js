@@ -142,7 +142,8 @@ let strings = new LocalizedStrings({
     selectMessage: "پیامی را انتخاب کنید",
     unBlock: "رفع مسدودی",
     accept: "قبول",
-    leave: "ترک"
+    leave: "ترک",
+    description: "توضیحات"
   },
   it: {}
 });

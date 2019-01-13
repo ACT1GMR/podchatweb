@@ -82,7 +82,7 @@ export default class MainFooterEmojiIcons extends Component {
       <Container inline className={style.MainFooterEmojiIcons} relative onClick={this.onClick}>
         {emojies.map(emoji => (
           emoji.emojies.map(el => (
-            <Container className={style.MainFooterEmojiIcons__Icon} onClick={this.onEmojiClick.bind(this, el, emoji.info)}>
+            <Container key={`${emoji.name}-${el.x}${el.y}`} className={style.MainFooterEmojiIcons__Icon} onClick={this.onEmojiClick.bind(this, el, emoji.info)}>
               <Container className={`${emojiStyle[`emoji-${emoji.info.name}`]} ${classNames}`}
                          style={{backgroundPosition: `${el.x}px ${el.y}px`}}/>
             </Container>

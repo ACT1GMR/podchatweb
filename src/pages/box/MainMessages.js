@@ -44,6 +44,7 @@ import {
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
+
 function isMessageByMe(message, user) {
   if (message) {
     if (message) {
@@ -57,7 +58,7 @@ function isMessageByMe(message, user) {
   }
 }
 
-function hiddenLastOwner(message, threadMessages) {
+function showNameOrAvatar(message, threadMessages) {
   const msgOwnerId = message.participant.id;
   const msgId = message.id;
   const index = threadMessages.findIndex(e => e.id === msgId);
@@ -65,10 +66,10 @@ function hiddenLastOwner(message, threadMessages) {
     const lastMessage = threadMessages[index - 1];
     if (lastMessage) {
       if (lastMessage.participant.id === msgOwnerId) {
-        return "hidden";
+        return false;
       }
     }
-    return "visible";
+    return true;
   }
 }
 
@@ -411,7 +412,7 @@ export default class MainMessages extends Component {
     const forwardFragment = (el) => {
       if (el.forwardInfo) {
         return (
-          <Container >
+          <Container>
             <Paper colorBackground borderRadius={5}>
               <Text italic size="xs">{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
@@ -434,10 +435,12 @@ export default class MainMessages extends Component {
         </Container>
       );
     };
+
     const messageSelectedCondition = message => {
       const fileIndex = threadCheckedMessageList.findIndex((msg => msg.uniqueId === message.uniqueId));
       return fileIndex >= 0;
     };
+
     const messageTick = message => {
       const isExisted = messageSelectedCondition(message);
       const classNames = classnames({
@@ -445,7 +448,14 @@ export default class MainMessages extends Component {
         [style["MainMessages__Tick--selected"]]: isExisted
       });
       return <Container className={classNames} onClick={this.onAddToCheckedMessage.bind(this, message, !isExisted)}/>;
+    };
 
+    const personNameFragment = message => {
+      const messageParticipant = message.participant;
+      const color = avatarNameGenerator(messageParticipant.name).color;
+      return showNameOrAvatar(message, threadMessages) &&
+        <Text size="sm" bold
+              style={{color: color}}>{messageParticipant.firstName} {messageParticipant.lastName}</Text>
     };
 
     const messageArguments = message => {
@@ -455,10 +465,12 @@ export default class MainMessages extends Component {
         editFragment,
         replyFragment,
         forwardFragment,
+        personNameFragment,
         isMessageByMe,
         datePetrification,
         message,
-        user
+        user,
+        isFirstMessage: showNameOrAvatar(message, threadMessages)
       }
     };
 
@@ -467,14 +479,21 @@ export default class MainMessages extends Component {
       :
       <MainMessagesText {...messageArguments(message)}/>;
 
-    const avatar = message =>
-      <Container inline inSpace style={{visibility: hiddenLastOwner(message, threadMessages), maxWidth: "50px"}}>
-        <Avatar>
-          <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
-                       textBg={avatarNameGenerator(message.participant.name).color}/>
-          <AvatarName bottom size="sm">{message.participant.name}</AvatarName>
-        </Avatar>
-      </Container>;
+    const avatar = message => {
+      const showAvatar = showNameOrAvatar(message, threadMessages);
+      const fragment =
+        showAvatar ?
+          <Avatar>
+            <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
+                         textBg={avatarNameGenerator(message.participant.name).color}/>
+          </Avatar> :
+          <div style={{width: "50px", display: "inline-block"}}/>;
+      return showAvatar ?
+        <Container inline inSpace style={{maxWidth: "50px", verticalAlign: "top"}}>
+          {fragment}
+        </Container> : fragment;
+    };
+
 
     return (
       <Container className={style.MainMessages} onScroll={this.onScroll}

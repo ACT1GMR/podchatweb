@@ -21,6 +21,8 @@
 
 .Box * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  tap-highlight-color: transparent;
   &:focus {
     outline: 0 none;
   }

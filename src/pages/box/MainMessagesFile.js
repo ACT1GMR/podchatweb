@@ -205,12 +205,12 @@ class MainMessagesFile extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing, location} = this.props;
+    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing, personNameFragment} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     let metaData = message.metaData;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
-    const isImage = ~metaData.mimeType.indexOf("image");
-    const isVideo = ~metaData.mimeType.indexOf("video");
+    const isImage = metaData.mimeType.indexOf("image") > -1;
+    const isVideo = metaData.mimeType.indexOf("video") > -1;
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
     const isMsgByMe = isMessageByMe(message, user);
     const classNames = classnames({
@@ -237,7 +237,7 @@ class MainMessagesFile extends Component {
                             style={{margin: "3px"}}
                             onClick={this.onMessageControlHide.bind(this)}/>
             </Container>
-            <Container center centerTextAlign style={{width: "100%"}}>
+            <Container className={style.MainMessagesFile__ControlIconContainer}>
               {isMessageByMe(message, user) &&
               <MdDelete size={styleVar.iconSizeMd}
                         className={style.MainMessagesFile__ControlIcon}
@@ -262,6 +262,7 @@ class MainMessagesFile extends Component {
                        title={`${message.progress && message.progress.progress}`}/>
             : ""}
           <Paper colorBackgroundLight borderRadius={5} hasShadow>
+            {personNameFragment(message)}
             {replyFragment(message)}
             {forwardFragment(message)}
             <Container relative

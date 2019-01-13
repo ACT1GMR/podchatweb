@@ -34,6 +34,9 @@ import style from "../../../styles/pages/box/MainMessagesText.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 function urlify(text) {
+  if(!text) {
+    return "";
+  }
   var urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, function (url) {
     return ReactDOMServer.renderToStaticMarkup(<Text link={url} target="_blank" wordWrap="breakWord">{url}</Text>)
@@ -130,7 +133,7 @@ export default class MainMessagesText extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user} = this.props;
+    const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, personNameFragment} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const classNames = classnames({
       [style.MainMessagesText]: true,
@@ -152,7 +155,7 @@ export default class MainMessagesText extends Component {
                             style={{margin: "3px"}}
                             onClick={this.onMessageControlHide.bind(this)}/>
             </Container>
-            <Container center centerTextAlign style={{width: "100%"}}>
+            <Container className={style.MainMessagesText__ControlIconContainer}>
               {isMessageByMe(message, user) &&
               <Container inline>
                 {message.editable && <MdEdit size={styleVar.iconSizeMd}
@@ -174,6 +177,7 @@ export default class MainMessagesText extends Component {
           </Container>
           : ""}
         <Paper colorBackgroundLight borderRadius={5} hasShadow>
+          {personNameFragment(message)}
           {replyFragment(message)}
           {forwardFragment(message)}
           <Container userSelect="text">

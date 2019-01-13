@@ -92,6 +92,13 @@ export default class MainFooterInput extends Component {
     dispatch(threadIsSendingMessage(false));
   }
 
+  componentDidMount() {
+    const {dispatch, threadId, messageEditing: msgEditing} = this.props;
+    dispatch(messageEditing());
+    this.setInputText();
+    dispatch(threadIsSendingMessage(false));
+  }
+
   componentDidUpdate(prevProps) {
     const {dispatch, threadId, messageEditing: msgEditing} = this.props;
     if (msgEditing !== prevProps.messageEditing) {
