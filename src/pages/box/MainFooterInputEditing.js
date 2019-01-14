@@ -119,7 +119,7 @@ export default class MainFooterInputEditing extends Component {
       editObject = getMessageEditingText(messageEditing);
       return (
 
-        <Paper colorBackgroundLight borderRadius="20px 20px 0 0">
+        <Paper colorBackgroundLight style={{borderRadius: "20px 20px 0 0"}}>
           <Container inline className={style.MainFooterInputEditing}>
             <Container>
               {messageEditing.type === constants.forwarding ?

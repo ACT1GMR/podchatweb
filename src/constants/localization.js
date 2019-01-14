@@ -143,7 +143,9 @@ let strings = new LocalizedStrings({
     unBlock: "رفع مسدودی",
     accept: "قبول",
     leave: "ترک",
-    description: "توضیحات"
+    description: "توضیحات",
+    photo: "عکس",
+    video: "ویدیو"
   },
   it: {}
 });

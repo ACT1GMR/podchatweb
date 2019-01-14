@@ -176,7 +176,7 @@ export default class MainMessagesText extends Component {
             </Container>
           </Container>
           : ""}
-        <Paper colorBackgroundLight borderRadius={5} hasShadow>
+        <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
           {personNameFragment(message)}
           {replyFragment(message)}
           {forwardFragment(message)}

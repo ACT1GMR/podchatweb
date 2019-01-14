@@ -261,7 +261,7 @@ class MainMessagesFile extends Component {
                        style={{width: `${message.progress ? message.progress.progress : 0}%`}}
                        title={`${message.progress && message.progress.progress}`}/>
             : ""}
-          <Paper colorBackgroundLight borderRadius={5} hasShadow>
+          <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
             {personNameFragment(message)}
             {replyFragment(message)}
             {forwardFragment(message)}

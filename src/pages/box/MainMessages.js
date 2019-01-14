@@ -36,11 +36,14 @@ import MainMessagesText from "./MainMessagesText";
 //styling
 import {
   MdDoneAll,
+  MdVideocam,
   MdDone,
   MdChatBubbleOutline,
   MdErrorOutline,
   MdSchedule,
-  MdExpandMore
+  MdExpandMore,
+  MdCameraAlt,
+  MdInsertDriveFile
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
@@ -268,7 +271,10 @@ export default class MainMessages extends Component {
     }
   }
 
-  goToMessageId(threadId, msgId, isDeleted) {
+  goToMessageId(threadId, msgId, isDeleted, e) {
+    if(e) {
+      e.stopPropagation();
+    }
     if (isDeleted) {
       return;
     }
@@ -394,14 +400,54 @@ export default class MainMessages extends Component {
           meta = JSON.parse(replyInfo.metadata);
         } catch (e) {
         }
-        const text = replyInfo.message ? replyInfo.message : meta && meta.file && meta.file.name ? meta.file.name : "";
+        const text = replyInfo.message;
+        const file = meta && meta.file;
+        let isImage, isVideo, imageLink;
+        if (file) {
+          isImage = file.mimeType.indexOf("image") > -1;
+          isVideo = file.mimeType.indexOf("video") > -1;
+          if (isImage) {
+            let width = file.width;
+            let height = file.height;
+            const ratio = height / width;
+            const maxWidth = 100;
+            height = Math.ceil(maxWidth * ratio);
+            imageLink = `${file.link}&width=${maxWidth}&height=${height}`;
+          }
+        }
         return (
           <Container
             cursor="pointer"
             onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.repliedToMessageId, replyInfo.deleted)}>
-            <Paper colorBackground borderRadius={5}>
+            <Paper colorBackground
+                   style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
               <Text bold size="xs">{strings.replyTo}:</Text>
-              <Text italic size="xs">{text && text.length > 30 ? `${text.slice(0, 30)}...` : text}</Text>
+              {isImage && text ?
+                <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
+                :
+                isImage && !text ?
+                  <Container>
+                    <MdCameraAlt size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
+                    <Text inline size="sm" bold color="gray" dark>{strings.photo}</Text>
+                  </Container> :
+                  isVideo ?
+                    <Container>
+                      <MdVideocam size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
+                      <Text inline size="sm" bold color="gray" dark>{strings.video}</Text>
+                    </Container> :
+                    file ?
+                      <Container>
+                        <MdInsertDriveFile size={style.iconSizeSm} color={style.colorGrayDark}
+                                           style={{margin: "0 5px"}}/>
+                        <Text inline size="sm" bold color="gray" dark>{file.originalName}</Text>
+                      </Container>
+                      :
+                      <Text italic size="xs" isHTML>{text}</Text>}
+
+              {isImage &&
+              <Container className={style.MainMessages__ReplyFragmentImage}
+                         style={{backgroundImage: `url(${imageLink})`}}/>
+              }
             </Paper>
             <Gap block y={5}/>
           </Container>
@@ -413,7 +459,7 @@ export default class MainMessages extends Component {
       if (el.forwardInfo) {
         return (
           <Container>
-            <Paper colorBackground borderRadius={5}>
+            <Paper colorBackground style={{borderRadius: "5px"}}>
               <Text italic size="xs">{strings.forwardFrom}</Text>
               <Text bold>{el.forwardInfo.participant.name}:</Text>
             </Paper>
