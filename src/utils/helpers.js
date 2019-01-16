@@ -86,6 +86,12 @@ export function avatarNameGenerator(firstName, lastName) {
     return;
   }
   firstName = firstName.trim();
+  if (!firstName) {
+    return {
+      letter: "",
+      color: colorLogic[0]
+    }
+  }
   if (!lastName) {
     const split = firstName.split(" ");
     if (split.length <= 1) {
