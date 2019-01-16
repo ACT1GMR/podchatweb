@@ -74,13 +74,13 @@ export const threadGetList = threadIds => {
   }
 };
 
-export const threadMessageGetList = (threadId) => {
+export const threadMessageGetList = (threadId, offset, count) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: THREAD_GET_MESSAGE_LIST(),
-      payload: chatSDK.getThreadMessageList(threadId)
+      payload: chatSDK.getThreadMessageList(threadId, offset, count)
     });
   }
 };
