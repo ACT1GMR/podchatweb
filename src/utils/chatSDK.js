@@ -155,7 +155,7 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadMessageList(resolve, reject, threadId, offset) {
+  getThreadMessageList(resolve, reject, threadId, offset, count) {
     const getThreadHistoryParams = {
       count: count || 50,
       offset: offset || 0,
@@ -175,16 +175,16 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadMessageListPartial(resolve, reject, threadId, messageId, loadAfter, count) {
+  getThreadMessageListPartial(resolve, reject, threadId, messageTime, loadAfter, count) {
     const getThreadHistoryParams = {
       count: count || 50,
       threadId: threadId,
-      lastMessageId: messageId
+      toTime: Math.floor(messageTime / Math.pow(10, 6))
     };
     if (loadAfter) {
-      getThreadHistoryParams.firstMessageId = messageId;
+      getThreadHistoryParams.fromTime = Math.floor(messageTime / Math.pow(10, 6));
       getThreadHistoryParams.order = "ASC";
-      delete getThreadHistoryParams.lastMessageId;
+      delete getThreadHistoryParams.toTime;
     }
     this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
       if (!this._onError(result, reject)) {
@@ -200,17 +200,17 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadMessageListByMessageId(resolve, reject, threadId, msgId) {
+  getThreadMessageListByMessageId(resolve, reject, threadId, messageTime) {
     let baseGetThreadHistoryParams = {
       count: 50,
       threadId: threadId
     };
 
     let historyMessageArray = [];
-    this.getThreadMessageListPartial(threadId, msgId, true, 25).then(result => {
+    this.getThreadMessageListPartial(threadId, messageTime, true, 25).then(result => {
       historyMessageArray = [...historyMessageArray, ...result.messages];
       const hasNext = result.hasNext;
-      this.getThreadMessageListPartial(threadId, msgId, false, 25).then(result => {
+      this.getThreadMessageListPartial(threadId, messageTime, false, 25).then(result => {
         historyMessageArray = [...historyMessageArray, ...result.messages];
         resolve({...result, ...{messages: historyMessageArray, hasNext, hasPrevious: result.hasNext}});
       }, reject);

@@ -200,7 +200,7 @@ export default class MainMessages extends Component {
         }
       }
       if (message) {
-        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, loadBefore, 50));
+        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.time, loadBefore, 50));
       }
     } else {
       this.lastPosition = scrollTop;
@@ -236,7 +236,7 @@ export default class MainMessages extends Component {
           this.gotoBottom = false;
         }
       } else if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
-        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.messageId);
+        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.time);
       } else {
         if (oldThreadId !== threadId) {
           this.gotoBottom = true;
@@ -272,7 +272,7 @@ export default class MainMessages extends Component {
     }
   }
 
-  goToMessageId(threadId, msgId, isDeleted, e) {
+  goToMessageId(threadId, messageTime, isDeleted, e) {
     if(e) {
       e.stopPropagation();
     }
@@ -285,7 +285,7 @@ export default class MainMessages extends Component {
       return this.gotoMessage(msgId);
     }
     this.pendingGoToId = msgId;
-    this.props.dispatch(threadMessageGetListByMessageId(threadId, msgId));
+    this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime));
   }
 
   onDragOver(e) {
@@ -419,7 +419,7 @@ export default class MainMessages extends Component {
         return (
           <Container
             cursor="pointer"
-            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.repliedToMessageId, replyInfo.deleted)}>
+            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.time, replyInfo.deleted)}>
             <Paper colorBackground
                    style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
               <Text bold size="xs">{strings.replyTo}:</Text>

@@ -134,13 +134,13 @@ export const threadLeave = threadId => {
   }
 };
 
-export const threadMessageGetListPartial = (threadId, msgId, loadBefore, count) => {
+export const threadMessageGetListPartial = (threadId, msgTime, loadBefore, count) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: THREAD_GET_MESSAGE_LIST_PARTIAL(),
-      payload: chatSDK.getThreadMessageListPartial(threadId, msgId, !loadBefore, count)
+      payload: chatSDK.getThreadMessageListPartial(threadId, msgTime, !loadBefore, count)
     });
   }
 };
