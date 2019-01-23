@@ -33,8 +33,8 @@ class MyApp extends Component {
 }
 ```
 
-Programmatic calling:
-
+### Programmatic calling:
+#### Module loader:
 ```jsx
 import {Podchat} from "podchatweb"
 
@@ -42,13 +42,35 @@ class MyApp extends Component {
 
     componentDidMount() {
         const {token} = this.props;
-        Podchat({token, onTokenExpire: callBack=> callBack(token)}, "myChat")
+        Podchat({token}, "myChat")
     }
     
     render() {
         return <div id="myChat"/>
     }
 }
+```
+
+#### Old school:
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="dist/index.js"/>
+</head>
+
+<body>
+<div id="app"></div>
+<script>
+var podchat = Podchat({token: "YOUR_TOKEN"}, "app");
+//GOT NEW TOKEN
+podchat.setToken("YOUR_NEW_TOKEN");
+</script>
+</body>
+</html>
 ```
 
 ## License

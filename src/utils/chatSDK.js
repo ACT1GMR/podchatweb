@@ -157,7 +157,7 @@ export default class ChatSDK {
   @promiseDecorator
   getThreadMessageList(resolve, reject, threadId, offset) {
     const getThreadHistoryParams = {
-      count: count || 50,
+      count: 50,
       offset: offset || 0,
       threadId: threadId
     };
@@ -272,7 +272,6 @@ export default class ChatSDK {
       ...obj, ...{
         newMessage: true,
         message: caption,
-        time: Date.now() * Math.pow(10, 6),
         fileUniqueId: obj.content.file.uniqueId,
         metaData: {
           file: {

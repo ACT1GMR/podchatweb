@@ -20,7 +20,9 @@ function Podchat(props, elementId) {
   let instance;
   render(
     <Provider store={store}>
-      <Box {...props} ref={e => instance = e}/>
+      <BrowserRouter>
+        <Box {...props} wrappedComponentRef={e => instance = e}/>
+      </BrowserRouter>
     </Provider>,
     document.getElementById(elementId)
   );
@@ -28,3 +30,5 @@ function Podchat(props, elementId) {
 }
 
 export {PodchatJSX, Podchat};
+
+window.Podchat = Podchat;

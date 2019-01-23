@@ -95,7 +95,7 @@ module.exports = (e, argv) => {
       path: __dirname + "/dist",
       filename: "index.js",
       library: "",
-      libraryTarget: "commonjs"
+      libraryTarget: "umd"
     }
   } else {
     base.devtool = "source-map";

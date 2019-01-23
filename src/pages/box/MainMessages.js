@@ -88,7 +88,6 @@ function isFile(message) {
 }
 
 function datePetrification(time) {
-  time = Math.ceil(time / Math.pow(10, 6));
   return date.isToday(time) ? date.format(time, "HH:mm") : date.isWithinAWeek(time) ? date.format(time, "dddd HH:mm") : date.format(time, "YYYY-MM-DD  HH:mm");
 }
 
