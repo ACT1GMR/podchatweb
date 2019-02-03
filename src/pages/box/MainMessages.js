@@ -63,8 +63,8 @@ function isMessageByMe(message, user) {
 
 function showNameOrAvatar(message, threadMessages) {
   const msgOwnerId = message.participant.id;
-  const msgId = message.id;
-  const index = threadMessages.findIndex(e => e.id === msgId);
+  const msgId = message.id || message.uniqueId;
+  const index = threadMessages.findIndex(e => e.id === msgId || e.uniqueId === msgId);
   if (~index) {
     const lastMessage = threadMessages[index - 1];
     if (lastMessage) {
@@ -272,7 +272,7 @@ export default class MainMessages extends Component {
   }
 
   goToMessageId(threadId, msgId, isDeleted, e) {
-    if(e) {
+    if (e) {
       e.stopPropagation();
     }
     if (isDeleted) {
@@ -501,7 +501,7 @@ export default class MainMessages extends Component {
       const color = avatarNameGenerator(messageParticipant.name).color;
       return showNameOrAvatar(message, threadMessages) &&
         <Text size="sm" bold
-              style={{color: color}}>{messageParticipant.firstName} {messageParticipant.lastName}</Text>
+              style={{color: color}}>{messageParticipant.contactName || messageParticipant.name}</Text>
     };
 
     const messageArguments = message => {
@@ -541,6 +541,12 @@ export default class MainMessages extends Component {
     };
 
 
+    const MainMessagesMessageContainerClassNames = message => classnames({
+      [style.MainMessages__MessageContainer]: true,
+      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
+    });
+
+
     return (
       <Container className={style.MainMessages} onScroll={this.onScroll}
                  userSelect="none"
@@ -555,9 +561,9 @@ export default class MainMessages extends Component {
               <ListItem key={el.id || el.uniqueId} data={el}
                         noPadding
                         active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
-                <Container leftTextAlign={!isMessageByMe(el, user)} id={`${el.id || el.uniqueId}`} relative>
-                  {!isMessageByMe(el, user) ? message(el) : avatar(el)}
-                  {!isMessageByMe(el, user) ? avatar(el) : message(el)}
+                <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}  relative>
+                  {avatar(el)}
+                  {message(el)}
                   {threadSelectMessageShowing && messageTick(el)}
                 </Container>
               </ListItem>

@@ -169,8 +169,8 @@ class MainMessagesFile extends Component {
   }
 
   onDownload(metaData, isVideo, e) {
-    e.stopPropagation();
-    if (isVideo) {
+    (e || isVideo).stopPropagation();
+    if (isVideo === true) {
       return;
     }
     window.location.href = `${metaData.link}&downloadable=true`;
@@ -231,7 +231,7 @@ class MainMessagesFile extends Component {
         {highLighterFragment(message)}
         {messageControlShow ?
           <Container className={style.MainMessagesFile__Control}>
-            <Container topLeft={isMessageByMe(message, user)} topRight={!isMessageByMe(message, user)}>
+            <Container topLeft>
               <MdExpandMore size={styleVar.iconSizeMd}
                             className={style.MainMessagesFile__TriggerIcon}
                             style={{margin: "3px"}}
@@ -266,7 +266,7 @@ class MainMessagesFile extends Component {
             {replyFragment(message)}
             {forwardFragment(message)}
             <Container relative
-                       className={`${style.MainMessagesFile__FileContainer} ${!isImage && !isMsgByMe ? style["MainMessagesFile__FileContainer--reverseDirection"] : ""}`}>
+                       className={style.MainMessagesFile__FileContainer}>
               {isImage ?
                 <Container style={{width: `${imageSizeLink.width}px`}}>
                   <Container className={style.MainMessagesFile__ImageContainer}>
@@ -332,7 +332,7 @@ class MainMessagesFile extends Component {
                 dispatch(messageSendFile(message.content.file.fileObject, message.threadId, message.message));
               })}
               {datePetrification(message.time)}
-              <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace
+              <Container inline left inSpace
                          className={style.MainMessagesFile__OpenTriggerIconContainer}>
                 <MdExpandLess size={styleVar.iconSizeMd}
                               className={style.MainMessagesFile__TriggerIcon}

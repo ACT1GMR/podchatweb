@@ -9,6 +9,19 @@ import Container from "../../../../../uikit/src/container";
 
 //styling
 
+function getName(contanct) {
+  if (contanct.contactName) {
+    return contanct.contactName;
+  }
+  if (contanct.name) {
+    return contanct.name;
+  }
+  if (contanct.firstName) {
+    return `${contanct.firstName} ${contanct.lastName}`;
+  }
+
+}
+
 export function ContactList(props) {
   const {hasUser, contacts, activeList, onSelect, onDeselect, activeWithTick, actions, selection, invert, multiple} = props;
   let filterContacts = [...contacts];
@@ -28,8 +41,9 @@ export function ContactList(props) {
                   active={activeList && activeList.indexOf(el.id) > -1}>
           <Container relative>
             <Avatar>
-              <AvatarImage src={el.image} text={avatarNameGenerator(el.name ? el.name  : `${el.firstName} ${el.lastName}`).letter} textBg={avatarNameGenerator(el.name ? el.name  : `${el.firstName} ${el.lastName}`).color}/>
-              <AvatarName>{el.name ? el.name  : `${el.firstName} ${el.lastName}`}</AvatarName>
+              <AvatarImage src={el.image} text={avatarNameGenerator(getName(el)).letter}
+                           textBg={avatarNameGenerator(getName(el)).color}/>
+              <AvatarName>{getName(el)}</AvatarName>
             </Avatar>
 
             {actions ?

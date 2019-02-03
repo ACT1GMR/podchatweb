@@ -149,7 +149,7 @@ export default class MainMessagesText extends Component {
         {highLighterFragment(message)}
         {messageControlShow ?
           <Container className={style.MainMessagesText__Control}>
-            <Container topLeft={isMessageByMe(message, user)} topRight={!isMessageByMe(message, user)}>
+            <Container topLeft>
               <MdExpandMore size={styleVar.iconSizeMd}
                             className={style.MainMessagesText__TriggerIcon}
                             style={{margin: "3px"}}
@@ -189,7 +189,7 @@ export default class MainMessagesText extends Component {
             {seenFragment(message, user)}
             {editFragment(message)}
             {datePetrification(message.time)}
-            <Container inline left={isMessageByMe(message, user)} right={!isMessageByMe(message, user)} inSpace
+            <Container inline left inSpace
                        className={style.MainMessagesText__OpenTriggerIconContainer}>
               <MdExpandLess size={styleVar.iconSizeMd}
                             className={style.MainMessagesText__TriggerIcon}

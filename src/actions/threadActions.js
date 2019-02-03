@@ -25,7 +25,7 @@ import {
   THREAD_CHECKED_MESSAGE_LIST_ADD,
   CONTACT_GET_LIST,
   THREAD_EMOJI_SHOWING,
-  THREAD_NOTIFICATION, THREAD_LEAVE, THREAD_REMOVED_FROM, THREAD_CREATE_INIT
+  THREAD_NOTIFICATION, THREAD_LEAVE, THREAD_REMOVED_FROM, THREAD_CREATE_INIT, THREAD_PARTICIPANTS_REMOVED
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName, idType) => {
@@ -217,14 +217,16 @@ export const threadAddParticipant = (threadId, contactIds) => {
   }
 };
 
-export const threadRemoveParticipant = (threadId, participants) => {
+export const threadRemoveParticipant = (threadId, participantIds) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    return dispatch({
-      type: THREAD_PARTICIPANT_REMOVE(),
-      payload: chatSDK.removeParticipants(threadId, participants)
-    });
+    chatSDK.removeParticipants(threadId, participantIds).then(()=>{
+      return dispatch({
+        type: THREAD_PARTICIPANTS_REMOVED,
+        payload: {threadId, participantIds}
+      });
+    })
   }
 };
 
@@ -349,7 +351,7 @@ export const threadNotification = (threadId, mute) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     return dispatch({
-      type: THREAD_NOTIFICATION,
+      type: THREAD_NOTIFICATION(),
       payload: chatSDK.muteThread(threadId, mute)
     });
   }

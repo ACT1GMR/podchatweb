@@ -21,7 +21,7 @@ export const chatSetInstance = config => {
     const chatSDKInstance = new ChatSDK({
       config,
       onThreadEvents: (thread, type) => {
-        if(type === THREAD_REMOVED_FROM) {
+        if (type === THREAD_REMOVED_FROM) {
           return dispatch({
             type: THREAD_REMOVED_FROM,
             payload: thread
@@ -59,6 +59,9 @@ export const chatSetInstance = config => {
           type: CHAT_STATE,
           payload: e
         });
+      },
+      onChatError(e) {
+        console.log(e)
       },
       onChatReady(e) {
         dispatch({

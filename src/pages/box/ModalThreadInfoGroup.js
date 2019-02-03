@@ -45,7 +45,7 @@ const constants = {
 @connect(store => {
   return {
     threadParticipantAdd: store.threadParticipantAdd.thread,
-    threadParticipantRemove: store.threadParticipantRemove.thread,
+    notificationPending: store.threadNotification.fetching
   }
 }, null, null, {withRef: true})
 class ModalThreadInfoGroup extends Component {
@@ -54,7 +54,9 @@ class ModalThreadInfoGroup extends Component {
     super(props);
     this.state = {
       addMembers: [],
-      step: constants.GROUP_INFO
+      step: constants.GROUP_INFO,
+      removingParticipantIds: [],
+      partialParticipantLoading: false
     };
     this.settingsRef = React.createRef();
     this.onClose = this.onClose.bind(this);
@@ -70,21 +72,21 @@ class ModalThreadInfoGroup extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {thread, threadParticipantAdd, threadParticipantRemove, dispatch} = this.props;
+    const {thread, threadParticipantAdd, dispatch} = this.props;
     if (thread.id) {
       if (oldProps.thread.id !== thread.id) {
+        this.setState({
+          partialParticipantLoading: false
+        });
         dispatch(threadParticipantList(thread.id));
       }
     }
 
     if (threadParticipantAdd) {
       if (!oldProps.threadParticipantAdd || oldProps.threadParticipantAdd.timestamp !== threadParticipantAdd.timestamp) {
-        dispatch(threadParticipantList(thread.id));
-      }
-    }
-
-    if (threadParticipantRemove) {
-      if (!oldProps.threadParticipantRemove || oldProps.threadParticipantRemove.timestamp !== threadParticipantRemove.timestamp) {
+        this.setState({
+          partialParticipantLoading: true
+        });
         dispatch(threadParticipantList(thread.id));
       }
     }
@@ -104,10 +106,20 @@ class ModalThreadInfoGroup extends Component {
 
   onAddMember() {
     const {thread, dispatch} = this.props;
-    dispatch(threadAddParticipant(thread.id, this.state.addMembers));
+    const {addMembers, removingParticipantIds} = this.state;
+    const removingParticipantIdsClone = [...removingParticipantIds];
+    dispatch(threadAddParticipant(thread.id, addMembers));
+    for (const addMember of addMembers) {
+      const index = removingParticipantIdsClone.indexOf(addMember);
+      if(index > -1 ) {
+        removingParticipantIdsClone.splice(index, 1);
+      }
+    }
+
     this.setState({
       step: constants.GROUP_INFO,
-      addMembers: []
+      addMembers: [],
+      removingParticipantIds: removingParticipantIdsClone
     });
   }
 
@@ -136,9 +148,9 @@ class ModalThreadInfoGroup extends Component {
     });
   }
 
-  onStartChat(id) {
+  onStartChat(id, isParticipant) {
     this.onClose();
-    this.props.dispatch(threadCreate(id));
+    this.props.dispatch(threadCreate(id, null, null, isParticipant ? "TO_BE_USER_ID" : null));
   }
 
   onClose(dontGoBack) {
@@ -174,14 +186,19 @@ class ModalThreadInfoGroup extends Component {
 
   onRemoveParticipant(participant) {
     const {thread, dispatch} = this.props;
+    const {removingParticipantIds} = this.state;
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(participant.name)}؟`, () => {
       dispatch(threadRemoveParticipant(thread.id, [participant.id]));
       dispatch(chatModalPrompt());
+      this.setState({
+        removingParticipantIds: [...removingParticipantIds, ...[participant.contactId]]
+      });
     }, null));
   }
 
   render() {
-    const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching} = this.props;
+    const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching, notificationPending} = this.props;
+    const {removingParticipantIds, partialParticipantLoading} = this.state;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
@@ -189,17 +206,30 @@ class ModalThreadInfoGroup extends Component {
     const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
 
     const conversationAction = participant => {
+      const participantId = participant.id;
+      const participantContactId = participant.contactId;
+      const isRemovingParticipant = removingParticipantIds.indexOf(participantContactId) > -1;
+      const id = participantContactId || participantId;
+      const isParticipant = !participant.contactId;
       return (
         <Container>
+          {isRemovingParticipant ?
+            <Container centerTextAlign>
+              <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+            </Container>
+            :
+            <Container>
+              <Button onClick={this.onStartChat.bind(this, id, isParticipant)} text size="sm">
+                {strings.startChat}
+              </Button>
+              {thread.inviter && thread.group && user.id === thread.inviter.id ? (
+                <Button onClick={this.onRemoveParticipant.bind(this, participant)} text size="sm">
+                  {strings.remove}
+                </Button>
+              ) : ""}
+            </Container>
+          }
 
-          <Button onClick={this.onStartChat.bind(this, participant.contactId)} text size="sm">
-            {strings.startChat}
-          </Button>
-          {thread.inviter && thread.group && user.id === thread.inviter.id ? (
-            <Button onClick={this.onRemoveParticipant.bind(this, participant)} text size="sm">
-              {strings.remove}
-            </Button>
-          ) : ""}
         </Container>
 
       )
@@ -293,10 +323,16 @@ class ModalThreadInfoGroup extends Component {
                         <Text>{strings.notification}</Text>
                       </Gap>
                       <Container centerLeft>
-                        <Gap x={5}>
-                          <Text size="sm"
-                                color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
-                        </Gap>
+                        {notificationPending ?
+                          <Container centerTextAlign>
+                            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                          </Container>
+                          :
+                          <Gap x={5}>
+                            <Text size="sm"
+                                  color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
+                          </Gap>
+                        }
                       </Container>
                     </Container>
                   </ListItem>
@@ -308,7 +344,7 @@ class ModalThreadInfoGroup extends Component {
               </Gap>
 
               <Container>
-                {participantsFetching ?
+                {participantsFetching && !partialParticipantLoading ?
                   <Container centerTextAlign>
                     <Loading hasSpace><LoadingBlinkDots/></Loading>
                     <Text>{strings.waitingForContact}...</Text>

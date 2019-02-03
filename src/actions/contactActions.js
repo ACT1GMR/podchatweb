@@ -6,7 +6,7 @@ import {
   CONTACT_LIST_SHOWING,
   CONTACT_CHATTING,
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
-  THREAD_CREATE, THREAD_GET_MESSAGE_LIST, CONTACT_REMOVE, CONTACT_EDIT
+  THREAD_CREATE, THREAD_GET_MESSAGE_LIST, CONTACT_REMOVE, CONTACT_EDIT, CONTACT_BLOCK
 } from "../constants/actionTypes";
 import {threadCreate, threadParticipantList, threadShowing} from "./threadActions";
 
@@ -73,7 +73,15 @@ export const contactBlock = (contactId, block, thread) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: CONTACT_BLOCK("PENDING"),
+      payload: null
+    });
     chatSDK.blockContact(contactId, block).then(() => {
+      dispatch({
+        type: CONTACT_BLOCK("SUCCESS"),
+        payload: null
+      });
       dispatch(threadParticipantList(thread.id));
     });
   }

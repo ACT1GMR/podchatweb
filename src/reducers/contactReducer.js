@@ -4,7 +4,7 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   CONTACT_ADDING,
   CONTACT_ADD,
-  CONTACT_CHATTING, CONTACT_EDIT, CONTACT_GET_BLOCK_LIST
+  CONTACT_CHATTING, CONTACT_EDIT, CONTACT_GET_BLOCK_LIST, CONTACT_BLOCK
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -70,6 +70,24 @@ export const contactAdd = (state = {
     case CONTACT_ADD("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload, "contact")};
     case CONTACT_ADD("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const contactBlockReducer = (state = {
+  contact: null,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case CONTACT_BLOCK("PENDING"):
+      return {...state, ...stateObject("PENDING", null, "contact")};
+    case CONTACT_BLOCK("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "contact")};
+    case CONTACT_BLOCK("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;

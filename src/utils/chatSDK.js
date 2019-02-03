@@ -35,6 +35,7 @@ export default class ChatSDK {
     this.onFileUploadEvents = props.onFileUploadEvents;
     this.onChatReady = props.onChatReady;
     this.onChatState = props.onChatState;
+    this.onChatError = props.onChatError;
     this._onMessageEvents();
     this._onThreadEvents();
     this._onFileUploadEvents();
@@ -96,12 +97,18 @@ export default class ChatSDK {
 
   _onChatError() {
     this.chatAgent.on("error", (response) => {
-      this._onError(response.error);
+      if (this.onChatError) {
+        this.onChatError(response.error);
+      }
     });
   }
 
   setToken(token) {
     this.chatAgent.setToken(token);
+  }
+
+  reconnect() {
+    this.chatAgent.reconnect();
   }
 
   @promiseDecorator
@@ -342,7 +349,7 @@ export default class ChatSDK {
     };
     this.chatAgent[mute ? "muteThread" : "unMuteThread"](params, result => {
       if (!this._onError(result, reject)) {
-        return resolve();
+        return resolve(threadId);
       }
     });
   }
@@ -559,7 +566,7 @@ export default class ChatSDK {
 
     this.chatAgent.addParticipants(addParticipantParams, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.thread);
+        return resolve(result.result.thread.participants);
       }
     });
   }
@@ -573,7 +580,7 @@ export default class ChatSDK {
 
     this.chatAgent.removeParticipants(removeParticipantParams, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.thread);
+        return resolve(participants);
       }
     });
   }

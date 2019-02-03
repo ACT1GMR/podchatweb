@@ -51,6 +51,50 @@ const sanitizeRule = {
   }
 };
 
+function clearHtml(html) {
+  const document = window.document.createElement("div");
+  document.innerHTML = html;
+  const children = Array.from(document.childNodes);
+  const removingIndexes = [];
+  for (let child of children) {
+    if (child.data) {
+      break
+    }
+    if (child.innerText === "\n") {
+      removingIndexes.push(children.indexOf(child));
+      continue;
+    }
+    break;
+  }
+  const clonedChildren = [...children].reverse();
+  for (let child of clonedChildren) {
+    if (child.data) {
+      break;
+    }
+    if (child.innerText === "\n") {
+      removingIndexes.push(children.indexOf(child));
+      continue;
+    }
+    break;
+  }
+  let filterChildren = [];
+  if (removingIndexes.length) {
+    let index = 0;
+    for (const child of children) {
+      if (removingIndexes.indexOf(index) === -1) {
+        filterChildren.push(child);
+      }
+      index++;
+    }
+  } else {
+    filterChildren = children;
+  }
+  const newText = window.document.createElement("div");
+  filterChildren.map(e => newText.appendChild(e));
+  return newText.innerHTML.trim();
+}
+
+
 @connect(store => {
   return {
     messageEditing: store.messageEditing,
@@ -63,6 +107,7 @@ export default class MainFooterInput extends Component {
     super();
     this.onTextChange = this.onTextChange.bind(this);
     this.setInputText = this.setInputText.bind(this);
+    this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.inputNode = React.createRef();
     this.state = {
       messageText: ""
@@ -74,7 +119,9 @@ export default class MainFooterInput extends Component {
     const {messageText} = this.state;
     let newText = text;
     if (append) {
-      newText = messageText + newText
+      if (messageText) {
+        newText = messageText + newText;
+      }
     }
     this.setState({
       messageText: newText
@@ -131,11 +178,12 @@ export default class MainFooterInput extends Component {
   sendMessage() {
     const {threadId, dispatch, messageEditing: msgEditing} = this.props;
     const {messageText} = this.state;
+    const clearMessageText = clearHtml(messageText);
     let isEmptyMessage = false;
-    if (!messageText) {
+    if (!clearMessageText) {
       isEmptyMessage = true;
     }
-    if (!messageText.trim()) {
+    if (!clearMessageText.trim()) {
       isEmptyMessage = true;
     }
     if (msgEditing) {
@@ -144,23 +192,23 @@ export default class MainFooterInput extends Component {
         if (isEmptyMessage) {
           return;
         }
-        dispatch(messageReply(messageText, msgEditingId, threadId));
+        dispatch(messageReply(clearMessageText, msgEditingId, threadId));
       } else if (msgEditing.type === constants.forwarding) {
-        if (messageText) {
-          dispatch(messageSend(messageText, threadId));
+        if (clearMessageText) {
+          dispatch(messageSend(clearMessageText, threadId));
         }
         dispatch(messageForward(threadId, msgEditingId));
       } else {
         if (isEmptyMessage) {
           return;
         }
-        this.props.dispatch(messageEdit(messageText, msgEditingId));
+        this.props.dispatch(messageEdit(clearMessageText, msgEditingId));
       }
     } else {
       if (isEmptyMessage) {
         return;
       }
-      dispatch(messageSend(messageText, threadId));
+      dispatch(messageSend(clearMessageText, threadId));
     }
     dispatch(messageEditing());
     this.setInputText("");
@@ -168,6 +216,15 @@ export default class MainFooterInput extends Component {
 
   onTextChange(event) {
     this.setInputText(event);
+  }
+
+  onInputKeyPress(evt) {
+    if (!mobileCheck()) {
+      if (evt.which === 13 && !evt.shiftKey) {
+        this.sendMessage();
+        evt.preventDefault();
+      }
+    }
   }
 
   render() {
@@ -191,6 +248,7 @@ export default class MainFooterInput extends Component {
               ref={this.inputNode}
               placeholder={strings.pleaseWriteHere}
               onChange={this.onTextChange}
+              onKeyPress={this.onInputKeyPress}
               value={messageText}/>
           </Container>
           <Container centerLeft>

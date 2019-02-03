@@ -79,6 +79,13 @@ class ModalAddContact extends Component {
 
   onSubmit() {
     const {mobilePhone, firstName, lastName} = this.state;
+    if(!firstName || !firstName.trim()) {
+      if(!lastName || !lastName.trim()) {
+        return this.setState({
+          notEnteredFirstOrFamilyName: true
+        });
+      }
+    }
     const {contactEdit} = this.props;
     this.props.dispatch(contactAdd(mobilePhone, firstName, lastName, contactEdit));
   }
@@ -98,13 +105,14 @@ class ModalAddContact extends Component {
 
   onFieldChange(field, event) {
     this.setState({
+      notEnteredFirstOrFamilyName: false,
       [field]: event.target.value
     });
   }
 
   render() {
     const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
-    const {mobilePhone, firstName, lastName} = this.state;
+    const {mobilePhone, firstName, lastName, notEnteredFirstOrFamilyName} = this.state;
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
@@ -116,7 +124,7 @@ class ModalAddContact extends Component {
           <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
                      value={mobilePhone}
                      placeholder={strings.mobilePhone}/>
-          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")} placeholder={strings.firstName}
+          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")} placeholder={`${strings.firstName} ( ${strings.required} )`}
                      value={firstName}/>
           <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}
                      value={lastName}/>
@@ -126,11 +134,11 @@ class ModalAddContact extends Component {
           <Button text loading={contactAddPending}
                   onClick={this.onSubmit.bind(this)}>{contactEdit ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
-          {contactAdd && !contactAdd.linkedUser &&
+          {( contactAdd && !contactAdd.linkedUser ) || notEnteredFirstOrFamilyName &&
           (
             <Container inline>
               <Message warn>
-                {strings.isNotPodUser}
+                {notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : strings.isNotPodUser}
               </Message>
             </Container>
           )
