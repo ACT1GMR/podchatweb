@@ -77,12 +77,18 @@ export default class MainMessagesText extends Component {
     if (mobileCheck()) {
       return;
     }
+    if(this.state.messageTriggerShow) {
+      return;
+    }
     this.setState({
       messageTriggerShow: true
     });
   }
 
   onMouseLeave() {
+    if(!this.state.messageTriggerShow) {
+      return;
+    }
     this.setState({
       messageTriggerShow: false
     });

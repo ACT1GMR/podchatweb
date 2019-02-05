@@ -390,7 +390,15 @@ export const threadMessageListReducer = (state = {
       return removeDuplicate({...state, messages: [...state.messages, action.payload]});
     case MESSAGE_EDIT():
     case MESSAGE_SEEN:
-      return updateMessage(null, action.payload, message => message.id === action.payload.id);
+      const newState = updateMessage(null, action.payload, message => message.id === action.payload.id);
+      const newMessagesClone = newState.messages;
+      const fileIndex = newMessagesClone.findIndex(message => message.id === action.payload.id);
+      newMessagesClone.slice(0, fileIndex).forEach(e => {
+        if (!e.seen) {
+          e.seen = true;
+        }
+      });
+      return {...newState, ...stateObject("SUCCESS", newMessagesClone, "messages")};
     case MESSAGE_DELETE:
       return updateMessage(null, null, message => message.id === action.payload.id, null, true, true);
     default:

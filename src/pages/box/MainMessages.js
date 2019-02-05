@@ -156,23 +156,13 @@ export default class MainMessages extends Component {
     const goingToUp = scrollTop < this.lastPosition;
     const scrollHeight = current.scrollHeight;
     const gotoBottomButtonShowingThreshold = 100;
-    if (!goingToUp || threadMessagesHasNext) {
-      if (!goingToUp) {
-        if (scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
-          if (!gotoBottomButtonShowing) {
-            this.setState({
-              gotoBottomButtonShowing: true
-            });
-          }
-        } else {
-          if (gotoBottomButtonShowing) {
-            this.setState({
-              gotoBottomButtonShowing: false
-            });
-          }
+    if (threadMessagesHasNext || scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
+        if (!gotoBottomButtonShowing) {
+          this.setState({
+            gotoBottomButtonShowing: true
+          });
         }
-      }
-    } else {
+      } else {
       if (gotoBottomButtonShowing) {
         this.setState({
           gotoBottomButtonShowing: false
@@ -352,7 +342,7 @@ export default class MainMessages extends Component {
     if (threadMessagesPartialFetching) {
       partialLoading =
         (
-          <Container topCenter centerTextAlign>
+          <Container topCenter centerTextAlign style={{zIndex: 1}}>
             <Loading><LoadingBlinkDots size="sm"/></Loading>
           </Container>
         )
@@ -561,7 +551,8 @@ export default class MainMessages extends Component {
               <ListItem key={el.id || el.uniqueId} data={el}
                         noPadding
                         active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
-                <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}  relative>
+                <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}
+                           relative>
                   {avatar(el)}
                   {message(el)}
                   {threadSelectMessageShowing && messageTick(el)}
