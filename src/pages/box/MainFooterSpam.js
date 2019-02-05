@@ -112,12 +112,7 @@ export default class MainFooterSpam extends Component {
   componentDidUpdate(oldProps) {
     const {thread, dispatch, contacts} = this.props;
     const {thread: oldThread, contacts: oldContacts} = oldProps;
-    if (thread) {
-      if (!oldThread || oldThread.id !== thread.id) {
-        dispatch(threadParticipantList(thread.id));
-        dispatch(contactGetList());
-      }
-    }
+
   }
 
   reportSpamClick() {

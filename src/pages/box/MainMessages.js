@@ -63,8 +63,8 @@ function isMessageByMe(message, user) {
 
 function showNameOrAvatar(message, threadMessages) {
   const msgOwnerId = message.participant.id;
-  const msgId = message.id;
-  const index = threadMessages.findIndex(e => e.id === msgId);
+  const msgId = message.id || message.uniqueId;
+  const index = threadMessages.findIndex(e => e.id === msgId || e.uniqueId === msgId);
   if (~index) {
     const lastMessage = threadMessages[index - 1];
     if (lastMessage) {
@@ -88,7 +88,6 @@ function isFile(message) {
 }
 
 function datePetrification(time) {
-  time = Math.ceil(time / Math.pow(10, 6));
   return date.isToday(time) ? date.format(time, "HH:mm") : date.isWithinAWeek(time) ? date.format(time, "dddd HH:mm") : date.format(time, "YYYY-MM-DD  HH:mm");
 }
 
@@ -157,23 +156,13 @@ export default class MainMessages extends Component {
     const goingToUp = scrollTop < this.lastPosition;
     const scrollHeight = current.scrollHeight;
     const gotoBottomButtonShowingThreshold = 100;
-    if (!goingToUp || threadMessagesHasNext) {
-      if (!goingToUp) {
-        if (scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
-          if (!gotoBottomButtonShowing) {
-            this.setState({
-              gotoBottomButtonShowing: true
-            });
-          }
-        } else {
-          if (gotoBottomButtonShowing) {
-            this.setState({
-              gotoBottomButtonShowing: false
-            });
-          }
+    if (threadMessagesHasNext || scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
+        if (!gotoBottomButtonShowing) {
+          this.setState({
+            gotoBottomButtonShowing: true
+          });
         }
-      }
-    } else {
+      } else {
       if (gotoBottomButtonShowing) {
         this.setState({
           gotoBottomButtonShowing: false
@@ -200,7 +189,7 @@ export default class MainMessages extends Component {
         }
       }
       if (message) {
-        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.time, loadBefore, 50));
+        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, loadBefore, 50));
       }
     } else {
       this.lastPosition = scrollTop;
@@ -236,7 +225,7 @@ export default class MainMessages extends Component {
           this.gotoBottom = false;
         }
       } else if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
-        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.time);
+        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.messageId);
       } else {
         if (oldThreadId !== threadId) {
           this.gotoBottom = true;
@@ -272,8 +261,8 @@ export default class MainMessages extends Component {
     }
   }
 
-  goToMessageId(threadId, messageTime, isDeleted, e) {
-    if(e) {
+  goToMessageId(threadId, msgId, isDeleted, e) {
+    if (e) {
       e.stopPropagation();
     }
     if (isDeleted) {
@@ -285,7 +274,7 @@ export default class MainMessages extends Component {
       return this.gotoMessage(msgId);
     }
     this.pendingGoToId = msgId;
-    this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime));
+    this.props.dispatch(threadMessageGetListByMessageId(threadId, msgId));
   }
 
   onDragOver(e) {
@@ -353,7 +342,7 @@ export default class MainMessages extends Component {
     if (threadMessagesPartialFetching) {
       partialLoading =
         (
-          <Container topCenter centerTextAlign>
+          <Container topCenter centerTextAlign style={{zIndex: 1}}>
             <Loading><LoadingBlinkDots size="sm"/></Loading>
           </Container>
         )
@@ -419,7 +408,7 @@ export default class MainMessages extends Component {
         return (
           <Container
             cursor="pointer"
-            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.time, replyInfo.deleted)}>
+            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.repliedToMessageId, replyInfo.deleted)}>
             <Paper colorBackground
                    style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
               <Text bold size="xs">{strings.replyTo}:</Text>
@@ -502,7 +491,7 @@ export default class MainMessages extends Component {
       const color = avatarNameGenerator(messageParticipant.name).color;
       return showNameOrAvatar(message, threadMessages) &&
         <Text size="sm" bold
-              style={{color: color}}>{messageParticipant.firstName} {messageParticipant.lastName}</Text>
+              style={{color: color}}>{messageParticipant.contactName || messageParticipant.name}</Text>
     };
 
     const messageArguments = message => {
@@ -542,6 +531,12 @@ export default class MainMessages extends Component {
     };
 
 
+    const MainMessagesMessageContainerClassNames = message => classnames({
+      [style.MainMessages__MessageContainer]: true,
+      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
+    });
+
+
     return (
       <Container className={style.MainMessages} onScroll={this.onScroll}
                  userSelect="none"
@@ -556,9 +551,10 @@ export default class MainMessages extends Component {
               <ListItem key={el.id || el.uniqueId} data={el}
                         noPadding
                         active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
-                <Container leftTextAlign={!isMessageByMe(el, user)} id={`${el.id || el.uniqueId}`} relative>
-                  {!isMessageByMe(el, user) ? message(el) : avatar(el)}
-                  {!isMessageByMe(el, user) ? avatar(el) : message(el)}
+                <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}
+                           relative>
+                  {avatar(el)}
+                  {message(el)}
                   {threadSelectMessageShowing && messageTick(el)}
                 </Container>
               </ListItem>

@@ -61,3 +61,12 @@
   background-repeat: no-repeat ;
   background-size: cover;
 }
+
+
+.MainMessages__MessageContainer {
+  display: flex;
+}
+
+.MainMessages__MessageContainer--left {
+  flex-direction: row-reverse;
+}

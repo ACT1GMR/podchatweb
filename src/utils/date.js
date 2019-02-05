@@ -33,6 +33,9 @@ const date =
       }
     },
     prettifySince(date) {
+      if(!date) {
+        return strings.unknown;
+      }
       const seconds = Math.floor(date / 1000);
       let interval = Math.floor(seconds / 31536000);
       if (interval > 1) {

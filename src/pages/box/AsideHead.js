@@ -107,7 +107,7 @@ class AsideHead extends Component {
     retry(true, true).then(e => {
       const {chatInstance} = this.props;
       chatInstance.setToken(e.access_token);
-      chatInstance.chatAgent.reconnect();
+      chatInstance.reconnect();
     });
   }
 

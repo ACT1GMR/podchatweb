@@ -25,10 +25,13 @@ import date from "../../utils/date";
 //styling
 import {MdPerson, MdPhone, MdBlock, MdNotifications} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 
 @connect(store => {
   return {
     contacts: store.contactGetList.contacts,
+    contactBlocking: store.contactBlock.fetching,
+    notificationPending: store.threadNotification.fetching,
     chatInstance: store.chatInstance.chatSDK
   };
 }, null, null, {withRef: true})
@@ -56,7 +59,7 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, thread, user, onClose, isShow, smallVersion, contacts, participantsFetching} = this.props;
+    const {participants, thread, user, onClose, isShow, smallVersion, contacts, contactBlocking, notificationPending} = this.props;
     let participant = participants;
     if (participants) {
       participant = participants.filter(e => e.name !== user.name)[0];
@@ -98,36 +101,36 @@ export default class ModalThreadInfo extends Component {
             <Gap y={20} block>
               <Divider thick={2} color="gray"/>
             </Gap>
-            {contact && !participantsFetching ? <List>
+            {contact ?
+              <List>
 
-              <ListItem invert>
-                {contact.cellphoneNumber &&
-                <Container>
-                  <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                  <Gap x={20}>
-                    <Text inline>{contact.cellphoneNumber}</Text>
-                  </Gap>
-                </Container>
-                }
-              </ListItem>
+                <ListItem invert>
+                  {contact.cellphoneNumber &&
+                  <Container>
+                    <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                    <Gap x={20}>
+                      <Text inline>{contact.cellphoneNumber}</Text>
+                    </Gap>
+                  </Container>
+                  }
+                </ListItem>
 
-              <ListItem invert>
-                {contact.linkedUser && contact.linkedUser.name &&
-                <Container>
-                  <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                  <Gap x={20}>
-                    <Text inline>{contact.linkedUser.name}</Text>
-                  </Gap>
-                </Container>
-                }
-              </ListItem>
-            </List> : ""}
+                <ListItem invert>
+                  {contact.linkedUser && contact.linkedUser.name &&
+                  <Container>
+                    <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                    <Gap x={20}>
+                      <Text inline>{contact.linkedUser.name}</Text>
+                    </Gap>
+                  </Container>
+                  }
+                </ListItem>
+              </List> : ""}
 
 
             <Container>
-
               {
-                contact && !participantsFetching &&
+                contact &&
                 <Container>
                   <Gap y={20} block>
                     <Divider thick={2} color="gray"/>
@@ -143,10 +146,16 @@ export default class ModalThreadInfo extends Component {
                       <Text>{strings.block}</Text>
                     </Gap>
                     <Container centerLeft>
-                      <Gap x={5}>
-                        <Text size="sm"
-                              color={participant.blocked ? "red" : "green"}>{participant.blocked ? strings.blocked : ""}</Text>
-                      </Gap>
+                      {contactBlocking ?
+                        <Container centerTextAlign>
+                          <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                        </Container>
+                        :
+                        <Gap x={5}>
+                          <Text size="sm"
+                                color={participant.blocked ? "red" : "green"}>{participant.blocked ? strings.blocked : ""}</Text>
+                        </Gap>
+                      }
                     </Container>
                   </Container>
                 </ListItem>
@@ -159,10 +168,17 @@ export default class ModalThreadInfo extends Component {
                       <Text>{strings.notification}</Text>
                     </Gap>
                     <Container centerLeft>
-                      <Gap x={5}>
-                        <Text size="sm"
-                              color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
-                      </Gap>
+                      {notificationPending ?
+                        <Container centerTextAlign>
+                          <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                        </Container>
+                        :
+                        <Gap x={5}>
+                          <Text size="sm"
+                                color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
+                        </Gap>
+                      }
+
                     </Container>
                   </Container>
                 </ListItem>

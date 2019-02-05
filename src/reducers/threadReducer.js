@@ -32,7 +32,11 @@ import {
   THREAD_SELECT_MESSAGE_SHOWING,
   THREAD_CHECKED_MESSAGE_LIST_EMPTY,
   THREAD_CHECKED_MESSAGE_LIST_ADD,
-  THREAD_CHECKED_MESSAGE_LIST_REMOVE, THREAD_REMOVED_FROM, THREAD_EMOJI_SHOWING, THREAD_CREATE_INIT,
+  THREAD_CHECKED_MESSAGE_LIST_REMOVE,
+  THREAD_REMOVED_FROM,
+  THREAD_EMOJI_SHOWING,
+  THREAD_CREATE_INIT,
+  THREAD_PARTICIPANTS_REMOVED, THREAD_NOTIFICATION,
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -386,7 +390,15 @@ export const threadMessageListReducer = (state = {
       return removeDuplicate({...state, messages: [...state.messages, action.payload]});
     case MESSAGE_EDIT():
     case MESSAGE_SEEN:
-      return updateMessage(null, action.payload, message => message.id === action.payload.id);
+      const newState = updateMessage(null, action.payload, message => message.id === action.payload.id);
+      const newMessagesClone = newState.messages;
+      const fileIndex = newMessagesClone.findIndex(message => message.id === action.payload.id);
+      newMessagesClone.slice(0, fileIndex).forEach(e => {
+        if (!e.seen) {
+          e.seen = true;
+        }
+      });
+      return {...newState, ...stateObject("SUCCESS", newMessagesClone, "messages")};
     case MESSAGE_DELETE:
       return updateMessage(null, null, message => message.id === action.payload.id, null, true, true);
     default:
@@ -422,6 +434,17 @@ export const threadParticipantListReducer = (state = {
       return {...state, ...stateObject("PENDING", state.participants, "participants")};
     case THREAD_PARTICIPANT_GET_LIST("SUCCESS"):
       return {...state, ...stateObject("SUCCESS", action.payload, "participants")};
+    case THREAD_PARTICIPANTS_REMOVED:
+      const participants = action.payload.participantIds;
+      const threadId = action.payload.threadId;
+      const oldParticipants = state.participants;
+      for (const participant of participants) {
+        const index = oldParticipants.findIndex(prt => participant === prt.id && prt.threadId === threadId);
+        if (index > -1) {
+          oldParticipants.splice(index, 1);
+        }
+      }
+      return {...state, ...stateObject("SUCCESS", oldParticipants, "participants")};
     case THREAD_PARTICIPANT_GET_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
@@ -465,6 +488,24 @@ export const threadLeaveReducer = (state = {
   }
 };
 
+export const threadNotificationReducer = (state = {
+  threadId: null,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_NOTIFICATION("PENDING"):
+      return {...state, ...stateObject("PENDING")};
+    case THREAD_NOTIFICATION("SUCCESS"):
+      return {...state, ...stateObject("SUCCESS", action.payload, "threadId")};
+    case THREAD_NOTIFICATION("ERROR"):
+      return {...state, ...stateObject("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
 export const threadParticipantAddReducer = (state = {
   thread: null,
   fetching: false,
@@ -480,27 +521,6 @@ export const threadParticipantAddReducer = (state = {
       return {...state, ...stateObject("SUCCESS", thread, "thread")};
     }
     case THREAD_PARTICIPANT_ADD("ERROR"):
-      return {...state, ...stateObject("ERROR", action.payload)};
-    default:
-      return state;
-  }
-};
-
-export const threadParticipantRemoveReducer = (state = {
-  thread: null,
-  fetching: false,
-  fetched: false,
-  error: false
-}, action) => {
-  switch (action.type) {
-    case THREAD_PARTICIPANT_REMOVE("PENDING"):
-      return {...state, ...stateObject("PENDING", null, "thread")};
-    case THREAD_PARTICIPANT_REMOVE("SUCCESS"): {
-      let thread = action.payload;
-      thread.timestamp = Date.now();
-      return {...state, ...stateObject("SUCCESS", thread, "thread")};
-    }
-    case THREAD_PARTICIPANT_REMOVE("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     default:
       return state;

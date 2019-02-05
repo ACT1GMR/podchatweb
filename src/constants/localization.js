@@ -29,6 +29,7 @@ let strings = new LocalizedStrings({
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     unknown: "نامشخص",
+    required: "اجباری",
     firstName: "نام",
     groupName: "نام گروه",
     lastName: "نام خانوادگی",
@@ -59,6 +60,7 @@ let strings = new LocalizedStrings({
     imageText: "متن تصویر",
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
+    firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";
@@ -104,6 +106,9 @@ let strings = new LocalizedStrings({
       return `مخاطبی با مشخصات "${keyword}" وجود ندارد `;
     },
     prettifyDateString(string) {
+      if(string === strings.unknown) {
+        return string;
+      }
       if (string === "دیروز") {
         return string;
       }

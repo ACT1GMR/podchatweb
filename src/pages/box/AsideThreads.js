@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
-import {Link} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -90,7 +90,7 @@ const sanitizeRule = {
     chatInstance: store.chatInstance.chatSDK
   };
 })
-export default class AsideThreads extends Component {
+class AsideThreads extends Component {
 
   constructor(props) {
     super(props);
@@ -99,6 +99,8 @@ export default class AsideThreads extends Component {
   }
 
   onThreadClick(thread) {
+    const {history} = this.props;
+    history.push(ROUTE_THREAD);
     this.props.dispatch(threadCreate(null, thread));
   }
 
@@ -213,3 +215,5 @@ export default class AsideThreads extends Component {
     }
   }
 }
+
+export default withRouter(AsideThreads);

@@ -58,7 +58,6 @@ export default class MainFooterAttachment extends Component {
   }
 
   onClick() {
-    console.log('reached')
     const {isSendingText, sendMessage} = this.props;
     if (isSendingText) {
       sendMessage();

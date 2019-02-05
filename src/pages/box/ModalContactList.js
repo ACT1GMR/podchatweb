@@ -182,7 +182,7 @@ class ModalContactList extends Component {
     const showLoading = contactsFetching;
     let contactsFilter = contacts;
     if (searchInput) {
-      contactsFilter = isContains('firstName|lastName|cellphoneNumber', query, contacts);
+      contactsFilter = isContains("firstName|lastName|cellphoneNumber", query, contacts);
     }
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
