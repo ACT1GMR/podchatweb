@@ -7,7 +7,13 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {contactGetList, contactBlock} from "../../actions/contactActions";
+import {
+  contactGetList,
+  contactBlock,
+  contactAdding,
+  contactRemove,
+  contactListShowing
+} from "../../actions/contactActions";
 import {threadNotification} from "../../actions/threadActions";
 
 
@@ -23,16 +29,19 @@ import List, {ListItem} from "../../../../uikit/src/list";
 import date from "../../utils/date";
 
 //styling
-import {MdPerson, MdPhone, MdBlock, MdNotifications} from "react-icons/lib/md";
+import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import {ROUTE_ADD_CONTACT} from "../../constants/routes";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 @connect(store => {
   return {
     contacts: store.contactGetList.contacts,
     contactBlocking: store.contactBlock.fetching,
     notificationPending: store.threadNotification.fetching,
-    chatInstance: store.chatInstance.chatSDK
+    chatInstance: store.chatInstance.chatSDK,
+    chatRouterLess: store.chatRouterLess
   };
 }, null, null, {withRef: true})
 export default class ModalThreadInfo extends Component {
@@ -48,9 +57,9 @@ export default class ModalThreadInfo extends Component {
     }
   }
 
-  onBlockSelect(contact, blocked) {
+  onBlockSelect(threadId, blocked) {
     const {dispatch, thread} = this.props;
-    dispatch(contactBlock(contact.id, !blocked, thread));
+    dispatch(contactBlock(threadId, !blocked, thread));
   }
 
   onNotificationSelect() {
@@ -58,16 +67,39 @@ export default class ModalThreadInfo extends Component {
     dispatch(threadNotification(thread.id, !thread.mute));
   }
 
+  onEdit(contact) {
+    const {dispatch, history, chatRouterLess, onClose} = this.props;
+    dispatch(contactAdding(true, {
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      mobilePhone: contact.cellphoneNumber
+    }));
+    if (!chatRouterLess) {
+      history.push(ROUTE_ADD_CONTACT);
+    }
+    onClose(true);
+  }
+
+  onRemove(contact) {
+    const {dispatch} = this.props;
+    const text = strings.areYouSureAboutDeletingContact(`${contact.firstName} ${contact.lastName}`);
+    dispatch(chatModalPrompt(true, `${text}؟`, () => {
+      dispatch(contactRemove(contact.id));
+      dispatch(chatModalPrompt());
+      dispatch(contactGetList());
+    }, () => dispatch(contactListShowing(true))));
+  }
+
   render() {
     const {participants, thread, user, onClose, isShow, smallVersion, contacts, contactBlocking, notificationPending} = this.props;
     let participant = participants;
     if (participants) {
-      participant = participants.filter(e => e.name !== user.name)[0];
+      participant = participants.filter(e => e.id !== user.id)[0];
     }
     if (!participant) {
       participant = {};
     }
-    const contact = contacts.filter(contact => contact.id === participant.contactId)[0];
+    const contact = contacts.filter(contact => contact.userId === participant.id)[0];
     const participantImage = thread && thread.image;
     return (
       <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
@@ -138,8 +170,31 @@ export default class ModalThreadInfo extends Component {
                 </Container>
               }
               <List>
+                {
+                  contact &&
+                  <ListItem selection invert onSelect={this.onEdit.bind(this, contact)}>
+                    <Container relative>
+                      <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.edit}</Text>
+                      </Gap>
+                    </Container>
+                  </ListItem>
+                }
 
-                <ListItem selection invert onSelect={this.onBlockSelect.bind(this, contact, participant.blocked)}>
+                {
+                  contact &&
+                  <ListItem selection invert onSelect={this.onRemove.bind(this, contact)}>
+                    <Container relative>
+                      <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.remove}</Text>
+                      </Gap>
+                    </Container>
+                  </ListItem>
+                }
+
+                <ListItem selection invert onSelect={this.onBlockSelect.bind(this, thread.id, participant.blocked)}>
                   <Container relative>
                     <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                     <Gap x={20}>

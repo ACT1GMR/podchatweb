@@ -3,7 +3,7 @@ import {
   CHAT_MODAL_PROMPT_SHOWING,
   CHAT_SMALL_VERSION,
   CHAT_STATE,
-  MESSAGE_MODAL_DELETE_PROMPT_SHOWING
+  CHAT_ROUTER_LESS
 } from "../constants/actionTypes";
 import {stateObject} from "../utils/serviceStateGenerator";
 
@@ -34,6 +34,14 @@ export const chatSmallVersionReducer = (state = false, action) => {
   }
 };
 
+export const chatRouterLessReducer = (state = false, action) => {
+  switch (action.type) {
+    case CHAT_ROUTER_LESS:
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
 export const chatStateReducer = (state = false, action) => {
   switch (action.type) {

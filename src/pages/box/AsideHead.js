@@ -7,7 +7,7 @@ import {signOut, retry} from "podauth";
 //strings
 import strings from "../../constants/localization";
 import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP} from "../../constants/routes";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP, ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
@@ -28,12 +28,19 @@ const statics = {
   headMenuSize: 59
 };
 
+function routeChange(history, route, chatRouterLess) {
+  if (!chatRouterLess) {
+    history.push(route);
+  }
+}
+
 @connect(store => {
   return {
     threads: store.threadList.threads,
     threadId: store.thread.thread.id,
     chatState: store.chatState,
     chatInstance: store.chatInstance.chatSDK,
+    chatRouterLess: store.chatRouterLess,
     user: store.user.user
   };
 })
@@ -72,19 +79,19 @@ class AsideHead extends Component {
   }
 
   onMenuSelect(type) {
-    const {history, dispatch} = this.props;
+    const {history, chatRouterLess, dispatch} = this.props;
     switch (type) {
       case CONTACT_ADDING:
         dispatch(contactAdding(true));
-        history.push(ROUTE_ADD_CONTACT);
+        routeChange(history, ROUTE_ADD_CONTACT, chatRouterLess);
         break;
       case CONTACT_LIST_SHOWING:
         dispatch(contactListShowing(true));
-        history.push(ROUTE_CONTACTS);
+        routeChange(history, ROUTE_CONTACTS, chatRouterLess);
         break;
       case CONTACT_MODAL_CREATE_GROUP_SHOWING:
         dispatch(contactModalCreateGroupShowing(true));
-        history.push(ROUTE_CREATE_GROUP);
+        routeChange(history, ROUTE_CREATE_GROUP, chatRouterLess);
         break;
       default:
         signOut();

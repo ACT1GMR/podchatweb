@@ -186,10 +186,10 @@ export default class ChatSDK {
     const getThreadHistoryParams = {
       count: count || 50,
       threadId: threadId,
-      toTime: Math.floor(messageTime / Math.pow(10, 6))
+      toTimeFull: messageTime
     };
     if (loadAfter) {
-      getThreadHistoryParams.fromTime = Math.floor(messageTime / Math.pow(10, 6));
+      getThreadHistoryParams.fromTimeFull = messageTime;
       getThreadHistoryParams.order = "ASC";
       delete getThreadHistoryParams.toTime;
     }
@@ -459,9 +459,9 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  blockContact(resolve, reject, contactId, block) {
+  blockContact(resolve, reject, threadId, block) {
     const blockContactParam = {
-      [block ? "contactId" : "blockId"]: contactId
+      threadId,
     };
     this.chatAgent[block ? "block" : "unblock"](blockContactParam, (result) => {
       if (!this._onError(result, reject)) {

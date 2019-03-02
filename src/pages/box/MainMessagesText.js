@@ -6,7 +6,6 @@ import "moment/locale/fa";
 import {mobileCheck} from "../../utils/helpers";
 import classnames from "classnames";
 import {connect} from "react-redux";
-import reactStringReplace from "react-string-replace";
 
 //strings
 import strings from "../../constants/localization";

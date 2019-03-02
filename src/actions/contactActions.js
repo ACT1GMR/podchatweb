@@ -69,7 +69,7 @@ export const contactChatting = (contact) => {
   }
 };
 
-export const contactBlock = (contactId, block, thread) => {
+export const contactBlock = (threadId, block, thread) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
@@ -77,7 +77,7 @@ export const contactBlock = (contactId, block, thread) => {
       type: CONTACT_BLOCK("PENDING"),
       payload: null
     });
-    chatSDK.blockContact(contactId, block).then(() => {
+    chatSDK.blockContact(threadId, block).then(() => {
       dispatch({
         type: CONTACT_BLOCK("SUCCESS"),
         payload: null

@@ -37,7 +37,8 @@ const statics = {};
     thread: store.thread.thread,
     threadShowing: store.threadShowing,
     threadSelectMessageShowing: store.threadSelectMessageShowing,
-    threadCheckedMessageList: store.threadCheckedMessageList
+    threadCheckedMessageList: store.threadCheckedMessageList,
+    chatRouterLess: store.chatRouterLess
   };
 })
 class MainHead extends Component {
@@ -57,10 +58,12 @@ class MainHead extends Component {
 
   onThreadHide(e) {
     e.stopPropagation();
-    const {dispatch, history} = this.props;
+    const {dispatch, chatRouterLess, history} = this.props;
     dispatch(threadShowing(false));
     dispatch(threadInit());
-    history.push("/");
+    if(!chatRouterLess){
+      history.push("/");
+    }
   }
 
   onLeftAsideShow(e) {

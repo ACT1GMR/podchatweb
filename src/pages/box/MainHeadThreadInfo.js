@@ -5,7 +5,7 @@ import {Link, withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
-import {ROUTE_THREAD_INFO} from "../../constants/routes";
+import {ROUTE_THREAD, ROUTE_THREAD_INFO} from "../../constants/routes";
 
 //actions
 import {threadModalThreadInfoShowing} from "../../actions/threadActions";
@@ -23,9 +23,10 @@ import {avatarNameGenerator} from "../../utils/helpers";
 @connect(store => {
   return {
     smallVersion: store.chatSmallVersion,
+    chatRouterLess: store.chatRouterLess,
     thread: store.thread.thread,
     threadShowing: store.threadShowing,
-    participantsFetching: store.threadParticipantList.fetching,
+    participantsFetching: store.threadParticipantList.fetching
   };
 })
 class BoxHeadThreadInfo extends Component {
@@ -36,33 +37,35 @@ class BoxHeadThreadInfo extends Component {
   }
 
   onShowInfoClick() {
+    const {chatRouterLess, history} = this.props;
+    if (!chatRouterLess) {
+      history.push(ROUTE_THREAD_INFO);
+    }
     this.props.dispatch(threadModalThreadInfoShowing(true));
   }
 
   render() {
-    const {thread, smallVersion, participantsFetching} = this.props;
+    const {thread, smallVersion} = this.props;
     if (thread.id) {
       const classNames = classnames({
         [style.MainHeadThreadInfo]: true,
         [style["MainHeadThreadInfo--smallVersion"]]: smallVersion
       });
       return (
-        <Link to={ROUTE_THREAD_INFO}>
-          <Container className={classNames} onClick={this.onShowInfoClick} relative>
-            <Avatar>
-              <AvatarImage src={thread.image} text={avatarNameGenerator(thread.title).letter}
-                           textBg={avatarNameGenerator(thread.title).color}/>
-              <AvatarName>
-                <Text size="lg" invert overflow="ellipsis">{thread.title}</Text>
-                {thread.group ?
-                  <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
-                  :
-                  <Text size="xs" invert overflow="ellipsis">{strings.you}, {thread.title}</Text>
-                }
-              </AvatarName>
-            </Avatar>
-          </Container>
-        </Link>
+        <Container className={classNames} onClick={this.onShowInfoClick} relative>
+          <Avatar>
+            <AvatarImage src={thread.image} text={avatarNameGenerator(thread.title).letter}
+                         textBg={avatarNameGenerator(thread.title).color}/>
+            <AvatarName>
+              <Text size="lg" invert overflow="ellipsis">{thread.title}</Text>
+              {thread.group ?
+                <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
+                :
+                <Text size="xs" invert overflow="ellipsis">{strings.you}, {thread.title}</Text>
+              }
+            </AvatarName>
+          </Avatar>
+        </Container>
       )
     }
     return "";

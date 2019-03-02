@@ -16,6 +16,7 @@ import {Button} from "../../../../uikit/src/button";
 import {Heading} from "../../../../uikit/src/typography";
 import Message from "../../../../uikit/src/message";
 import Container from "../../../../uikit/src/container";
+import {chatRouterLess} from "../../actions/chatActions";
 
 
 //styling
@@ -26,7 +27,8 @@ import Container from "../../../../uikit/src/container";
     contactEdit: store.contactAdding.contactEdit,
     contactAdd: store.contactAdd.contact,
     contactAddPending: store.contactAdd.fetching,
-    contactAddError: store.contactAdd.fetching
+    contactAddError: store.contactAdd.fetching,
+    chatRouterLess: store.chatRouterLess
   };
 }, null, null, {withRef: true})
 class ModalAddContact extends Component {
@@ -57,7 +59,7 @@ class ModalAddContact extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {contactAdd, isShowing, dispatch, contactEdit, history} = this.props;
+    const {chatRouterLess, contactAdd, isShowing, dispatch, contactEdit, history} = this.props;
     if (contactAdd) {
       if (oldProps.contactAdd !== contactAdd) {
         if (isShowing) {
@@ -66,10 +68,14 @@ class ModalAddContact extends Component {
               this.onClose();
               dispatch(contactListShowing(false));
               dispatch(contactChatting(contactAdd));
-              history.push(ROUTE_THREAD);
+              if(!chatRouterLess){
+                history.push(ROUTE_THREAD);
+              }
             }
           } else {
-            history.push(ROUTE_CONTACTS);
+            if(!chatRouterLess){
+              history.push(ROUTE_CONTACTS);
+            }
             dispatch(contactListShowing(true));
           }
         }
@@ -91,15 +97,17 @@ class ModalAddContact extends Component {
   }
 
   onClose(e, noHistory) {
-    const {history, dispatch} = this.props;
+    const {chatRouterLess, history, dispatch} = this.props;
     dispatch(contactAdding(false));
     this.setState({
       mobilePhone: "",
       firstName: "",
       lastName: ""
     });
-    if (!noHistory) {
-      history.push("/");
+    if(!chatRouterLess){
+      if (!noHistory) {
+        history.push("/");
+      }
     }
   }
 

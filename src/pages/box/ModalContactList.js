@@ -17,7 +17,7 @@ import {
   contactUnblock
 } from "../../actions/contactActions";
 import {threadCreate} from "../../actions/threadActions";
-import {chatModalPrompt} from "../../actions/chatActions";
+import {chatModalPrompt, chatRouterLess} from "../../actions/chatActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -61,7 +61,8 @@ function isContains(flds, keyword, arr) {
     isShow: store.contactListShowing.isShow,
     contacts: store.contactGetList.contacts,
     contactsFetching: store.contactGetList.fetching,
-    chatInstance: store.chatInstance.chatSDK
+    chatInstance: store.chatInstance.chatSDK,
+    chatRouterLess: store.chatRouterLess
   };
 }, null, null, {withRef: true})
 class ModalContactList extends Component {
@@ -106,21 +107,12 @@ class ModalContactList extends Component {
   }
 
   onAdd() {
-    const {history} = this.props;
+    const {chatRouterLess, history} = this.props;
     this.props.dispatch(contactAdding(true));
     this.onContactSearchClick(false);
-    history.push(ROUTE_ADD_CONTACT);
-  }
-
-  onRemove(contact, e) {
-    e.stopPropagation();
-    const {dispatch} = this.props;
-    const text = strings.areYouSureAboutDeletingContact(`${contact.firstName} ${contact.lastName}`);
-    dispatch(chatModalPrompt(true, `${text}؟`, () => {
-      dispatch(contactRemove(contact.id));
-      dispatch(chatModalPrompt());
-      dispatch(contactGetList());
-    }, () => dispatch(contactListShowing(true))));
+    if(!chatRouterLess){
+      history.push(ROUTE_ADD_CONTACT);
+    }
   }
 
   onUnblock(contact, e) {
@@ -134,34 +126,26 @@ class ModalContactList extends Component {
     }, () => dispatch(contactListShowing(true))), strings.unBlock);
   }
 
-  onEdit(contact, e) {
-    e.stopPropagation();
-    const {dispatch, history} = this.props;
-    dispatch(contactAdding(true, {
-      firstName: contact.firstName,
-      lastName: contact.lastName,
-      mobilePhone: contact.cellphoneNumber
-    }));
-    history.push(ROUTE_ADD_CONTACT);
-    this.onClose(false, true);
-  }
-
   onClose(e, noHistory) {
-    const {history, dispatch} = this.props;
+    const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactListShowing(false));
     this.onContactSearchClick(false);
     this.onSearchQueryChange("");
-    if (!noHistory) {
-      history.push("/");
+    if(!chatRouterLess){
+      if (!noHistory) {
+        history.push("/");
+      }
     }
   }
 
   onStartChat(contact) {
-    const {history, dispatch} = this.props;
+    const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactChatting(contact));
     dispatch(threadCreate(contact.id));
     this.onClose(true);
-    history.push(ROUTE_THREAD);
+    if(!chatRouterLess){
+      history.push(ROUTE_THREAD);
+    }
   }
 
   onContactSearchClick(isOpen) {
@@ -245,29 +229,6 @@ class ModalContactList extends Component {
                         </AvatarName>
                       </Avatar>
                     </Container>
-
-                    <Container centerLeft>
-                      {el.blockId ?
-                        <Container className={style.ModalContactList__ActionButtonContainer}>
-                          <Container
-                            className={`${style.ModalContactList__ActionButton} ${style["ModalContactList__ActionButton--single"]}`}
-                            onClick={this.onUnblock.bind(this, el)}>
-                            <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
-                          </Container>
-                        </Container> :
-                        <Container className={style.ModalContactList__ActionButtonContainer}>
-                          <Container className={style.ModalContactList__ActionButton}
-                                     onClick={this.onEdit.bind(this, el)}>
-                            <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
-                          </Container>
-                          <Container className={style.ModalContactList__ActionButton} inline
-                                     onClick={this.onRemove.bind(this, el)}>
-                            <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
-                          </Container>
-                        </Container>
-                      }
-                    </Container>
-
                   </Container>
                 </ListItem>
               ))}

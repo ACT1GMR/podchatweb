@@ -2,6 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
+import sanitizeHTML from "sanitize-html";
 import {mobileCheck} from "../../utils/helpers";
 
 //strings
@@ -91,7 +92,7 @@ function clearHtml(html) {
   }
   const newText = window.document.createElement("div");
   filterChildren.map(e => newText.appendChild(e));
-  return newText.innerHTML.trim();
+  return sanitizeHTML(newText.innerHTML.trim(), sanitizeRule);
 }
 
 

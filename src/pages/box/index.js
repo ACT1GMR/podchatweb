@@ -9,12 +9,12 @@ import strings from "../../constants/localization";
 import {
   ROUTE_ADD_CONTACT,
   ROUTE_CONTACTS,
-  ROUTE_CREATE_GROUP,
+  ROUTE_CREATE_GROUP, ROUTE_THREAD,
   ROUTE_THREAD_INFO
 } from "../../constants/routes";
 
 //actions
-import {chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
+import {chatRouterLess, chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
 import {threadCreate, threadShowing} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
@@ -39,6 +39,7 @@ import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.sc
 @connect(store => {
   return {
     chatInstance: store.chatInstance.chatSDK,
+    chatRouterLess: store.chatRouterLess,
     user: store.user.user,
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing,
@@ -81,10 +82,13 @@ class Box extends Component {
   }
 
   componentDidMount() {
-    const {small, dispatch} = this.props;
+    const {small, routerLess, dispatch} = this.props;
     dispatch(chatSetInstance(this.props));
     if (small) {
       dispatch(chatSmallVersion(small))
+    }
+    if (routerLess) {
+      dispatch(chatRouterLess(routerLess))
     }
   }
 
@@ -118,10 +122,10 @@ class Box extends Component {
     };
     const popups = (
       <Container>
-        <Route exact path={ROUTE_CREATE_GROUP} render={props => <ModalCreateGroup smallVersion={small}/>}/>
-        <Route exact path={ROUTE_CONTACTS} render={props => <ModalContactList smallVersion={small}/>}/>
-        <Route exact path={ROUTE_ADD_CONTACT} render={props => <ModalAddContact smallVersion={small}/>}/>
-        <Route exact path={ROUTE_THREAD_INFO} render={props => <ModalThreadInfo smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CREATE_GROUP} render={() => <ModalCreateGroup smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CONTACTS} render={() => <ModalContactList smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_ADD_CONTACT} render={() => <ModalAddContact smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_THREAD_INFO} render={() => <ModalThreadInfo smallVersion={small}/>}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>
         <ModalImageCaption smallVersion={small} ref={this.modalImageCaptionRef}/>
         <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}

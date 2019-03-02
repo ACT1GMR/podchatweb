@@ -11,8 +11,12 @@ let strings = new LocalizedStrings({
     add: "اضافه کردن",
     addContact: "اضافه کردن مخاطب",
     editContact: contact => {
+      if(!contact) {
+        return "اصلاح مخاطب";
+      }
       return `اصلاح مخاطب ${contact.firstName} ${contact.lastName}`;
     },
+    removeContact: "حذف مخاطب",
     contactList: "لیست مخاطبین",
     cancel: "لغو",
     close: "بستن",

@@ -88,7 +88,8 @@ function isFile(message) {
 }
 
 function datePetrification(time) {
-  return date.isToday(time) ? date.format(time, "HH:mm") : date.isWithinAWeek(time) ? date.format(time, "dddd HH:mm") : date.format(time, "YYYY-MM-DD  HH:mm");
+  const correctTime = time / Math.pow(10, 6);
+  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
 }
 
 @connect(store => {
@@ -189,7 +190,7 @@ export default class MainMessages extends Component {
         }
       }
       if (message) {
-        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.id, loadBefore, 50));
+        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.time, loadBefore, 50));
       }
     } else {
       this.lastPosition = scrollTop;

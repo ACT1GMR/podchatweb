@@ -23,6 +23,7 @@ import Container from "../../../../uikit/src/container";
 
 //styling
 import {MdArrowForward} from "react-icons/lib/md";
+import {chatRouterLess} from "../../actions/chatActions";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -34,7 +35,8 @@ const constants = {
     isShow: store.contactModalCreateGroupShowing.isShow,
     contacts: store.contactGetList.contacts,
     contactsFetching: store.contactGetList.fetching,
-    chatInstance: store.chatInstance.chatSDK
+    chatInstance: store.chatInstance.chatSDK,
+    chatRouterLess: store.chatRouterLess
   };
 }, null, null, {withRef: true})
 class ModalCreateGroup extends Component {
@@ -77,28 +79,34 @@ class ModalCreateGroup extends Component {
   }
 
   onCreate(groupName) {
-    const {dispatch, history} = this.props;
+    const {dispatch, chatRouterLess, history} = this.props;
     dispatch(threadCreate(this.state.threadContacts, null, groupName));
-    history.push(ROUTE_THREAD);
+    if (!chatRouterLess) {
+      history.push(ROUTE_THREAD);
+    }
     this.onClose(false, true);
   }
 
   onClose(e, noHistory) {
-    const {dispatch, history} = this.props;
+    const {dispatch, chatRouterLess, history} = this.props;
     dispatch(contactModalCreateGroupShowing(false));
     this.setState({
       step: constants.SELECT_CONTACT,
       threadContacts: []
     });
-    if (!noHistory) {
-      history.push("/");
+    if (!chatRouterLess) {
+      if (!noHistory) {
+        history.push("/");
+      }
     }
   }
 
   onAdd() {
-    const {history, dispatch} = this.props;
+    const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactAdding(true));
-    history.push(ROUTE_ADD_CONTACT);
+    if (!chatRouterLess) {
+      history.push(ROUTE_ADD_CONTACT);
+    }
   }
 
   onSelect(id) {
@@ -132,7 +140,8 @@ class ModalCreateGroup extends Component {
 
     let filteredContacts = contacts.filter(e => e.hasUser);
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none">
 
         <ModalHeader>
           <Heading h3>{strings.selectContacts}</Heading>

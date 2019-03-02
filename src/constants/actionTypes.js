@@ -21,7 +21,7 @@ export const buildPromiseMessage = (baseMessage, type) => {
 
 export const CHAT_GET_INSTANCE = buildPromiseMessage.bind(null, "CHAT_GET_INSTANCE");
 export const CHAT_SMALL_VERSION = "CHAT_SMALL_VERSION";
-export const CHAT_MODAL_MEDIA_INSTANCE = "CHAT_MODAL_MEDIA_INSTANCE";
+export const CHAT_ROUTER_LESS = "CHAT_ROUTER_LESS";
 export const CHAT_STATE = "CHAT_STATE";
 export const CHAT_MODAL_PROMPT_SHOWING = "CHAT_MODAL_PROMPT_SHOWING";
 export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST");

@@ -36,7 +36,8 @@ import styleVar from "../../../styles/variables.scss";
   return {
     threadId: store.thread.thread.id,
     threadFetching: store.thread.fetching,
-    threadShowing: store.threadShowing
+    threadShowing: store.threadShowing,
+    chatRouterLess: store.chatRouterLess
   };
 })
 class Main extends Component {
@@ -53,15 +54,19 @@ class Main extends Component {
   }
 
   onContactListShow() {
-    const {history, dispatch} = this.props;
+    const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactListShowing(true));
-    history.push(ROUTE_CONTACTS);
+    if (!chatRouterLess) {
+      history.push(ROUTE_CONTACTS);
+    }
   }
 
   onAddMember() {
-    const {history, dispatch} = this.props;
+    const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactAdding(true));
-    history.push(ROUTE_ADD_CONTACT);
+    if (!chatRouterLess) {
+      history.push(ROUTE_ADD_CONTACT);
+    }
   }
 
   render() {
@@ -83,7 +88,7 @@ class Main extends Component {
       );
     }
     return (
-      <Route path={[`${ROUTE_THREAD}`, `/`]}
+      <Route path={[ROUTE_THREAD, ""]}
              render={props => {
                return (
                  <Container className={style.Main}>

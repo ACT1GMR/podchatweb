@@ -38,7 +38,13 @@ import {
   messageEditReducer,
   messageDeleteReducer
 } from "./messageReducer";
-import {chatSmallVersionReducer, chatInstanceReducer, chatStateReducer, chatModalPromptReducer} from "./chatReducer";
+import {
+  chatSmallVersionReducer,
+  chatInstanceReducer,
+  chatStateReducer,
+  chatModalPromptReducer,
+  chatRouterLessReducer
+} from "./chatReducer";
 import userReducer from "./userReducer";
 
 const rootReducer = {
@@ -46,6 +52,7 @@ const rootReducer = {
   chatState: chatStateReducer,
   chatModalPrompt: chatModalPromptReducer,
   chatSmallVersion: chatSmallVersionReducer,
+  chatRouterLess: chatRouterLessReducer,
   contactGetList: contactGetListReducer,
   contactListShowing: contactListShowingReducer,
   contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,

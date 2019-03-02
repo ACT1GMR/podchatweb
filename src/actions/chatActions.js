@@ -8,7 +8,7 @@ import {
   MESSAGE_NEW,
   CHAT_STATE,
   CHAT_MODAL_PROMPT_SHOWING,
-  THREAD_REMOVED_FROM
+  THREAD_REMOVED_FROM, CHAT_ROUTER_LESS
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -86,6 +86,15 @@ export const chatSmallVersion = isSmall => {
     return dispatch({
       type: CHAT_SMALL_VERSION,
       payload: isSmall
+    });
+  }
+};
+
+export const chatRouterLess = isRouterLess => {
+  return dispatch => {
+    return dispatch({
+      type: CHAT_ROUTER_LESS,
+      payload: isRouterLess
     });
   }
 };
