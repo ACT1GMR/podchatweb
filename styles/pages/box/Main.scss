@@ -9,3 +9,14 @@
   position: absolute;
   width: 100%;
 }
+
+.Main__Cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  background: url("../../images/Main/background.jpg") repeat repeat;
+  background-size: 320px;
+}

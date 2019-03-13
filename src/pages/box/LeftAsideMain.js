@@ -23,7 +23,8 @@ import style from "../../../styles/pages/box/LeftAsideMain.scss";
 import classnames from "classnames";
 
 function datePetrification(time) {
-  return date.isToday(time) ? date.format(time, "HH:mm") : date.isWithinAWeek(time) ? date.format(time, "dddd HH:mm") : date.format(time, "YYYY-MM-DD  HH:mm");
+  const correctTime = time / Math.pow(10, 6);
+  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
 }
 
 @connect(store => {
@@ -85,12 +86,12 @@ export default class LeftAsideMain extends Component {
     this.props.dispatch(threadSearchMessage(thread.id, query));
   }
 
-  onSearchItemClicked(messageId) {
+  onSearchItemClicked(messageTime, messageId) {
     const {smallVersion, dispatch, thread} = this.props;
     if (smallVersion || mobileCheck()) {
       dispatch(threadLeftAsideShowing(false));
     }
-    dispatch(threadGoToMessageId(thread.id, messageId));
+    dispatch(threadGoToMessageId(thread.id, messageTime, messageId));
   }
 
   render() {
@@ -115,7 +116,7 @@ export default class LeftAsideMain extends Component {
           threadSearchMessages && threadSearchMessages.length ? (
               <List>
                 {threadSearchMessages.map(el => (
-                  <ListItem key={el.id} onSelect={this.onSearchItemClicked.bind(this, el.id)} selection invert>
+                  <ListItem key={el.id} onSelect={this.onSearchItemClicked.bind(this, el.time, el.id)} selection invert>
                     <Container relative userSelect="none">
                       <Container inline>
                         <Text wordWrap="breakWord"

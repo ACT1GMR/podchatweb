@@ -154,7 +154,8 @@ let strings = new LocalizedStrings({
     leave: "ترک",
     description: "توضیحات",
     photo: "عکس",
-    video: "ویدیو"
+    video: "ویدیو",
+    unreaded: "خوانده نشده"
   },
   it: {}
 });

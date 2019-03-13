@@ -7,7 +7,6 @@ import {
   MESSAGE_FORWARD,
   MESSAGE_SENDING_ERROR,
   MESSAGE_FILE_UPLOAD_CANCEL,
-  MESSAGE_MODAL_DELETE_PROMPT_SHOWING,
   MESSAGE_DELETING
 } from "../constants/actionTypes";
 
@@ -123,5 +122,13 @@ export const messageSeen = (message) => {
       type: MESSAGE_SEEN,
       payload: chatSDK.seenMessage(message.id, message.ownerId)
     });
+  }
+};
+
+export const messageGet = (threadId, messageId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.getMessageById(threadId, messageId);
   }
 };

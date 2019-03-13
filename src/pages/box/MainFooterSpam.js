@@ -7,7 +7,7 @@ import classnames from "classnames";
 import strings from "../../constants/localization";
 
 //actions
-import {contactGetList} from "../../actions/contactActions";
+import {contactBlock, contactGetList} from "../../actions/contactActions";
 import {threadParticipantList, threadSpamPv} from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
@@ -56,7 +56,7 @@ function showSpam(props) {
       return false;
     }
   }
-  return true;
+  return thread.canSpam
 }
 
 
@@ -99,6 +99,7 @@ export default class MainFooterSpam extends Component {
   constructor() {
     super();
     this.reportSpamClick = this.reportSpamClick.bind(this);
+    this.onUnblockSelect = this.onUnblockSelect.bind(this);
   }
 
   componentDidMount() {
@@ -112,7 +113,6 @@ export default class MainFooterSpam extends Component {
   componentDidUpdate(oldProps) {
     const {thread, dispatch, contacts} = this.props;
     const {thread: oldThread, contacts: oldContacts} = oldProps;
-
   }
 
   reportSpamClick() {
@@ -120,7 +120,15 @@ export default class MainFooterSpam extends Component {
     dispatch(chatModalPrompt(true, `${strings.areYouSureToDoIt}؟`, () => {
       dispatch(threadSpamPv(thread.id));
       dispatch(chatModalPrompt());
-    }, null, strings.accept))
+    }, null, strings.accept));
+  }
+
+  onUnblockSelect() {
+    const {dispatch, thread} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureToDoIt}؟`, () => {
+      dispatch(contactBlock(thread.id));
+      dispatch(chatModalPrompt());
+    }, null, strings.accept));
   }
 
   render() {
@@ -149,7 +157,7 @@ export default class MainFooterSpam extends Component {
         </Container>
         :
         <Container className={classNames} userSelect="none">
-          <Container className={style.MainFooterSpam__BlockedTextContainer}>
+          <Container className={style.MainFooterSpam__BlockedTextContainer} onClick={this.onUnblockSelect}>
             <Text linkStyle color="accent" bold>
               {strings.unBlock}
             </Text>

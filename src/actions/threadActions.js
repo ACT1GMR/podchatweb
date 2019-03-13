@@ -96,11 +96,11 @@ export const threadSearchMessage = (threadId, query) => {
   }
 };
 
-export const threadGoToMessageId = (threadId, messageId) => {
+export const threadGoToMessageId = (threadId, time, id) => {
   return dispatch => {
     dispatch({
       type: THREAD_GO_TO_MESSAGE,
-      payload: {threadId, messageId}
+      payload: {threadId, time, id}
     });
   }
 };
@@ -145,13 +145,13 @@ export const threadMessageGetListPartial = (threadId, msgTime, loadBefore, count
   }
 };
 
-export const threadMessageGetListByMessageId = (threadId, msgId) => {
+export const threadMessageGetListByMessageId = (threadId, msgTime) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(),
-      payload: chatSDK.getThreadMessageListByMessageId(threadId, msgId)
+      payload: chatSDK.getThreadMessageListByMessageId(threadId, msgTime - 10000)
     });
   }
 };

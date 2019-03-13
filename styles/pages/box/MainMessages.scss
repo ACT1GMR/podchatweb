@@ -70,3 +70,8 @@
 .MainMessages__MessageContainer--left {
   flex-direction: row-reverse;
 }
+
+.MainMessages__UnreadCountBar {
+  background-color: $color-background-light;
+  padding: 7px 0;
+}

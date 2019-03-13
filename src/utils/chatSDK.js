@@ -132,6 +132,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getMessageById(resolve, reject, threadId, id) {
+    this.chatAgent.getHistory({threadId, id}, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.history[0]);
+      }
+    });
+  }
+
+  @promiseDecorator
   getThreadMessageListByQuery(resolve, reject, threadId, query, count) {
     if (typeof query === "string" && !query.slice()) {
       return resolve({
@@ -191,7 +200,7 @@ export default class ChatSDK {
     if (loadAfter) {
       getThreadHistoryParams.fromTimeFull = messageTime;
       getThreadHistoryParams.order = "ASC";
-      delete getThreadHistoryParams.toTime;
+      delete getThreadHistoryParams.toTimeFull;
     }
     this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
       if (!this._onError(result, reject)) {
@@ -219,7 +228,7 @@ export default class ChatSDK {
       const hasNext = result.hasNext;
       this.getThreadMessageListPartial(threadId, messageTime, false, 25).then(result => {
         historyMessageArray = [...historyMessageArray, ...result.messages];
-        resolve({...result, ...{messages: historyMessageArray, hasNext, hasPrevious: result.hasNext}});
+        resolve({...result, ...{messages: historyMessageArray, hasNext, hasPrevious: result.hasPrevious}});
       }, reject);
     }, reject);
   }
@@ -254,7 +263,8 @@ export default class ChatSDK {
     });
     resolve({
       ...obj, ...{
-        time: Date.now(),
+        participant: this.user,
+        time: Date.now() * Math.pow(10, 6),
         message: content,
         newMessage: true
       }
@@ -280,6 +290,7 @@ export default class ChatSDK {
         newMessage: true,
         message: caption,
         fileUniqueId: obj.content.file.uniqueId,
+        time: Date.now() * Math.pow(10, 6),
         metaData: {
           file: {
             mimeType: file.type,

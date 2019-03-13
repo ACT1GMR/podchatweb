@@ -43,14 +43,7 @@ class ModalAddContact extends Component {
   }
 
   componentDidMount() {
-    const {contactEdit, isShowing, match, dispatch} = this.props;
-    if (contactEdit) {
-      this.setState({
-        mobilePhone: contactEdit.mobilePhone,
-        firstName: contactEdit.firstName,
-        lastName: contactEdit.lastName
-      });
-    }
+    const {isShowing, match, dispatch} = this.props;
     if (!isShowing) {
       if (match.path === ROUTE_ADD_CONTACT) {
         dispatch(contactAdding(true));
@@ -59,7 +52,17 @@ class ModalAddContact extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {chatRouterLess, contactAdd, isShowing, dispatch, contactEdit, history} = this.props;
+    const {chatRouterLess, contactAdd, contactEdit, isShowing, dispatch, history} = this.props;
+    if (contactEdit) {
+      if (contactEdit !== oldProps.contactEdit) {
+        this.setState({
+          mobilePhone: contactEdit.mobilePhone,
+          firstName: contactEdit.firstName,
+          lastName: contactEdit.lastName
+        });
+        return;
+      }
+    }
     if (contactAdd) {
       if (oldProps.contactAdd !== contactAdd) {
         if (isShowing) {
@@ -68,12 +71,12 @@ class ModalAddContact extends Component {
               this.onClose();
               dispatch(contactListShowing(false));
               dispatch(contactChatting(contactAdd));
-              if(!chatRouterLess){
+              if (!chatRouterLess) {
                 history.push(ROUTE_THREAD);
               }
             }
           } else {
-            if(!chatRouterLess){
+            if (!chatRouterLess) {
               history.push(ROUTE_CONTACTS);
             }
             dispatch(contactListShowing(true));
@@ -85,8 +88,8 @@ class ModalAddContact extends Component {
 
   onSubmit() {
     const {mobilePhone, firstName, lastName} = this.state;
-    if(!firstName || !firstName.trim()) {
-      if(!lastName || !lastName.trim()) {
+    if (!firstName || !firstName.trim()) {
+      if (!lastName || !lastName.trim()) {
         return this.setState({
           notEnteredFirstOrFamilyName: true
         });
@@ -104,7 +107,7 @@ class ModalAddContact extends Component {
       firstName: "",
       lastName: ""
     });
-    if(!chatRouterLess){
+    if (!chatRouterLess) {
       if (!noHistory) {
         history.push("/");
       }
@@ -122,7 +125,8 @@ class ModalAddContact extends Component {
     const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
     const {mobilePhone, firstName, lastName, notEnteredFirstOrFamilyName} = this.state;
     return (
-      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none">
 
         <ModalHeader>
           <Heading h3>{contactEdit ? strings.editContact(contactEdit) : strings.addContact}</Heading>
@@ -132,7 +136,8 @@ class ModalAddContact extends Component {
           <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
                      value={mobilePhone}
                      placeholder={strings.mobilePhone}/>
-          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")} placeholder={`${strings.firstName} ( ${strings.required} )`}
+          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")}
+                     placeholder={`${strings.firstName} ( ${strings.required} )`}
                      value={firstName}/>
           <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}
                      value={lastName}/>
@@ -142,7 +147,7 @@ class ModalAddContact extends Component {
           <Button text loading={contactAddPending}
                   onClick={this.onSubmit.bind(this)}>{contactEdit ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
-          {( contactAdd && !contactAdd.linkedUser ) || notEnteredFirstOrFamilyName &&
+          {(contactAdd && !contactAdd.linkedUser) || notEnteredFirstOrFamilyName &&
           (
             <Container inline>
               <Message warn>

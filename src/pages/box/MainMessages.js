@@ -11,7 +11,7 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSeen} from "../../actions/messageActions";
+import {messageSeen, messageGet} from "../../actions/messageActions";
 import {
   threadFilesToUpload,
   threadMessageGetListByMessageId,
@@ -95,6 +95,8 @@ function datePetrification(time) {
 @connect(store => {
   return {
     threadId: store.thread.thread.id,
+    threadUnreadCount: store.thread.thread.unreadCount,
+    threadLastMessage: store.thread.thread.lastMessageVO,
     threadMessages: store.threadMessages.messages,
     threadMessagesHasNext: store.threadMessages.hasNext,
     threadMessagesHasPrevious: store.threadMessages.hasPrevious,
@@ -129,6 +131,63 @@ export default class MainMessages extends Component {
     };
   }
 
+  shouldComponentUpdate(nextProps) {
+    const {
+      threadId: currentThreadId,
+      threadUnreadCount: currentThreadUnreadCount,
+      threadLastMessage: currentThreadLastMessage,
+      threadMessages: currentThreadMessages
+    } = this.props;
+    const {
+      threadId,
+      threadUnreadCount,
+      threadLastMessage,
+      threadMessagesFetching,
+      threadMessages
+    } = nextProps;
+    const currentLastMessage = currentThreadMessages[currentThreadMessages.length - 1];
+    const lastMessage = threadMessages[threadMessages.length - 1];
+    const {showUnreadCountBar} = this;
+    const setBarAndCount = (showBar) => {
+      this.showUnreadCountBar = showBar;
+      this.showUnreadCountBarCount = showBar ? threadUnreadCount : 0;
+      this.showUnreadCountBarLastMessage = lastMessage;
+      return true;
+    };
+    if (currentThreadId !== threadId) {
+      this.showUnreadCountBar = false;
+      this.showUnreadCountBarCount = 0;
+      this.showUnreadCountBarLastMessage = undefined;
+    }
+
+    if (!threadMessagesFetching) {
+      if (this.showUnreadCountBarLastMessage) {
+        if (this.showUnreadCountBarLastMessage.id !== lastMessage.id) {
+          return setBarAndCount();
+        }
+      }
+      if (threadUnreadCount >= 1) {
+        if (this.showUnreadCountBarLastMessage) {
+          if (this.showUnreadCountBarLastMessage.threadId === threadLastMessage.threadId) {
+            return true;
+          }
+        }
+        if (currentLastMessage) {
+          if (currentLastMessage.threadId === threadId) {
+            return true;
+
+          }
+        }
+        if (lastMessage.id === threadLastMessage.id) {
+          if (lastMessage.threadId === threadLastMessage.threadId) {
+            return setBarAndCount(true);
+          }
+        }
+      }
+    }
+    return true;
+  }
+
   onGotoBottom() {
     const {dispatch, threadId, threadMessagesHasNext} = this.props;
     const {gotoBottomButtonShowing} = this.state;
@@ -158,12 +217,12 @@ export default class MainMessages extends Component {
     const scrollHeight = current.scrollHeight;
     const gotoBottomButtonShowingThreshold = 100;
     if (threadMessagesHasNext || scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
-        if (!gotoBottomButtonShowing) {
-          this.setState({
-            gotoBottomButtonShowing: true
-          });
-        }
-      } else {
+      if (!gotoBottomButtonShowing) {
+        this.setState({
+          gotoBottomButtonShowing: true
+        });
+      }
+    } else {
       if (gotoBottomButtonShowing) {
         this.setState({
           gotoBottomButtonShowing: false
@@ -226,7 +285,7 @@ export default class MainMessages extends Component {
           this.gotoBottom = false;
         }
       } else if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
-        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId.messageId);
+        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId);
       } else {
         if (oldThreadId !== threadId) {
           this.gotoBottom = true;
@@ -262,20 +321,34 @@ export default class MainMessages extends Component {
     }
   }
 
-  goToMessageId(threadId, msgId, isDeleted, e) {
+  goToMessageId(threadId, message, isDeleted, e) {
     if (e) {
       e.stopPropagation();
     }
     if (isDeleted) {
       return;
     }
-    const {threadMessages} = this.props;
-    const index = threadMessages.findIndex(e => e.id === msgId);
-    if (~index) {
-      return this.gotoMessage(msgId);
+    const {dispatch, threadMessages} = this.props;
+    const gotToMessageId = (message) => {
+      const msgId = message.id;
+      const msgTime = message.time;
+      const index = threadMessages.findIndex(e => e.id === msgId);
+      if (~index) {
+        return this.gotoMessage(msgId);
+      }
+      this.pendingGoToId = msgId;
+      dispatch(threadMessageGetListByMessageId(threadId, msgTime));
+    };
+    //TODO this is a mess, we need time field on replyInfoObject
+    const repliedToMessageId = message.repliedToMessageId;
+    if (repliedToMessageId) {
+      const index = threadMessages.findIndex(e => e.id === repliedToMessageId);
+      if (~index) {
+        return gotToMessageId(threadMessages[index]);
+      }
+      return dispatch(messageGet(threadId, message.repliedToMessageId)).then(gotToMessageId);
     }
-    this.pendingGoToId = msgId;
-    this.props.dispatch(threadMessageGetListByMessageId(threadId, msgId));
+    gotToMessageId(message);
   }
 
   onDragOver(e) {
@@ -312,16 +385,16 @@ export default class MainMessages extends Component {
       threadFetching,
       threadSelectMessageShowing,
       threadCheckedMessageList,
-      contact,
       user
     } = this.props;
     const {highLightMessage, gotoBottomButtonShowing} = this.state;
+    const showUnreadCountBar = this.showUnreadCountBar;
+    const showUnreadCountBarCount = this.showUnreadCountBarCount;
+    const modifiedThreadMessages = [...threadMessages];
     if (threadMessagesFetching || threadFetching || threadGetMessageListByMessageIdFetching) {
       return (
         <Container className={style.MainMessages}>
           <Container center centerTextAlign style={{width: "100%"}}>
-            <Message
-              size="lg">{threadFetching && contact ? strings.creatingChatWith(contact.firstName, contact.lastName) : strings.waitingForMessageFetching}</Message>
             <Loading hasSpace><LoadingBlinkDots/></Loading>
           </Container>
         </Container>
@@ -409,7 +482,7 @@ export default class MainMessages extends Component {
         return (
           <Container
             cursor="pointer"
-            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo.repliedToMessageId, replyInfo.deleted)}>
+            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo, replyInfo.deleted)}>
             <Paper colorBackground
                    style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
               <Text bold size="xs">{strings.replyTo}:</Text>
@@ -537,6 +610,9 @@ export default class MainMessages extends Component {
       [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
     });
 
+    if (showUnreadCountBar) {
+      modifiedThreadMessages.splice(modifiedThreadMessages.length - showUnreadCountBarCount, 0, {unreadContBar: true});
+    }
 
     return (
       <Container className={style.MainMessages} onScroll={this.onScroll}
@@ -548,18 +624,26 @@ export default class MainMessages extends Component {
         <Container className={style.MainMessages__Messages}
                    ref={this.boxSceneMessagesNode}>
           <List ref={this.messageListNode}>
-            {threadMessages.map(el => (
-              <ListItem key={el.id || el.uniqueId} data={el}
-                        noPadding
-                        active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
-                <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}
-                           relative>
-                  {avatar(el)}
-                  {message(el)}
-                  {threadSelectMessageShowing && messageTick(el)}
-                </Container>
-              </ListItem>
-            ))}
+            {modifiedThreadMessages.map(el =>
+              el.unreadContBar ?
+                <ListItem noPadding key="unreadCountBar">
+                  <Container className={style.MainMessages__UnreadCountBar} centerTextAlign>
+                    <Text bold color="accent">{strings.unreaded}</Text>
+                  </Container>
+                </ListItem>
+                :
+                <ListItem key={el.id || el.uniqueId} data={el}
+                          noPadding
+                          active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
+                  <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}
+                             relative>
+                    {avatar(el)}
+                    {message(el)}
+                    {threadSelectMessageShowing && messageTick(el)}
+                  </Container>
+                </ListItem>
+            )}
+
           </List>
         </Container>
         {gotoBottomButtonShowing ?

@@ -75,6 +75,7 @@ class Main extends Component {
     if (!threadId && !threadFetching) {
       return (
         <Container className={style.Main}>
+          <Container className={style.Main__Cover}/>
           <Container center centerTextAlign>
             <Message size="lg">{strings.pleaseStartAThreadFirst}</Message>
             <Gap y={10} block/>
@@ -92,6 +93,7 @@ class Main extends Component {
              render={props => {
                return (
                  <Container className={style.Main}>
+                   <Container className={style.Main__Cover}/>
                    <MainHead/>
                    <MainMessages/>
                    <MainFooter/>

@@ -110,7 +110,7 @@ class ModalContactList extends Component {
     const {chatRouterLess, history} = this.props;
     this.props.dispatch(contactAdding(true));
     this.onContactSearchClick(false);
-    if(!chatRouterLess){
+    if (!chatRouterLess) {
       history.push(ROUTE_ADD_CONTACT);
     }
   }
@@ -131,7 +131,7 @@ class ModalContactList extends Component {
     dispatch(contactListShowing(false));
     this.onContactSearchClick(false);
     this.onSearchQueryChange("");
-    if(!chatRouterLess){
+    if (!chatRouterLess) {
       if (!noHistory) {
         history.push("/");
       }
@@ -143,7 +143,7 @@ class ModalContactList extends Component {
     dispatch(contactChatting(contact));
     dispatch(threadCreate(contact.id));
     this.onClose(true);
-    if(!chatRouterLess){
+    if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }
   }
@@ -164,12 +164,13 @@ class ModalContactList extends Component {
     const {contacts, isShow, smallVersion, contactsFetching, chatInstance} = this.props;
     const {searchInput, query} = this.state;
     const showLoading = contactsFetching;
-    let contactsFilter = contacts;
+    let contactsFilter = contacts.filter(e => e.linkedUser);
     if (searchInput) {
       contactsFilter = isContains("firstName|lastName|cellphoneNumber", query, contacts);
     }
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none">
 
         <ModalHeader>
           <Container relative>
@@ -212,17 +213,17 @@ class ModalContactList extends Component {
 
                     <Container maxWidth="calc(100% - 75px)">
                       <Avatar>
-                        <AvatarImage src={el.linkedUser && el.linkedUser.image}
+                        <AvatarImage src={el.linkedUser.image}
                                      text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
                                      textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
                         <AvatarName>
                           {el.firstName} {el.lastName}
                           {
-                            (!el.hasUser || el.blockId)
+                            el.blocked
                             &&
                             <AvatarText>
                               <Text size="xs" inline
-                                    color={el.blockId ? "red" : "accent"}>{el.blockId ? strings.blocked : strings.isNotPodUser}</Text>
+                                    color={el.blocked ? "red" : "accent"}>{el.blocked ? strings.blocked : strings.isNotPodUser}</Text>
                             </AvatarText>
                           }
 
