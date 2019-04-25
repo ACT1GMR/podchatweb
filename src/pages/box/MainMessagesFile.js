@@ -83,7 +83,7 @@ function hasError(message) {
 @connect(store => {
   return {
     smallVersion: store.chatSmallVersion,
-    leftAsideShowing: store.threadLeftAsideShowing
+    leftAsideShowing: store.threadLeftAsideShowing.isShowing
   };
 })
 class MainMessagesFile extends Component {
@@ -207,7 +207,7 @@ class MainMessagesFile extends Component {
   render() {
     const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing, personNameFragment} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
-    let metaData = message.metaData;
+    let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = metaData.mimeType.indexOf("image") > -1;
     const isVideo = metaData.mimeType.indexOf("video") > -1;

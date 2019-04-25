@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
-import {Link, withRouter} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
@@ -22,6 +22,7 @@ import Loading from "../../../../uikit/src/loading";
 import {Text} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
 import date from "../../utils/date";
+import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
 
 //styling
 import style from "../../../styles/pages/box/AsideThreads.scss";
@@ -55,11 +56,11 @@ function prettifyMessageDate(passedTime) {
 
 function isFile(message) {
   if (message) {
-    if (message.metaData) {
-      if (typeof message.metaData === "object") {
-        return message.metaData.file;
+    if (message.metadata) {
+      if (typeof message.metadata === "object") {
+        return message.metadata.file;
       }
-      return JSON.parse(message.metaData).file
+      return JSON.parse(message.metadata).file
     }
   }
 }
@@ -88,7 +89,8 @@ const sanitizeRule = {
     threadsFetching: store.threadList.fetching,
     threadId: store.thread.thread.id,
     chatInstance: store.chatInstance.chatSDK,
-    chatRouterLess: store.chatRouterLess
+    chatRouterLess: store.chatRouterLess,
+    chatSearchResult: store.chatSearchResult
   };
 })
 class AsideThreads extends Component {
@@ -120,7 +122,7 @@ class AsideThreads extends Component {
   }
 
   render() {
-    const {threads, threadsFetching, threadShowing, chatInstance} = this.props;
+    const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult} = this.props;
     const {activeThread} = this.state;
     const classNames = classnames({
       [style.AsideThreads]: true,
@@ -146,71 +148,76 @@ class AsideThreads extends Component {
       }
       return (
         <Container className={classNames}>
-          <List>
-            {filteredThreads.map(el => (
-              <ListItem onSelect={this.onThreadClick.bind(this, el)} selection
-                        active={activeThread === el.id}>
+          {chatSearchResult ?
+            <AsideThreadsSearchResult chatSearchResult={chatSearchResult}/>
+            :
+            <List>
+              {filteredThreads.map(el => (
+                <ListItem onSelect={this.onThreadClick.bind(this, el)} selection
+                          active={activeThread === el.id}>
 
-                <Container relative>
-                  <Avatar>
-                    <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                 textBg={avatarNameGenerator(el.title).color}/>
-                    <AvatarName invert>
-                      {el.group &&
-                      <Container inline>
-                        <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                        <Gap x={2}/>
-                      </Container>
-                      }
-                      {getTitle(el.title)}
-                      <AvatarText>
-                        {el.group ?
-                          el.lastMessage || el.lastMessageVO ?
-                            <Container>
-                              <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
-                              {isFile(el.lastMessageVO) ?
+                  <Container relative>
+                    <Avatar>
+                      <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                   textBg={avatarNameGenerator(el.title).color}/>
+                      <AvatarName invert>
+                        {el.group &&
+                        <Container inline>
+                          <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          <Gap x={2}/>
+                        </Container>
+                        }
+                        {getTitle(el.title)}
+                        <AvatarText>
+                          {el.group ?
+                            el.lastMessage || el.lastMessageVO ?
+                              <Container>
+                                <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
+                                {isFile(el.lastMessageVO) ?
+                                  <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
+                                  :
+                                  <Text isHTML size="sm" inline color="gray" dark
+                                        sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
+                                }
+                              </Container>
+                              :
+                              <Text size="sm" inline
+                                    color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
+                            :
+                            el.lastMessage || el.lastMessageVO ?
+                              isFile(el.lastMessageVO) ?
                                 <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
                                 :
-                                <Text isHTML size="sm" inline color="gray" dark
-                                      sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
-                              }
-                            </Container>
-                            :
-                            <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
-                          :
-                          el.lastMessage || el.lastMessageVO ?
-                            isFile(el.lastMessageVO) ?
-                              <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
+                                <Text isHTML size="sm" inline color="gray"
+                                      sanitizeRule={sanitizeRule}
+                                      dark>{sliceMessage(el.lastMessage, 30)}</Text>
                               :
-                              <Text isHTML size="sm" inline color="gray"
-                                    sanitizeRule={sanitizeRule}
-                                    dark>{sliceMessage(el.lastMessage, 30)}</Text>
-                            :
-                            <Text size="sm" inline
-                                  color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
-                        }
-                        {el.lastMessageVO || el.time ?
-                          <Container topLeft>
-                            <Text size="xs"
-                                  color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
-                          </Container>
-                          : ""}
+                              <Text size="sm" inline
+                                    color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
+                          }
+                          {el.lastMessageVO || el.time ?
+                            <Container topLeft>
+                              <Text size="xs"
+                                    color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
+                            </Container>
+                            : ""}
 
-                      </AvatarText>
-                    </AvatarName>
-                  </Avatar>
-                  {el.unreadCount && activeThread !== el.id ?
-                    <Container absolute centerLeft>
-                      <Gap y={10} block/>
-                      <Shape color="accent">
-                        <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                      </Shape>
-                    </Container> : ""}
-                </Container>
-              </ListItem>
-            ))}
-          </List>
+                        </AvatarText>
+                      </AvatarName>
+                    </Avatar>
+                    {el.unreadCount && activeThread !== el.id ?
+                      <Container absolute centerLeft>
+                        <Gap y={10} block/>
+                        <Shape color="accent">
+                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                        </Shape>
+                      </Container> : ""}
+                  </Container>
+                </ListItem>
+              ))}
+            </List>
+          }
+
         </Container>
       );
     }

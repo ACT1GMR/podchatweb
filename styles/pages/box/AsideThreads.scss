@@ -1,9 +1,13 @@
-@import "../../mixin/responsive";
 @import "_scope";
+@import "../../mixin/responsive";
 
 .AsideThreads {
   background-color: $color-primary;
   z-index: $z-index-1;
   height: 100%;
   overflow-y: auto;
+}
+
+.AsideThreads--smallVersion {
+
 }

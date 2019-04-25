@@ -304,11 +304,11 @@ export const threadEmojiShowing = isShowing => {
   }
 };
 
-export const threadLeftAsideShowing = isShowing => {
+export const threadLeftAsideShowing = (isShowing, type, data) => {
   return dispatch => {
     return dispatch({
       type: THREAD_LEFT_ASIDE_SHOWING,
-      payload: isShowing
+      payload: {isShowing, type, data}
     });
   }
 };

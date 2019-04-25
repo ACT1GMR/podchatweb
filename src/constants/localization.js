@@ -128,8 +128,11 @@ let strings = new LocalizedStrings({
       return `${person} چتی ساخت`
     },
     noResult: "نتیجه ای وجود ندارد",
+    noBodyReadMessage: "کسی این پیام را نخوانده",
+    conversations: "گفتگوها",
     searchSomething: "کلمه ای تایپ کنید",
     searchMessages: "جستجو پیامها",
+    messageSeenList: "لیست خواننده ها",
     edit: "اصلاح",
     block: "مسدود سازی",
     notification: "اعلانات",

@@ -119,8 +119,8 @@ export const messageSeen = (message) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
-      type: MESSAGE_SEEN,
-      payload: chatSDK.seenMessage(message.id, message.ownerId)
+      type: MESSAGE_SEEN(),
+      payload: chatSDK.seenMessage(message.id, message.ownerId, message.threadId)
     });
   }
 };
@@ -130,5 +130,13 @@ export const messageGet = (threadId, messageId) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     return chatSDK.getMessageById(threadId, messageId);
+  }
+};
+
+export const messageGetSeenList = (messageId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.getMessageSeenList(messageId);
   }
 };

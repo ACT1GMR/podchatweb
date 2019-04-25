@@ -8,7 +8,7 @@ import {
   MESSAGE_NEW,
   CHAT_STATE,
   CHAT_MODAL_PROMPT_SHOWING,
-  THREAD_REMOVED_FROM, CHAT_ROUTER_LESS
+  THREAD_REMOVED_FROM, CHAT_ROUTER_LESS, CHAT_SEARCH_RESULT, CHAT_SEARCH_SHOW
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -18,7 +18,7 @@ export const chatSetInstance = config => {
       type: CHAT_GET_INSTANCE(),
       payload: null
     });
-    const chatSDKInstance = new ChatSDK({
+    new ChatSDK({
       config,
       onThreadEvents: (thread, type) => {
         if (type === THREAD_REMOVED_FROM) {
@@ -110,6 +110,29 @@ export const chatModalPrompt = (isShowing, message, onApply, onCancel, confirmTe
         onCancel,
         confirmText
       }
+    });
+  }
+};
+
+export const chatSearchResult = (isShowing, filteredThreads, filteredContacts) => {
+  return dispatch => {
+    return dispatch({
+      type: CHAT_SEARCH_RESULT,
+      payload: {
+        isShowing,
+        filteredThreads,
+        filteredContacts
+      }
+    });
+  }
+};
+
+
+export const chatSearchShow = isShow => {
+  return dispatch => {
+    return dispatch({
+      type: CHAT_SEARCH_SHOW,
+      payload: isShow
     });
   }
 };

@@ -8,6 +8,7 @@ import {connect} from "react-redux";
 
 //components
 import AsideHead from "./AsideHead";
+import AsideSearch from "./AsideSearch";
 import AsideThreads from "./AsideThreads";
 import Container from "../../../../uikit/src/container";
 
@@ -24,6 +25,7 @@ export default class Aside extends Component {
     return (
       <Container className={style.Aside}>
         <AsideHead/>
+        <AsideSearch/>
         <AsideThreads/>
       </Container>
     );

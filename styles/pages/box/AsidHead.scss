@@ -1,3 +1,5 @@
+@import "../../mixin/responsive";
+
 .AsideHead {
   height: 59px;
   width: 100%;
@@ -7,4 +9,17 @@
 
 .AsideHead__ConnectionHandlerContainer {
   margin: 0 68px;
+}
+
+.AsideHead__SearchContainer {
+  padding: 17px 15px;
+  cursor: pointer;
+}
+
+@include grid("md") {
+  .AsideHead:not(.AsideHead--smallVersion) {
+    .AsideHead__SearchContainer {
+      display: none;
+    }
+  }
 }

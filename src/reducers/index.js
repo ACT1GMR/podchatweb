@@ -43,7 +43,9 @@ import {
   chatInstanceReducer,
   chatStateReducer,
   chatModalPromptReducer,
-  chatRouterLessReducer
+  chatRouterLessReducer,
+  chatSearchResultReducer,
+  chatSearchShowReducer
 } from "./chatReducer";
 import userReducer from "./userReducer";
 
@@ -53,6 +55,8 @@ const rootReducer = {
   chatModalPrompt: chatModalPromptReducer,
   chatSmallVersion: chatSmallVersionReducer,
   chatRouterLess: chatRouterLessReducer,
+  chatSearchResult: chatSearchResultReducer,
+  chatSearchShow: chatSearchShowReducer,
   contactGetList: contactGetListReducer,
   contactListShowing: contactListShowingReducer,
   contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,

@@ -13,16 +13,20 @@ import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP, ROUTE_THREAD} fro
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
 
 //UI components
-import {MdMenu, MdClose} from "react-icons/lib/md";
+import {MdMenu, MdClose, MdSearch} from "react-icons/lib/md";
 import Notification from "./Notification";
 import {Dropdown, DropdownItem} from "../../../../uikit/src/menu";
 import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
+import {InputText} from "../../../../uikit/src/input";
 
 //styling
 import style from "../../../styles/pages/box/AsidHead.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
+import {threadSearchMessage} from "../../actions/threadActions";
+import classnames from "classnames";
+import {chatSearchShow} from "../../actions/chatActions";
 
 const statics = {
   headMenuSize: 59
@@ -41,6 +45,8 @@ function routeChange(history, route, chatRouterLess) {
     chatState: store.chatState,
     chatInstance: store.chatInstance.chatSDK,
     chatRouterLess: store.chatRouterLess,
+    chatSearchShowing: store.chatSearchShow,
+    smallVersion: store.chatSmallVersion,
     user: store.user.user
   };
 })
@@ -76,6 +82,7 @@ class AsideHead extends Component {
     this.onCloseMenu = this.onCloseMenu.bind(this);
     this.onOpenMenu = this.onOpenMenu.bind(this);
     this.onRetryClick = this.onRetryClick.bind(this);
+    this.onChatSearchToggle = this.onChatSearchToggle.bind(this);
   }
 
   onMenuSelect(type) {
@@ -118,8 +125,13 @@ class AsideHead extends Component {
     });
   }
 
+  onChatSearchToggle() {
+    const {chatSearchShowing} = this.props;
+    this.props.dispatch(chatSearchShow(!chatSearchShowing));
+  }
+
   render() {
-    const {menuItems, chatState, chatInstance} = this.props;
+    const {menuItems, chatState, chatInstance, smallVersion, chatSearchShowing} = this.props;
     const {isOpen} = this.state;
     const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
@@ -127,8 +139,12 @@ class AsideHead extends Component {
     const isReconnecting = chatState.socketState == 1 && !chatState.deviceRegister;
     const isConnected = chatState.socketState == 1 && chatState.deviceRegister;
     const isDisconnected = chatState.socketState == 3;
+    const classNames = classnames({
+      [style.AsideHead]: true,
+      [style["AsideHead--smallVersion"]]: smallVersion
+    });
     return (
-      <Container className={style.AsideHead} ref={this.container} relative>
+      <Container className={classNames} ref={this.container} relative>
         <Notification/>
         {isOpen ? (
           <MdClose size={iconSize} onClick={this.onCloseMenu}
@@ -157,6 +173,15 @@ class AsideHead extends Component {
             <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)} invert>{el.name}</DropdownItem>
           ))}
         </Dropdown>
+        <Container centerLeft>
+          <Container className={style.AsideHead__SearchContainer} inline onClick={this.onChatSearchToggle}>
+            {chatSearchShowing ?
+              <MdClose size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+              :
+              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+            }
+          </Container>
+        </Container>
       </Container>
     )
   }

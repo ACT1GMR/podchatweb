@@ -5,6 +5,7 @@ import {Link, withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
+import {THREAD_LEFT_ASIDE_SEARCH} from "../../constants/actionTypes";
 
 //actions
 import {
@@ -68,7 +69,7 @@ class MainHead extends Component {
 
   onLeftAsideShow(e) {
     e.stopPropagation();
-    this.props.dispatch(threadLeftAsideShowing(true));
+    this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEARCH));
   }
 
   onSelectMessagesShow(e) {

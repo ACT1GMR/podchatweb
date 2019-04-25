@@ -5,6 +5,7 @@ import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
+import {THREAD_LEFT_ASIDE_SEARCH} from "../../constants/actionTypes";
 
 //actions
 import {threadLeftAsideShowing} from "../../actions/threadActions";
@@ -26,7 +27,8 @@ const statics = {
 
 @connect(store => {
   return {
-    smallVersion: store.chatSmallVersion
+    smallVersion: store.chatSmallVersion,
+    leftAsideShowingType: store.threadLeftAsideShowing.type,
   }
 })
 export default class LeftAsideHead extends Component {
@@ -41,7 +43,7 @@ export default class LeftAsideHead extends Component {
   }
 
   render() {
-    const {smallVersion} = this.props;
+    const {smallVersion, leftAsideShowingType} = this.props;
     const iconSize = styleVar.iconSizeMd.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
     const classNames = classnames({
@@ -57,7 +59,7 @@ export default class LeftAsideHead extends Component {
                    style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         </Container>
         <Container inline>
-          <Text invert>{strings.searchMessages}</Text>
+          <Text invert>{leftAsideShowingType === THREAD_LEFT_ASIDE_SEARCH ?  strings.searchMessages : strings.messageSeenList}</Text>
         </Container>
       </Container>
     )

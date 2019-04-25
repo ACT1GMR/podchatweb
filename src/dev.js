@@ -15,7 +15,7 @@ auth({
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <Box token={token}/>
+          <Box token={token} enableCache fullResponseObject dynamicHistoryCount/>
         </BrowserRouter>
       </Provider>,
       document.getElementById("app")

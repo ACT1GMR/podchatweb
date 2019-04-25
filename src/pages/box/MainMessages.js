@@ -17,7 +17,8 @@ import {
   threadMessageGetListByMessageId,
   threadMessageGetListPartial,
   threadMessageGetList,
-  threadCheckedMessageList
+  threadCheckedMessageList,
+  threadLeftAsideShowing
 } from "../../actions/threadActions";
 
 //components
@@ -36,6 +37,7 @@ import MainMessagesText from "./MainMessagesText";
 //styling
 import {
   MdDoneAll,
+  MdVisibility,
   MdVideocam,
   MdDone,
   MdChatBubbleOutline,
@@ -47,6 +49,7 @@ import {
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
+import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../../constants/actionTypes";
 
 function isMessageByMe(message, user) {
   if (message) {
@@ -78,11 +81,11 @@ function showNameOrAvatar(message, threadMessages) {
 
 function isFile(message) {
   if (message) {
-    if (message.metaData) {
-      if (typeof message.metaData === "object") {
-        return message.metaData.file;
+    if (message.metadata) {
+      if (typeof message.metadata === "object") {
+        return message.metadata.file;
       }
-      return JSON.parse(message.metaData).file
+      return JSON.parse(message.metadata).file
     }
   }
 }
@@ -94,6 +97,7 @@ function datePetrification(time) {
 
 @connect(store => {
   return {
+    isGroup: store.thread.thread.group,
     threadId: store.thread.thread.id,
     threadUnreadCount: store.thread.thread.unreadCount,
     threadLastMessage: store.thread.thread.lastMessageVO,
@@ -134,8 +138,6 @@ export default class MainMessages extends Component {
   shouldComponentUpdate(nextProps) {
     const {
       threadId: currentThreadId,
-      threadUnreadCount: currentThreadUnreadCount,
-      threadLastMessage: currentThreadLastMessage,
       threadMessages: currentThreadMessages
     } = this.props;
     const {
@@ -147,7 +149,6 @@ export default class MainMessages extends Component {
     } = nextProps;
     const currentLastMessage = currentThreadMessages[currentThreadMessages.length - 1];
     const lastMessage = threadMessages[threadMessages.length - 1];
-    const {showUnreadCountBar} = this;
     const setBarAndCount = (showBar) => {
       this.showUnreadCountBar = showBar;
       this.showUnreadCountBarCount = showBar ? threadUnreadCount : 0;
@@ -162,8 +163,10 @@ export default class MainMessages extends Component {
 
     if (!threadMessagesFetching) {
       if (this.showUnreadCountBarLastMessage) {
-        if (this.showUnreadCountBarLastMessage.id !== lastMessage.id) {
-          return setBarAndCount();
+        if(lastMessage){
+          if (this.showUnreadCountBarLastMessage.id !== lastMessage.id) {
+            return setBarAndCount();
+          }
         }
       }
       if (threadUnreadCount >= 1) {
@@ -249,7 +252,7 @@ export default class MainMessages extends Component {
         }
       }
       if (message) {
-        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.time, loadBefore, 50));
+        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.timeMiliSeconds, loadBefore, 50));
       }
     } else {
       this.lastPosition = scrollTop;
@@ -288,6 +291,7 @@ export default class MainMessages extends Component {
         return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId);
       } else {
         if (oldThreadId !== threadId) {
+          this.seenMessages = [];
           this.gotoBottom = true;
         } else if (lastMessage.newMessage && this.lastMessage !== lastMessage.uniqueId) {
           gotoBottom();
@@ -331,7 +335,7 @@ export default class MainMessages extends Component {
     const {dispatch, threadMessages} = this.props;
     const gotToMessageId = (message) => {
       const msgId = message.id;
-      const msgTime = message.time;
+      const msgTime = message.timeMiliSeconds;
       const index = threadMessages.findIndex(e => e.id === msgId);
       if (~index) {
         return this.gotoMessage(msgId);
@@ -376,8 +380,13 @@ export default class MainMessages extends Component {
     return false;
   }
 
+  onMessageSeenListClick(message) {
+    this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id))
+  }
+
   render() {
     const {
+      isGroup,
       threadGetMessageListByMessageIdFetching,
       threadMessagesFetching,
       threadMessagesPartialFetching,
@@ -441,10 +450,12 @@ export default class MainMessages extends Component {
       if (!el.id) {
         return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
       }
-      if (el.seen) {
-        return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+      if(!isGroup) {
+        if (el.seen) {
+          return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+        }
       }
-      return <MdDone size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+      return <MdDone className={isGroup ? style.MainMessages__SentIcon : ""} size={style.iconSizeXs} style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}} onClick={isGroup ?  this.onMessageSeenListClick.bind(this, el) : null}/>
     };
 
     const editFragment = (el) => {

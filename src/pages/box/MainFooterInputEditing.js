@@ -56,8 +56,8 @@ function getMessageEditingText(messageEditing) {
       if(message instanceof Array) {
         editObject.text = strings.messagesCount(message.length);
       } else {
-        if (message.metaData) {
-          const file = JSON.parse(message.metaData).file;
+        if (message.metadata) {
+          const file = JSON.parse(message.metadata).file;
           if (file) {
             let width = file.width;
             editObject.text = file.originalName;

@@ -17,6 +17,7 @@ import Text from "../../../../uikit/src/typography/Text";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterSpam.scss";
+import Gap from "../../../../uikit/src/gap";
 
 
 function showSpam(props) {
@@ -56,7 +57,7 @@ function showSpam(props) {
       return false;
     }
   }
-  return thread.canSpam
+  return thread.canSpam;
 }
 
 
@@ -100,6 +101,7 @@ export default class MainFooterSpam extends Component {
     super();
     this.reportSpamClick = this.reportSpamClick.bind(this);
     this.onUnblockSelect = this.onUnblockSelect.bind(this);
+    this.onBlockSelect = this.onBlockSelect.bind(this);
   }
 
   componentDidMount() {
@@ -108,11 +110,6 @@ export default class MainFooterSpam extends Component {
     if (thread) {
       dispatch(threadParticipantList(thread.id));
     }
-  }
-
-  componentDidUpdate(oldProps) {
-    const {thread, dispatch, contacts} = this.props;
-    const {thread: oldThread, contacts: oldContacts} = oldProps;
   }
 
   reportSpamClick() {
@@ -127,6 +124,14 @@ export default class MainFooterSpam extends Component {
     const {dispatch, thread} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureToDoIt}؟`, () => {
       dispatch(contactBlock(thread.id));
+      dispatch(chatModalPrompt());
+    }, null, strings.accept));
+  }
+
+  onBlockSelect() {
+    const {dispatch, thread} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureToDoIt}؟`, () => {
+      dispatch(contactBlock(thread.id, true, thread));
       dispatch(chatModalPrompt());
     }, null, strings.accept));
   }
@@ -149,10 +154,18 @@ export default class MainFooterSpam extends Component {
     return (
       showSpamming ?
         <Container className={classNames} userSelect="none">
-          <Container centerTextAlign onClick={this.reportSpamClick}>
-            <Text linkStyle color="accent" bold>
-              {strings.reportSpam}
-            </Text>
+          <Container style={{margin: "0 auto"}}>
+            <Container onClick={this.reportSpamClick} inline>
+              <Text linkStyle color="accent" bold>
+                {strings.reportSpam}
+              </Text>
+            </Container>
+            <Gap x={5}/>
+            <Container onClick={this.onBlockSelect} inline>
+              <Text linkStyle color="accent" bold>
+                {strings.block}
+              </Text>
+            </Container>
           </Container>
         </Container>
         :

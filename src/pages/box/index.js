@@ -42,7 +42,7 @@ import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.sc
     chatRouterLess: store.chatRouterLess,
     user: store.user.user,
     threadShowing: store.threadShowing,
-    leftAsideShowing: store.threadLeftAsideShowing,
+    leftAsideShowing: store.threadLeftAsideShowing.isShowing,
     threadImages: store.threadLeftAsideShowing
   };
 }, null, null, {withRef: true})
@@ -109,7 +109,7 @@ class Box extends Component {
   }
 
   render() {
-    const {threadShowing, customClassName, leftAsideShowing, small} = this.props;
+    const {threadShowing, customClassName, leftAsideShowing, small, chatRouterLess} = this.props;
     let classNames = classnames({
       [customClassName]: customClassName,
       [style.Box]: true,

@@ -155,7 +155,11 @@ export const threadShowingReducer = (state = false, action) => {
   }
 };
 
-export const threadLeftAsideShowingReducer = (state = false, action) => {
+export const threadLeftAsideShowingReducer = (state = {
+  isShowing: false,
+  type: null,
+  data: null
+}, action) => {
   switch (action.type) {
     case THREAD_LEFT_ASIDE_SHOWING:
       return action.payload;
@@ -191,6 +195,8 @@ export const threadsReducer = (state = {
   const sortThreads = (threads) => {
     return threads.sort((a, b) => b.time - a.time)
   };
+  const threads = [...state.threads];
+  let index;
   switch (action.type) {
     case THREAD_GET_LIST("PENDING"):
       return {...state, ...stateObject("PENDING", [], "threads")};
@@ -211,10 +217,15 @@ export const threadsReducer = (state = {
     case THREAD_GET_LIST("ERROR"):
       return {...state, ...stateObject("ERROR", action.payload)};
     case THREAD_REMOVED_FROM:
-      let threads = [...state.threads];
-      let index = threads.findIndex(thread => thread.id === action.payload);
+      index = threads.findIndex(thread => thread.id === action.payload);
       if (~index) {
         threads.splice(index, 1);
+      }
+      return {...state, ...stateObject("SUCCESS", sortThreads(threads), "threads")};
+    case MESSAGE_SEEN("SUCCESS"):
+      index = threads.findIndex(thread => thread.id === action.payload.threadId);
+      if (~index) {
+        threads[index].unreadCount = 0;
       }
       return {...state, ...stateObject("SUCCESS", sortThreads(threads), "threads")};
     default:
@@ -389,15 +400,9 @@ export const threadMessageListReducer = (state = {
       }
       return removeDuplicate({...state, messages: [...state.messages, action.payload]});
     case MESSAGE_EDIT():
-    case MESSAGE_SEEN:
-      const newState = updateMessage(null, action.payload, message => message.id === action.payload.id);
+    case MESSAGE_SEEN("SUCCESS"):
+      const newState = updateMessage("seen", true, message => message.id === action.payload, null, null, true);
       const newMessagesClone = newState.messages;
-      const fileIndex = newMessagesClone.findIndex(message => message.id === action.payload.id);
-      newMessagesClone.slice(0, fileIndex).forEach(e => {
-        if (!e.seen) {
-          e.seen = true;
-        }
-      });
       return {...newState, ...stateObject("SUCCESS", newMessagesClone, "messages")};
     case MESSAGE_DELETE:
       return updateMessage(null, null, message => message.id === action.payload.id, null, true, true);

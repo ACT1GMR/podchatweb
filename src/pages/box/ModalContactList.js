@@ -166,7 +166,7 @@ class ModalContactList extends Component {
     const showLoading = contactsFetching;
     let contactsFilter = contacts.filter(e => e.linkedUser);
     if (searchInput) {
-      contactsFilter = isContains("firstName|lastName|cellphoneNumber", query, contacts);
+      contactsFilter = isContains("firstName|lastName|cellphoneNumber", query, contactsFilter);
     }
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
@@ -268,4 +268,5 @@ class ModalContactList extends Component {
   }
 }
 
-export default withRouter(ModalContactList);
+const exportDefault =  withRouter(ModalContactList);
+export {isContains, exportDefault as default};

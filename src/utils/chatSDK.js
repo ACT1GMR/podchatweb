@@ -179,11 +179,16 @@ export default class ChatSDK {
     };
     this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
       if (!this._onError(result, reject)) {
+        const rslt = result.result;
+        rslt.failed.forEach(item => {
+          item.participant = this.user;
+          item.hasError = true
+        });
         return resolve({
-          messages: result.result.history,
+          messages: rslt.history.concat(rslt.failed.concat(rslt.sending.concat(rslt.uploading))),
           threadId: threadId,
-          messagesCount: result.result.contentCount,
-          hasPrevious: result.result.hasNext,
+          messagesCount: rslt.contentCount,
+          hasPrevious: rslt.hasNext,
           hasNext: false
         });
       }
@@ -291,7 +296,7 @@ export default class ChatSDK {
         message: caption,
         fileUniqueId: obj.content.file.uniqueId,
         time: Date.now() * Math.pow(10, 6),
-        metaData: {
+        metadata: {
           file: {
             mimeType: file.type,
             originalName: file.name,
@@ -428,11 +433,10 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  seenMessage(resolve, reject, messageId, ownerId) {
+  seenMessage(resolve, reject, messageId, ownerId, threadId) {
+    resolve({messageId, threadId});
     this.chatAgent.seen({messageId, ownerId}, (result) => {
-      if (!this._onError(result, reject)) {
-        return resolve(result);
-      }
+      this._onError(result, reject)
     });
   }
 
@@ -564,6 +568,19 @@ export default class ChatSDK {
     this.chatAgent.getThreadParticipants(getParticipantsParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.participants);
+      }
+    });
+  }
+
+  @promiseDecorator
+  getMessageSeenList(resolve, reject, messageId) {
+    const params = {
+      messageId
+    };
+
+    this.chatAgent.getMessageSeenList(params, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
       }
     });
   }
