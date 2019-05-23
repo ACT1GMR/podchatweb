@@ -217,11 +217,11 @@ class AsideThreads extends Component {
               ))}
             </List>
           }
-
         </Container>
       );
     }
   }
 }
 
-export default withRouter(AsideThreads);
+const exportDefault =  withRouter(AsideThreads);
+export {getTitle, sliceMessage, isFile, sanitizeRule, prettifyMessageDate, exportDefault as default};

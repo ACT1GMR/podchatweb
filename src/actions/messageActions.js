@@ -32,13 +32,13 @@ export const messageSendFile = (file, threadId, caption) => {
   }
 };
 
-export const messageCancelFile = (uniqueId, threadId) => {
+export const messageCancelFile = (fileUniqueId, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_FILE_UPLOAD_CANCEL(),
-      payload: chatSDK.cancelFileUpload(uniqueId, threadId)
+      payload: chatSDK.cancelFileUpload(fileUniqueId, threadId)
     });
   }
 };

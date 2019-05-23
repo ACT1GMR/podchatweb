@@ -1,4 +1,10 @@
 import {
+  getThreadHistory,
+  getThreadHistoryByQuery,
+  getThreadHistoryInMiddle
+} from "../utils/listing";
+
+import {
   THREAD_CREATE,
   THREAD_GET_MESSAGE_LIST,
   THREAD_GET_LIST,
@@ -7,7 +13,6 @@ import {
   THREAD_PARTICIPANT_GET_LIST,
   THREAD_PARTICIPANT_ADD,
   THREAD_MODAL_THREAD_INFO_SHOWING,
-  THREAD_PARTICIPANT_REMOVE,
   THREAD_MODAL_MEDIA_SHOWING,
   THREAD_FILES_TO_UPLOAD,
   THREAD_SHOWING,
@@ -23,9 +28,11 @@ import {
   THREAD_CHECKED_MESSAGE_LIST_REMOVE,
   THREAD_CHECKED_MESSAGE_LIST_EMPTY,
   THREAD_CHECKED_MESSAGE_LIST_ADD,
-  CONTACT_GET_LIST,
   THREAD_EMOJI_SHOWING,
-  THREAD_NOTIFICATION, THREAD_LEAVE, THREAD_REMOVED_FROM, THREAD_CREATE_INIT, THREAD_PARTICIPANTS_REMOVED
+  THREAD_NOTIFICATION,
+  THREAD_REMOVED_FROM,
+  THREAD_CREATE_INIT,
+  THREAD_PARTICIPANTS_REMOVED
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName, idType) => {
@@ -74,13 +81,39 @@ export const threadGetList = threadIds => {
   }
 };
 
-export const threadMessageGetList = (threadId, offset, count) => {
+export const threadMessageGetList = (threadId, count) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
+      type: THREAD_GET_MESSAGE_LIST("PENDING"),
+      payload: null
+    });
+    dispatch({
       type: THREAD_GET_MESSAGE_LIST(),
-      payload: chatSDK.getThreadMessageList(threadId, offset, count)
+      payload: getThreadHistory(chatSDK, threadId, count)
+    });
+  }
+};
+
+export const threadMessageGetListPartial = (threadId, msgTime, loadAfter, count) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: THREAD_GET_MESSAGE_LIST_PARTIAL(),
+      payload: getThreadHistory(chatSDK, threadId, count, msgTime, loadAfter)
+    });
+  }
+};
+
+export const threadMessageGetListByMessageId = (threadId, msgTime, count) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(),
+      payload: getThreadHistoryInMiddle(chatSDK, threadId, msgTime, count)
     });
   }
 };
@@ -89,9 +122,15 @@ export const threadSearchMessage = (threadId, query) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if (!threadId) {
+      return dispatch({
+        type: THREAD_SEARCH_MESSAGE("SUCCESS"),
+        payload: {messages: {reset: true}}
+      });
+    }
     dispatch({
       type: THREAD_SEARCH_MESSAGE(),
-      payload: chatSDK.getThreadMessageListByQuery(threadId, query)
+      payload: getThreadHistoryByQuery(chatSDK, threadId, query)
     });
   }
 };
@@ -109,7 +148,7 @@ export const threadSpamPv = (threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    chatSDK.spamPvThread(threadId).then(e=>{
+    chatSDK.spamPvThread(threadId).then(e => {
       dispatch(threadInit());
       return dispatch({
         type: THREAD_REMOVED_FROM,
@@ -134,27 +173,6 @@ export const threadLeave = threadId => {
   }
 };
 
-export const threadMessageGetListPartial = (threadId, msgTime, loadBefore, count) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chatInstance.chatSDK;
-    dispatch({
-      type: THREAD_GET_MESSAGE_LIST_PARTIAL(),
-      payload: chatSDK.getThreadMessageListPartial(threadId, msgTime, !loadBefore, count)
-    });
-  }
-};
-
-export const threadMessageGetListByMessageId = (threadId, msgTime) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chatInstance.chatSDK;
-    dispatch({
-      type: THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(),
-      payload: chatSDK.getThreadMessageListByMessageId(threadId, msgTime - 10000)
-    });
-  }
-};
 
 export const threadParticipantList = threadId => {
   return (dispatch, getState) => {
@@ -221,23 +239,12 @@ export const threadRemoveParticipant = (threadId, participantIds) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    chatSDK.removeParticipants(threadId, participantIds).then(()=>{
+    chatSDK.removeParticipants(threadId, participantIds).then(() => {
       return dispatch({
         type: THREAD_PARTICIPANTS_REMOVED,
-        payload: {threadId, participantIds}
+        payload: {threadId, id: participantIds[0]}
       });
     })
-  }
-};
-
-export const threadInfo = (threadId, contactIds) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chatInstance.chatSDK;
-    return dispatch({
-      type: THREAD_PARTICIPANT_ADD(),
-      payload: chatSDK.addParticipants(threadId, contactIds)
-    });
   }
 };
 

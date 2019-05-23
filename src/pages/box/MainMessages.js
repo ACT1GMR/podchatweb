@@ -95,6 +95,12 @@ function datePetrification(time) {
   return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
 }
 
+const statics = {
+  scrollThresholdMultiply: 10,
+  gotoBottomButtonShowingThreshold: 100,
+  messageFetchingCount: 20,
+};
+
 @connect(store => {
   return {
     isGroup: store.thread.thread.group,
@@ -106,6 +112,7 @@ function datePetrification(time) {
     threadMessagesHasPrevious: store.threadMessages.hasPrevious,
     threadMessagesFetching: store.threadMessages.fetching,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
+    threadMessagesNextOffset: store.threadMessages.nextOffset,
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
     threadGoToMessageId: store.threadGoToMessageId,
     threadFetching: store.thread.fetching,
@@ -163,7 +170,7 @@ export default class MainMessages extends Component {
 
     if (!threadMessagesFetching) {
       if (this.showUnreadCountBarLastMessage) {
-        if(lastMessage){
+        if (lastMessage) {
           if (this.showUnreadCountBarLastMessage.id !== lastMessage.id) {
             return setBarAndCount();
           }
@@ -209,17 +216,16 @@ export default class MainMessages extends Component {
   }
 
   onScroll() {
-    const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext, threadMessagesHasPrevious} = this.props;
+    const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext, threadMessagesHasPrevious, threadMessagesNextOffset, dispatch} = this.props;
     const {gotoBottomButtonShowing} = this.state;
     if (!this.freeScroll || threadMessagesPartialFetching) {
       return false;
     }
-    const current = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
-    const scrollTop = current.scrollTop + current.offsetHeight;
+    const current = window.current = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
+    const scrollTop = current.scrollTop;
     const goingToUp = scrollTop < this.lastPosition;
     const scrollHeight = current.scrollHeight;
-    const gotoBottomButtonShowingThreshold = 100;
-    if (threadMessagesHasNext || scrollTop <= (scrollHeight - gotoBottomButtonShowingThreshold)) {
+    if (threadMessagesHasNext || scrollTop <= (scrollHeight - statics.gotoBottomButtonShowingThreshold)) {
       if (!gotoBottomButtonShowing) {
         this.setState({
           gotoBottomButtonShowing: true
@@ -239,20 +245,21 @@ export default class MainMessages extends Component {
       let loadBefore = false;
       if (goingToUp) {
         if (threadMessagesHasPrevious) {
-          if (scrollTop <= (scrollHeight / 3)) {
+          if (scrollTop <= (scrollHeight / statics.scrollThresholdMultiply)) {
             message = threadMessages[0];
             loadBefore = true;
           }
         }
       } else {
         if (threadMessagesHasNext) {
-          if (scrollTop > (scrollHeight - (scrollHeight / 3))) {
+          if (scrollTop + current.offsetHeight > (scrollHeight - (scrollHeight / statics.scrollThresholdMultiply))) {
             message = threadMessages[threadMessages.length - 1];
           }
         }
       }
       if (message) {
-        this.props.dispatch(threadMessageGetListPartial(message.threadId, message.timeMiliSeconds, loadBefore, 50));
+        console.log("Fire at", new Date());
+        dispatch(threadMessageGetListPartial(message.threadId, message.time + (loadBefore ? -20000 : 20000), !loadBefore, statics.messageFetchingCount));
       }
     } else {
       this.lastPosition = scrollTop;
@@ -335,13 +342,13 @@ export default class MainMessages extends Component {
     const {dispatch, threadMessages} = this.props;
     const gotToMessageId = (message) => {
       const msgId = message.id;
-      const msgTime = message.timeMiliSeconds;
+      const msgTime = message.time;
       const index = threadMessages.findIndex(e => e.id === msgId);
       if (~index) {
         return this.gotoMessage(msgId);
       }
       this.pendingGoToId = msgId;
-      dispatch(threadMessageGetListByMessageId(threadId, msgTime));
+      dispatch(threadMessageGetListByMessageId(threadId, msgTime, statics.messageFetchingCount));
     };
     //TODO this is a mess, we need time field on replyInfoObject
     const repliedToMessageId = message.repliedToMessageId;
@@ -450,12 +457,14 @@ export default class MainMessages extends Component {
       if (!el.id) {
         return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
       }
-      if(!isGroup) {
+      if (!isGroup) {
         if (el.seen) {
           return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
         }
       }
-      return <MdDone className={isGroup ? style.MainMessages__SentIcon : ""} size={style.iconSizeXs} style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}} onClick={isGroup ?  this.onMessageSeenListClick.bind(this, el) : null}/>
+      return <MdDone className={isGroup ? style.MainMessages__SentIcon : ""} size={style.iconSizeXs}
+                     style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}}
+                     onClick={isGroup ? this.onMessageSeenListClick.bind(this, el) : null}/>
     };
 
     const editFragment = (el) => {

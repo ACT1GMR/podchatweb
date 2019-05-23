@@ -17,7 +17,7 @@ import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
   return {
     user: store.user.user,
     isShow: store.threadModalThreadInfoShowing.isShow,
-    participants: store.threadParticipantList.participants,
+    participants: store.threadParticipantList.result.participants,
     participantsFetching: store.threadParticipantList.fetching,
     thread: store.thread.thread,
     contacts: store.contactGetList.contacts,
@@ -59,7 +59,7 @@ class ModalThreadInfo extends Component {
     if (dontGoBack === true) {
       return;
     }
-    if(!chatRouterLess){
+    if (!chatRouterLess) {
       history.goBack();
     }
   }
@@ -67,7 +67,17 @@ class ModalThreadInfo extends Component {
   render() {
     const {participants, contacts, isShow, thread, user, smallVersion, participantsFetching, history} = this.props;
     const isGroup = thread.group;
-    const commonProps = {participants, contacts, isShow, thread, user, onClose: this.onClose, smallVersion, participantsFetching, history};
+    const commonProps = {
+      participants,
+      contacts,
+      isShow,
+      thread,
+      user,
+      onClose: this.onClose,
+      smallVersion,
+      participantsFetching,
+      history
+    };
     return isGroup ? <ModalThreadInfoGroup {...commonProps}/> : <ModalThreadInfoPerson {...commonProps}/>;
   }
 }

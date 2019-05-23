@@ -1,5 +1,7 @@
 import PodChat from "podchat";
 import {promiseDecorator} from "./decorators";
+import Box from "../pages/box";
+import React from "react";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -21,6 +23,9 @@ export default class ChatSDK {
       connectionCheckTimeout: 10000, // Socket connection live time on server
       messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
+      enableCache: true,
+      fullResponseObject: true,
+      dynamicHistoryCount: true,
       asyncLogging: {
         onFunction: true, // log main actions on console
         // onMessageReceive: true, // log received messages on console
@@ -60,7 +65,7 @@ export default class ChatSDK {
 
   _onThreadEvents() {
     this.chatAgent.on("threadEvents", res => {
-      this.onThreadEvents(res.result.thread, res.type);
+      this.onThreadEvents(res, res.type);
     });
   }
 
@@ -171,71 +176,27 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadMessageList(resolve, reject, threadId, offset, count) {
-    const getThreadHistoryParams = {
-      count: 50,
-      offset: offset || 0,
-      threadId: threadId
-    };
-    this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
+  getThreadMessageList(resolve, reject, params) {
+    this.chatAgent.getHistory(params, (result) => {
       if (!this._onError(result, reject)) {
         const rslt = result.result;
         rslt.failed.forEach(item => {
           item.participant = this.user;
           item.hasError = true
         });
+        const {hasNext, contentCount, nextOffset} = result.result;
+        let realHasPrevious = (!params.fromTimeFull && !params.toTimeFull) || params.toTimeFull ? hasNext ? hasNext : false : "UNKNOWN";
+        let realHasNext = params.fromTimeFull ? hasNext ? hasNext : false : "UNKNOWN";
         return resolve({
+          threadId: params.threadId,
+          nextOffset,
+          contentCount,
           messages: rslt.history.concat(rslt.failed.concat(rslt.sending.concat(rslt.uploading))),
-          threadId: threadId,
-          messagesCount: rslt.contentCount,
-          hasPrevious: rslt.hasNext,
-          hasNext: false
+          hasNext: realHasNext,
+          hasPrevious: realHasPrevious
         });
       }
     });
-  }
-
-  @promiseDecorator
-  getThreadMessageListPartial(resolve, reject, threadId, messageTime, loadAfter, count) {
-    const getThreadHistoryParams = {
-      count: count || 50,
-      threadId: threadId,
-      toTimeFull: messageTime
-    };
-    if (loadAfter) {
-      getThreadHistoryParams.fromTimeFull = messageTime;
-      getThreadHistoryParams.order = "ASC";
-      delete getThreadHistoryParams.toTimeFull;
-    }
-    this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
-      if (!this._onError(result, reject)) {
-        return resolve({
-          messages: loadAfter ? result.result.history.reverse() : result.result.history,
-          threadId: threadId,
-          messagesCount: result.result.contentCount,
-          hasNext: loadAfter ? result.result.hasNext : null,
-          hasPrevious: loadAfter ? null : result.result.hasNext
-        });
-      }
-    });
-  }
-
-  @promiseDecorator
-  getThreadMessageListByMessageId(resolve, reject, threadId, messageTime) {
-    let baseGetThreadHistoryParams = {
-      count: 50,
-      threadId: threadId
-    };
-
-    let historyMessageArray = [];
-    this.getThreadMessageListPartial(threadId, messageTime, true, 25).then(result => {
-      historyMessageArray = [...historyMessageArray, ...result.messages];
-      const hasNext = result.hasNext;
-      this.getThreadMessageListPartial(threadId, messageTime, false, 25).then(result => {
-        historyMessageArray = [...historyMessageArray, ...result.messages];
-        resolve({...result, ...{messages: historyMessageArray, hasNext, hasPrevious: result.hasPrevious}});
-      }, reject);
-    }, reject);
   }
 
   @promiseDecorator
@@ -518,7 +479,6 @@ export default class ChatSDK {
     });
   }
 
-
   @promiseDecorator
   leaveThread(resolve, reject, threadId) {
     const leaveThreadParam = {threadId};
@@ -565,9 +525,9 @@ export default class ChatSDK {
       threadId
     };
 
-    this.chatAgent.getThreadParticipants(getParticipantsParams, (result) => {
+    this.chatAgent.getThreadParticipants(getParticipantsParams, result => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.participants);
+        return resolve({threadId, result: result.result});
       }
     });
   }
@@ -594,7 +554,7 @@ export default class ChatSDK {
 
     this.chatAgent.addParticipants(addParticipantParams, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.thread.participants);
+        return resolve(result.result.thread);
       }
     });
   }

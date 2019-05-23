@@ -83,6 +83,11 @@ export const contactBlock = (threadId, block) => {
         payload: null
       });
       dispatch(threadParticipantList(threadId));
+    }, e => {
+      dispatch({
+        type: CONTACT_BLOCK(),
+        payload: null
+      });
     });
   }
 };

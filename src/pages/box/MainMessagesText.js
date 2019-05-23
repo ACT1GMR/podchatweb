@@ -121,7 +121,7 @@ export default class MainMessagesText extends Component {
   onDelete(message) {
     const {dispatch} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, message.editable));
+      dispatch(messageDelete(message.id, true));
       dispatch(chatModalPrompt());
     }));
     this.onMessageControlHide();

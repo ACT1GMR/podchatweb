@@ -68,7 +68,11 @@ export default class LeftAsideMainSearch extends Component {
 
   search(query) {
     const {thread} = this.props;
-    this.props.dispatch(threadSearchMessage(thread.id, query));
+    if(query && query.slice()) {
+      return this.props.dispatch(threadSearchMessage(thread.id, query));
+    } else {
+      return this.props.dispatch(threadSearchMessage());
+    }
   }
 
   onSearchItemClicked(messageTime, messageId) {

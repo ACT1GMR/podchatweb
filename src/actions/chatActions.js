@@ -8,7 +8,12 @@ import {
   MESSAGE_NEW,
   CHAT_STATE,
   CHAT_MODAL_PROMPT_SHOWING,
-  THREAD_REMOVED_FROM, CHAT_ROUTER_LESS, CHAT_SEARCH_RESULT, CHAT_SEARCH_SHOW
+  THREAD_REMOVED_FROM,
+  CHAT_ROUTER_LESS,
+  CHAT_SEARCH_RESULT,
+  CHAT_SEARCH_SHOW,
+  THREAD_PARTICIPANTS_LIST_CHANGE,
+  THREADS_LIST_CHANGE
 } from "../constants/actionTypes";
 import ChatSDK from "../utils/chatSDK";
 
@@ -21,28 +26,31 @@ export const chatSetInstance = config => {
     new ChatSDK({
       config,
       onThreadEvents: (thread, type) => {
-        if (type === THREAD_REMOVED_FROM) {
-          return dispatch({
-            type: THREAD_REMOVED_FROM,
-            payload: thread
-          });
+        switch (type) {
+          case THREAD_REMOVED_FROM:
+          case THREAD_NEW:
+          case THREAD_PARTICIPANTS_LIST_CHANGE:
+          case THREADS_LIST_CHANGE:
+            return dispatch({
+              type: type,
+              payload:
+                type === THREAD_NEW ? thread.result.thread
+                :
+                type === THREADS_LIST_CHANGE ? thread.result.threads : thread
+            });
+          default:
+            thread.changeType = type;
+            dispatch({
+              type: THREAD_CHANGED,
+              payload: thread.result ? thread.result.thread : thread
+            });
         }
-        thread.changeType = type;
-        if (thread.changeType === THREAD_NEW) {
-          return dispatch({
-            type: THREAD_NEW,
-            payload: thread
-          });
-        }
-        dispatch({
-          type: THREAD_CHANGED,
-          payload: thread
-        });
       },
       onMessageEvents: (message, type) => {
         if (type === MESSAGE_NEW) {
           message.newMessage = true;
         }
+        console.log("message events", type, message)
         dispatch({
           type: type,
           payload: message
@@ -126,7 +134,6 @@ export const chatSearchResult = (isShowing, filteredThreads, filteredContacts) =
     });
   }
 };
-
 
 export const chatSearchShow = isShow => {
   return dispatch => {

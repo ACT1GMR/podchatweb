@@ -5,7 +5,7 @@ import {
   CHAT_STATE,
   CHAT_ROUTER_LESS, CHAT_SEARCH_RESULT, CHAT_SEARCH_SHOW
 } from "../constants/actionTypes";
-import {stateObject} from "../utils/serviceStateGenerator";
+import {stateGenerator} from "../utils/storeHelper";
 
 export const chatInstanceReducer = (state = {
   chatSDK: null,
@@ -15,11 +15,11 @@ export const chatInstanceReducer = (state = {
 }, action) => {
   switch (action.type) {
     case CHAT_GET_INSTANCE("PENDING"):
-      return {...state, ...stateObject("PENDING")};
+      return {...state, ...stateGenerator("PENDING")};
     case CHAT_GET_INSTANCE("SUCCESS"):
-      return {...state, ...stateObject("SUCCESS", action.payload, "chatSDK")};
+      return {...state, ...stateGenerator("SUCCESS", action.payload, "chatSDK")};
     case CHAT_GET_INSTANCE("ERROR"):
-      return {...state, ...stateObject("ERROR", action.payload)};
+      return {...state, ...stateGenerator("ERROR", action.payload)};
     default:
       return state;
   }

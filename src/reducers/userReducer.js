@@ -1,5 +1,5 @@
 import {USER_GET} from "../constants/actionTypes";
-import {stateObject} from "../utils/serviceStateGenerator";
+import {stateGenerator} from "../utils/storeHelper";
 
 export default (state = {
   user: null,
@@ -9,11 +9,11 @@ export default (state = {
 }, action) => {
   switch (action.type) {
     case USER_GET("PENDING"):
-      return {...state, ...stateObject("PENDING")};
+      return {...state, ...stateGenerator("PENDING")};
     case USER_GET("SUCCESS"):
-      return {...state, ...stateObject("SUCCESS", action.payload, "user")};
+      return {...state, ...stateGenerator("SUCCESS", action.payload, "user")};
     case USER_GET("ERROR"):
-      return {...state, ...stateObject("ERROR", action.payload)};
+      return {...state, ...stateGenerator("ERROR", action.payload)};
     default:
       return state;
   }

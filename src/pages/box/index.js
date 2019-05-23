@@ -35,6 +35,7 @@ import ModalPrompt from "./ModalPrompt";
 //styling
 import style from "../../../styles/pages/box/index.scss";
 import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
+import {contactGetList} from "../../actions/contactActions";
 
 @connect(store => {
   return {
@@ -69,6 +70,7 @@ class Box extends Component {
         this.setToken(token);
       }
     }
+    this.props.dispatch(contactGetList());
   }
 
   resetChat() {

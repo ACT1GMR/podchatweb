@@ -5,6 +5,7 @@ const path = require("path");
 
 module.exports = (e, argv) => {
   const mode = argv.mode;
+  const define = argv.define;
   let base = {
     devServer: {
       compress: true,
@@ -97,6 +98,9 @@ module.exports = (e, argv) => {
       library: "",
       libraryTarget: "umd"
     }
+  } else if (define === "TEST") {
+    base.devtool = "source-map";
+    base.entry = "./src/test";
   } else {
     base.devtool = "source-map";
     base.entry = "./src/dev";

@@ -86,13 +86,8 @@ const rootReducer = {
   threadGoToMessageId: threadGoToMessageIdReducer,
   threadGetMessageListByMessageId: threadGetMessageListByMessageIdReducer,
   threadCheckedMessageList: threadCheckedMessageListReducer,
-  threadSpamPV: threadSpamPVReducer,
-  threadLeave: threadLeaveReducer,
   message: messageNewReducer,
-  sendMessage: messageSendReducer,
   messageEditing: messageEditingReducer,
-  messageEdit: messageEditReducer,
-  messageDelete: messageDeleteReducer,
   user: userReducer,
 };
 

@@ -11,7 +11,7 @@ import strings from "../../constants/localization";
 //actions
 
 //UI components
-import {MdMenu, MdClose} from "react-icons/lib/md";
+import {MdClose} from "react-icons/lib/md";
 import Container from "../../../../uikit/src/container";
 import {InputText} from "../../../../uikit/src/input";
 
@@ -82,6 +82,9 @@ class AsideSearch extends Component {
       if (threads) {
         if (threads.length) {
           for (const thread of threads) {
+            if (!thread.title) {
+              continue;
+            }
             if (thread.title.indexOf(query) > -1) {
               filteredThreads.push(thread);
             }

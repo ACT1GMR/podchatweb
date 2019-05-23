@@ -60,6 +60,7 @@ let strings = new LocalizedStrings({
     remove: "حذف",
     groupInfo: "اطلاعات گروه",
     contactInfo: "اطلاعات مخاطب",
+    contacts: "مخاطبین",
     dropYourFileHere: "فایلاتون رو بندازید اینجا",
     imageText: "متن تصویر",
     send: "بفرست",

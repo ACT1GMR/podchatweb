@@ -29,6 +29,9 @@ function showSpam(props) {
     contacts,
     contactsFetching
   } = props;
+  if (!user) {
+    return false;
+  }
   if (!thread || !thread.inviter) {
     return false;
   }

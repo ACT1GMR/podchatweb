@@ -56,6 +56,7 @@ export default class Notification extends Component {
 
 
   componentDidUpdate(oldProps) {
+    return;
     if (Push.Permission.request()) {
       const {newMessage, chatInstance, dispatch, user} = this.props;
       if (!isMessageByMe(newMessage, user)) {
@@ -105,10 +106,6 @@ export default class Notification extends Component {
         newTitle = `💬 (${count}) - ${defaultTitle}`;
       }
     }
-    return (
-      <MetaTags>
-        <title>{newTitle}</title>
-      </MetaTags>
-    )
+    return null
   }
 }
