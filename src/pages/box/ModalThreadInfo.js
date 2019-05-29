@@ -16,8 +16,8 @@ import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
 @connect(store => {
   return {
     user: store.user.user,
-    isShow: store.threadModalThreadInfoShowing.isShow,
-    participants: store.threadParticipantList.result.participants,
+    isShow: store.threadModalThreadInfoShowing,
+    participants: store.threadParticipantList.participants,
     participantsFetching: store.threadParticipantList.fetching,
     thread: store.thread.thread,
     contacts: store.contactGetList.contacts,

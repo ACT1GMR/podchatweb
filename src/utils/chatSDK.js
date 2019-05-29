@@ -33,16 +33,18 @@ export default class ChatSDK {
       },
       ...props.config
     };
-    this.user = null;
+    this.user = {};
     this.chatAgent = new PodChat(this.params);
     this.onThreadEvents = props.onThreadEvents;
     this.onMessageEvents = props.onMessageEvents;
+    this.onContactsEvents = props.onContactsEvents;
     this.onFileUploadEvents = props.onFileUploadEvents;
     this.onChatReady = props.onChatReady;
     this.onChatState = props.onChatState;
     this.onChatError = props.onChatError;
     this._onMessageEvents();
     this._onThreadEvents();
+    this._onContactsEvents();
     this._onFileUploadEvents();
     this._onChatReady();
     this._onChatState();
@@ -72,6 +74,12 @@ export default class ChatSDK {
   _onMessageEvents() {
     this.chatAgent.on("messageEvents", (msg) => {
       this.onMessageEvents(msg.result.message, msg.type);
+    });
+  }
+
+  _onContactsEvents() {
+    this.chatAgent.on("contactEvents", (msg) => {
+      this.onContactsEvents(msg.result.contacts, msg.type);
     });
   }
 
@@ -277,6 +285,15 @@ export default class ChatSDK {
     };
     resolve(cancelFileUploadParams);
     this.chatAgent.cancelFileUpload(cancelFileUploadParams);
+  }
+
+  @promiseDecorator
+  cancelMessage(resolve, reject, uniqueId) {
+    const cancelMessageParams = {
+      uniqueId
+    };
+    resolve(cancelMessageParams);
+    this.chatAgent.cancelMessage(uniqueId);
   }
 
   @promiseDecorator
@@ -527,7 +544,7 @@ export default class ChatSDK {
 
     this.chatAgent.getThreadParticipants(getParticipantsParams, result => {
       if (!this._onError(result, reject)) {
-        return resolve({threadId, result: result.result});
+        return resolve({threadId, participants: result.result.participants});
       }
     });
   }

@@ -17,7 +17,9 @@ import {
   messageEditing,
   messageSendingError,
   messageCancelFile,
-  messageSendFile, messageDelete
+  messageSendFile,
+  messageDelete,
+  messageCancel
 } from "../../actions/messageActions";
 
 //components
@@ -66,17 +68,15 @@ function isDownloadable(message) {
 
 function isUploading(message) {
   if (message.progress) {
-    if (message.progress.state === "UPLOADING") {
+    if (message.state === "UPLOADING") {
       return true;
     }
   }
 }
 
 function hasError(message) {
-  if (message.progress) {
-    if (message.progress.state === "UPLOAD_ERROR") {
-      return true;
-    }
+  if (message.state === "UPLOAD_ERROR") {
+    return true;
   }
 }
 
@@ -258,8 +258,8 @@ class MainMessagesFile extends Component {
         <Container relative>
           {isUploading(message) ?
             <Container className={style.MainMessagesFile__Progress}
-                       style={{width: `${message.progress ? message.progress.progress : 0}%`}}
-                       title={`${message.progress && message.progress.progress}`}/>
+                       style={{width: `${message.progress ? message.progress : 0}%`}}
+                       title={`${message.progress && message.progress}`}/>
             : ""}
           <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
             {personNameFragment(message)}
@@ -289,9 +289,9 @@ class MainMessagesFile extends Component {
                 :
                 <Container className={style.MainMessagesFile__FileName}>
                   {isVideo ?
-                  <video controls id={`video-${message.id}`} style={{display: "none"}}>
-                    <source src={metaData.link} type={metaData.mimeType}/>
-                  </video> : ""
+                    <video controls id={`video-${message.id}`} style={{display: "none"}}>
+                      <source src={metaData.link} type={metaData.mimeType}/>
+                    </video> : ""
                   }
                   <Text wordWrap="breakWord" bold>
                     {metaData.originalName}
@@ -330,6 +330,8 @@ class MainMessagesFile extends Component {
               {seenFragment(message, () => {
                 this.onCancel(message);
                 dispatch(messageSendFile(message.content.file.fileObject, message.threadId, message.message));
+              }, () => {
+                dispatch(messageCancel(message.uniqueId));
               })}
               {datePetrification(message.time)}
               <Container inline left inSpace

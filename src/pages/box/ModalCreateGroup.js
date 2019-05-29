@@ -23,7 +23,6 @@ import Container from "../../../../uikit/src/container";
 
 //styling
 import {MdArrowForward} from "react-icons/lib/md";
-import {chatRouterLess} from "../../actions/chatActions";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -32,7 +31,7 @@ const constants = {
 
 @connect(store => {
   return {
-    isShow: store.contactModalCreateGroupShowing.isShow,
+    isShow: store.contactModalCreateGroupShowing,
     contacts: store.contactGetList.contacts,
     contactsFetching: store.contactGetList.fetching,
     chatInstance: store.chatInstance.chatSDK,

@@ -12,7 +12,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {chatModalPrompt} from "../../actions/chatActions";
-import {messageDelete, messageEditing} from "../../actions/messageActions";
+import {messageCancel, messageDelete, messageEditing, messageSend} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 
 //components
@@ -33,7 +33,7 @@ import style from "../../../styles/pages/box/MainMessagesText.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 function urlify(text) {
-  if(!text) {
+  if (!text) {
     return "";
   }
   var urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -76,7 +76,7 @@ export default class MainMessagesText extends Component {
     if (mobileCheck()) {
       return;
     }
-    if(this.state.messageTriggerShow) {
+    if (this.state.messageTriggerShow) {
       return;
     }
     this.setState({
@@ -85,7 +85,7 @@ export default class MainMessagesText extends Component {
   }
 
   onMouseLeave() {
-    if(!this.state.messageTriggerShow) {
+    if (!this.state.messageTriggerShow) {
       return;
     }
     this.setState({
@@ -138,7 +138,7 @@ export default class MainMessagesText extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, personNameFragment} = this.props;
+    const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, personNameFragment, dispatch} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const classNames = classnames({
       [style.MainMessagesText]: true,
@@ -191,7 +191,12 @@ export default class MainMessagesText extends Component {
             </Text>
           </Container>
           <PaperFooter>
-            {seenFragment(message, user)}
+            {seenFragment(message, () => {
+              dispatch(messageCancel(message.uniqueId));
+              dispatch(messageSend(message.message, message.threadId));
+            }, () => {
+              dispatch(messageCancel(message.uniqueId));
+            })})}
             {editFragment(message)}
             {datePetrification(message.time)}
             <Container inline left inSpace

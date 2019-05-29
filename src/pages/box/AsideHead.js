@@ -7,7 +7,7 @@ import {signOut, retry} from "podauth";
 //strings
 import strings from "../../constants/localization";
 import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP, ROUTE_THREAD} from "../../constants/routes";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP} from "../../constants/routes";
 
 //actions
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
@@ -18,13 +18,11 @@ import Notification from "./Notification";
 import {Dropdown, DropdownItem} from "../../../../uikit/src/menu";
 import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
-import {InputText} from "../../../../uikit/src/input";
 
 //styling
 import style from "../../../styles/pages/box/AsidHead.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
-import {threadSearchMessage} from "../../actions/threadActions";
 import classnames from "classnames";
 import {chatSearchShow} from "../../actions/chatActions";
 

@@ -5,7 +5,7 @@ import {
   CONTACT_ADDING,
   CONTACT_ADD,
   CONTACT_CHATTING,
-  CONTACT_BLOCK
+  CONTACT_BLOCK, CONTACTS_LIST_CHANGE
 } from "../constants/actionTypes";
 import {stateGenerator, stateGeneratorState} from "../utils/storeHelper";
 const {PENDING, SUCCESS, ERROR} = stateGeneratorState;
@@ -20,6 +20,7 @@ export const contactGetListReducer = (state = {
   switch (action.type) {
     case CONTACT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
+    case CONTACTS_LIST_CHANGE:
     case CONTACT_GET_LIST(SUCCESS):
       let contacts = action.payload;
       if (contacts.length) {
@@ -76,14 +77,12 @@ export const contactBlockReducer = (state = {
 
 export const contactAddingReducer = (state = {
   isShowing: false,
-  editMode: false,
   contactEdit: null
 }, action) => {
   switch (action.type) {
     case CONTACT_ADDING:
       return {
         isShowing: action.payload.isShowing,
-        editMode: action.payload.editMode,
         contactEdit: action.payload.contactEdit
       };
     default:

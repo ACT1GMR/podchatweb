@@ -9,6 +9,8 @@ export function stateGenerator(state, response, payloadKey) {
   }
   if (payloadKey) {
     object = {...object, [payloadKey]: response};
+  } else {
+    object = {...object, ...response}
   }
   return object;
 }

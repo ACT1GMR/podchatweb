@@ -20,7 +20,7 @@ import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src
 import List, {ListItem} from "../../../../uikit/src/list";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
 import Container from "../../../../uikit/src/container";
-import {Heading, Text} from "../../../../uikit/src/typography";
+import {Text} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
 
 //styling
@@ -65,7 +65,7 @@ class AsideThreadsSearchResult extends Component {
     }
     return (
       <Container>
-        <Gap y="8" x="5">
+        <Gap y={8} x={5}>
           <Text size="lg" color="gray">{strings.conversations}</Text>
         </Gap>
         {filteredThreads && filteredThreads.length ?
@@ -123,13 +123,6 @@ class AsideThreadsSearchResult extends Component {
                         </AvatarText>
                       </AvatarName>
                     </Avatar>
-                    {el.unreadCount && activeThread !== el.id ?
-                      <Container absolute centerLeft>
-                        <Gap y={10} block/>
-                        <Shape color="accent">
-                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                        </Shape>
-                      </Container> : ""}
                   </Container>
                 </ListItem>
               ))}

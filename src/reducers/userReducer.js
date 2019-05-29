@@ -2,7 +2,7 @@ import {USER_GET} from "../constants/actionTypes";
 import {stateGenerator} from "../utils/storeHelper";
 
 export default (state = {
-  user: null,
+  user: {},
   fetching: false,
   fetched: false,
   error: false

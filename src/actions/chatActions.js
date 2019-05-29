@@ -13,8 +13,9 @@ import {
   CHAT_SEARCH_RESULT,
   CHAT_SEARCH_SHOW,
   THREAD_PARTICIPANTS_LIST_CHANGE,
-  THREADS_LIST_CHANGE
+  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT
 } from "../constants/actionTypes";
+import {threadLeave} from "./threadActions";
 import ChatSDK from "../utils/chatSDK";
 
 export const chatSetInstance = config => {
@@ -26,18 +27,28 @@ export const chatSetInstance = config => {
     new ChatSDK({
       config,
       onThreadEvents: (thread, type) => {
+
         switch (type) {
-          case THREAD_REMOVED_FROM:
           case THREAD_NEW:
           case THREAD_PARTICIPANTS_LIST_CHANGE:
+          case THREAD_LEAVE_PARTICIPANT:
           case THREADS_LIST_CHANGE:
             return dispatch({
               type: type,
               payload:
                 type === THREAD_NEW ? thread.result.thread
                 :
-                type === THREADS_LIST_CHANGE ? thread.result.threads : thread
+                type === THREADS_LIST_CHANGE ? thread.result.threads
+                :
+                type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
+                :
+                type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
+                  threadId: thread.threadId,
+                  participants: thread.result.participants
+                } : thread
             });
+          case THREAD_REMOVED_FROM:
+            return dispatch(threadLeave(thread.result.thread, true));
           default:
             thread.changeType = type;
             dispatch({
@@ -50,16 +61,21 @@ export const chatSetInstance = config => {
         if (type === MESSAGE_NEW) {
           message.newMessage = true;
         }
-        console.log("message events", type, message)
         dispatch({
           type: type,
           payload: message
         });
       },
+      onContactsEvents: (contacts, type) => {
+        dispatch({
+          type: type,
+          payload: contacts
+        });
+      },
       onFileUploadEvents: message => {
         dispatch({
           type: THREAD_FILE_UPLOADING,
-          payload: message
+          payload: {...message, hasError: message.state === "UPLOAD_ERROR"}
         });
       },
       onChatState(e) {

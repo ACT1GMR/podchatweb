@@ -159,10 +159,20 @@ export const threadSpamPv = (threadId) => {
   }
 };
 
-export const threadLeave = threadId => {
+export const threadLeave = (threadId, kickedOut) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if (kickedOut) {
+      dispatch({
+        type: THREAD_REMOVED_FROM,
+        payload: threadId
+      });
+      if (state.thread.thread.id === threadId) {
+        dispatch(threadInit());
+      }
+      return;
+    }
     chatSDK.leaveThread(threadId).then(e => {
       dispatch(threadInit());
       dispatch({
@@ -214,11 +224,11 @@ export const threadModalMediaShowing = (isShowing, object = {}) => {
   }
 };
 
-export const threadModalThreadInfoShowing = (isShowing) => {
+export const threadModalThreadInfoShowing = isShowing => {
   return dispatch => {
     return dispatch({
       type: THREAD_MODAL_THREAD_INFO_SHOWING,
-      payload: isShowing
+      payload: isShowing ? isShowing : false
     });
   }
 };

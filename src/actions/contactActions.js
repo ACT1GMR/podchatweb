@@ -46,7 +46,7 @@ export const contactListShowing = (isShowing) => {
   return dispatch => {
     return dispatch({
       type: CONTACT_LIST_SHOWING,
-      payload: isShowing
+      payload: isShowing ? isShowing : false
     });
   }
 };
@@ -83,7 +83,7 @@ export const contactBlock = (threadId, block) => {
         payload: null
       });
       dispatch(threadParticipantList(threadId));
-    }, e => {
+    }, () => {
       dispatch({
         type: CONTACT_BLOCK(),
         payload: null

@@ -153,7 +153,7 @@ class AsideThreads extends Component {
             :
             <List>
               {filteredThreads.map(el => (
-                <ListItem onSelect={this.onThreadClick.bind(this, el)} selection
+                <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
 
                   <Container relative>
@@ -182,7 +182,7 @@ class AsideThreads extends Component {
                               </Container>
                               :
                               <Text size="sm" inline
-                                    color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
+                                    color="accent">{sliceMessage(strings.createdAGroup(el.inviter.contactName || el.inviter.name), 30)}</Text>
                             :
                             el.lastMessage || el.lastMessageVO ?
                               isFile(el.lastMessageVO) ?
@@ -193,7 +193,7 @@ class AsideThreads extends Component {
                                       dark>{sliceMessage(el.lastMessage, 30)}</Text>
                               :
                               <Text size="sm" inline
-                                    color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
+                                    color="accent">{sliceMessage(strings.createdAChat(el.inviter.contactName || el.inviter.name), 35)}</Text>
                           }
                           {el.lastMessageVO || el.time ?
                             <Container topLeft>

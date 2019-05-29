@@ -207,6 +207,9 @@ class ModalThreadInfoGroup extends Component {
 
     const conversationAction = participant => {
       const participantId = participant.id;
+      if(user.id === participantId) {
+        return "";
+      }
       const participantContactId = participant.contactId;
       const isRemovingParticipant = removingParticipantIds.indexOf(participantContactId) > -1;
       const id = participantContactId || participantId;

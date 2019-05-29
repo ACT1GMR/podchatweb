@@ -95,7 +95,7 @@ class Box extends Component {
   }
 
   componentWillUpdate(chatInstance) {
-    if (chatInstance.chatInstance && !this.props.user) {
+    if (chatInstance.chatInstance && !this.props.user.id) {
       this.props.dispatch(userGet(chatInstance.chatInstance));
     }
   }

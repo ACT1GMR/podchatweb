@@ -13,11 +13,10 @@ import {
   contactAdding,
   contactGetList,
   contactChatting,
-  contactRemove,
   contactUnblock
 } from "../../actions/contactActions";
 import {threadCreate} from "../../actions/threadActions";
-import {chatModalPrompt, chatRouterLess} from "../../actions/chatActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -32,7 +31,7 @@ import Gap from "../../../../uikit/src/gap";
 import {InputText} from "../../../../uikit/src/input";
 
 //styling
-import {MdClose, MdDelete, MdSearch, MdEdit, MdPersonAdd} from "react-icons/lib/md";
+import {MdClose, MdSearch} from "react-icons/lib/md";
 
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
@@ -53,12 +52,11 @@ function isContains(flds, keyword, arr) {
       }
     }
   })
-
 }
 
 @connect(store => {
   return {
-    isShow: store.contactListShowing.isShow,
+    isShow: store.contactListShowing,
     contacts: store.contactGetList.contacts,
     contactsFetching: store.contactGetList.fetching,
     chatInstance: store.chatInstance.chatSDK,
@@ -128,7 +126,7 @@ class ModalContactList extends Component {
 
   onClose(e, noHistory) {
     const {history, chatRouterLess, dispatch} = this.props;
-    dispatch(contactListShowing(false));
+    dispatch(contactListShowing());
     this.onContactSearchClick(false);
     this.onSearchQueryChange("");
     if (!chatRouterLess) {

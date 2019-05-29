@@ -52,6 +52,9 @@ function showSpam(props) {
     return false;
   }
   participant = participants.filter(e => e.id !== user.id)[0];
+  if(!participant) {
+    return false;
+  }
   for (const contact of contacts) {
     if (contact.blockId) {
       continue;

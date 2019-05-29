@@ -37,7 +37,6 @@ import MainMessagesText from "./MainMessagesText";
 //styling
 import {
   MdDoneAll,
-  MdVisibility,
   MdVideocam,
   MdDone,
   MdChatBubbleOutline,
@@ -188,9 +187,11 @@ export default class MainMessages extends Component {
 
           }
         }
-        if (lastMessage.id === threadLastMessage.id) {
-          if (lastMessage.threadId === threadLastMessage.threadId) {
-            return setBarAndCount(true);
+        if (lastMessage) {
+          if (lastMessage.id === threadLastMessage.id) {
+            if (lastMessage.threadId === threadLastMessage.threadId) {
+              return setBarAndCount(true);
+            }
           }
         }
       }
@@ -258,7 +259,6 @@ export default class MainMessages extends Component {
         }
       }
       if (message) {
-        console.log("Fire at", new Date());
         dispatch(threadMessageGetListPartial(message.threadId, message.time + (loadBefore ? -20000 : 20000), !loadBefore, statics.messageFetchingCount));
       }
     } else {
@@ -437,7 +437,7 @@ export default class MainMessages extends Component {
           </Container>
         )
     }
-    const seenFragment = (el, onClick) => {
+    const seenFragment = (el, onRetry, onCancel) => {
       if (!isMessageByMe(el, user)) {
         return null;
       }
@@ -446,8 +446,12 @@ export default class MainMessages extends Component {
           <Container inline>
             <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
             <Gap x={2}>
-              <Container onClick={onClick}>
+              <Container onClick={onRetry} inline>
                 <Text size="xs" color="accent" linkStyle>{strings.tryAgain}</Text>
+              </Container>
+              <Gap x={5}/>
+              <Container onClick={onCancel} inline>
+                <Text size="xs" color="accent" linkStyle>{strings.cancel}</Text>
               </Container>
             </Gap>
             <Gap x={3}/>

@@ -43,11 +43,18 @@ class ModalAddContact extends Component {
   }
 
   componentDidMount() {
-    const {isShowing, match, dispatch} = this.props;
+    const {isShowing, match, dispatch, contactEdit} = this.props;
     if (!isShowing) {
       if (match.path === ROUTE_ADD_CONTACT) {
         dispatch(contactAdding(true));
       }
+    }
+    if (contactEdit) {
+      this.setState({
+        mobilePhone: contactEdit.mobilePhone,
+        firstName: contactEdit.firstName,
+        lastName: contactEdit.lastName
+      });
     }
   }
 
