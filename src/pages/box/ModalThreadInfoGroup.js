@@ -14,6 +14,7 @@ import {
 } from "../../actions/threadActions";
 
 //UI components
+import {ContactList, ContactListSelective} from "./_component/contactList";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import ModalThreadInfoGroupSettings from "./ModalThreadInfoGroupSettings";
 import {Button} from "../../../../uikit/src/button";
@@ -22,7 +23,6 @@ import {Heading, Text} from "../../../../uikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Divider from "../../../../uikit/src/divider";
-import {ContactList, ContactListSelective} from "./_component/contactList";
 import Modal from "../../../../uikit/src/modal";
 import ModalHeader from "../../../../uikit/src/modal/ModalHeader";
 import ModalBody from "../../../../uikit/src/modal/ModalBody";
@@ -33,7 +33,7 @@ import {chatModalPrompt} from "../../actions/chatActions";
 //styling
 import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
-import utilsStlye from "../../../styles/utils/utils.scss";
+import utilsStyle from "../../../styles/utils/utils.scss";
 
 
 const constants = {
@@ -45,7 +45,8 @@ const constants = {
 @connect(store => {
   return {
     threadParticipantAdd: store.threadParticipantAdd.thread,
-    notificationPending: store.threadNotification.fetching
+    notificationPending: store.threadNotification.fetching,
+    contacts: store.contactGetList.contacts
   }
 }, null, null, {withRef: true})
 class ModalThreadInfoGroup extends Component {
@@ -109,13 +110,6 @@ class ModalThreadInfoGroup extends Component {
     const {addMembers, removingParticipantIds} = this.state;
     const removingParticipantIdsClone = [...removingParticipantIds];
     dispatch(threadAddParticipant(thread.id, addMembers));
-    for (const addMember of addMembers) {
-      const index = removingParticipantIdsClone.indexOf(addMember);
-      if(index > -1 ) {
-        removingParticipantIdsClone.splice(index, 1);
-      }
-    }
-
     this.setState({
       step: constants.GROUP_INFO,
       addMembers: [],
@@ -123,12 +117,18 @@ class ModalThreadInfoGroup extends Component {
     });
   }
 
-  onSelect(id) {
-    const {addMembers} = this.state;
+  onSelect(id, contact) {
+    const {addMembers, removingParticipantIds} = this.state;
     let contactsClone = [...addMembers];
     contactsClone.push(id);
+    const removingParticipantIdsClone = [...removingParticipantIds];
+    const index = removingParticipantIdsClone.indexOf(contact.userId);
+    if(index > -1 ) {
+      removingParticipantIdsClone.splice(index, 1);
+    }
     this.setState({
-      addMembers: contactsClone
+      addMembers: contactsClone,
+      removingParticipantIds: removingParticipantIdsClone
     });
   }
 
@@ -191,7 +191,7 @@ class ModalThreadInfoGroup extends Component {
       dispatch(threadRemoveParticipant(thread.id, [participant.id]));
       dispatch(chatModalPrompt());
       this.setState({
-        removingParticipantIds: [...removingParticipantIds, ...[participant.contactId]]
+        removingParticipantIds: [...removingParticipantIds, ...[participant.id]]
       });
     }, null));
   }
@@ -203,7 +203,7 @@ class ModalThreadInfoGroup extends Component {
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
     const filteredContacts = contacts.filter(a => a.hasUser && !participants.filter(b => a.id === b.contactId).length);
-    const iconClasses = `${utilsStlye["u-clickable"]} ${utilsStlye["u-hoverColorAccent"]}`;
+    const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
 
     const conversationAction = participant => {
       const participantId = participant.id;
@@ -211,9 +211,9 @@ class ModalThreadInfoGroup extends Component {
         return "";
       }
       const participantContactId = participant.contactId;
-      const isRemovingParticipant = removingParticipantIds.indexOf(participantContactId) > -1;
+      const isRemovingParticipant = removingParticipantIds.indexOf(participantId) > -1;
       const id = participantContactId || participantId;
-      const isParticipant = !participant.contactId;
+      const isParticipant = !participantContactId;
       return (
         <Container>
           {isRemovingParticipant ?

@@ -8,11 +8,11 @@ import {
   CONTACT_BLOCK, CONTACTS_LIST_CHANGE
 } from "../constants/actionTypes";
 import {stateGenerator, stateGeneratorState} from "../utils/storeHelper";
+
 const {PENDING, SUCCESS, ERROR} = stateGeneratorState;
 
 export const contactGetListReducer = (state = {
   contacts: [],
-  init: true,
   fetching: false,
   fetched: false,
   error: false
@@ -28,7 +28,7 @@ export const contactGetListReducer = (state = {
           if (!a.firstName) {
             return
           }
-          return a.firstName.localeCompare(b.firstName)
+          return a.firstName.localeCompare(b.firstName);
         });
       }
       return {...state, ...stateGenerator(SUCCESS, contacts, "contacts")};

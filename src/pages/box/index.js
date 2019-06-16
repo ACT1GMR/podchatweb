@@ -42,6 +42,7 @@ import {contactGetList} from "../../actions/contactActions";
     chatInstance: store.chatInstance.chatSDK,
     chatRouterLess: store.chatRouterLess,
     user: store.user.user,
+    userFetching: store.user.fetching,
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing.isShowing,
     threadImages: store.threadLeftAsideShowing
@@ -55,10 +56,11 @@ class Box extends Component {
     this.modalThreadListRef = React.createRef(this.modalThreadListRef);
     this.modalMediaRef = React.createRef(this.modalMediaRef);
     this.modalImageCaptionRef = React.createRef(this.modalImageCaptionRef);
+    this.firstContactFetching = true;
   }
 
   componentDidUpdate(oldProps) {
-    const {token, location} = this.props;
+    const {token, location, user, userFetching, chatInstance} = this.props;
     const {token: oldToken} = oldProps;
     if (oldProps.location.pathname !== location.pathname) {
       if (location.pathname === "/") {
@@ -70,7 +72,17 @@ class Box extends Component {
         this.setToken(token);
       }
     }
-    this.props.dispatch(contactGetList());
+    if (this.firstContactFetching) {
+      this.props.dispatch(contactGetList());
+      this.firstContactFetching = false;
+    }
+    if (chatInstance) {
+      if (!user.id) {
+        if (!userFetching) {
+          this.props.dispatch(userGet(chatInstance));
+        }
+      }
+    }
   }
 
   resetChat() {
@@ -95,9 +107,7 @@ class Box extends Component {
   }
 
   componentWillUpdate(chatInstance) {
-    if (chatInstance.chatInstance && !this.props.user.id) {
-      this.props.dispatch(userGet(chatInstance.chatInstance));
-    }
+
   }
 
   setToken(token) {
@@ -124,10 +134,14 @@ class Box extends Component {
     };
     const popups = (
       <Container>
-        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CREATE_GROUP} render={() => <ModalCreateGroup smallVersion={small}/>}/>
-        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CONTACTS} render={() => <ModalContactList smallVersion={small}/>}/>
-        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_ADD_CONTACT} render={() => <ModalAddContact smallVersion={small}/>}/>
-        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_THREAD_INFO} render={() => <ModalThreadInfo smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CREATE_GROUP}
+               render={() => <ModalCreateGroup smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CONTACTS}
+               render={() => <ModalContactList smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_ADD_CONTACT}
+               render={() => <ModalAddContact smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_THREAD_INFO}
+               render={() => <ModalThreadInfo smallVersion={small}/>}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>
         <ModalImageCaption smallVersion={small} ref={this.modalImageCaptionRef}/>
         <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}

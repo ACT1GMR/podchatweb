@@ -110,14 +110,6 @@ export default class MainFooterSpam extends Component {
     this.onBlockSelect = this.onBlockSelect.bind(this);
   }
 
-  componentDidMount() {
-    const {dispatch, thread} = this.props;
-    dispatch(contactGetList());
-    if (thread) {
-      dispatch(threadParticipantList(thread.id));
-    }
-  }
-
   reportSpamClick() {
     const {dispatch, thread} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureToDoIt}؟`, () => {

@@ -92,7 +92,6 @@ export default class ChatSDK {
   _onChatReady() {
     this.chatAgent.on("chatReady", e => {
       this.onChatReady(this);
-      this.getContactList();
       const {onTokenExpire, expireTokenTimeOut} = this.params;
       if (onTokenExpire) {
         setInterval(e => {
@@ -149,36 +148,6 @@ export default class ChatSDK {
     this.chatAgent.getHistory({threadId, id}, result => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.history[0]);
-      }
-    });
-  }
-
-  @promiseDecorator
-  getThreadMessageListByQuery(resolve, reject, threadId, query, count) {
-    if (typeof query === "string" && !query.slice()) {
-      return resolve({
-        messages: [],
-        threadId: threadId,
-        messagesCount: 0,
-        hasNext: false,
-        reset: true
-      });
-    }
-
-    const getThreadHistoryParams = {
-      count: count || 50,
-      order: "ASC",
-      query: query,
-      threadId: threadId
-    };
-    this.chatAgent.getHistory(getThreadHistoryParams, (result) => {
-      if (!this._onError(result, reject)) {
-        return resolve({
-          messages: result.result.history,
-          threadId: threadId,
-          messagesCount: result.result.contentCount,
-          hasNext: result.result.hasNext
-        });
       }
     });
   }
@@ -522,6 +491,7 @@ export default class ChatSDK {
       count: 50,
       offset: 0
     };
+    console.log("Get contacts in", Date.now());
     if (typeof name === "string") {
       getContactsParams.name = name;
     }
@@ -541,7 +511,6 @@ export default class ChatSDK {
       offset: 0,
       threadId
     };
-
     this.chatAgent.getThreadParticipants(getParticipantsParams, result => {
       if (!this._onError(result, reject)) {
         return resolve({threadId, participants: result.result.participants});

@@ -72,7 +72,7 @@ export const messageSendingError = (threadId, uniqueId) => {
   }
 };
 
-export const messageEdit = (newText, id) => {
+export const messageEdit = (newText, id, messageEditing) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;

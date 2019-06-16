@@ -102,7 +102,10 @@ class AsideThreads extends Component {
   }
 
   onThreadClick(thread) {
-    const {chatRouterLess, history} = this.props;
+    const {chatRouterLess, history, threadId} = this.props;
+    if(thread.id === threadId) {
+      return;
+    }
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }

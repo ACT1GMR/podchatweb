@@ -57,7 +57,7 @@ function isMessageByMe(message, user) {
         return true;
       }
       if (user) {
-        return message.participant.id === user.id;
+        return message.ownerId === user.id;
       }
     }
   }

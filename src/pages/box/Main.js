@@ -6,10 +6,8 @@ import {Route, withRouter} from "react-router-dom";
 //strings
 import {
   ROUTE_THREAD,
-  ROUTE_THREAD_INFO,
   ROUTE_ADD_CONTACT,
   ROUTE_CONTACTS,
-  ROUTE_CREATE_GROUP
 } from "../../constants/routes";
 import strings from "../../constants/localization";
 

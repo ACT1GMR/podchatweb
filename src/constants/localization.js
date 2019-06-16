@@ -66,6 +66,7 @@ let strings = new LocalizedStrings({
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
+    mobilePhoneIsRequired: "شماره موبایل اجباری است",
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";

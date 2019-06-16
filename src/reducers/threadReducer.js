@@ -40,6 +40,7 @@ import {
   THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
+
 const {PENDING, SUCCESS, ERROR} = stateGeneratorState;
 
 export const threadCreateReducer = (state = {
@@ -223,6 +224,26 @@ export const threadsReducer = (state = {
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
     }
+    case MESSAGE_EDIT(): {
+      const filteredThread = state.threads.filter(thread => thread.lastMessageVO && thread.lastMessageVO.id === action.payload.id);
+      if(!filteredThread.length) {
+        return state;
+      }
+      const list = updateStore(
+        filteredThread,
+        {id: action.payload.threadId, lastMessageVO: action.payload, lastMessage: action.payload.message},
+        {
+          mix: true,
+          by: "id",
+          method: listUpdateStrategyMethods.UPDATE
+        }
+      );
+      let threads = updateStore(state.threads, list, {
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
+    }
     default:
       return state;
   }
@@ -321,6 +342,7 @@ export const threadMessageListReducer = (state = {
     removeIndexes.forEach(index => messages.splice(index, 1));
     return state;
   }
+
   let newHasNext, newHasPrevious;
   let hasNext = state.hasNext;
   let hasPrevious = state.hasPrevious;
@@ -331,34 +353,50 @@ export const threadMessageListReducer = (state = {
     hasPrevious = newHasPrevious !== null && newHasPrevious !== "UNKNOWN" ? newHasPrevious : state.hasPrevious;
   }
   switch (action.type) {
-    case THREAD_CREATE(PENDING):
-      return {...state, ...stateGenerator(PENDING, [], "messages")};
     case THREAD_CREATE_INIT:
     case THREAD_CREATE("CACHE"):
-    case THREAD_CREATE(SUCCESS):
-      return {...state, ...stateGenerator(SUCCESS, action.type === THREAD_CREATE_INIT ? null : action.payload.id, "threadId")};
+    case THREAD_CREATE(PENDING):
+    case THREAD_CREATE(SUCCESS): {
+      const isSetThreadIdNull = action.type === THREAD_CREATE_INIT || action.type === THREAD_CREATE(PENDING);
+      return {
+        ...state, ...stateGenerator(PENDING, {
+          threadId: isSetThreadIdNull ? null : action.payload.id,
+          messages: []
+        })
+      };
+    }
     case THREAD_GET_MESSAGE_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(PENDING):
       return {...state, ...stateGenerator(SUCCESS, [], "messages")};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(SUCCESS):
-    case THREAD_GET_MESSAGE_LIST(SUCCESS):{
+    case THREAD_GET_MESSAGE_LIST(SUCCESS): {
+      const {threadId, messages} = action.payload;
+      if (state.threadId) {
+        if (threadId !== state.threadId) {
+          return state;
+        }
+      }
       const object = {
         hasPrevious,
         hasNext,
-        threadId: action.payload.threadId,
-        messages: action.payload.messages
+        threadId,
+        messages
       };
       return sortMessages(removeDuplicateMessages({...state, ...stateGenerator(SUCCESS, object)}));
     }
 
     case THREAD_GET_MESSAGE_LIST(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
-    case THREAD_FILE_UPLOADING:{
-      const messages = updateStore(state.messages, action.payload, {method: listUpdateStrategyMethods.UPDATE, mix: true, by: "id"});
+    case THREAD_FILE_UPLOADING: {
+      const messages = updateStore(state.messages, action.payload, {
+        method: listUpdateStrategyMethods.UPDATE,
+        mix: true,
+        by: "id"
+      });
       return removeDuplicateMessages({...state, ...stateGenerator(SUCCESS, messages, "messages")});
     }
-    case THREAD_GET_MESSAGE_LIST_PARTIAL(SUCCESS):{
+    case THREAD_GET_MESSAGE_LIST_PARTIAL(SUCCESS): {
       const object = {
         hasPrevious,
         hasNext,
@@ -367,12 +405,20 @@ export const threadMessageListReducer = (state = {
       };
       return sortMessages(removeDuplicateMessages({...state, ...stateGenerator(SUCCESS, object)}));
     }
-    case MESSAGE_SENDING_ERROR:{
-      const messages = updateStore(state.messages, {hasError: true, id: action.payload.id}, {method: listUpdateStrategyMethods.UPDATE, mix: true, by: "id"});
+    case MESSAGE_SENDING_ERROR: {
+      const messages = updateStore(state.messages, {
+        hasError: true,
+        id: action.payload.id
+      }, {method: listUpdateStrategyMethods.UPDATE, mix: true, by: "id"});
       return removeDuplicateMessages({...state, ...stateGenerator(SUCCESS, messages, "messages")});
     }
     case MESSAGE_FILE_UPLOAD_CANCEL(SUCCESS):
-      return {...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload.uniqueId, {method: listUpdateStrategyMethods.REMOVE, by: "fileUniqueId"}), "messages")};
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload.uniqueId, {
+          method: listUpdateStrategyMethods.REMOVE,
+          by: "fileUniqueId"
+        }), "messages")
+      };
     case MESSAGE_NEW:
     case MESSAGE_SEND(SUCCESS):
       if (!checkForCurrentThread()) {
@@ -380,17 +426,36 @@ export const threadMessageListReducer = (state = {
       }
       return sortMessages({
         ...state,
-        messages: updateStore(state.messages, action.payload, {method: listUpdateStrategyMethods.UPDATE, upsert: true, by: ["id", "uniqueId"], or: true})
+        messages: updateStore(state.messages, action.payload, {
+          method: listUpdateStrategyMethods.UPDATE,
+          upsert: true,
+          by: ["id", "uniqueId"],
+          or: true
+        })
       });
     case MESSAGE_EDIT():
-      return {...state, ...stateGenerator(SUCCESS,  updateStore(state.messages, action.payload, {method: listUpdateStrategyMethods.UPDATE, by: "id"}), "messages")};
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload, {
+          method: listUpdateStrategyMethods.UPDATE,
+          by: "id"
+        }), "messages")
+      };
     case MESSAGE_SEEN(SUCCESS):
-      return {...state, ...stateGenerator(SUCCESS,  updateStore(state.messages, {seen: true, id: action.payload}, {method: listUpdateStrategyMethods.UPDATE, by: "id"}), "messages")};
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, {
+          seen: true,
+          id: action.payload
+        }, {method: listUpdateStrategyMethods.UPDATE, by: "id"}), "messages")
+      };
     case MESSAGE_DELETE:
     case MESSAGE_CANCEL(SUCCESS):
       return {
         ...state,
-        messages: updateStore(state.messages, action.payload, {method: listUpdateStrategyMethods.REMOVE, by: ["id", "uniqueId"], or: true})
+        messages: updateStore(state.messages, action.payload, {
+          method: listUpdateStrategyMethods.REMOVE,
+          by: ["id", "uniqueId"],
+          or: true
+        })
       };
     default:
       return state;

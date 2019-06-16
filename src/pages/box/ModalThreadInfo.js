@@ -41,7 +41,6 @@ class ModalThreadInfo extends Component {
         }
       }
     }
-
   }
 
   componentDidUpdate(oldProps) {

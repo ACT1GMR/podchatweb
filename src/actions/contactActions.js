@@ -117,6 +117,7 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
       if (e.linkedUser) {
         dispatch(threadCreate(e.id, null, true));
         dispatch(threadShowing(true));
+        dispatch(contactGetList());
       }
     }, e => {
       dispatch({
@@ -131,12 +132,13 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
   }
 };
 
-export const contactRemove = contactId => {
+export const contactRemove = (contactId, threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.removeContact(contactId).then(e => {
       dispatch(contactGetList());
+      dispatch(threadParticipantList(threadId));
     });
   }
 };

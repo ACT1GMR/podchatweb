@@ -7,7 +7,13 @@ import strings from "../../constants/localization";
 import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_THREAD} from "../../constants/routes";
 
 //actions
-import {contactAdd, contactAdding, contactChatting, contactListShowing} from "../../actions/contactActions";
+import {
+  contactAdd,
+  contactAdding,
+  contactChatting,
+  contactGetList,
+  contactListShowing
+} from "../../actions/contactActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -36,6 +42,8 @@ class ModalAddContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      notEnteredFirstOrFamilyName: false,
+      notEnteredMobilePhone: false,
       mobilePhone: "",
       firstName: "",
       lastName: ""
@@ -95,6 +103,11 @@ class ModalAddContact extends Component {
 
   onSubmit() {
     const {mobilePhone, firstName, lastName} = this.state;
+    if (!mobilePhone) {
+      return this.setState({
+        notEnteredMobilePhone: true
+      });
+    }
     if (!firstName || !firstName.trim()) {
       if (!lastName || !lastName.trim()) {
         return this.setState({
@@ -102,8 +115,13 @@ class ModalAddContact extends Component {
         });
       }
     }
-    const {contactEdit} = this.props;
-    this.props.dispatch(contactAdd(mobilePhone, firstName, lastName, contactEdit));
+    const {contactEdit, dispatch} = this.props;
+    dispatch(contactAdd(mobilePhone, firstName, lastName, contactEdit));
+    this.setState({
+      notEnteredFirstOrFamilyName: false,
+      notEnteredMobilePhone: false
+    });
+
   }
 
   onClose(e, noHistory) {
@@ -130,7 +148,7 @@ class ModalAddContact extends Component {
 
   render() {
     const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
-    const {mobilePhone, firstName, lastName, notEnteredFirstOrFamilyName} = this.state;
+    const {mobilePhone, firstName, lastName, notEnteredFirstOrFamilyName, notEnteredMobilePhone} = this.state;
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
@@ -140,13 +158,15 @@ class ModalAddContact extends Component {
         </ModalHeader>
 
         <ModalBody>
+          {!contactEdit &&
           <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
                      value={mobilePhone}
-                     placeholder={strings.mobilePhone}/>
-          <InputText max={10} onChange={this.onFieldChange.bind(this, "firstName")}
+                     placeholder={`${strings.mobilePhone} ( ${strings.required} )`}/>
+          }
+          <InputText max={15} onChange={this.onFieldChange.bind(this, "firstName")}
                      placeholder={`${strings.firstName} ( ${strings.required} )`}
                      value={firstName}/>
-          <InputText max={10} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}
+          <InputText max={15} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}
                      value={lastName}/>
         </ModalBody>
 
@@ -154,14 +174,14 @@ class ModalAddContact extends Component {
           <Button text loading={contactAddPending}
                   onClick={this.onSubmit.bind(this)}>{contactEdit ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
-          {(contactAdd && !contactAdd.linkedUser) || notEnteredFirstOrFamilyName &&
-          (
-            <Container inline>
-              <Message warn>
-                {notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : strings.isNotPodUser}
-              </Message>
-            </Container>
-          )
+          {((contactAdd && !contactAdd.linkedUser) || notEnteredFirstOrFamilyName || notEnteredMobilePhone) &&
+
+          <Container inline>
+            <Message warn>
+              {notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : notEnteredMobilePhone ? strings.mobilePhoneIsRequired : strings.isNotPodUser}
+            </Message>
+          </Container>
+
           }
 
         </ModalFooter>

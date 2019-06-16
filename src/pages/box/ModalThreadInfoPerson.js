@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 
-
 //strings
 import strings from "../../constants/localization";
 
@@ -37,24 +36,17 @@ import {chatModalPrompt} from "../../actions/chatActions";
 
 @connect(store => {
   return {
-    contacts: store.contactGetList.contacts,
     contactBlocking: store.contactBlock.fetching,
     notificationPending: store.threadNotification.fetching,
     chatInstance: store.chatInstance.chatSDK,
-    chatRouterLess: store.chatRouterLess
+    chatRouterLess: store.chatRouterLess,
+    contacts: store.contactGetList.contacts
   };
 }, null, null, {withRef: true})
 export default class ModalThreadInfo extends Component {
 
   constructor(props) {
     super(props);
-  }
-
-  componentDidUpdate(oldProps) {
-    const {dispatch, chatInstance} = this.props;
-    if (oldProps.chatInstance !== chatInstance) {
-      dispatch(contactGetList());
-    }
   }
 
   onBlockSelect(threadId, blocked) {
@@ -67,11 +59,11 @@ export default class ModalThreadInfo extends Component {
     dispatch(threadNotification(thread.id, !thread.mute));
   }
 
-  onEdit(contact) {
+  onEdit(participant, contact) {
     const {dispatch, history, chatRouterLess, onClose} = this.props;
     dispatch(contactAdding(true, {
-      firstName: contact.firstName,
-      lastName: contact.lastName,
+      firstName: participant.contactFirstName,
+      lastName: participant.contactLastName,
       mobilePhone: contact.cellphoneNumber
     }));
     if (!chatRouterLess) {
@@ -80,18 +72,17 @@ export default class ModalThreadInfo extends Component {
     onClose(true);
   }
 
-  onRemove(contact) {
+  onRemove(participant) {
     const {dispatch} = this.props;
-    const text = strings.areYouSureAboutDeletingContact(`${contact.firstName} ${contact.lastName}`);
+    const text = strings.areYouSureAboutDeletingContact(participant.contactName);
     dispatch(chatModalPrompt(true, `${text}؟`, () => {
-      dispatch(contactRemove(contact.id));
+      dispatch(contactRemove(participant.contactId, participant.threadId));
       dispatch(chatModalPrompt());
-      dispatch(contactGetList());
     }, () => dispatch(contactListShowing(true))));
   }
 
   render() {
-    const {participants, thread, user, onClose, isShow, smallVersion, contacts, contactBlocking, notificationPending} = this.props;
+    const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, contacts} = this.props;
     let participant = participants;
     if (participants) {
       participant = participants.filter(e => e.id !== user.id)[0];
@@ -99,8 +90,14 @@ export default class ModalThreadInfo extends Component {
     if (!participant) {
       participant = {};
     }
-    const contact = contacts.filter(contact => contact.userId === participant.id)[0];
-    const participantImage = thread && thread.image;
+    let contact = contacts.findIndex(contact => contact.id === participant.contactId);
+    if (contact < 0) {
+      contact = {};
+    } else {
+      contact = contacts[contact];
+    }
+    const participantImage = participant.image;
+    const isMyContact = participant.contactId;
     return (
       <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 
@@ -133,7 +130,7 @@ export default class ModalThreadInfo extends Component {
             <Gap y={20} block>
               <Divider thick={2} color="gray"/>
             </Gap>
-            {contact ?
+            {isMyContact ?
               <List>
 
                 <ListItem invert>
@@ -148,11 +145,11 @@ export default class ModalThreadInfo extends Component {
                 </ListItem>
 
                 <ListItem invert>
-                  {contact.linkedUser && contact.linkedUser.name &&
+                  {contact.linkedUser && contact.linkedUser.username &&
                   <Container>
                     <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                     <Gap x={20}>
-                      <Text inline>{contact.linkedUser.name}</Text>
+                      <Text inline>{contact.linkedUser.username}</Text>
                     </Gap>
                   </Container>
                   }
@@ -162,7 +159,7 @@ export default class ModalThreadInfo extends Component {
 
             <Container>
               {
-                contact &&
+                isMyContact &&
                 <Container>
                   <Gap y={20} block>
                     <Divider thick={2} color="gray"/>
@@ -170,9 +167,10 @@ export default class ModalThreadInfo extends Component {
                 </Container>
               }
               <List>
+
                 {
-                  contact &&
-                  <ListItem selection invert onSelect={this.onEdit.bind(this, contact)}>
+                  isMyContact &&
+                  <ListItem selection invert onSelect={this.onEdit.bind(this, participant, contact)}>
                     <Container relative>
                       <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                       <Gap x={20}>
@@ -183,8 +181,8 @@ export default class ModalThreadInfo extends Component {
                 }
 
                 {
-                  contact &&
-                  <ListItem selection invert onSelect={this.onRemove.bind(this, contact)}>
+                  isMyContact &&
+                  <ListItem selection invert onSelect={this.onRemove.bind(this, participant)}>
                     <Container relative>
                       <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                       <Gap x={20}>

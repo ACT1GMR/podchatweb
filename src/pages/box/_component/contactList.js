@@ -35,8 +35,8 @@ export function ContactList(props) {
                   activeWithTick={activeWithTick}
                   selection={selection}
                   multiple={multiple}
-                  onSelect={onSelect ? () => onSelect(el.id) : null}
-                  onDeselect={onDeselect ? () => onDeselect(el.id) : null}
+                  onSelect={onSelect ? () => onSelect(el.id, el) : null}
+                  onDeselect={onDeselect ? () => onDeselect(el.id, el) : null}
                   invert={invert}
                   active={activeList && activeList.indexOf(el.id) > -1}>
           <Container relative>

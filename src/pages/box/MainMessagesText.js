@@ -196,7 +196,7 @@ export default class MainMessagesText extends Component {
               dispatch(messageSend(message.message, message.threadId));
             }, () => {
               dispatch(messageCancel(message.uniqueId));
-            })})}
+            })}
             {editFragment(message)}
             {datePetrification(message.time)}
             <Container inline left inSpace

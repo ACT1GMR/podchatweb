@@ -42,7 +42,6 @@ export const threadCreate = (contactId, thread, threadName, idType) => {
     dispatch(threadCheckedMessageList(null, null, true));
     dispatch(threadEmojiShowing(false));
     if (thread) {
-      dispatch(threadParticipantList(thread.id));
       return dispatch({
         type: THREAD_CREATE("CACHE"),
         payload: thread
@@ -249,7 +248,7 @@ export const threadRemoveParticipant = (threadId, participantIds) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    chatSDK.removeParticipants(threadId, participantIds).then(() => {
+    return chatSDK.removeParticipants(threadId, participantIds).then(() => {
       return dispatch({
         type: THREAD_PARTICIPANTS_REMOVED,
         payload: {threadId, id: participantIds[0]}
