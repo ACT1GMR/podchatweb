@@ -14,7 +14,7 @@ let strings = new LocalizedStrings({
       if(!contact) {
         return "اصلاح مخاطب";
       }
-      return `اصلاح مخاطب ${contact.firstName} ${contact.lastName}`;
+      return `اصلاح مخاطب ${contact.firstName || ""} ${contact.lastName || ""}`;
     },
     removeContact: "حذف مخاطب",
     contactList: "لیست مخاطبین",

@@ -589,7 +589,7 @@ export default class MainMessages extends Component {
       const color = avatarNameGenerator(messageParticipant.name).color;
       return showNameOrAvatar(message, threadMessages) &&
         <Text size="sm" bold
-              style={{color: color}}>{messageParticipant.contactName || messageParticipant.name}</Text>
+              style={{color: color}}>{isMessageByMe(message, user) ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
     };
 
     const messageArguments = message => {

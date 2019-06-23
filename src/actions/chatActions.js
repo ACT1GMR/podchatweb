@@ -13,13 +13,13 @@ import {
   CHAT_SEARCH_RESULT,
   CHAT_SEARCH_SHOW,
   THREAD_PARTICIPANTS_LIST_CHANGE,
-  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT
+  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_DELETE
 } from "../constants/actionTypes";
 import {threadLeave} from "./threadActions";
 import ChatSDK from "../utils/chatSDK";
 
 export const chatSetInstance = config => {
-  return (dispatch) => {
+  return (dispatch, state) => {
     dispatch({
       type: CHAT_GET_INSTANCE(),
       payload: null
@@ -61,6 +61,7 @@ export const chatSetInstance = config => {
         if (type === MESSAGE_NEW) {
           message.newMessage = true;
         }
+
         dispatch({
           type: type,
           payload: message

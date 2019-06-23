@@ -224,6 +224,7 @@ export const threadsReducer = (state = {
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
     }
+    case MESSAGE_DELETE:
     case MESSAGE_EDIT(): {
       const filteredThread = state.threads.filter(thread => thread.lastMessageVO && thread.lastMessageVO.id === action.payload.id);
       if(!filteredThread.length) {
