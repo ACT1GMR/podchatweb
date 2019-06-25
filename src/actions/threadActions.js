@@ -32,7 +32,7 @@ import {
   THREAD_NOTIFICATION,
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
-  THREAD_PARTICIPANTS_REMOVED
+  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE
 } from "../constants/actionTypes";
 
 export const threadCreate = (contactId, thread, threadName, idType) => {
@@ -182,6 +182,16 @@ export const threadLeave = (threadId, kickedOut) => {
   }
 };
 
+export const threadNewMessage = message =>{
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: THREAD_NEW_MESSAGE,
+      payload: message
+    });
+  }
+};
 
 export const threadParticipantList = threadId => {
   return (dispatch, getState) => {

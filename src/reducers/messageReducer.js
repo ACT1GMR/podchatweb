@@ -14,12 +14,10 @@ export const messageEditingReducer = (state = null, action) => {
   }
 };
 
-export const messageNewReducer = (state = {
-  message: null
-}, action) => {
+export const messageNewReducer = (state = null, action) => {
   switch (action.type) {
     case MESSAGE_NEW:
-      return {...state, ...stateGenerator(PENDING, action.payload, "message")};
+      return {...state, ...stateGenerator(PENDING, action.payload)};
     default:
       return state;
   }

@@ -17,7 +17,7 @@ import {threadMessageGetList} from "../../actions/threadActions";
 
 //components
 import MainHead from "./MainHead";
-import MainMessages from "./MainMessages";
+import MainMessagesFetcher from "./MainMessagesFetcher";
 import MainFooter from "./MainFooter";
 import Message from "../../../../uikit/src/message";
 import Gap from "../../../../uikit/src/gap";
@@ -93,7 +93,7 @@ class Main extends Component {
                  <Container className={style.Main}>
                    <Container className={style.Main__Cover}/>
                    <MainHead/>
-                   <MainMessages/>
+                   <MainMessagesFetcher/>
                    <MainFooter/>
                  </Container>
                )

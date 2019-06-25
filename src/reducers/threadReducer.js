@@ -37,7 +37,7 @@ import {
   THREAD_PARTICIPANTS_REMOVED,
   THREAD_NOTIFICATION,
   THREAD_PARTICIPANTS_LIST_CHANGE,
-  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL
+  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL, THREAD_NEW_MESSAGE
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 
@@ -420,7 +420,7 @@ export const threadMessageListReducer = (state = {
           by: "fileUniqueId"
         }), "messages")
       };
-    case MESSAGE_NEW:
+    case THREAD_NEW_MESSAGE:
     case MESSAGE_SEND(SUCCESS):
       if (!checkForCurrentThread()) {
         return state;

@@ -58,10 +58,6 @@ export const chatSetInstance = config => {
         }
       },
       onMessageEvents: (message, type) => {
-        if (type === MESSAGE_NEW) {
-          message.newMessage = true;
-        }
-
         dispatch({
           type: type,
           payload: message

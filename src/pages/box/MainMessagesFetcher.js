@@ -62,7 +62,9 @@ function isMessageByMe(message, user) {
 @connect(store => {
   return {
     thread: store.thread.thread,
-    threadMessages: store.threadMessages
+    threadMessages: store.threadMessages,
+    threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
+    newMessage: store.newMessage,
   };
 })
 export default class MainMessages extends Component {
@@ -72,7 +74,11 @@ export default class MainMessages extends Component {
     this.state = {
       gotoBottomButtonShowing: false,
       newMessageUnreadCount: 0
-    }
+    };
+    this.scroller = React.createRef();
+    this.onScrollBottomEnd = this.onScrollBottomEnd.bind(this);
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
   }
 
   componentDidMount() {
@@ -83,8 +89,8 @@ export default class MainMessages extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {thread, threadMessages} = this.props;
-    const {thread: oldThread} = oldProps;
+    const {thread, threadMessages, newMessage} = this.props;
+    const {thread: oldThread, newMessage: oldNewMessage} = oldProps;
     const {messages, hasNext, fetching} = threadMessages;
     const threadId = thread.id;
 
@@ -98,20 +104,20 @@ export default class MainMessages extends Component {
       return
     }
     if (this.hasPendingMessageToGo) {
-      this.onGoToSpecificMessage(this.hasPendingMessageToGo);
+      this.goToSpecificMessage(this.hasPendingMessageToGo);
       return this.hasPendingMessageToGo = null;
     }
 
     //new message coming scroll handle
-    if (messages.length) {
-      const lastMessage = messages[messages.length - 1];
-      if (lastMessage.newMessage) {
-        if (isMessageByMe(lastMessage)) {
-          this.scroller.goto(true);
+    if (newMessage !== oldNewMessage) {
+      if (newMessage.threadId === thread.id) {
+        if (isMessageByMe(newMessage)) {
+          dispatch(threadNewMessage(newMessage));
+          this.scroller.current.gotoBottom();
         } else {
-          const currentScrollPosition = this.scroller.getInfo();
-          if (!hasNext || currentScrollPosition.isInBottomThreshold) {
-            this.scroller.goto(true);
+          const currentScrollPosition = this.scroller.current.getInfo();
+          if (!hasNext || currentScrollPosition.isInBottom) {
+            this.scroller.current.gotoBottom(true);
           } else if (hasNext) {
             this.setState({
               newMessageUnreadCount: this.state.newMessageUnreadCount + 1
@@ -120,12 +126,10 @@ export default class MainMessages extends Component {
         }
       }
     }
-
-
   }
 
   _fetchHistory() {
-    const {thread, dispatch, threadMessages} = this.props;
+    const {thread, dispatch} = this.props;
     if (thread.unreadCount > statics.historyFetchCount) {
       this.hasPendingMessageToGo = thread.lastSeenMessageId;
       dispatch(threadMessageGetListByMessageId(thread.id, statics.historyFetchCount, thread.lastSeenMessageTime));
@@ -137,13 +141,17 @@ export default class MainMessages extends Component {
     }
   }
 
-  onGotoBottomButtonClick() {
+  onGotoBottomClicked() {
+
+  }
+
+  goToSpecificMessage() {
     const {threadMessages, dispatch, thread} = this.props;
     const {hasNext} = threadMessages;
     if (hasNext) {
       dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
     } else {
-      this.scroller.goto(true);
+      this.scroller.current.gotoBottom(true);
     }
     this.setState({
       gotoBottomButtonShowing: false
@@ -151,22 +159,26 @@ export default class MainMessages extends Component {
   }
 
   onScrollTopThreshold() {
-    listing.getThreadHistory(statics.historyFetchCount, this.props.thread.id);
+    const {thread, threadMessages, dispatch} = this.props;
+    const {messages} = threadMessages;
+    dispatch(threadMessageGetListPartial(thread.id, messages[0].time, false, statics.historyFetchCount));
   }
 
   onScrollBottomThreshold() {
-    listing.getThreadHistory(statics.historyFetchCount, this.props.thread.id, true);
+    const {thread, threadMessages, dispatch} = this.props;
+    const {messages} = threadMessages;
+    dispatch(threadMessageGetListPartial(thread.id, messages[messages.length - 1].time, true, statics.historyFetchCount));
   }
 
   onScrollBottomEnd() {
     this.setState({
       gotoBottomButtonShowing: false
-    })
+    });
   }
 
   onGoToSpecificMessage(messageId, messageTime) {
-    const {thread} = this.props;
-    const result = this.scroller.goto(messageId);
+    const {thread, dispatch} = this.props;
+    const result = this.scroller.current.gotoElement(messageId);
     if (!result) {
       this.hasPendingMessageToGo = messageId;
       return dispatch(threadMessageGetListByMessageId(thread.id, statics.historyFetchCount, messageTime));
@@ -175,15 +187,23 @@ export default class MainMessages extends Component {
   }
 
   render() {
-    const {threadMessages} = this.props;
+    const {threadMessages, threadMessagesPartialFetching} = this.props;
+    const {messages} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
-    return <Scroller onScrollBottomEnd={this.onScrollBottomEnd}
-                     onScrollBottomThreshold={this.onScrollBottomThreshold}
-                     onScrollBottomThresholdCondition={hasNext}
-                     onScrollTopThreshold={this.onScrollTopThreshold}
-                     onScrollTopThresholdCondition={hasPrevious}>
-
-    </Scroller>
-
+    return <section className={style.MainMessages}>
+      <Scroller ref={this.scroller}
+                threshold={5}
+                onScrollBottomEnd={this.onScrollBottomEnd}
+                onScrollBottomThreshold={this.onScrollBottomThreshold}
+                onScrollBottomThresholdCondition={hasNext}
+                onScrollTopThreshold={this.onScrollTopThreshold}
+                onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching}>
+        {messages.map(el =>
+          <div style={{height: "200px", width: "200px"}}>
+            {el.message}
+          </div>
+        )}
+      </Scroller>
+    </section>
   }
 }

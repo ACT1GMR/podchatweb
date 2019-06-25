@@ -25,7 +25,7 @@ function isMessageByMe(message, user) {
 
 @connect(store => {
   return {
-    newMessage: store.message.message,
+    newMessage: store.message,
     user: store.user.user,
     chatInstance: store.chatInstance.chatSDK,
   };
