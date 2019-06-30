@@ -64,6 +64,7 @@ function isMessageByMe(message, user) {
     thread: store.thread.thread,
     threadMessages: store.threadMessages,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
+    threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
     newMessage: store.newMessage,
   };
 })
@@ -79,6 +80,9 @@ export default class MainMessages extends Component {
     this.onScrollBottomEnd = this.onScrollBottomEnd.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
+    //Controller fields
+    this.gotoBottom = false;
+    this.hasPendingMessageToGo = null;
   }
 
   componentDidMount() {
@@ -89,7 +93,7 @@ export default class MainMessages extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {thread, threadMessages, newMessage} = this.props;
+    const {thread, threadMessages, newMessage, threadGetMessageListByMessageIdFetching} = this.props;
     const {thread: oldThread, newMessage: oldNewMessage} = oldProps;
     const {messages, hasNext, fetching} = threadMessages;
     const threadId = thread.id;
@@ -100,12 +104,17 @@ export default class MainMessages extends Component {
     }
 
     //scroll to message if have pending message to go
-    if (!fetching) {
+    if (fetching || threadGetMessageListByMessageIdFetching) {
       return
     }
+
     if (this.hasPendingMessageToGo) {
-      this.goToSpecificMessage(this.hasPendingMessageToGo);
-      return this.hasPendingMessageToGo = null;
+      return this.goToSpecificMessage(this.hasPendingMessageToGo);
+    }
+
+    if (this.gotoBottom) {
+      this.scroller.current.gotoBottom();
+      return this.gotoBottom = false;
     }
 
     //new message coming scroll handle
@@ -131,21 +140,26 @@ export default class MainMessages extends Component {
   _fetchHistory() {
     const {thread, dispatch} = this.props;
     if (thread.unreadCount > statics.historyFetchCount) {
-      this.hasPendingMessageToGo = thread.lastSeenMessageId;
-      dispatch(threadMessageGetListByMessageId(thread.id, statics.historyFetchCount, thread.lastSeenMessageTime));
+      this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+      this._fetchHistoryFromMiddle(thread.id, thread.lastSeenMessageTime);
     } else {
-      if (thread.lastSeenMessageId !== thread.lastMessageVO.id) {
-        this.hasPendingMessageToGo = thread.lastSeenMessageId;
+      if (thread.lastSeenMessageId === thread.lastMessageVO.id) {
+        this.gotoBottom = true;
+      } else {
+        this.hasPendingMessageToGo = thread.lastMessageVO.time;
       }
       dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
     }
   }
 
-  onGotoBottomClicked() {
-
+  _fetchHistoryFromMiddle(threadId, messageTime) {
+     this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime, statics.historyFetchCount));
+     this.setState({
+       bottomButton: true
+     });
   }
 
-  goToSpecificMessage() {
+  onGotoBottomClicked() {
     const {threadMessages, dispatch, thread} = this.props;
     const {hasNext} = threadMessages;
     if (hasNext) {
@@ -176,12 +190,12 @@ export default class MainMessages extends Component {
     });
   }
 
-  onGoToSpecificMessage(messageId, messageTime) {
+  goToSpecificMessage(messageTime) {
     const {thread, dispatch} = this.props;
-    const result = this.scroller.current.gotoElement(messageId);
+    const result = this.scroller.current.gotoElement(`message-${messageTime}`);
     if (!result) {
-      this.hasPendingMessageToGo = messageId;
-      return dispatch(threadMessageGetListByMessageId(thread.id, statics.historyFetchCount, messageTime));
+      this.hasPendingMessageToGo = messageTime;
+      this._fetchHistoryFromMiddle(thread.id, messageTime);
     }
     this.hasPendingMessageToGo = null;
   }
@@ -199,7 +213,7 @@ export default class MainMessages extends Component {
                 onScrollTopThreshold={this.onScrollTopThreshold}
                 onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching}>
         {messages.map(el =>
-          <div style={{height: "200px", width: "200px"}}>
+          <div id={`message-${el.time}`} style={{height: "200px", width: "200px"}}>
             {el.message}
           </div>
         )}

@@ -46,9 +46,6 @@ class Main extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    if (oldProps.threadId !== this.props.threadId) {
-      this.props.dispatch(threadMessageGetList(this.props.threadId));
-    }
   }
 
   onContactListShow() {
