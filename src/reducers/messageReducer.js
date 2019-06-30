@@ -1,9 +1,10 @@
 import {
   MESSAGE_EDITING,
   MESSAGE_NEW,
+  MESSAGE_SEND
 } from "../constants/actionTypes";
 import {stateGenerator, stateGeneratorState} from "../utils/storeHelper";
-const {PENDING} = stateGeneratorState;
+const {PENDING, SUCCESS} = stateGeneratorState;
 
 export const messageEditingReducer = (state = null, action) => {
   switch (action.type) {
@@ -17,7 +18,8 @@ export const messageEditingReducer = (state = null, action) => {
 export const messageNewReducer = (state = null, action) => {
   switch (action.type) {
     case MESSAGE_NEW:
-      return {...state, ...stateGenerator(PENDING, action.payload)};
+    case MESSAGE_SEND(SUCCESS):
+      return action.payload;
     default:
       return state;
   }

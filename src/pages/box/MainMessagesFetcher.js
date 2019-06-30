@@ -18,7 +18,7 @@ import {
   threadMessageGetListPartial,
   threadMessageGetList,
   threadCheckedMessageList,
-  threadLeftAsideShowing
+  threadLeftAsideShowing, threadNewMessage
 } from "../../actions/threadActions";
 
 //components
@@ -56,7 +56,16 @@ const statics = {
 };
 
 function isMessageByMe(message, user) {
-
+  if (message) {
+    if (message) {
+      if (!message.id) {
+        return true;
+      }
+      if (user) {
+        return message.ownerId === user.id;
+      }
+    }
+  }
 }
 
 @connect(store => {
@@ -65,7 +74,8 @@ function isMessageByMe(message, user) {
     threadMessages: store.threadMessages,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
-    newMessage: store.newMessage,
+    messageNew: store.messageNew,
+    user: store.user.user
   };
 })
 export default class MainMessages extends Component {
@@ -73,7 +83,7 @@ export default class MainMessages extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gotoBottomButtonShowing: false,
+      bottomButtonShowing: false,
       newMessageUnreadCount: 0
     };
     this.scroller = React.createRef();
@@ -90,6 +100,42 @@ export default class MainMessages extends Component {
     if (thread) {
       this._fetchHistory();
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    const {messageNew: oldNewMessage, threadMessages, dispatch, user} = this.props;
+    const {messageNew, thread} = nextProps;
+    const {hasNext} = threadMessages;
+    //new message handler
+    if (oldNewMessage || messageNew) {
+      if (!oldNewMessage || oldNewMessage.id !== messageNew.id) {
+        if (messageNew.threadId === thread.id) {
+          if (isMessageByMe(messageNew, user)) {
+            if(hasNext) {
+              dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+              return false;
+            } else {
+              dispatch(threadNewMessage(messageNew));
+              this.gotoBottom = true;
+              return false;
+            }
+          } else {
+            const scrollPositionInfo = this.scroller.current.getInfo();
+            if (!hasNext || scrollPositionInfo.isInBottomEnd) {
+              dispatch(threadNewMessage(messageNew));
+              this.gotoBottom = true;
+              return false;
+            } else if (hasNext) {
+              this.setState({
+                newMessageUnreadCount: this.state.newMessageUnreadCount + 1
+              });
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
   }
 
   componentDidUpdate(oldProps) {
@@ -116,25 +162,6 @@ export default class MainMessages extends Component {
       this.scroller.current.gotoBottom();
       return this.gotoBottom = false;
     }
-
-    //new message coming scroll handle
-    if (newMessage !== oldNewMessage) {
-      if (newMessage.threadId === thread.id) {
-        if (isMessageByMe(newMessage)) {
-          dispatch(threadNewMessage(newMessage));
-          this.scroller.current.gotoBottom();
-        } else {
-          const currentScrollPosition = this.scroller.current.getInfo();
-          if (!hasNext || currentScrollPosition.isInBottom) {
-            this.scroller.current.gotoBottom(true);
-          } else if (hasNext) {
-            this.setState({
-              newMessageUnreadCount: this.state.newMessageUnreadCount + 1
-            });
-          }
-        }
-      }
-    }
   }
 
   _fetchHistory() {
@@ -153,10 +180,10 @@ export default class MainMessages extends Component {
   }
 
   _fetchHistoryFromMiddle(threadId, messageTime) {
-     this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime, statics.historyFetchCount));
-     this.setState({
-       bottomButton: true
-     });
+    this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime, statics.historyFetchCount));
+    this.setState({
+      bottomButtonShowing: true
+    });
   }
 
   onGotoBottomClicked() {
@@ -165,28 +192,28 @@ export default class MainMessages extends Component {
     if (hasNext) {
       dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
     } else {
-      this.scroller.current.gotoBottom(true);
+      this.scroller.current.gotoBottom();
     }
     this.setState({
-      gotoBottomButtonShowing: false
+      bottomButtonShowing: false
     });
   }
 
   onScrollTopThreshold() {
     const {thread, threadMessages, dispatch} = this.props;
     const {messages} = threadMessages;
-    dispatch(threadMessageGetListPartial(thread.id, messages[0].time, false, statics.historyFetchCount));
+    dispatch(threadMessageGetListPartial(thread.id, messages[0].time - 200, false, statics.historyFetchCount));
   }
 
   onScrollBottomThreshold() {
     const {thread, threadMessages, dispatch} = this.props;
     const {messages} = threadMessages;
-    dispatch(threadMessageGetListPartial(thread.id, messages[messages.length - 1].time, true, statics.historyFetchCount));
+    dispatch(threadMessageGetListPartial(thread.id, messages[messages.length - 1].time + 200, true, statics.historyFetchCount));
   }
 
   onScrollBottomEnd() {
     this.setState({
-      gotoBottomButtonShowing: false
+      bottomButtonShowing: false
     });
   }
 
@@ -201,17 +228,18 @@ export default class MainMessages extends Component {
   }
 
   render() {
-    const {threadMessages, threadMessagesPartialFetching} = this.props;
+    const {threadMessages, threadMessagesPartialFetching, threadGetMessageListByMessageIdFetching} = this.props;
     const {messages} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
     return <section className={style.MainMessages}>
       <Scroller ref={this.scroller}
-                threshold={5}
+                className={style.MainMessages__Messages}
+                threshold={10}
                 onScrollBottomEnd={this.onScrollBottomEnd}
                 onScrollBottomThreshold={this.onScrollBottomThreshold}
-                onScrollBottomThresholdCondition={hasNext}
+                onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}
                 onScrollTopThreshold={this.onScrollTopThreshold}
-                onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching}>
+                onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}>
         {messages.map(el =>
           <div id={`message-${el.time}`} style={{height: "200px", width: "200px"}}>
             {el.message}

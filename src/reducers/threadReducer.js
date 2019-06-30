@@ -421,7 +421,6 @@ export const threadMessageListReducer = (state = {
         }), "messages")
       };
     case THREAD_NEW_MESSAGE:
-    case MESSAGE_SEND(SUCCESS):
       if (!checkForCurrentThread()) {
         return state;
       }
