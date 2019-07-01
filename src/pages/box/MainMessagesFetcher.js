@@ -93,6 +93,7 @@ export default class MainMessages extends Component {
     //Controller fields
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
+    this.lastSeenMessage = null;
   }
 
   componentDidMount() {
@@ -107,41 +108,54 @@ export default class MainMessages extends Component {
     const {messageNew, thread} = nextProps;
     const {hasNext} = threadMessages;
     //new message handler
-    if (oldNewMessage || messageNew) {
-      if (!oldNewMessage || oldNewMessage.id !== messageNew.id) {
-        if (messageNew.threadId === thread.id) {
-          if (isMessageByMe(messageNew, user)) {
-            if(hasNext) {
-              dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
-              return false;
-            } else {
-              dispatch(threadNewMessage(messageNew));
-              this.gotoBottom = true;
-              return false;
-            }
-          } else {
-            const scrollPositionInfo = this.scroller.current.getInfo();
-            if (!hasNext || scrollPositionInfo.isInBottomEnd) {
-              dispatch(threadNewMessage(messageNew));
-              this.gotoBottom = true;
-              return false;
-            } else if (hasNext) {
-              this.setState({
-                newMessageUnreadCount: this.state.newMessageUnreadCount + 1
-              });
-              return false;
-            }
-          }
-        }
+
+    //Check for allow rendering
+    if (!oldNewMessage && !messageNew) {
+      return true;
+    }
+    if (oldNewMessage && messageNew) {
+      if (oldNewMessage.id === messageNew.id) {
+        return true;
+      }
+      if (oldNewMessage.time > messageNew.time) {
+        return true;
+      }
+    }
+    if (messageNew.threadId !== thread.id) {
+      return true;
+    }
+
+    //functionality after allowing newMessage to come for calculation
+    if (isMessageByMe(messageNew, user)) {
+      if (hasNext) {
+        dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+        return false;
+      } else {
+        dispatch(threadNewMessage(messageNew));
+        this.gotoBottom = true;
+        return false;
+      }
+    } else {
+      const scrollPositionInfo = this.scroller.current.getInfo();
+      if (!hasNext && scrollPositionInfo.isInBottomEnd) {
+        dispatch(threadNewMessage(messageNew));
+        this.gotoBottom = true;
+        this.lastSeenMessage = messageNew;
+        return false;
+      } else if (hasNext) {
+        this.setState({
+          newMessageUnreadCount: this.state.newMessageUnreadCount + 1
+        });
+        return false;
       }
     }
     return true;
   }
 
   componentDidUpdate(oldProps) {
-    const {thread, threadMessages, newMessage, threadGetMessageListByMessageIdFetching} = this.props;
-    const {thread: oldThread, newMessage: oldNewMessage} = oldProps;
-    const {messages, hasNext, fetching} = threadMessages;
+    const {thread, threadMessages, threadGetMessageListByMessageIdFetching, dispatch} = this.props;
+    const {thread: oldThread} = oldProps;
+    const {fetching} = threadMessages;
     const threadId = thread.id;
 
     //fetch message if thread change
@@ -151,7 +165,12 @@ export default class MainMessages extends Component {
 
     //scroll to message if have pending message to go
     if (fetching || threadGetMessageListByMessageIdFetching) {
-      return
+      return;
+    }
+
+    if(this.lastSeenMessage) {
+      dispatch(messageSeen(this.lastSeenMessage));
+      this.lastSeenMessage = null;
     }
 
     if (this.hasPendingMessageToGo) {
@@ -165,15 +184,20 @@ export default class MainMessages extends Component {
   }
 
   _fetchHistory() {
+    this.lastSeenMessage = null;
+    this.gotoBottom = false;
+    this.hasPendingMessageToGo = null;
     const {thread, dispatch} = this.props;
     if (thread.unreadCount > statics.historyFetchCount) {
       this.hasPendingMessageToGo = thread.lastSeenMessageTime;
       this._fetchHistoryFromMiddle(thread.id, thread.lastSeenMessageTime);
+      this.lastSeenMessage = thread.lastMessageVO;
     } else {
       if (thread.lastSeenMessageId === thread.lastMessageVO.id) {
         this.gotoBottom = true;
       } else {
-        this.hasPendingMessageToGo = thread.lastMessageVO.time;
+        this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+        this.lastSeenMessage = thread.lastMessageVO;
       }
       dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
     }

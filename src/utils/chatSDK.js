@@ -163,7 +163,7 @@ export default class ChatSDK {
         });
         const {hasNext, contentCount, nextOffset} = result.result;
         let realHasPrevious = (!params.fromTimeFull && !params.toTimeFull) || params.toTimeFull ? hasNext ? hasNext : false : "UNKNOWN";
-        let realHasNext = params.fromTimeFull ? hasNext ? hasNext : false : "UNKNOWN";
+        let realHasNext = params.fromTimeFull ? hasNext ? hasNext : false : (!params.fromTimeFull && !params.toTimeFull) ? false : "UNKNOWN";
         return resolve({
           threadId: params.threadId,
           nextOffset,
