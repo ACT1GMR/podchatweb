@@ -151,7 +151,7 @@ export default class MainMessagesText extends Component {
                  id={message.uuid}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
-        {highLighterFragment(message)}
+        {highLighterFragment()}
         {messageControlShow ?
           <Container className={style.MainMessagesText__Control}>
             <Container topLeft>
@@ -182,23 +182,23 @@ export default class MainMessagesText extends Component {
           </Container>
           : ""}
         <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
-          {personNameFragment(message)}
-          {replyFragment(message)}
-          {forwardFragment(message)}
+          {personNameFragment()}
+          {replyFragment()}
+          {forwardFragment()}
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap">
               {urlify(message.message)}
             </Text>
           </Container>
           <PaperFooter>
-            {seenFragment(message, () => {
+            {seenFragment(() => {
               dispatch(messageCancel(message.uniqueId));
               dispatch(messageSend(message.message, message.threadId));
             }, () => {
               dispatch(messageCancel(message.uniqueId));
             })}
-            {editFragment(message)}
-            {datePetrification(message.time)}
+            {editFragment()}
+            {datePetrification()}
             <Container inline left inSpace
                        className={style.MainMessagesText__OpenTriggerIconContainer}>
               <MdExpandLess size={styleVar.iconSizeMd}

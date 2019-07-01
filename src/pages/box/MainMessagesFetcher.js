@@ -68,6 +68,210 @@ function isMessageByMe(message, user) {
   }
 }
 
+function isFile(message) {
+  if (message) {
+    if (message.metadata) {
+      if (typeof message.metadata === "object") {
+        return message.metadata.file;
+      }
+      return JSON.parse(message.metadata).file
+    }
+  }
+}
+
+function showNameOrAvatar(message, messages) {
+  const msgOwnerId = message.participant.id;
+  const msgId = message.id || message.uniqueId;
+  const index = messages.findIndex(e => e.id === msgId || e.uniqueId === msgId);
+  if (~index) {
+    const lastMessage = messages[index - 1];
+    if (lastMessage) {
+      if (lastMessage.participant.id === msgOwnerId) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+function datePetrification(time) {
+  const correctTime = time / Math.pow(10, 6);
+  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
+}
+
+function personNameFragment(message, messages, user) {
+  const messageParticipant = message.participant;
+  const color = avatarNameGenerator(messageParticipant.name).color;
+  return showNameOrAvatar(message, messages) &&
+    <Text size="sm" bold
+          style={{color: color}}>{isMessageByMe(message, user) ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
+}
+
+function forwardFragment(message) {
+  if (message.forwardInfo) {
+    return (
+      <Container>
+        <Paper colorBackground style={{borderRadius: "5px"}}>
+          <Text italic size="xs">{strings.forwardFrom}</Text>
+          <Text bold>{message.forwardInfo.participant.name}:</Text>
+        </Paper>
+        <Gap block y={5}/>
+      </Container>
+    )
+  }
+  return "";
+}
+
+function replyFragment(message, gotoMessageFunc) {
+  if (message.replyInfo) {
+    const replyInfo = message.replyInfo;
+    let meta = "";
+    try {
+      meta = JSON.parse(replyInfo.metadata);
+    } catch (e) {
+    }
+    const text = replyInfo.message;
+    const file = meta && meta.file;
+    let isImage, isVideo, imageLink;
+    if (file) {
+      isImage = file.mimeType.indexOf("image") > -1;
+      isVideo = file.mimeType.indexOf("video") > -1;
+      if (isImage) {
+        let width = file.width;
+        let height = file.height;
+        const ratio = height / width;
+        const maxWidth = 100;
+        height = Math.ceil(maxWidth * ratio);
+        imageLink = `${file.link}&width=${maxWidth}&height=${height}`;
+      }
+    }
+    const imageLinkString = `url(${imageLink})`;
+    return (
+      <Container
+        cursor="pointer"
+        onClick={gotoMessageFunc.bind(null, replyInfo.repliedToMessageTime, replyInfo.deleted)}>
+        <Paper colorBackground
+               style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
+          <Text bold size="xs">{strings.replyTo}:</Text>
+          {isImage && text ?
+            <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
+            :
+            isImage && !text ?
+              <Container>
+                <MdCameraAlt size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
+                <Text inline size="sm" bold color="gray" dark>{strings.photo}</Text>
+              </Container> :
+              isVideo ?
+                <Container>
+                  <MdVideocam size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
+                  <Text inline size="sm" bold color="gray" dark>{strings.video}</Text>
+                </Container> :
+                file ?
+                  <Container>
+                    <MdInsertDriveFile size={style.iconSizeSm} color={style.colorGrayDark}
+                                       style={{margin: "0 5px"}}/>
+                    <Text inline size="sm" bold color="gray" dark>{file.originalName}</Text>
+                  </Container>
+                  :
+                  <Text italic size="xs" isHTML>{text}</Text>}
+
+          {isImage &&
+          <Container className={style.MainMessages__ReplyFragmentImage}
+                     style={{backgroundImage: imageLinkString}}/>
+          }
+        </Paper>
+        <Gap block y={5}/>
+      </Container>
+    )
+  }
+  return "";
+}
+
+function seenFragment(message, user, onRetry, onCancel) {
+  if (!isMessageByMe(message, user)) {
+    return null;
+  }
+  if (message.hasError) {
+    return (
+      <Container inline>
+        <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+        <Gap x={2}>
+          <Container onClick={onRetry} inline>
+            <Text size="xs" color="accent" linkStyle>{strings.tryAgain}</Text>
+          </Container>
+          <Gap x={5}/>
+          <Container onClick={onCancel} inline>
+            <Text size="xs" color="accent" linkStyle>{strings.cancel}</Text>
+          </Container>
+        </Gap>
+        <Gap x={3}/>
+      </Container>
+    )
+  }
+}
+
+function editFragment(message) {
+  if (message.edited) {
+    return (
+      <Gap x={2}>
+        <Text italic size="xs" inline>{strings.edited}</Text>
+      </Gap>
+    )
+  }
+}
+
+function highLighterFragment(message, highLightMessage) {
+  const classNames = classnames({
+    [style.MainMessages__Highlighter]: true,
+    [style["MainMessages__Highlighter--highlighted"]]: highLightMessage && highLightMessage === message.time
+  });
+  return (
+    <Container className={classNames}>
+      <Container className={style.MainMessages__HighlighterBox}/>
+    </Container>
+  );
+}
+
+
+function messageArguments(message, messages, user, gotoMessageFunc, highLightMessage) {
+  return {
+    highLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
+    seenFragment: seenFragment.bind(null, message, user),
+    editFragment: editFragment.bind(null, message),
+    replyFragment: replyFragment.bind(this, message, gotoMessageFunc),
+    forwardFragment: forwardFragment.bind(null, message),
+    personNameFragment: personNameFragment.bind(null, message, messages, user),
+    isMessageByMe: isMessageByMe.bind(null, message, user),
+    isFirstMessage: showNameOrAvatar(message, messages),
+    datePetrification: datePetrification.bind(null, message.time),
+    message,
+    user
+  }
+}
+
+function getMessage(message, messages, user, gotoMessageFunc, highlightedMessage) {
+  const messageArg = messageArguments(message, messages, user, gotoMessageFunc, highlightedMessage);
+  return isFile(message) ?
+    <MainMessagesFile {...messageArg}/>
+    :
+    <MainMessagesText {...messageArg}/>;
+}
+
+function getAvatar(message, messages) {
+  const showAvatar = showNameOrAvatar(message, messages);
+  const fragment =
+    showAvatar ?
+      <Avatar>
+        <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
+                     textBg={avatarNameGenerator(message.participant.name).color}/>
+      </Avatar> :
+      <div style={{width: "50px", display: "inline-block"}}/>;
+  return showAvatar ?
+    <Container inline inSpace style={{maxWidth: "50px", verticalAlign: "top"}}>
+      {fragment}
+    </Container> : fragment;
+}
+
 @connect(store => {
   return {
     thread: store.thread.thread,
@@ -84,12 +288,15 @@ export default class MainMessages extends Component {
     super(props);
     this.state = {
       bottomButtonShowing: false,
+      highLightMessage: null,
       newMessageUnreadCount: 0
     };
     this.scroller = React.createRef();
     this.onScrollBottomEnd = this.onScrollBottomEnd.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
+    this.onScrollTop = this.onScrollTop.bind(this);
+    this.onGotoBottomClicked = this.onGotoBottomClicked.bind(this);
     //Controller fields
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
@@ -168,7 +375,7 @@ export default class MainMessages extends Component {
       return;
     }
 
-    if(this.lastSeenMessage) {
+    if (this.lastSeenMessage) {
       dispatch(messageSeen(this.lastSeenMessage));
       this.lastSeenMessage = null;
     }
@@ -205,9 +412,6 @@ export default class MainMessages extends Component {
 
   _fetchHistoryFromMiddle(threadId, messageTime) {
     this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime, statics.historyFetchCount));
-    this.setState({
-      bottomButtonShowing: true
-    });
   }
 
   onGotoBottomClicked() {
@@ -241,35 +445,85 @@ export default class MainMessages extends Component {
     });
   }
 
+  onScrollTop() {
+    if (!this.state.bottomButtonShowing) {
+      this.setState({
+        bottomButtonShowing: true
+      });
+    }
+  }
+
   goToSpecificMessage(messageTime) {
     const {thread, dispatch} = this.props;
     const result = this.scroller.current.gotoElement(`message-${messageTime}`);
+    const setHighlighter = () => {
+      this.setState({
+        highLightMessage: messageTime
+      });
+      return setTimeout(() => {
+        this.setState({
+          highLightMessage: false
+        });
+      }, 2500);
+    };
+
     if (!result) {
       this.hasPendingMessageToGo = messageTime;
       this._fetchHistoryFromMiddle(thread.id, messageTime);
+      return setHighlighter();
     }
+    setHighlighter();
     this.hasPendingMessageToGo = null;
   }
 
+  onRepliedMessageClicked(time, isDeleted) {
+    if (isDeleted) {
+      return;
+    }
+    this.goToSpecificMessage(time);
+  }
+
   render() {
-    const {threadMessages, threadMessagesPartialFetching, threadGetMessageListByMessageIdFetching} = this.props;
+    const {threadMessages, threadMessagesPartialFetching, threadGetMessageListByMessageIdFetching, user} = this.props;
     const {messages} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
-    return <section className={style.MainMessages}>
-      <Scroller ref={this.scroller}
-                className={style.MainMessages__Messages}
-                threshold={10}
-                onScrollBottomEnd={this.onScrollBottomEnd}
-                onScrollBottomThreshold={this.onScrollBottomThreshold}
-                onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}
-                onScrollTopThreshold={this.onScrollTopThreshold}
-                onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}>
-        {messages.map(el =>
-          <div id={`message-${el.time}`} style={{height: "200px", width: "200px"}}>
-            {el.message}
-          </div>
-        )}
-      </Scroller>
-    </section>
+    const {highLightMessage, bottomButtonShowing} = this.state;
+    const MainMessagesMessageContainerClassNames = message => classnames({
+      [style.MainMessages__MessageContainer]: true,
+      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
+    });
+    return (
+      <Container className={style.MainMessages}>
+        <Scroller ref={this.scroller}
+                  threshold={10}
+                  onScrollBottomEnd={this.onScrollBottomEnd}
+                  onScrollBottomThreshold={this.onScrollBottomThreshold}
+                  onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}
+                  onScrollTop={this.onScrollTop}
+                  onScrollTopThreshold={this.onScrollTopThreshold}
+                  onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}>
+          <List>
+            {messages.map(message =>
+              <ListItem key={message.time} data={message}
+                        noPadding
+                        activeColor="gray">
+                <Container className={MainMessagesMessageContainerClassNames(message)}
+                           id={`message-${message.time}`}
+                           relative>
+                  {getAvatar(message, messages)}
+                  {getMessage(message, messages, user, this.onRepliedMessageClicked.bind(this), highLightMessage)}
+                </Container>
+              </ListItem>
+            )}
+
+          </List>
+        </Scroller>
+        {bottomButtonShowing ?
+          <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>
+            <MdExpandMore size={style.iconSizeMd} style={{margin: "0 5px"}}/>
+          </ButtonFloating> :
+          ""}
+      </Container>
+    )
   }
 }

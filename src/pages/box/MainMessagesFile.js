@@ -212,7 +212,6 @@ class MainMessagesFile extends Component {
     const isImage = metaData.mimeType.indexOf("image") > -1;
     const isVideo = metaData.mimeType.indexOf("video") > -1;
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
-    const isMsgByMe = isMessageByMe(message, user);
     const classNames = classnames({
       [style.MainMessagesFile]: true,
       [style["MainMessagesFile--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
@@ -228,7 +227,7 @@ class MainMessagesFile extends Component {
                  ref={this.containerRef}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
-        {highLighterFragment(message)}
+        {highLighterFragment()}
         {messageControlShow ?
           <Container className={style.MainMessagesFile__Control}>
             <Container topLeft>
@@ -262,9 +261,9 @@ class MainMessagesFile extends Component {
                        title={`${message.progress && message.progress}`}/>
             : ""}
           <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
-            {personNameFragment(message)}
-            {replyFragment(message)}
-            {forwardFragment(message)}
+            {personNameFragment()}
+            {replyFragment()}
+            {forwardFragment()}
             <Container relative
                        className={style.MainMessagesFile__FileContainer}>
               {isImage ?
@@ -327,7 +326,7 @@ class MainMessagesFile extends Component {
             </Container>
 
             <PaperFooter>
-              {seenFragment(message, () => {
+              {seenFragment(() => {
                 this.onCancel(message);
                 dispatch(messageSendFile(message.content.file.fileObject, message.threadId, message.message));
               }, () => {
