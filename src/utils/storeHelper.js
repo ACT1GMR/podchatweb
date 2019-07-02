@@ -4,6 +4,8 @@ export function stateGenerator(state, response, payloadKey) {
     object = {fetching: true, fetched: false, error: false};
   } else if (state === "REJECTED") {
     object = {fetching: false, fetched: false, error: response};
+  } else if (state === "CANCELED") {
+    object = {fetching: false, fetched: false, error: false};
   } else {
     object = {fetching: false, fetched: true, error: false};
   }
@@ -192,5 +194,6 @@ export const listUpdateStrategyMethods = {
 export const stateGeneratorState = {
   PENDING: "PENDING",
   SUCCESS: "SUCCESS",
-  ERROR: "ERROR"
+  ERROR: "ERROR",
+  CANCELED: "CANCELED"
 };

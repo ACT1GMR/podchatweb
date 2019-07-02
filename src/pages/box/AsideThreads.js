@@ -208,7 +208,7 @@ class AsideThreads extends Component {
                         </AvatarText>
                       </AvatarName>
                     </Avatar>
-                    {el.unreadCount && activeThread !== el.id ?
+                    {el.unreadCount?
                       <Container absolute centerLeft>
                         <Gap y={10} block/>
                         <Shape color="accent">

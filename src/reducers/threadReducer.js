@@ -41,7 +41,7 @@ import {
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 
-const {PENDING, SUCCESS, ERROR} = stateGeneratorState;
+const {PENDING, SUCCESS, ERROR, CANCELED} = stateGeneratorState;
 
 export const threadCreateReducer = (state = {
   thread: {},
@@ -58,6 +58,13 @@ export const threadCreateReducer = (state = {
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
     case THREAD_CREATE("CACHE"):
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
+    case THREADS_LIST_CHANGE:
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.thread, action.payload[0], {
+          by: "id",
+          method: listUpdateStrategyMethods.UPDATE
+        }), "thread")
+      };
     case THREAD_CHANGED:
       return {
         ...state, ...stateGenerator(SUCCESS, updateStore(state.thread, action.payload, {
@@ -227,7 +234,7 @@ export const threadsReducer = (state = {
     case MESSAGE_DELETE:
     case MESSAGE_EDIT(): {
       const filteredThread = state.threads.filter(thread => thread.lastMessageVO && thread.lastMessageVO.id === action.payload.id);
-      if(!filteredThread.length) {
+      if (!filteredThread.length) {
         return state;
       }
       const list = updateStore(
@@ -276,6 +283,8 @@ export const threadMessageListPartialReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
+    case THREAD_GET_MESSAGE_LIST_PARTIAL(CANCELED):
+      return {...state, ...stateGenerator(CANCELED)};
     case THREAD_GET_MESSAGE_LIST_PARTIAL(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case THREAD_GET_MESSAGE_LIST_PARTIAL(SUCCESS):
@@ -293,6 +302,8 @@ export const threadGetMessageListByMessageIdReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
+    case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(CANCELED):
+      return {...state, ...stateGenerator(CANCELED)};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(SUCCESS):

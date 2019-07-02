@@ -1,5 +1,5 @@
 export const buildPromiseMessage = (baseMessage, type) => {
-  if(!type) {
+  if (!type) {
     return baseMessage;
   }
   if (type === "ERROR") {
@@ -85,8 +85,8 @@ export const THREAD_IS_SENDING_MESSAGE = "THREAD_IS_SENDING_MESSAGE";
 export const THREAD_CHECKED_MESSAGE_LIST_EMPTY = "THREAD_CHECKED_MESSAGE_LIST_EMPTY";
 export const THREAD_CHECKED_MESSAGE_LIST_ADD = "THREAD_CHECKED_MESSAGE_LIST_ADD";
 export const THREAD_CHECKED_MESSAGE_LIST_REMOVE = "THREAD_CHECKED_MESSAGE_LIST_REMOVE";
-export const THREAD_SEARCH_MESSAGE =  buildPromiseMessage.bind(null, "THREAD_SEARCH_MESSAGE");
-export const THREAD_NEW_MESSAGE =  buildPromiseMessage.bind(null, "THREAD_NEW_MESSAGE");
+export const THREAD_SEARCH_MESSAGE = buildPromiseMessage.bind(null, "THREAD_SEARCH_MESSAGE");
+export const THREAD_NEW_MESSAGE = buildPromiseMessage.bind(null, "THREAD_NEW_MESSAGE");
 
 
 

@@ -11,7 +11,7 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSeen, messageGet} from "../../actions/messageActions";
+import {messageSeen} from "../../actions/messageActions";
 import {
   threadFilesToUpload,
   threadMessageGetListByMessageId,
@@ -66,6 +66,11 @@ function isMessageByMe(message, user) {
       }
     }
   }
+}
+
+function messageSelectedCondition(message, threadCheckedMessageList) {
+  const fileIndex = threadCheckedMessageList.findIndex((msg => msg.uniqueId === message.uniqueId));
+  return fileIndex >= 0;
 }
 
 function isFile(message) {
@@ -266,6 +271,15 @@ function loadingFragment() {
   )
 }
 
+function messageTickFragment(message, onAddToCheckedMessage, threadCheckedMessageList) {
+  const isExisted = messageSelectedCondition(message, threadCheckedMessageList);
+  const classNames = classnames({
+    [style.MainMessages__Tick]: true,
+    [style["MainMessages__Tick--selected"]]: isExisted
+  });
+  return <Container className={classNames} onClick={onAddToCheckedMessage.bind(null, message, !isExisted)}/>;
+}
+
 function getMessage(message, messages, user, gotoMessageFunc, highLightMessage, thread, messageSeenListClick) {
   const args = {
     highLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
@@ -307,8 +321,10 @@ function getAvatar(message, messages) {
     threadMessages: store.threadMessages,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
+    threadSelectMessageShowing: store.threadSelectMessageShowing,
+    threadCheckedMessageList: store.threadCheckedMessageList,
     messageNew: store.messageNew,
-    user: store.user.user
+    user: store.user.user,
   };
 })
 export default class MainMessages extends Component {
@@ -345,9 +361,7 @@ export default class MainMessages extends Component {
     const {messageNew: oldNewMessage, threadMessages, dispatch, user} = this.props;
     const {messageNew, thread} = nextProps;
     const {hasNext} = threadMessages;
-    if (!thread.id) {
-      return;
-    }
+
     //Check for allow rendering
     if (!oldNewMessage && !messageNew) {
       return true;
@@ -356,36 +370,35 @@ export default class MainMessages extends Component {
       if (oldNewMessage.id === messageNew.id) {
         return true;
       }
-      if (oldNewMessage.time > messageNew.time) {
-        return true;
-      }
     }
     if (messageNew.threadId !== thread.id) {
       return true;
     }
 
     //functionality after allowing newMessage to come for calculation
-    if (isMessageByMe(messageNew, user)) {
-      if (hasNext) {
-        dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
-        return false;
+    if (this.scroller.current) {
+      if (isMessageByMe(messageNew, user)) {
+        if (hasNext) {
+          dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+          return false;
+        } else {
+          dispatch(threadNewMessage(messageNew));
+          this.gotoBottom = true;
+          return false;
+        }
       } else {
-        dispatch(threadNewMessage(messageNew));
-        this.gotoBottom = true;
-        return false;
-      }
-    } else {
-      const scrollPositionInfo = this.scroller.current.getInfo();
-      if (!hasNext && scrollPositionInfo.isInBottomEnd) {
-        dispatch(threadNewMessage(messageNew));
-        this.gotoBottom = true;
-        this.lastSeenMessage = messageNew;
-        return false;
-      } else if (hasNext) {
-        this.setState({
-          newMessageUnreadCount: this.state.newMessageUnreadCount + 1
-        });
-        return false;
+        const scrollPositionInfo = this.scroller.current.getInfo();
+        if (!hasNext && scrollPositionInfo.isInBottomEnd) {
+          dispatch(threadNewMessage(messageNew));
+          this.gotoBottom = true;
+          this.lastSeenMessage = messageNew;
+          return false;
+        } else if (hasNext) {
+          this.setState({
+            newMessageUnreadCount: this.state.newMessageUnreadCount + 1
+          });
+          return false;
+        }
       }
     }
     return true;
@@ -396,6 +409,10 @@ export default class MainMessages extends Component {
     const {thread: oldThread} = oldProps;
     const {fetching} = threadMessages;
     const threadId = thread.id;
+
+    if (!thread.id) {
+      return;
+    }
 
     //fetch message if thread change
     if (!oldThread || oldThread.id !== threadId) {
@@ -427,12 +444,14 @@ export default class MainMessages extends Component {
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
     const {thread, dispatch} = this.props;
+    dispatch(threadMessageGetListPartial(null, null, null, null, true));
+    dispatch(threadMessageGetListByMessageId(null, null, null, true));
     if (thread.unreadCount > statics.historyFetchCount) {
       this.hasPendingMessageToGo = thread.lastSeenMessageTime;
       this._fetchHistoryFromMiddle(thread.id, thread.lastSeenMessageTime);
       this.lastSeenMessage = thread.lastMessageVO;
     } else {
-      if (thread.lastSeenMessageId === thread.lastMessageVO.id) {
+      if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
         this.gotoBottom = true;
       } else {
         this.hasPendingMessageToGo = thread.lastSeenMessageTime;
@@ -447,11 +466,12 @@ export default class MainMessages extends Component {
   }
 
   onGotoBottomClicked() {
-    const {threadMessages, dispatch, thread} = this.props;
-    const {hasNext} = threadMessages;
+    const {threadMessages, messageNew} = this.props;
+    const {hasNext, messages} = threadMessages;
     if (hasNext) {
       this._fetchInitHistory();
     } else {
+      this.lastSeenMessage = messageNew;
       this.scroller.current.gotoBottom();
     }
     this.setState({
@@ -472,6 +492,10 @@ export default class MainMessages extends Component {
   }
 
   onScrollBottomEnd() {
+    const {thread, messageNew} = this.props;
+    if (thread.unreadCount > 0) {
+      this.lastSeenMessage = messageNew;
+    }
     this.setState({
       bottomButtonShowing: false
     });
@@ -519,8 +543,21 @@ export default class MainMessages extends Component {
     this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id));
   }
 
+  onAddToCheckedMessage(message, isAdd, e) {
+    e.stopPropagation();
+    this.props.dispatch(threadCheckedMessageList(isAdd, message));
+  }
+
   render() {
-    const {threadMessages, threadMessagesPartialFetching, threadGetMessageListByMessageIdFetching, user, thread} = this.props;
+    const {
+      threadMessages,
+      threadMessagesPartialFetching,
+      threadGetMessageListByMessageIdFetching,
+      user,
+      thread,
+      threadCheckedMessageList,
+      threadSelectMessageShowing
+    } = this.props;
     const {messages, fetching} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
     const {highLightMessage, bottomButtonShowing} = this.state;
@@ -537,6 +574,7 @@ export default class MainMessages extends Component {
       return noMessageFragment();
     }
 
+
     return (
       <Container className={style.MainMessages}>
         <Scroller ref={this.scroller}
@@ -550,13 +588,15 @@ export default class MainMessages extends Component {
           <List>
             {messages.map(message =>
               <ListItem key={message.time} data={message}
-                        noPadding
-                        activeColor="gray">
+                        active={threadSelectMessageShowing && messageSelectedCondition(message, threadCheckedMessageList)}
+                        activeColor="gray"
+                        noPadding>
                 <Container className={MainMessagesMessageContainerClassNames(message)}
                            id={`message-${message.time}`}
                            relative>
                   {getAvatar(message, messages)}
                   {getMessage(message, messages, user, this.onRepliedMessageClicked.bind(this), highLightMessage, thread, this.onMessageSeenListClick.bind(this, message))}
+                  {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
                 </Container>
               </ListItem>
             )}
