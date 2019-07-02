@@ -187,7 +187,7 @@ function replyFragment(message, gotoMessageFunc) {
   return "";
 }
 
-function seenFragment(message, user, onRetry, onCancel) {
+function seenFragment(message, user, thread, messageSeenListClick, onRetry, onCancel) {
   if (!isMessageByMe(message, user)) {
     return null;
   }
@@ -208,6 +208,18 @@ function seenFragment(message, user, onRetry, onCancel) {
       </Container>
     )
   }
+  const isGroup = thread.group;
+  if (!message.id) {
+    return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+  }
+  if (!isGroup) {
+    if (message.seen) {
+      return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+    }
+  }
+  return <MdDone className={isGroup ? style.MainMessages__SentIcon : ""} size={style.iconSizeXs}
+                 style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}}
+                 onClick={isGroup ? messageSeenListClick : null}/>
 }
 
 function editFragment(message) {
@@ -232,11 +244,32 @@ function highLighterFragment(message, highLightMessage) {
   );
 }
 
+function noMessageFragment() {
+  return (
+    <Container className={style.MainMessages}>
+      <Container center centerTextAlign relative style={{width: "100%"}}>
+        <div className={style.MainMessages__Empty}/>
+        <Message size="lg">{strings.thereIsNoMessageToShow}</Message>
+        <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
+      </Container>
+    </Container>
+  )
+}
 
-function messageArguments(message, messages, user, gotoMessageFunc, highLightMessage) {
-  return {
+function loadingFragment() {
+  return (
+    <Container className={style.MainMessages}>
+      <Container center centerTextAlign style={{width: "100%"}}>
+        <Loading hasSpace><LoadingBlinkDots/></Loading>
+      </Container>
+    </Container>
+  )
+}
+
+function getMessage(message, messages, user, gotoMessageFunc, highLightMessage, thread, messageSeenListClick) {
+  const args = {
     highLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
-    seenFragment: seenFragment.bind(null, message, user),
+    seenFragment: seenFragment.bind(null, message, user, thread, messageSeenListClick),
     editFragment: editFragment.bind(null, message),
     replyFragment: replyFragment.bind(this, message, gotoMessageFunc),
     forwardFragment: forwardFragment.bind(null, message),
@@ -246,15 +279,11 @@ function messageArguments(message, messages, user, gotoMessageFunc, highLightMes
     datePetrification: datePetrification.bind(null, message.time),
     message,
     user
-  }
-}
-
-function getMessage(message, messages, user, gotoMessageFunc, highlightedMessage) {
-  const messageArg = messageArguments(message, messages, user, gotoMessageFunc, highlightedMessage);
+  };
   return isFile(message) ?
-    <MainMessagesFile {...messageArg}/>
+    <MainMessagesFile {...args}/>
     :
-    <MainMessagesText {...messageArg}/>;
+    <MainMessagesText {...args}/>;
 }
 
 function getAvatar(message, messages) {
@@ -306,7 +335,9 @@ export default class MainMessages extends Component {
   componentDidMount() {
     const {thread} = this.props;
     if (thread) {
-      this._fetchHistory();
+      if (thread.id) {
+        this._fetchInitHistory();
+      }
     }
   }
 
@@ -314,8 +345,9 @@ export default class MainMessages extends Component {
     const {messageNew: oldNewMessage, threadMessages, dispatch, user} = this.props;
     const {messageNew, thread} = nextProps;
     const {hasNext} = threadMessages;
-    //new message handler
-
+    if (!thread.id) {
+      return;
+    }
     //Check for allow rendering
     if (!oldNewMessage && !messageNew) {
       return true;
@@ -367,7 +399,7 @@ export default class MainMessages extends Component {
 
     //fetch message if thread change
     if (!oldThread || oldThread.id !== threadId) {
-      return this._fetchHistory();
+      return this._fetchInitHistory();
     }
 
     //scroll to message if have pending message to go
@@ -390,7 +422,7 @@ export default class MainMessages extends Component {
     }
   }
 
-  _fetchHistory() {
+  _fetchInitHistory() {
     this.lastSeenMessage = null;
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
@@ -418,7 +450,7 @@ export default class MainMessages extends Component {
     const {threadMessages, dispatch, thread} = this.props;
     const {hasNext} = threadMessages;
     if (hasNext) {
-      dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+      this._fetchInitHistory();
     } else {
       this.scroller.current.gotoBottom();
     }
@@ -446,7 +478,7 @@ export default class MainMessages extends Component {
   }
 
   onScrollTop() {
-    if (!this.state.bottomButtonShowing) {
+    if (!this.state.bottomButtonShowing && !this.props.threadMessages.fetching) {
       this.setState({
         bottomButtonShowing: true
       });
@@ -483,15 +515,28 @@ export default class MainMessages extends Component {
     this.goToSpecificMessage(time);
   }
 
+  onMessageSeenListClick(message) {
+    this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id));
+  }
+
   render() {
-    const {threadMessages, threadMessagesPartialFetching, threadGetMessageListByMessageIdFetching, user} = this.props;
-    const {messages} = threadMessages;
+    const {threadMessages, threadMessagesPartialFetching, threadGetMessageListByMessageIdFetching, user, thread} = this.props;
+    const {messages, fetching} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
     const {highLightMessage, bottomButtonShowing} = this.state;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
       [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
     });
+
+    if (!thread.id || fetching || threadGetMessageListByMessageIdFetching) {
+      return loadingFragment();
+    }
+
+    if (!messages.length) {
+      return noMessageFragment();
+    }
+
     return (
       <Container className={style.MainMessages}>
         <Scroller ref={this.scroller}
@@ -511,7 +556,7 @@ export default class MainMessages extends Component {
                            id={`message-${message.time}`}
                            relative>
                   {getAvatar(message, messages)}
-                  {getMessage(message, messages, user, this.onRepliedMessageClicked.bind(this), highLightMessage)}
+                  {getMessage(message, messages, user, this.onRepliedMessageClicked.bind(this), highLightMessage, thread, this.onMessageSeenListClick.bind(this, message))}
                 </Container>
               </ListItem>
             )}
