@@ -149,11 +149,11 @@ export const threadSearchMessage = (threadId, query) => {
   }
 };
 
-export const threadGoToMessageId = (threadId, time, id) => {
+export const threadGoToMessageId = time => {
   return dispatch => {
     dispatch({
       type: THREAD_GO_TO_MESSAGE,
-      payload: {threadId, time, id}
+      payload: time
     });
   }
 };

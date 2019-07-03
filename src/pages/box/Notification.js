@@ -25,7 +25,7 @@ function isMessageByMe(message, user) {
 
 @connect(store => {
   return {
-    newMessage: store.message,
+    messageNew: store.messageNew,
     user: store.user.user,
     chatInstance: store.chatInstance.chatSDK,
   };
@@ -56,16 +56,24 @@ export default class Notification extends Component {
 
 
   componentDidUpdate(oldProps) {
-    return;
     if (Push.Permission.request()) {
-      const {newMessage, chatInstance, dispatch, user} = this.props;
-      if (!isMessageByMe(newMessage, user)) {
+      const {messageNew, chatInstance, dispatch, user} = this.props;
+      const {messageNew: oldMessageNew} = oldProps;
+      if (messageNew && oldMessageNew) {
+        if (messageNew.time < oldMessageNew.time) {
+          return;
+        }
+      }
+      if (!isMessageByMe(messageNew, user)) {
         if (chatInstance) {
           if (!window.document.hasFocus()) {
-            if (newMessage === oldProps.newMessage) {
+            if (messageNew === oldProps.messageNew) {
               return;
             }
-            chatInstance.getThreadInfo(newMessage.threadId).then(thread => {
+            chatInstance.getThreadInfo(messageNew.threadId).then(thread => {
+              if (thread.mute) {
+                return;
+              }
               const {count} = this.state;
               this.setState({
                 thread,
@@ -80,7 +88,7 @@ export default class Notification extends Component {
                 }, 1500);
               }
               Push.create(thread.title, {
-                body: newMessage.message,
+                body: messageNew.message,
                 icon: thread.image || defaultAvatar,
                 timeout: 60000,
                 onClick: function () {
@@ -106,6 +114,10 @@ export default class Notification extends Component {
         newTitle = `💬 (${count}) - ${defaultTitle}`;
       }
     }
-    return null
+    return (
+      <MetaTags>
+        <title>{newTitle}</title>
+      </MetaTags>
+    )
   }
 }

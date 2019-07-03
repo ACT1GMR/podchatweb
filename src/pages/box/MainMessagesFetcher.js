@@ -323,6 +323,7 @@ function getAvatar(message, messages) {
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
     threadSelectMessageShowing: store.threadSelectMessageShowing,
     threadCheckedMessageList: store.threadCheckedMessageList,
+    threadGoToMessageId: store.threadGoToMessageId,
     messageNew: store.messageNew,
     user: store.user.user,
   };
@@ -342,6 +343,7 @@ export default class MainMessages extends Component {
     this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
     this.onScrollTop = this.onScrollTop.bind(this);
     this.onGotoBottomClicked = this.onGotoBottomClicked.bind(this);
+
     //Controller fields
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
@@ -358,9 +360,13 @@ export default class MainMessages extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {messageNew: oldNewMessage, threadMessages, dispatch, user} = this.props;
-    const {messageNew, thread} = nextProps;
+    const {messageNew: oldNewMessage, threadGoToMessageId: oldThreadGoToMessageId, threadMessages, dispatch, user} = this.props;
+    const {messageNew, thread, threadGoToMessageId} = nextProps;
     const {hasNext} = threadMessages;
+
+    if (threadGoToMessageId !== oldThreadGoToMessageId) {
+      this.hasPendingMessageToGo = threadGoToMessageId;
+    }
 
     //Check for allow rendering
     if (!oldNewMessage && !messageNew) {
@@ -410,7 +416,7 @@ export default class MainMessages extends Component {
     const {fetching} = threadMessages;
     const threadId = thread.id;
 
-    if (!thread.id) {
+    if (!threadId) {
       return;
     }
 
@@ -451,11 +457,13 @@ export default class MainMessages extends Component {
       this._fetchHistoryFromMiddle(thread.id, thread.lastSeenMessageTime);
       this.lastSeenMessage = thread.lastMessageVO;
     } else {
-      if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
-        this.gotoBottom = true;
-      } else {
-        this.hasPendingMessageToGo = thread.lastSeenMessageTime;
-        this.lastSeenMessage = thread.lastMessageVO;
+      if (thread.lastSeenMessageTime && thread.lastMessageVO) {
+        if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
+          this.gotoBottom = true;
+        } else {
+          this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          this.lastSeenMessage = thread.lastMessageVO;
+        }
       }
       dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
     }
@@ -466,12 +474,14 @@ export default class MainMessages extends Component {
   }
 
   onGotoBottomClicked() {
-    const {threadMessages, messageNew} = this.props;
-    const {hasNext, messages} = threadMessages;
+    const {threadMessages, messageNew, thread} = this.props;
+    const {hasNext} = threadMessages;
     if (hasNext) {
       this._fetchInitHistory();
     } else {
-      this.lastSeenMessage = messageNew;
+      if (thread.unreadCount) {
+        this.lastSeenMessage = messageNew;
+      }
       this.scroller.current.gotoBottom();
     }
     this.setState({
@@ -573,7 +583,6 @@ export default class MainMessages extends Component {
     if (!messages.length) {
       return noMessageFragment();
     }
-
 
     return (
       <Container className={style.MainMessages}>

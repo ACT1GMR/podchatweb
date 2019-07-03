@@ -144,7 +144,7 @@ export const threadSelectMessageShowingReducer = (state = false, action) => {
   }
 };
 
-export const threadGoToMessageIdReducer = (state = false, action) => {
+export const threadGoToMessageIdReducer = (state = null, action) => {
   switch (action.type) {
     case THREAD_GO_TO_MESSAGE:
       return action.payload;

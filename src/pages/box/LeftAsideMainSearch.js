@@ -75,12 +75,12 @@ export default class LeftAsideMainSearch extends Component {
     }
   }
 
-  onSearchItemClicked(messageTime, messageId) {
-    const {smallVersion, dispatch, thread} = this.props;
+  onSearchItemClicked(messageTime) {
+    const {smallVersion, dispatch} = this.props;
     if (smallVersion || mobileCheck()) {
       dispatch(threadLeftAsideShowing(false));
     }
-    dispatch(threadGoToMessageId(thread.id, messageTime, messageId));
+    dispatch(threadGoToMessageId(messageTime));
   }
 
   render() {

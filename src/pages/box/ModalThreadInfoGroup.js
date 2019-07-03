@@ -277,7 +277,6 @@ class ModalThreadInfoGroup extends Component {
                       <Gap x={5}/>
                     </Container>
                     : ""}
-                  <MdGroup size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                 </Container>
 
               </Container>
