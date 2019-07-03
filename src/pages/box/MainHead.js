@@ -60,7 +60,6 @@ class MainHead extends Component {
   onThreadHide(e) {
     e.stopPropagation();
     const {dispatch, chatRouterLess, history} = this.props;
-    dispatch(threadShowing(false));
     dispatch(threadInit());
     if(!chatRouterLess){
       history.push("/");

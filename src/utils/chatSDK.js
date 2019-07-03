@@ -92,6 +92,7 @@ export default class ChatSDK {
   _onChatReady() {
     this.chatAgent.on("chatReady", e => {
       this.onChatReady(this);
+
       const {onTokenExpire, expireTokenTimeOut} = this.params;
       if (onTokenExpire) {
         setInterval(e => {
@@ -99,6 +100,10 @@ export default class ChatSDK {
         }, expireTokenTimeOut || (1000 * 60 * 10));
       }
     });
+  }
+
+  clearCache() {
+    this.chatAgent.deleteCacheDatabases();
   }
 
   _onChatState() {
@@ -491,7 +496,6 @@ export default class ChatSDK {
       count: 50,
       offset: 0
     };
-    console.log("Get contacts in", Date.now());
     if (typeof name === "string") {
       getContactsParams.name = name;
     }

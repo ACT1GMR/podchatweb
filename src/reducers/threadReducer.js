@@ -369,6 +369,11 @@ export const threadMessageListReducer = (state = {
     case THREAD_CREATE("CACHE"):
     case THREAD_CREATE(PENDING):
     case THREAD_CREATE(SUCCESS): {
+      if(action.type === THREAD_CREATE("CACHE")) {
+        if(state.threadId === action.payload.id) {
+          return state;
+        }
+      }
       const isSetThreadIdNull = action.type === THREAD_CREATE_INIT || action.type === THREAD_CREATE(PENDING);
       return {
         ...state, ...stateGenerator(PENDING, {

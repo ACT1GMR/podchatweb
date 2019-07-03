@@ -43,7 +43,7 @@ export function ContactList(props) {
             <Avatar>
               <AvatarImage src={el.image} text={avatarNameGenerator(getName(el)).letter}
                            textBg={avatarNameGenerator(getName(el)).color}/>
-              <AvatarName>{getName(el)}</AvatarName>
+              <AvatarName maxWidth="150px">{getName(el)}</AvatarName>
             </Avatar>
 
             {actions ?

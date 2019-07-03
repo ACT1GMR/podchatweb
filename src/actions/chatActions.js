@@ -156,3 +156,11 @@ export const chatSearchShow = isShow => {
     });
   }
 };
+
+export const chatClearCache = ()=>{
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.clearCache();
+  }
+};

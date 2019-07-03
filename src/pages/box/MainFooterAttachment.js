@@ -13,7 +13,7 @@ import {threadFilesToUpload} from "../../actions/threadActions";
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdAttachFile, MdChevronLeft} from "react-icons/lib/md";
+import {MdAttachFile, MdChevronRight} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterAttachment.scss";
@@ -71,7 +71,7 @@ export default class MainFooterAttachment extends Component {
         {
           isSendingText ?
             <Container>
-              <MdChevronLeft size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
+              <MdChevronRight size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
             </Container>
             :
             <Container>

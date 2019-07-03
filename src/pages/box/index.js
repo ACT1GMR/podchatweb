@@ -14,7 +14,7 @@ import {
 } from "../../constants/routes";
 
 //actions
-import {chatRouterLess, chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
+import {chatClearCache, chatRouterLess, chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
 import {threadCreate, threadShowing} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
@@ -60,7 +60,7 @@ class Box extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {token, location, user, userFetching, chatInstance} = this.props;
+    const {token, location, user, userFetching, chatInstance, dispatch, clearCache} = this.props;
     const {token: oldToken} = oldProps;
     if (oldProps.location.pathname !== location.pathname) {
       if (location.pathname === "/") {
@@ -73,13 +73,16 @@ class Box extends Component {
       }
     }
     if (this.firstContactFetching) {
-      this.props.dispatch(contactGetList());
+      dispatch(contactGetList());
       this.firstContactFetching = false;
     }
     if (chatInstance) {
       if (!user.id) {
         if (!userFetching) {
-          this.props.dispatch(userGet(chatInstance));
+          dispatch(userGet(chatInstance));
+          if (clearCache) {
+            dispatch(chatClearCache());
+          }
         }
       }
     }

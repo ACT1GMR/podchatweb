@@ -34,6 +34,7 @@ export default class Notification extends Component {
 
   constructor(props) {
     super(props);
+    this.lastTime = Date.now();
     if (!Push.Permission.has()) {
       Push.Permission.request();
     }
@@ -44,7 +45,7 @@ export default class Notification extends Component {
       thread: null,
       count: 0
     };
-    window.addEventListener("focus", (event) => {
+    window.addEventListener("focus", () => {
       this.setState({
         thread: null,
         count: 0
@@ -67,7 +68,7 @@ export default class Notification extends Component {
       if (!isMessageByMe(messageNew, user)) {
         if (chatInstance) {
           if (!window.document.hasFocus()) {
-            if (messageNew === oldProps.messageNew) {
+            if (messageNew === oldMessageNew) {
               return;
             }
             chatInstance.getThreadInfo(messageNew.threadId).then(thread => {

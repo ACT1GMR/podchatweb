@@ -2,6 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {Route, withRouter} from "react-router-dom";
+import {mobileCheck} from "../../utils/helpers";
 
 //strings
 import {
@@ -13,7 +14,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {contactAdding, contactListShowing} from "../../actions/contactActions";
-import {threadMessageGetList} from "../../actions/threadActions";
+import {threadInit, threadMessageGetList, threadShowing} from "../../actions/threadActions";
 
 //components
 import MainHead from "./MainHead";
@@ -46,6 +47,12 @@ class Main extends Component {
   }
 
   componentDidUpdate(oldProps) {
+    const {history, dispatch} = this.props;
+    if(mobileCheck()) {
+      if(history.location.pathname === "/") {
+        dispatch(threadInit());
+      }
+    }
   }
 
   onContactListShow() {

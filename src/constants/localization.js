@@ -2,6 +2,7 @@ import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
   fa: {
+    admin: "مدیر",
     podchat: "پادچت",
     search: "جستجو",
     tryAgain: "تلاش دوباره",

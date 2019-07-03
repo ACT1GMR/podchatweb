@@ -458,8 +458,11 @@ export default class MainMessages extends Component {
       this.lastSeenMessage = thread.lastMessageVO;
     } else {
       if (thread.lastSeenMessageTime && thread.lastMessageVO) {
-        if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
+        if (thread.lastSeenMessageTime >= thread.lastMessageVO.time || thread.lastMessageVO.previousId === thread.lastSeenMessageId) {
           this.gotoBottom = true;
+        } else if (thread.lastMessageVO.previousId === thread.lastSeenMessageId) {
+          this.gotoBottom = true;
+          this.hasPendingMessageToGo = thread.lastSeenMessageTime;
         } else {
           this.hasPendingMessageToGo = thread.lastSeenMessageTime;
           this.lastSeenMessage = thread.lastMessageVO;
@@ -526,7 +529,7 @@ export default class MainMessages extends Component {
       this.setState({
         highLightMessage: messageTime
       });
-      return setTimeout(() => {
+      setTimeout(() => {
         this.setState({
           highLightMessage: false
         });

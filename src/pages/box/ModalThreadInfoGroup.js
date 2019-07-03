@@ -32,6 +32,7 @@ import {chatModalPrompt} from "../../actions/chatActions";
 
 //styling
 import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
+import style from "./../../../styles/pages/box/ModalThreadInfoGroup.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 
@@ -207,7 +208,16 @@ class ModalThreadInfoGroup extends Component {
 
     const conversationAction = participant => {
       const participantId = participant.id;
+      const isCreator = participant.coreUserId === thread.inviter.coreUserId;
+      const adminFragment = (
+        <Container className={style.ModalThreadInfoGroup__AdminTextContainer}>
+          <Text size="sm" color="accent">{strings.admin}</Text>
+        </Container>
+      );
       if(user.id === participantId) {
+        if(isCreator) {
+          return adminFragment;
+        }
         return "";
       }
       const participantContactId = participant.contactId;
@@ -225,6 +235,7 @@ class ModalThreadInfoGroup extends Component {
               <Button onClick={this.onStartChat.bind(this, id, isParticipant)} text size="sm">
                 {strings.startChat}
               </Button>
+              {isCreator && adminFragment}
               {thread.inviter && thread.group && user.id === thread.inviter.id ? (
                 <Button onClick={this.onRemoveParticipant.bind(this, participant)} text size="sm">
                   {strings.remove}

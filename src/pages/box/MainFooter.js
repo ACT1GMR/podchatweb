@@ -44,11 +44,11 @@ export default class MainFooter extends Component {
           <MainFooterSpam/>
         </Container>
         <Container className={style.MainFooter__InputContainer}>
-          <Container className={style.MainFooter__Input}>
-            <MainFooterInput ref={this.mainFooterInputRef}/>
-          </Container>
           <Container className={style.MainFooter__Attachment}>
             <MainFooterAttachment sendMessage={this.sendMessage.bind(this)}/>
+          </Container>
+          <Container className={style.MainFooter__Input}>
+            <MainFooterInput ref={this.mainFooterInputRef}/>
           </Container>
         </Container>
 
