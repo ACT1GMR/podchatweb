@@ -43,7 +43,7 @@ import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 
-function getImage(metaData, isFromServer, smallVersion) {
+function getImage(metaData, isFromServer, smallVersion, fileObject) {
   let imageLink = metaData.link;
   let width = metaData.width;
   let height = metaData.height;
@@ -51,6 +51,13 @@ function getImage(metaData, isFromServer, smallVersion) {
   const ratio = height / width;
   const maxWidth = smallVersion || window.innerWidth <= 700 ? 190 : ratio >= 2 ? 200 : 300;
   if (!isFromServer) {
+    if (fileObject && fileObject.type) {
+      if (fileObject.type.startsWith("image/")) {
+        if (!imageLink) {
+          imageLink = URL.createObjectURL(fileObject);
+        }
+      }
+    }
     return {imageLink, width: maxWidth, height};
   }
   height = Math.ceil(maxWidth * ratio);
@@ -178,7 +185,7 @@ class MainMessagesFile extends Component {
   }
 
   onCancel(message) {
-    this.props.dispatch(messageCancelFile(message.fileUniqueId, message.threadId));
+    this.props.dispatch(messageCancelFile(message.uniqueId, message.threadId));
   }
 
   onDelete(message) {
@@ -211,7 +218,7 @@ class MainMessagesFile extends Component {
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = metaData.mimeType.indexOf("image") > -1;
     const isVideo = metaData.mimeType.indexOf("video") > -1;
-    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
+    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing, message.fileObject) : false;
     const classNames = classnames({
       [style.MainMessagesFile]: true,
       [style["MainMessagesFile--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
@@ -328,7 +335,7 @@ class MainMessagesFile extends Component {
             <PaperFooter>
               {seenFragment(() => {
                 this.onCancel(message);
-                dispatch(messageSendFile(message.content.file.fileObject, message.threadId, message.message));
+                dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
               }, () => {
                 dispatch(messageCancel(message.uniqueId));
               })}

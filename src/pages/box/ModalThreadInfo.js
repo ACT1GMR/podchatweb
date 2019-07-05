@@ -10,8 +10,26 @@ import {
 import {ROUTE_THREAD_INFO} from "../../constants/routes";
 
 //UI components
-import ModalThreadInfoGroup from "./ModalThreadInfoGroup"
-import ModalThreadInfoPerson from "./ModalThreadInfoPerson"
+import Gap from "../../../../uikit/src/gap";
+import Container from "../../../../uikit/src/container";
+import Divider from "../../../../uikit/src/divider";
+
+//UI components
+import ModalThreadInfoGroup from "./ModalThreadInfoGroup";
+import ModalThreadInfoPerson from "./ModalThreadInfoPerson";
+
+//styling
+import style from "./../../../styles/pages/box/ModalThreadInfo.scss";
+
+function GapFragment() {
+  return (
+    <Container className={style.ModalThreadInfo__GapContainer}>
+      <Gap y={20} block>
+        <Divider thick={5} color="background" shadowInset/>
+      </Gap>
+    </Container>
+  )
+}
 
 @connect(store => {
   return {
@@ -75,7 +93,8 @@ class ModalThreadInfo extends Component {
       onClose: this.onClose,
       smallVersion,
       participantsFetching,
-      history
+      history,
+      GapFragment
     };
     return isGroup ? <ModalThreadInfoGroup {...commonProps}/> : <ModalThreadInfoPerson {...commonProps}/>;
   }

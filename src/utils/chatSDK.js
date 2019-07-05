@@ -214,7 +214,6 @@ export default class ChatSDK {
         participant: this.user,
         time: Date.now() * Math.pow(10, 6),
         message: content,
-        newMessage: true
       }
     })
   }
@@ -235,10 +234,9 @@ export default class ChatSDK {
     });
     resolve({
       ...obj, ...{
-        newMessage: true,
         message: caption,
-        fileUniqueId: obj.content.file.uniqueId,
         time: Date.now() * Math.pow(10, 6),
+        fileObject: file,
         metadata: {
           file: {
             mimeType: file.type,

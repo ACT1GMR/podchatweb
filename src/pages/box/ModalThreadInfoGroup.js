@@ -198,7 +198,7 @@ class ModalThreadInfoGroup extends Component {
   }
 
   render() {
-    const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching, notificationPending} = this.props;
+    const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching, notificationPending, GapFragment} = this.props;
     const {removingParticipantIds, partialParticipantLoading} = this.state;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
     const {addMembers, step} = this.state;
@@ -294,17 +294,13 @@ class ModalThreadInfoGroup extends Component {
 
               {thread.description &&
               <Container>
-                <Gap y={20} block>
-                  <Divider thick={1} color="gray"/>
-                </Gap>
+                <GapFragment/>
                 <Text color="accent" size="sm">{strings.description} :</Text>
                 <Text>{thread.description}</Text>
               </Container>
               }
 
-              <Gap y={20} block>
-                <Divider thick={1} color="gray"/>
-              </Gap>
+              <GapFragment/>
 
               <Container>
                 <List>
@@ -352,9 +348,7 @@ class ModalThreadInfoGroup extends Component {
                 </List>
               </Container>
 
-              <Gap y={20} block>
-                <Divider thick={1} color="gray"/>
-              </Gap>
+              <GapFragment/>
 
               <Container>
                 {participantsFetching && !partialParticipantLoading ?

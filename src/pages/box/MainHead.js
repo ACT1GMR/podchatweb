@@ -121,7 +121,7 @@ class MainHead extends Component {
           {
             !threadSelectMessageShowing &&
             <Container>
-              {thread.lastMessage &&
+              {thread.lastMessageVO &&
               <Container className={style.MainHead__SearchContainer} inline onClick={this.onSelectMessagesShow}>
                 <MdCheck size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
               </Container>

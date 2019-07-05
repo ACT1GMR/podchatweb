@@ -409,7 +409,7 @@ export const threadMessageListReducer = (state = {
       const messages = updateStore(state.messages, action.payload, {
         method: listUpdateStrategyMethods.UPDATE,
         mix: true,
-        by: "id"
+        by: "uniqueId"
       });
       return removeDuplicateMessages({...state, ...stateGenerator(SUCCESS, messages, "messages")});
     }
@@ -433,7 +433,7 @@ export const threadMessageListReducer = (state = {
       return {
         ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload.uniqueId, {
           method: listUpdateStrategyMethods.REMOVE,
-          by: "fileUniqueId"
+          by: "uniqueId"
         }), "messages")
       };
     case THREAD_NEW_MESSAGE:

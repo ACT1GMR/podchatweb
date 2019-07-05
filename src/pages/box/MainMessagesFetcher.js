@@ -18,7 +18,7 @@ import {
   threadMessageGetListPartial,
   threadMessageGetList,
   threadCheckedMessageList,
-  threadLeftAsideShowing, threadNewMessage
+  threadLeftAsideShowing, threadNewMessage, threadCreate
 } from "../../actions/threadActions";
 
 //components
@@ -62,7 +62,7 @@ function isMessageByMe(message, user) {
         return true;
       }
       if (user) {
-        return message.ownerId === user.id;
+        return message.participant.id === user.id;
       }
     }
   }
@@ -79,7 +79,7 @@ function isFile(message) {
       if (typeof message.metadata === "object") {
         return message.metadata.file;
       }
-      return JSON.parse(message.metadata).file
+      return JSON.parse(message.metadata).file;
     }
   }
 }
@@ -300,14 +300,17 @@ function getMessage(message, messages, user, gotoMessageFunc, highLightMessage, 
     <MainMessagesText {...args}/>;
 }
 
-function getAvatar(message, messages) {
+function getAvatar(message, messages, onAvatarClick, thread, user) {
   const showAvatar = showNameOrAvatar(message, messages);
+  const enableClickCondition = !isMessageByMe(message, user) && thread.group;
   const fragment =
     showAvatar ?
-      <Avatar>
+      <Avatar onClick={enableClickCondition ? onAvatarClick.bind(null, message.participant) : null}
+              cursor={enableClickCondition ? "pointer" : null}>
         <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
                      textBg={avatarNameGenerator(message.participant.name).color}/>
-      </Avatar> :
+      </Avatar>
+      :
       <div style={{width: "50px", display: "inline-block"}}/>;
   return showAvatar ?
     <Container inline inSpace style={{maxWidth: "50px", verticalAlign: "top"}}>
@@ -343,6 +346,7 @@ export default class MainMessages extends Component {
     this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
     this.onScrollTop = this.onScrollTop.bind(this);
     this.onGotoBottomClicked = this.onGotoBottomClicked.bind(this);
+    this.onAvatarClick = this.onAvatarClick.bind(this);
 
     //Controller fields
     this.gotoBottom = false;
@@ -373,7 +377,7 @@ export default class MainMessages extends Component {
       return true;
     }
     if (oldNewMessage && messageNew) {
-      if (oldNewMessage.id === messageNew.id) {
+      if (oldNewMessage.uniqueId === messageNew.uniqueId) {
         return true;
       }
     }
@@ -439,7 +443,7 @@ export default class MainMessages extends Component {
       return this.goToSpecificMessage(this.hasPendingMessageToGo);
     }
 
-    if (this.gotoBottom) {
+    if (this.gotoBottom && this.scroller.current) {
       this.scroller.current.gotoBottom();
       return this.gotoBottom = false;
     }
@@ -545,20 +549,26 @@ export default class MainMessages extends Component {
     this.hasPendingMessageToGo = null;
   }
 
-  onRepliedMessageClicked(time, isDeleted) {
+  onRepliedMessageClicked(time, isDeleted, e) {
+    e.stopPropagation();
     if (isDeleted) {
       return;
     }
     this.goToSpecificMessage(time);
   }
 
-  onMessageSeenListClick(message) {
+  onMessageSeenListClick(message, e) {
+    e.stopPropagation();
     this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id));
   }
 
   onAddToCheckedMessage(message, isAdd, e) {
     e.stopPropagation();
     this.props.dispatch(threadCheckedMessageList(isAdd, message));
+  }
+
+  onAvatarClick(participant) {
+    this.props.dispatch(threadCreate(participant.id, null, null, "TO_BE_USER_ID"));
   }
 
   render() {
@@ -606,7 +616,7 @@ export default class MainMessages extends Component {
                 <Container className={MainMessagesMessageContainerClassNames(message)}
                            id={`message-${message.time}`}
                            relative>
-                  {getAvatar(message, messages)}
+                  {getAvatar(message, messages, this.onAvatarClick, thread, user)}
                   {getMessage(message, messages, user, this.onRepliedMessageClicked.bind(this), highLightMessage, thread, this.onMessageSeenListClick.bind(this, message))}
                   {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
                 </Container>

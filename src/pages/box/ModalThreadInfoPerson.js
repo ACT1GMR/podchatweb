@@ -82,7 +82,7 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, contacts} = this.props;
+    const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, contacts, GapFragment} = this.props;
     let participant = participants;
     if (participants) {
       participant = participants.filter(e => e.id !== user.id)[0];
@@ -127,9 +127,7 @@ export default class ModalThreadInfo extends Component {
 
             </Container>
 
-            <Gap y={20} block>
-              <Divider thick={2} color="gray"/>
-            </Gap>
+            <GapFragment/>
             {isMyContact ?
               <List>
 
@@ -160,11 +158,7 @@ export default class ModalThreadInfo extends Component {
             <Container>
               {
                 isMyContact &&
-                <Container>
-                  <Gap y={20} block>
-                    <Divider thick={2} color="gray"/>
-                  </Gap>
-                </Container>
+                <GapFragment/>
               }
               <List>
 
