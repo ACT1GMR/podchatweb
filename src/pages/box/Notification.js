@@ -4,11 +4,13 @@ import {connect} from "react-redux";
 import "moment/locale/fa";
 import Push from "push.js";
 import MetaTags from "react-meta-tags";
+import {isFile} from "./MainMessagesFetcher";
 
 //strings
 
 //actions
 import {threadCreate} from "../../actions/threadActions";
+import strings from "../../constants/localization";
 
 //components
 
@@ -88,8 +90,12 @@ export default class Notification extends Component {
                   })
                 }, 1500);
               }
+              const isMessageFile = isFile(messageNew);
+              const tag = document.createElement("div");
+              tag.append(messageNew.message);
+              const isEmoji = tag.innerText && tag.innerText.indexOf('img') > -1;
               Push.create(thread.title, {
-                body: messageNew.message,
+                body: isMessageFile ? messageNew.message ? messageNew.message : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText,
                 icon: thread.image || defaultAvatar,
                 timeout: 60000,
                 onClick: function () {

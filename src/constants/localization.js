@@ -58,6 +58,7 @@ let strings = new LocalizedStrings({
     yesterday: "دیروز",
     recently: "چند لحظه پیش",
     sentAFile: "فایلی فرستاد",
+    sentAMessage: "پیغامی فرستاده شد",
     remove: "حذف",
     groupInfo: "اطلاعات گروه",
     contactInfo: "اطلاعات مخاطب",

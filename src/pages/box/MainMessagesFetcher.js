@@ -73,7 +73,7 @@ function messageSelectedCondition(message, threadCheckedMessageList) {
   return fileIndex >= 0;
 }
 
-function isFile(message) {
+export function isFile(message) {
   if (message) {
     if (message.metadata) {
       if (typeof message.metadata === "object") {
@@ -113,12 +113,14 @@ function personNameFragment(message, messages, user) {
 }
 
 function forwardFragment(message) {
-  if (message.forwardInfo) {
+  const forwardInfo = message.forwardInfo;
+  if (forwardInfo) {
+    const participant = forwardInfo.participant;
     return (
       <Container>
         <Paper colorBackground style={{borderRadius: "5px"}}>
           <Text italic size="xs">{strings.forwardFrom}</Text>
-          <Text bold>{message.forwardInfo.participant.name}:</Text>
+          <Text bold>{participant.contactName || participant.name}:</Text>
         </Paper>
         <Gap block y={5}/>
       </Container>
@@ -378,6 +380,9 @@ export default class MainMessages extends Component {
     }
     if (oldNewMessage && messageNew) {
       if (oldNewMessage.uniqueId === messageNew.uniqueId) {
+        if(!oldNewMessage.id && messageNew.id) {
+          dispatch(threadNewMessage(messageNew));
+        }
         return true;
       }
     }
