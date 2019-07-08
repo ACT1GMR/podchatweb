@@ -193,7 +193,7 @@ export default class MainFooterInput extends Component {
         if (isEmptyMessage) {
           return;
         }
-        dispatch(messageReply(clearMessageText, msgEditingId, threadId));
+        dispatch(messageReply(clearMessageText, msgEditingId, threadId, msgEditing.message));
       } else if (msgEditing.type === constants.forwarding) {
         if (clearMessageText) {
           dispatch(messageSend(clearMessageText, threadId));

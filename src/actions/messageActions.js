@@ -105,13 +105,13 @@ export const messageForward = (threadId, messageId) => {
   }
 };
 
-export const messageReply = (replyText, id, threadId) => {
+export const messageReply = (replyText, id, threadId, repliedMessage) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
-      type: MESSAGE_EDIT(),
-      payload: chatSDK.replyMessage(replyText, id, threadId)
+      type: MESSAGE_SEND(),
+      payload: chatSDK.replyMessage(replyText, id, threadId, repliedMessage)
     });
   }
 };

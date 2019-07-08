@@ -44,6 +44,7 @@ export const MESSAGE_EDIT = buildPromiseMessage.bind(null, "MESSAGE_EDIT");
 export const MESSAGE_DELETE = "MESSAGE_DELETE";
 export const MESSAGE_DELETING = buildPromiseMessage.bind(null, "MESSAGE_DELETING");
 export const MESSAGE_FORWARD = buildPromiseMessage.bind(null, "MESSAGE_FORWARD");
+export const MESSAGE_REPLY = buildPromiseMessage.bind(null, "MESSAGE_REPLY");
 export const MESSAGE_NEW = "MESSAGE_NEW";
 export const MESSAGE_SEEN = buildPromiseMessage.bind(null, "MESSAGE_SEEN");
 export const MESSAGE_FILE_UPLOAD_CANCEL = buildPromiseMessage.bind(null, "MESSAGE_FILE_UPLOAD_CANCEL");

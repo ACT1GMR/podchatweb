@@ -92,7 +92,7 @@ export default class Notification extends Component {
               }
               const isMessageFile = isFile(messageNew);
               const tag = document.createElement("div");
-              tag.append(messageNew.message);
+              tag.innerHTML = messageNew.message;
               const isEmoji = tag.innerText && tag.innerText.indexOf('img') > -1;
               Push.create(thread.title, {
                 body: isMessageFile ? messageNew.message ? messageNew.message : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText,

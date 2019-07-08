@@ -365,19 +365,34 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  replyMessage(resolve, reject, content, repliedTo, threadId) {
+  replyMessage(resolve, reject, content, repliedTo, threadId, repliedMessage) {
     const sendChatParams = {
       threadId,
       repliedTo,
       content
     };
-    this.chatAgent.replyMessage(sendChatParams, (result) => {
+    const obj = this.chatAgent.replyMessage(sendChatParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({
           result, ...{
             message: content, participant: {}
           }
         });
+      }
+    });
+    const {metadata, participant, time, message} = repliedMessage;
+    resolve({
+      ...obj, ...{
+        replyInfo: {
+          message: message,
+          metadata: metadata,
+          participant: participant,
+          repliedToMessageId: repliedTo,
+          repliedToMessageTime: time,
+          messageType: 0,
+        },
+        time: Date.now() * Math.pow(10, 6),
+        message: content,
       }
     });
   }

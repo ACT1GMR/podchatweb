@@ -456,12 +456,12 @@ export const threadMessageListReducer = (state = {
           by: "id"
         }), "messages")
       };
-    case MESSAGE_SEEN(SUCCESS):
+    case MESSAGE_SEEN():
       return {
         ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, {
           seen: true,
-          id: action.payload
-        }, {method: listUpdateStrategyMethods.UPDATE, by: "id"}), "messages")
+          uniqueId: action.payload.uniqueId
+        }, {method: listUpdateStrategyMethods.UPDATE, by: "uniqueId", mix: true}), "messages")
       };
     case MESSAGE_DELETE:
     case MESSAGE_CANCEL(SUCCESS):
