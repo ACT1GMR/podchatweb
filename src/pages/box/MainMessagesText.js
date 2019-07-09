@@ -12,7 +12,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {chatModalPrompt} from "../../actions/chatActions";
-import {messageCancel, messageDelete, messageEditing, messageSend} from "../../actions/messageActions";
+import {messageCancel, messageDelete, messageEditing, messageSend, messageSendFile} from "../../actions/messageActions";
 import {threadModalListShowing} from "../../actions/threadActions";
 
 //components
@@ -138,7 +138,7 @@ export default class MainMessagesText extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, editFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, personNameFragment, dispatch} = this.props;
+    const {highLighterFragment, seenFragment, editFragment, isMessageByMe, datePetrification, message, user, dispatch, PaperFragment, PaperFooterFragment} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const classNames = classnames({
       [style.MainMessagesText]: true,
@@ -181,32 +181,23 @@ export default class MainMessagesText extends Component {
             </Container>
           </Container>
           : ""}
-        <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
-          {personNameFragment()}
-          {replyFragment()}
-          {forwardFragment()}
+        <PaperFragment>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap">
               {urlify(message.message)}
             </Text>
           </Container>
-          <PaperFooter>
+          <PaperFooterFragment onMessageControlShow={this.onMessageControlShow}>
             {seenFragment(() => {
               dispatch(messageCancel(message.uniqueId));
               dispatch(messageSend(message.message, message.threadId));
             }, () => {
               dispatch(messageCancel(message.uniqueId));
             })}
+
             {editFragment()}
-            {datePetrification()}
-            <Container inline left inSpace
-                       className={style.MainMessagesText__OpenTriggerIconContainer}>
-              <MdExpandLess size={styleVar.iconSizeMd}
-                            className={style.MainMessagesText__TriggerIcon}
-                            onClick={this.onMessageControlShow.bind(this)}/>
-            </Container>
-          </PaperFooter>
-        </Paper>
+          </PaperFooterFragment>
+        </PaperFragment>
       </Container>
     );
   }

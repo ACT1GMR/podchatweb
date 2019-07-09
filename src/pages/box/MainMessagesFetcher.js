@@ -10,9 +10,8 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {messageCancel, messageSeen, messageSend} from "../../actions/messageActions";
+import {messageSeen} from "../../actions/messageActions";
 import {
-  threadFilesToUpload,
   threadMessageGetListByMessageId,
   threadMessageGetListPartial,
   threadMessageGetList,
@@ -23,7 +22,7 @@ import {
 //components
 import {ButtonFloating} from "../../../../uikit/src/button"
 import List, {ListItem} from "../../../../uikit/src/list"
-import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Avatar, {AvatarImage} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
@@ -273,22 +272,28 @@ function loadingFragment() {
   )
 }
 
-function PaperFragment(message, messages, gotoMessageFunc, paperChildren) {
+function PaperFragment(message, messages, user, gotoMessageFunc, {children}) {
   return (
-    <Paper style={{borderRadius: "5px", backgroundColor: "#ccc"}} hasShadow>
+    <Paper style={{borderRadius: "5px"}} hasShadow colorBackgroundLight>
       {personNameFragment(message, messages, user)}
       {replyFragment(message, gotoMessageFunc)}
       {forwardFragment(message)}
-      {paperChildren}
+      {children}
     </Paper>
   )
 }
 
-function PaperFragmentFooter(message, seenFragment) {
+function PaperFragmentFooter(message, {children}) {
   return (
     <PaperFooter>
-      {seenFragment}
+      {children}
       {datePetrification(message.time)}
+      <Container inline left inSpace
+                 className={style.MainMessages__OpenTriggerIconContainer}>
+        <MdExpandLess size={styleVar.iconSizeMd}
+                      className={style.MainMessages__TriggerIcon}
+                      onClick={this.onMessageControlShow.bind(this)}/>
+      </Container>
     </PaperFooter>
   );
 }
@@ -307,7 +312,8 @@ function getMessage(message, messages, user, gotoMessageFunc, highLightMessage, 
     highLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
     seenFragment: seenFragment.bind(null, message, user, thread, messageSeenListClick),
     editFragment: editFragment.bind(null, message),
-    paperFragment: paperFragment.bind(null, message, messages, gotoMessageFunc),
+    PaperFragment: PaperFragment.bind(null, message, messages, user, gotoMessageFunc),
+    PaperFooterFragment: PaperFragmentFooter.bind(null, message),
     isMessageByMe: isMessageByMe.bind(null, message, user),
     isFirstMessage: showNameOrAvatar(message, messages),
     datePetrification: datePetrification.bind(null, message.time),
@@ -367,6 +373,7 @@ export default class MainMessages extends Component {
     this.onScrollTop = this.onScrollTop.bind(this);
     this.onGotoBottomClicked = this.onGotoBottomClicked.bind(this);
     this.onAvatarClick = this.onAvatarClick.bind(this);
+    this.onRepliedMessageClicked = this.onRepliedMessageClicked.bind(this);
 
     //Controller fields
     this.gotoBottom = false;
@@ -637,7 +644,8 @@ export default class MainMessages extends Component {
                   onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}>
           <List>
             {messages.map(message =>
-              <ListItem key={message.time} data={message}
+              <ListItem key={message.time}
+                        data={message}
                         active={threadSelectMessageShowing && messageSelectedCondition(message, threadCheckedMessageList)}
                         activeColor="gray"
                         noPadding>

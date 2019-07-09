@@ -23,7 +23,6 @@ import {
 } from "../../actions/messageActions";
 
 //components
-import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Image from "../../../../uikit/src/image";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
@@ -212,7 +211,7 @@ class MainMessagesFile extends Component {
   }
 
   render() {
-    const {highLighterFragment, seenFragment, replyFragment, forwardFragment, isMessageByMe, datePetrification, message, user, dispatch, smallVersion, leftAsideShowing, personNameFragment} = this.props;
+    const {highLighterFragment, seenFragment, isMessageByMe, message, user, smallVersion, leftAsideShowing, dispatch, PaperFragment, PaperFooterFragment} = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -227,14 +226,6 @@ class MainMessagesFile extends Component {
       [style.MainMessagesFile__Image]: true,
       [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
     });
-
-    const seenFragmentImport = seenFragment(() => {
-      this.onCancel(message);
-      dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
-    }, () => {
-      dispatch(messageCancel(message.uniqueId));
-    });
-    const datePetrificationImport = datePetrification(message.time);
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
                  id={message.uuid}
@@ -332,15 +323,21 @@ class MainMessagesFile extends Component {
                     </Shape>
                   </Gap>
                   : ""}
-
               </Container>
-
             </Container>
-            <PaperFooterFragment onMessageControlShow={this.onMessageControlShow} {seenFragmentImport} {datePetrificationImport}/>
+            <PaperFooterFragment onMessageControlShow={this.onMessageControlShow}>
+              {seenFragment(() => {
+                this.onCancel(message);
+                dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
+              }, () => {
+                dispatch(messageCancel(message.uniqueId));
+              })}
+            </PaperFooterFragment>
           </PaperFragment>
         </Container>
-        );
-        }
-        }
+      </Container>
+    );
+  }
+}
 
-        export default withRouter(MainMessagesFile);
+export default withRouter(MainMessagesFile);
