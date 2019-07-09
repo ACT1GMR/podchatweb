@@ -62,6 +62,7 @@ class Box extends Component {
   componentDidUpdate(oldProps) {
     const {token, location, user, userFetching, chatInstance, dispatch, clearCache} = this.props;
     const {token: oldToken} = oldProps;
+
     if (oldProps.location.pathname !== location.pathname) {
       if (location.pathname === "/") {
         this.resetChat();
@@ -77,12 +78,12 @@ class Box extends Component {
       this.firstContactFetching = false;
     }
     if (chatInstance) {
+      if (clearCache) {
+        return dispatch(chatClearCache());
+      }
       if (!user.id) {
         if (!userFetching) {
           dispatch(userGet(chatInstance));
-          if (clearCache) {
-            dispatch(chatClearCache());
-          }
         }
       }
     }

@@ -1,6 +1,5 @@
 // src/list/BoxSceneMessages
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
@@ -11,7 +10,7 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {messageSeen} from "../../actions/messageActions";
+import {messageCancel, messageSeen, messageSend} from "../../actions/messageActions";
 import {
   threadFilesToUpload,
   threadMessageGetListByMessageId,
@@ -26,7 +25,7 @@ import {ButtonFloating} from "../../../../uikit/src/button"
 import List, {ListItem} from "../../../../uikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
-import Paper from "../../../../uikit/src/paper";
+import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
 import {Text} from "../../../../uikit/src/typography";
@@ -45,7 +44,7 @@ import {
   MdSchedule,
   MdExpandMore,
   MdCameraAlt,
-  MdInsertDriveFile
+  MdInsertDriveFile, MdExpandLess
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
@@ -128,6 +127,7 @@ function forwardFragment(message) {
   }
   return "";
 }
+
 
 function replyFragment(message, gotoMessageFunc) {
   if (message.replyInfo) {
@@ -273,6 +273,26 @@ function loadingFragment() {
   )
 }
 
+function PaperFragment(message, messages, gotoMessageFunc, paperChildren) {
+  return (
+    <Paper style={{borderRadius: "5px", backgroundColor: "#ccc"}} hasShadow>
+      {personNameFragment(message, messages, user)}
+      {replyFragment(message, gotoMessageFunc)}
+      {forwardFragment(message)}
+      {paperChildren}
+    </Paper>
+  )
+}
+
+function PaperFragmentFooter(message, seenFragment) {
+  return (
+    <PaperFooter>
+      {seenFragment}
+      {datePetrification(message.time)}
+    </PaperFooter>
+  );
+}
+
 function messageTickFragment(message, onAddToCheckedMessage, threadCheckedMessageList) {
   const isExisted = messageSelectedCondition(message, threadCheckedMessageList);
   const classNames = classnames({
@@ -287,9 +307,7 @@ function getMessage(message, messages, user, gotoMessageFunc, highLightMessage, 
     highLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
     seenFragment: seenFragment.bind(null, message, user, thread, messageSeenListClick),
     editFragment: editFragment.bind(null, message),
-    replyFragment: replyFragment.bind(this, message, gotoMessageFunc),
-    forwardFragment: forwardFragment.bind(null, message),
-    personNameFragment: personNameFragment.bind(null, message, messages, user),
+    paperFragment: paperFragment.bind(null, message, messages, gotoMessageFunc),
     isMessageByMe: isMessageByMe.bind(null, message, user),
     isFirstMessage: showNameOrAvatar(message, messages),
     datePetrification: datePetrification.bind(null, message.time),
@@ -380,7 +398,7 @@ export default class MainMessages extends Component {
     }
     if (oldNewMessage && messageNew) {
       if (oldNewMessage.uniqueId === messageNew.uniqueId) {
-        if(!oldNewMessage.id && messageNew.id) {
+        if (!oldNewMessage.id && messageNew.id) {
           dispatch(threadNewMessage(messageNew));
         }
         return true;
@@ -467,13 +485,18 @@ export default class MainMessages extends Component {
       this.lastSeenMessage = thread.lastMessageVO;
     } else {
       if (thread.lastSeenMessageTime && thread.lastMessageVO) {
-        if (thread.lastSeenMessageTime >= thread.lastMessageVO.time || thread.lastMessageVO.previousId === thread.lastSeenMessageId) {
+        if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
           this.gotoBottom = true;
         } else if (thread.lastMessageVO.previousId === thread.lastSeenMessageId) {
           this.gotoBottom = true;
           this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          this.lastSeenMessage = thread.lastMessageVO;
         } else {
           this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          this.lastSeenMessage = thread.lastMessageVO;
+        }
+      } else {
+        if (thread.lastMessageVO) {
           this.lastSeenMessage = thread.lastMessageVO;
         }
       }

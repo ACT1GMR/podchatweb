@@ -227,6 +227,14 @@ class MainMessagesFile extends Component {
       [style.MainMessagesFile__Image]: true,
       [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
     });
+
+    const seenFragmentImport = seenFragment(() => {
+      this.onCancel(message);
+      dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
+    }, () => {
+      dispatch(messageCancel(message.uniqueId));
+    });
+    const datePetrificationImport = datePetrification(message.time);
     return (
       <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
                  id={message.uuid}
@@ -267,10 +275,7 @@ class MainMessagesFile extends Component {
                        style={{width: `${message.progress ? message.progress : 0}%`}}
                        title={`${message.progress && message.progress}`}/>
             : ""}
-          <Paper colorBackgroundLight style={{borderRadius: "5px"}} hasShadow>
-            {personNameFragment()}
-            {replyFragment()}
-            {forwardFragment()}
+          <PaperFragment>
             <Container relative
                        className={style.MainMessagesFile__FileContainer}>
               {isImage ?
@@ -331,27 +336,11 @@ class MainMessagesFile extends Component {
               </Container>
 
             </Container>
-
-            <PaperFooter>
-              {seenFragment(() => {
-                this.onCancel(message);
-                dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
-              }, () => {
-                dispatch(messageCancel(message.uniqueId));
-              })}
-              {datePetrification(message.time)}
-              <Container inline left inSpace
-                         className={style.MainMessagesFile__OpenTriggerIconContainer}>
-                <MdExpandLess size={styleVar.iconSizeMd}
-                              className={style.MainMessagesFile__TriggerIcon}
-                              onClick={this.onMessageControlShow.bind(this)}/>
-              </Container>
-            </PaperFooter>
-          </Paper>
+            <PaperFooterFragment onMessageControlShow={this.onMessageControlShow} {seenFragmentImport} {datePetrificationImport}/>
+          </PaperFragment>
         </Container>
-      </Container>
-    );
-  }
-}
+        );
+        }
+        }
 
-export default withRouter(MainMessagesFile);
+        export default withRouter(MainMessagesFile);
