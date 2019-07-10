@@ -32,11 +32,6 @@
   border-radius: 5px;
 }
 
-.MainMessagesFile__Paper {
-  max-width: 100%;
-  border-radius: 5px;
-}
-
 .MainMessagesFile__Progress {
   position: absolute;
   height: 4px;
@@ -60,53 +55,6 @@
   border-radius: 50%;
   font-size: $font-size-xsm;
   text-align: center;
-}
-
-.MainMessagesFile__Control {
-  position: absolute;
-  width: calc(100% - 10px);
-  height: 40px;
-  bottom: 5px;
-  left: 5px;
-  border-radius: 0 0 5px 5px;
-  background-color: lighten($color-background, 3%);
-  z-index: 1;
-  border-top: 1px solid $color-background;
-}
-
-.MainMessagesFile__TriggerIcon,
-.MainMessagesFile__ControlIcon {
-  color: $color-gray-dark;
-  cursor: pointer;
-  transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-}
-
-.MainMessagesFile__ControlIcon {
-  margin: -10px 5px;
-  position: relative;
-  top: -5px;
-}
-
-.MainMessagesFile__TriggerIcon:hover,
-.MainMessagesFile__ControlIcon:hover {
-  color: $color-accent;
-  transform: scale(1.2);
-}
-
-.MainMessagesFile__OpenTriggerIconContainer {
-  display: none;
-}
-
-.MainMessagesFile__ControlIconContainer {
-  width: 100%;
-  text-align: center;
-  margin-top: 18px;
-}
-
-.MainMessagesFile--triggerIconShow {
-  .MainMessagesFile__OpenTriggerIconContainer {
-    display: block;
-  }
 }
 
 @include grid("md") {

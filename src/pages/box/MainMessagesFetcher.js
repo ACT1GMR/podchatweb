@@ -3,7 +3,6 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
-import date from "../../utils/date";
 import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
@@ -16,7 +15,8 @@ import {
   threadMessageGetListPartial,
   threadMessageGetList,
   threadCheckedMessageList,
-  threadLeftAsideShowing, threadNewMessage, threadCreate
+  threadNewMessage,
+  threadCreate
 } from "../../actions/threadActions";
 
 //components
@@ -24,30 +24,19 @@ import {ButtonFloating} from "../../../../uikit/src/button"
 import List, {ListItem} from "../../../../uikit/src/list"
 import Avatar, {AvatarImage} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
-import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
 import {Text} from "../../../../uikit/src/typography";
-import Gap from "../../../../uikit/src/gap";
 import Scroller from "../../../../uikit/src/Scroller";
-import MainMessagesFile from "./MainMessagesFile";
-import MainMessagesText from "./MainMessagesText";
 
 //styling
 import {
-  MdDoneAll,
-  MdVideocam,
-  MdDone,
   MdChatBubbleOutline,
-  MdErrorOutline,
-  MdSchedule,
   MdExpandMore,
-  MdCameraAlt,
-  MdInsertDriveFile, MdExpandLess
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../../constants/actionTypes";
+import MainMessagesMessage from "./MainMessagesMessage";
 
 const statics = {
   historyFetchCount: 20,
@@ -71,17 +60,6 @@ function messageSelectedCondition(message, threadCheckedMessageList) {
   return fileIndex >= 0;
 }
 
-export function isFile(message) {
-  if (message) {
-    if (message.metadata) {
-      if (typeof message.metadata === "object") {
-        return message.metadata.file;
-      }
-      return JSON.parse(message.metadata).file;
-    }
-  }
-}
-
 function showNameOrAvatar(message, messages) {
   const msgOwnerId = message.participant.id;
   const msgId = message.id || message.uniqueId;
@@ -95,159 +73,6 @@ function showNameOrAvatar(message, messages) {
     }
     return true;
   }
-}
-
-function datePetrification(time) {
-  const correctTime = time / Math.pow(10, 6);
-  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
-}
-
-function personNameFragment(message, messages, user) {
-  const messageParticipant = message.participant;
-  const color = avatarNameGenerator(messageParticipant.name).color;
-  return showNameOrAvatar(message, messages) &&
-    <Text size="sm" bold
-          style={{color: color}}>{isMessageByMe(message, user) ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
-}
-
-function forwardFragment(message) {
-  const forwardInfo = message.forwardInfo;
-  if (forwardInfo) {
-    const participant = forwardInfo.participant;
-    return (
-      <Container>
-        <Paper colorBackground style={{borderRadius: "5px"}}>
-          <Text italic size="xs">{strings.forwardFrom}</Text>
-          <Text bold>{participant.contactName || participant.name}:</Text>
-        </Paper>
-        <Gap block y={5}/>
-      </Container>
-    )
-  }
-  return "";
-}
-
-
-function replyFragment(message, gotoMessageFunc) {
-  if (message.replyInfo) {
-    const replyInfo = message.replyInfo;
-    let meta = "";
-    try {
-      meta = JSON.parse(replyInfo.metadata);
-    } catch (e) {
-    }
-    const text = replyInfo.message;
-    const file = meta && meta.file;
-    let isImage, isVideo, imageLink;
-    if (file) {
-      isImage = file.mimeType.indexOf("image") > -1;
-      isVideo = file.mimeType.indexOf("video") > -1;
-      if (isImage) {
-        let width = file.width;
-        let height = file.height;
-        const ratio = height / width;
-        const maxWidth = 100;
-        height = Math.ceil(maxWidth * ratio);
-        imageLink = `${file.link}&width=${maxWidth}&height=${height}`;
-      }
-    }
-    const imageLinkString = `url(${imageLink})`;
-    return (
-      <Container
-        cursor="pointer"
-        onClick={gotoMessageFunc.bind(null, replyInfo.repliedToMessageTime, replyInfo.deleted)}>
-        <Paper colorBackground
-               style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
-          <Text bold size="xs">{strings.replyTo}:</Text>
-          {isImage && text ?
-            <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
-            :
-            isImage && !text ?
-              <Container>
-                <MdCameraAlt size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
-                <Text inline size="sm" bold color="gray" dark>{strings.photo}</Text>
-              </Container> :
-              isVideo ?
-                <Container>
-                  <MdVideocam size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
-                  <Text inline size="sm" bold color="gray" dark>{strings.video}</Text>
-                </Container> :
-                file ?
-                  <Container>
-                    <MdInsertDriveFile size={style.iconSizeSm} color={style.colorGrayDark}
-                                       style={{margin: "0 5px"}}/>
-                    <Text inline size="sm" bold color="gray" dark>{file.originalName}</Text>
-                  </Container>
-                  :
-                  <Text italic size="xs" isHTML>{text}</Text>}
-
-          {isImage &&
-          <Container className={style.MainMessages__ReplyFragmentImage}
-                     style={{backgroundImage: imageLinkString}}/>
-          }
-        </Paper>
-        <Gap block y={5}/>
-      </Container>
-    )
-  }
-  return "";
-}
-
-function seenFragment(message, user, thread, messageSeenListClick, onRetry, onCancel) {
-  if (!isMessageByMe(message, user)) {
-    return null;
-  }
-  if (message.hasError) {
-    return (
-      <Container inline>
-        <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
-        <Gap x={2}>
-          <Container onClick={onRetry} inline>
-            <Text size="xs" color="accent" linkStyle>{strings.tryAgain}</Text>
-          </Container>
-          <Gap x={5}/>
-          <Container onClick={onCancel} inline>
-            <Text size="xs" color="accent" linkStyle>{strings.cancel}</Text>
-          </Container>
-        </Gap>
-        <Gap x={3}/>
-      </Container>
-    )
-  }
-  const isGroup = thread.group;
-  if (!message.id) {
-    return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
-  }
-  if (!isGroup) {
-    if (message.seen) {
-      return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
-    }
-  }
-  return <MdDone className={isGroup ? style.MainMessages__SentIcon : ""} size={style.iconSizeXs}
-                 style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}}
-                 onClick={isGroup ? messageSeenListClick : null}/>
-}
-
-function editFragment(message) {
-  if (message.edited) {
-    return (
-      <Gap x={2}>
-        <Text italic size="xs" inline>{strings.edited}</Text>
-      </Gap>
-    )
-  }
-}
-
-function highLighterFragment(message, highLightMessage) {
-  const classNames = classnames({
-    [style.MainMessages__Highlighter]: true,
-    [style["MainMessages__Highlighter--highlighted"]]: highLightMessage && highLightMessage === message.time
-  });
-  return (
-    <Container className={classNames}>
-      <Container className={style.MainMessages__HighlighterBox}/>
-    </Container>
-  );
 }
 
 function noMessageFragment() {
@@ -272,32 +97,6 @@ function loadingFragment() {
   )
 }
 
-function PaperFragment(message, messages, user, gotoMessageFunc, {children}) {
-  return (
-    <Paper style={{borderRadius: "5px"}} hasShadow colorBackgroundLight>
-      {personNameFragment(message, messages, user)}
-      {replyFragment(message, gotoMessageFunc)}
-      {forwardFragment(message)}
-      {children}
-    </Paper>
-  )
-}
-
-function PaperFragmentFooter(message, {children}) {
-  return (
-    <PaperFooter>
-      {children}
-      {datePetrification(message.time)}
-      <Container inline left inSpace
-                 className={style.MainMessages__OpenTriggerIconContainer}>
-        <MdExpandLess size={styleVar.iconSizeMd}
-                      className={style.MainMessages__TriggerIcon}
-                      onClick={this.onMessageControlShow.bind(this)}/>
-      </Container>
-    </PaperFooter>
-  );
-}
-
 function messageTickFragment(message, onAddToCheckedMessage, threadCheckedMessageList) {
   const isExisted = messageSelectedCondition(message, threadCheckedMessageList);
   const classNames = classnames({
@@ -305,25 +104,6 @@ function messageTickFragment(message, onAddToCheckedMessage, threadCheckedMessag
     [style["MainMessages__Tick--selected"]]: isExisted
   });
   return <Container className={classNames} onClick={onAddToCheckedMessage.bind(null, message, !isExisted)}/>;
-}
-
-function getMessage(message, messages, user, gotoMessageFunc, highLightMessage, thread, messageSeenListClick) {
-  const args = {
-    highLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
-    seenFragment: seenFragment.bind(null, message, user, thread, messageSeenListClick),
-    editFragment: editFragment.bind(null, message),
-    PaperFragment: PaperFragment.bind(null, message, messages, user, gotoMessageFunc),
-    PaperFooterFragment: PaperFragmentFooter.bind(null, message),
-    isMessageByMe: isMessageByMe.bind(null, message, user),
-    isFirstMessage: showNameOrAvatar(message, messages),
-    datePetrification: datePetrification.bind(null, message.time),
-    message,
-    user
-  };
-  return isFile(message) ?
-    <MainMessagesFile {...args}/>
-    :
-    <MainMessagesText {...args}/>;
 }
 
 function getAvatar(message, messages, onAvatarClick, thread, user) {
@@ -592,11 +372,6 @@ export default class MainMessages extends Component {
     this.goToSpecificMessage(time);
   }
 
-  onMessageSeenListClick(message, e) {
-    e.stopPropagation();
-    this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id));
-  }
-
   onAddToCheckedMessage(message, isAdd, e) {
     e.stopPropagation();
     this.props.dispatch(threadCheckedMessageList(isAdd, message));
@@ -632,6 +407,8 @@ export default class MainMessages extends Component {
       return noMessageFragment();
     }
 
+    const args = {thread, messages, user, highLightMessage, onRepliedMessageClicked: this.onRepliedMessageClicked, isMessageByMe, showNameOrAvatar};
+
     return (
       <Container className={style.MainMessages}>
         <Scroller ref={this.scroller}
@@ -653,7 +430,7 @@ export default class MainMessages extends Component {
                            id={`message-${message.time}`}
                            relative>
                   {getAvatar(message, messages, this.onAvatarClick, thread, user)}
-                  {getMessage(message, messages, user, this.onRepliedMessageClicked.bind(this), highLightMessage, thread, this.onMessageSeenListClick.bind(this, message))}
+                  <MainMessagesMessage {...args} message={message}/>
                   {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
                 </Container>
               </ListItem>

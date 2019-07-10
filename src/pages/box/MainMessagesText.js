@@ -8,28 +8,18 @@ import classnames from "classnames";
 import {connect} from "react-redux";
 
 //strings
-import strings from "../../constants/localization";
 
 //actions
-import {chatModalPrompt} from "../../actions/chatActions";
-import {messageCancel, messageDelete, messageEditing, messageSend, messageSendFile} from "../../actions/messageActions";
-import {threadModalListShowing} from "../../actions/threadActions";
+import {messageCancel, messageEditing, messageSend} from "../../actions/messageActions";
 
 //components
-import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
-import {
-  MdExpandLess,
-  MdExpandMore,
-  MdDelete,
-  MdEdit,
-  MdReply,
-  MdForward,
-} from "react-icons/lib/md";
+import {MdEdit} from "react-icons/lib/md";
 
 //styling
 import style from "../../../styles/pages/box/MainMessagesText.scss";
+import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 function urlify(text) {
@@ -47,70 +37,16 @@ export default class MainMessagesText extends Component {
 
   constructor(props) {
     super(props);
-    this.onMouseOver = this.onMouseOver.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
-    this.containerRef = React.createRef();
-    document.addEventListener('click', this.handleClickOutside.bind(this));
-    this.state = {
-      messageControlShow: false,
-      messageTriggerShow: false
-    };
   }
 
-  handleClickOutside(e) {
-    const {messageControlShow} = this.state;
-    if (!messageControlShow) {
-      return;
-    }
-    if (!this.containerRef.current) {
-      return;
-    }
-    const target = e.target;
-    const node = ReactDOM.findDOMNode(this.containerRef.current);
-    if (!node.contains(target)) {
-      this.onMessageControlHide();
-    }
+  onRetry(message) {
+    const {dispatch} = this.props;
+    dispatch(messageCancel(message.uniqueId));
+    dispatch(messageSend(message.message, message.threadId));
   }
 
-  onMouseOver() {
-    if (mobileCheck()) {
-      return;
-    }
-    if (this.state.messageTriggerShow) {
-      return;
-    }
-    this.setState({
-      messageTriggerShow: true
-    });
-  }
-
-  onMouseLeave() {
-    if (!this.state.messageTriggerShow) {
-      return;
-    }
-    this.setState({
-      messageTriggerShow: false
-    });
-  }
-
-  onMessageControlShow(isClick, e) {
-    if (isClick === true && !mobileCheck()) {
-      return;
-    }
-    this.setState({
-      messageControlShow: true
-    });
-  }
-
-  onMessageControlHide(e) {
-    if (e) {
-      if (e.stopPropagation) {
-        e.stopPropagation();
-      }
-    }
-    this.setState({
-      messageControlShow: false
-    });
+  onCancel(message) {
+    this.props.dispatch(messageCancel(message.uniqueId));
   }
 
   onEdit(message) {
@@ -118,69 +54,16 @@ export default class MainMessagesText extends Component {
     this.onMessageControlHide();
   }
 
-  onDelete(message) {
-    const {dispatch} = this.props;
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, true));
-      dispatch(chatModalPrompt());
-    }));
-    this.onMessageControlHide();
-  }
-
-  onForward(message) {
-    this.props.dispatch(threadModalListShowing(true, message));
-    this.onMessageControlHide();
-  }
-
-  onReply(message) {
-    this.props.dispatch(messageEditing(message, "REPLYING"));
-    this.onMessageControlHide();
-  }
-
   render() {
-    const {highLighterFragment, seenFragment, editFragment, isMessageByMe, datePetrification, message, user, dispatch, PaperFragment, PaperFooterFragment} = this.props;
-    const {messageControlShow, messageTriggerShow} = this.state;
-    const classNames = classnames({
-      [style.MainMessagesText]: true,
-      [style["MainMessagesText--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
-    });
+    const {ControlFragment, HighLighterFragment, EditFragment, PaperFragment, PaperFooterFragment, SeenFragment, message} = this.props;
     return (
-      <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
-                 ref={this.containerRef}
-                 onClick={this.onMessageControlShow.bind(this, true)}
-                 id={message.uuid}
-                 onMouseOver={this.onMouseOver}
-                 onMouseLeave={this.onMouseLeave}>
-        {highLighterFragment()}
-        {messageControlShow ?
-          <Container className={style.MainMessagesText__Control}>
-            <Container topLeft>
-              <MdExpandMore size={styleVar.iconSizeMd}
-                            className={style.MainMessagesText__TriggerIcon}
-                            style={{margin: "3px"}}
-                            onClick={this.onMessageControlHide.bind(this)}/>
-            </Container>
-            <Container className={style.MainMessagesText__ControlIconContainer}>
-              {isMessageByMe(message, user) &&
-              <Container inline>
-                {message.editable && <MdEdit size={styleVar.iconSizeMd}
-                                             className={style.MainMessagesText__ControlIcon}
-                                             onClick={this.onEdit.bind(this, message)}/>}
-                {<MdDelete size={styleVar.iconSizeMd}
-                           className={style.MainMessagesText__ControlIcon}
-                           onClick={this.onDelete.bind(this, message)}/>
-                }
-              </Container>
-              }
-              <MdForward size={styleVar.iconSizeMd}
-                         className={style.MainMessagesText__ControlIcon}
-                         onClick={this.onForward.bind(this, message)}/>
-              <MdReply size={styleVar.iconSizeMd}
-                       className={style.MainMessagesText__ControlIcon}
-                       onClick={this.onReply.bind(this, message)}/>
-            </Container>
-          </Container>
-          : ""}
+      <Container className={style.MainMessagesText}>
+        <HighLighterFragment/>
+        <ControlFragment isText={true}>
+          <MdEdit className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
+                  size={styleVar.iconSizeMd}
+                  onClick={this.onEdit.bind(this, message)}/>
+        </ControlFragment>
         <PaperFragment>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap">
@@ -188,14 +71,8 @@ export default class MainMessagesText extends Component {
             </Text>
           </Container>
           <PaperFooterFragment onMessageControlShow={this.onMessageControlShow}>
-            {seenFragment(() => {
-              dispatch(messageCancel(message.uniqueId));
-              dispatch(messageSend(message.message, message.threadId));
-            }, () => {
-              dispatch(messageCancel(message.uniqueId));
-            })}
-
-            {editFragment()}
+            <SeenFragment onRetry={this.onRetry.bind(this, message)} onCancel={this.onCancel.bind(this, message)}/>
+            <EditFragment/>
           </PaperFooterFragment>
         </PaperFragment>
       </Container>

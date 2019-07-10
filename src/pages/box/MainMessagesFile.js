@@ -4,22 +4,16 @@ import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
-import {humanFileSize, mobileCheck} from "../../utils/helpers";
+import {humanFileSize} from "../../utils/helpers";
 import classnames from "classnames";
 
 //strings
-import strings from "../../constants/localization";
 
 //actions
-import {chatModalPrompt} from "../../actions/chatActions";
-import {threadModalListShowing, threadModalMediaShowing} from "../../actions/threadActions";
 import {
-  messageEditing,
   messageSendingError,
   messageCancelFile,
   messageSendFile,
-  messageDelete,
-  messageCancel
 } from "../../actions/messageActions";
 
 //components
@@ -31,14 +25,12 @@ import Gap from "../../../../uikit/src/gap";
 
 //styling
 import {
-  MdDelete,
-  MdReply,
-  MdForward,
   MdArrowDownward,
   MdPlayArrow,
-  MdClose, MdExpandLess, MdExpandMore
+  MdClose
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
+import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
 
 
@@ -96,69 +88,13 @@ class MainMessagesFile extends Component {
 
   constructor(props) {
     super(props);
-    this.onMouseOver = this.onMouseOver.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
     this.onImageClick = this.onImageClick.bind(this);
-    this.containerRef = React.createRef();
-    document.addEventListener('click', this.handleClickOutside.bind(this));
-    this.state = {
-      messageControlShow: false,
-      messageTriggerShow: false
-    };
-  }
-
-  handleClickOutside(e) {
-    const {messageControlShow} = this.state;
-    if (!messageControlShow) {
-      return;
-    }
-    if (!this.containerRef.current) {
-      return;
-    }
-    const target = e.target;
-    const node = ReactDOM.findDOMNode(this.containerRef.current);
-    if (!node.contains(target)) {
-      this.onMessageControlHide();
-    }
+    this.onCancel = this.onCancel.bind(this);
+    this.onRetry = this.onRetry.bind(this);
   }
 
   onImageClick(e) {
     e.stopPropagation();
-  }
-
-  onMouseOver() {
-    if (mobileCheck()) {
-      return;
-    }
-    this.setState({
-      messageTriggerShow: true
-    });
-  }
-
-  onMouseLeave() {
-    this.setState({
-      messageTriggerShow: false
-    });
-  }
-
-  onMessageControlShow(isClick, e) {
-    if (isClick === true && !mobileCheck()) {
-      return;
-    }
-    this.setState({
-      messageControlShow: true
-    });
-  }
-
-  onMessageControlHide(e) {
-    if (e) {
-      if (e.stopPropagation) {
-        e.stopPropagation();
-      }
-    }
-    this.setState({
-      messageControlShow: false
-    });
   }
 
   componentDidUpdate() {
@@ -183,160 +119,102 @@ class MainMessagesFile extends Component {
     this.onMessageControlHide();
   }
 
-  onCancel(message) {
-    this.props.dispatch(messageCancelFile(message.uniqueId, message.threadId));
+  onRetry() {
+    const {dispatch, message} = this.props;
+    this.onCancel(message);
+    dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
   }
 
-  onDelete(message) {
-    const {dispatch} = this.props;
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, message.editable));
-      dispatch(chatModalPrompt());
-    }));
-    this.onMessageControlHide();
-  }
-
-  onForward(message) {
-    this.props.dispatch(threadModalListShowing(true, message));
-    this.onMessageControlHide();
-  }
-
-  onReply(message) {
-    this.props.dispatch(messageEditing(message, "REPLYING"));
-    this.onMessageControlHide();
-  }
-
-  onModalMediaShow(metaData) {
-    this.props.dispatch(threadModalMediaShowing(true, {src: metaData.link}));
+  onCancel() {
+    const {dispatch, message} = this.props;
+    dispatch(messageCancelFile(message.uniqueId, message.threadId));
   }
 
   render() {
-    const {highLighterFragment, seenFragment, isMessageByMe, message, user, smallVersion, leftAsideShowing, dispatch, PaperFragment, PaperFooterFragment} = this.props;
-    const {messageControlShow, messageTriggerShow} = this.state;
+    const {ControlFragment, HighLighterFragment, PaperFragment, PaperFooterFragment, SeenFragment, message, leftAsideShowing, smallVersion} = this.props;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = metaData.mimeType.indexOf("image") > -1;
     const isVideo = metaData.mimeType.indexOf("video") > -1;
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing, message.fileObject) : false;
-    const classNames = classnames({
-      [style.MainMessagesFile]: true,
-      [style["MainMessagesFile--triggerIconShow"]]: message.id && !messageControlShow && messageTriggerShow
-    });
     const mainMessagesFileImageClassNames = classnames({
       [style.MainMessagesFile__Image]: true,
       [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
     });
+
     return (
-      <Container inline inSpace relative maxWidth="50%" minWidth="220px" className={classNames}
-                 id={message.uuid}
-                 onClick={this.onMessageControlShow.bind(this, true)}
-                 ref={this.containerRef}
-                 onMouseOver={this.onMouseOver}
-                 onMouseLeave={this.onMouseLeave}>
-        {highLighterFragment()}
-        {messageControlShow ?
-          <Container className={style.MainMessagesFile__Control}>
-            <Container topLeft>
-              <MdExpandMore size={styleVar.iconSizeMd}
-                            className={style.MainMessagesFile__TriggerIcon}
-                            style={{margin: "3px"}}
-                            onClick={this.onMessageControlHide.bind(this)}/>
-            </Container>
-            <Container className={style.MainMessagesFile__ControlIconContainer}>
-              {isMessageByMe(message, user) &&
-              <MdDelete size={styleVar.iconSizeMd}
-                        className={style.MainMessagesFile__ControlIcon}
-                        onClick={this.onDelete.bind(this, message)}/>
-              }
-              <MdForward size={styleVar.iconSizeMd}
-                         className={style.MainMessagesFile__ControlIcon}
-                         onClick={this.onForward.bind(this, message)}/>
-              <MdReply size={styleVar.iconSizeMd}
-                       className={style.MainMessagesFile__ControlIcon}
-                       onClick={this.onReply.bind(this, message)}/>
-              <MdArrowDownward size={styleVar.iconSizeMd}
-                               className={style.MainMessagesFile__ControlIcon}
-                               onClick={this.onDownload.bind(this, metaData)}/>
+      <Container className={style.MainMessagesFile} key={message.uuid}>
+        <HighLighterFragment/>
+        <ControlFragment>
+          <MdArrowDownward className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
+                           size={styleVar.iconSizeMd}
+                           onClick={this.onDownload.bind(this, metaData)}/>
+        </ControlFragment>
+        <PaperFragment>
+          <Container relative
+                     className={style.MainMessagesFile__FileContainer}>
+            {isImage ?
+              <Container style={{width: `${imageSizeLink.width}px`}}>
+                <Container className={style.MainMessagesFile__ImageContainer}>
+                  <Text link={imageSizeLink.imageLinkOrig}
+                        linkClearStyle
+                        data-options={`{"caption": "${message.message || ""}"}`}>
+                    <Image className={mainMessagesFileImageClassNames}
+                           onClick={this.onImageClick}
+                           src={imageSizeLink.imageLink}
+                           style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
+                  </Text>
+                </Container>
+                <Container>
+                  <Text wordWrap="breakWord" bold>
+                    {message.message}
+                  </Text>
+                </Container>
+
+              </Container>
+              :
+              <Container className={style.MainMessagesFile__FileName}>
+                {isVideo ?
+                  <video controls id={`video-${message.id}`} style={{display: "none"}}>
+                    <source src={metaData.link} type={metaData.mimeType}/>
+                  </video> : ""
+                }
+                <Text wordWrap="breakWord" bold>
+                  {metaData.originalName}
+                </Text>
+                <Text size="xs" color="gray">
+                  {humanFileSize(metaData.size, true)}
+                </Text>
+              </Container>
+            }
+            <Container className={style.MainMessagesFile__FileControlIcon} center={isImage}>
+              {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
+                <Gap x={10}>
+                  <Shape color="accent" size="lg"
+                         onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, isVideo) : this.onCancel.bind(this, message)}>
+                    <ShapeCircle>
+                      {isUploading(message) || hasError(message) ?
+                        <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                        : isDownloadable(message) ?
+                          isVideo ?
+                            <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
+                              <MdPlayArrow style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                            </Text>
+                            :
+                            <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
+                      }
+                    </ShapeCircle>
+                  </Shape>
+                </Gap>
+                : ""}
             </Container>
           </Container>
-          : ""}
-        <Container relative>
-          {isUploading(message) ?
-            <Container className={style.MainMessagesFile__Progress}
-                       style={{width: `${message.progress ? message.progress : 0}%`}}
-                       title={`${message.progress && message.progress}`}/>
-            : ""}
-          <PaperFragment>
-            <Container relative
-                       className={style.MainMessagesFile__FileContainer}>
-              {isImage ?
-                <Container style={{width: `${imageSizeLink.width}px`}}>
-                  <Container className={style.MainMessagesFile__ImageContainer}>
-                    <Text link={imageSizeLink.imageLinkOrig}
-                          linkClearStyle
-                          data-options={`{"caption": "${message.message || ""}"}`}>
-                      <Image className={mainMessagesFileImageClassNames}
-                             onClick={this.onImageClick}
-                             src={imageSizeLink.imageLink}
-                             style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
-                    </Text>
-                  </Container>
-                  <Container>
-                    <Text wordWrap="breakWord" bold>
-                      {message.message}
-                    </Text>
-                  </Container>
-
-                </Container>
-                :
-                <Container className={style.MainMessagesFile__FileName}>
-                  {isVideo ?
-                    <video controls id={`video-${message.id}`} style={{display: "none"}}>
-                      <source src={metaData.link} type={metaData.mimeType}/>
-                    </video> : ""
-                  }
-                  <Text wordWrap="breakWord" bold>
-                    {metaData.originalName}
-                  </Text>
-                  <Text size="xs" color="gray">
-                    {humanFileSize(metaData.size, true)}
-                  </Text>
-                </Container>
-              }
-              <Container className={style.MainMessagesFile__FileControlIcon} center={isImage}>
-                {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
-                  <Gap x={10}>
-                    <Shape color="accent" size="lg"
-                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, isVideo) : this.onCancel.bind(this, message)}>
-                      <ShapeCircle>
-                        {isUploading(message) || hasError(message) ?
-                          <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
-                          : isDownloadable(message) ?
-                            isVideo ?
-                              <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
-                                <MdPlayArrow style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
-                              </Text>
-                              :
-                              <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
-                        }
-                      </ShapeCircle>
-                    </Shape>
-                  </Gap>
-                  : ""}
-              </Container>
-            </Container>
-            <PaperFooterFragment onMessageControlShow={this.onMessageControlShow}>
-              {seenFragment(() => {
-                this.onCancel(message);
-                dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
-              }, () => {
-                dispatch(messageCancel(message.uniqueId));
-              })}
-            </PaperFooterFragment>
-          </PaperFragment>
-        </Container>
+          <PaperFooterFragment>
+            <SeenFragment onRetry={this.onRetry} onCancel={this.onCancel}/>
+          </PaperFooterFragment>
+        </PaperFragment>
       </Container>
-    );
+    )
   }
 }
 

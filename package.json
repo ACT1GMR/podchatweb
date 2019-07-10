@@ -64,6 +64,7 @@
     "react-icons": "^2.2.7",
     "react-localization": "^1.0.10",
     "react-meta-tags": "^0.4.2",
+    "react-outside-click-handler": "^1.2.3",
     "react-router-dom": "^4.3.1",
     "react-string-replace": "^0.4.1",
     "redux-promise-middleware": "^5.1.1",

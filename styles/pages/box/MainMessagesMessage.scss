@@ -1,0 +1,80 @@
+.MainMessagesMessage__Control {
+  position: absolute;
+  width: calc(100% - 10px);
+  height: 40px;
+  bottom: 5px;
+  left: 5px;
+  border-radius: 0 0 5px 5px;
+  background-color: lighten($color-background, 3%);
+  border-top: 1px solid $color-background;
+}
+
+.MainMessagesMessage__Control--show {
+  display: block;
+}
+
+.MainMessagesMessage__TriggerIcon,
+.MainMessagesMessage__ControlIcon {
+  color: $color-gray-dark;
+  cursor: pointer;
+  transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.MainMessagesMessage__OpenTriggerIconContainer {
+  display: none;
+}
+
+.MainMessagesMessage__OpenTriggerIconContainer--show {
+  display: block;
+}
+
+.MainMessagesMessage__ControlIcon {
+  margin: -10px 5px;
+  position: relative;
+  top: -5px;
+}
+
+.MainMessagesMessage__TriggerIcon:hover,
+.MainMessagesMessage__ControlIcon:hover {
+  color: $color-accent;
+  transform: scale(1.2);
+}
+
+.MainMessagesMessage__ControlIconContainer {
+  width: 100%;
+  text-align: center;
+  margin-top: 18px;
+}
+
+.MainMessagesMessage__ReplyFragmentImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 55px;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.MainMessagesMessage__Highlighter {
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  z-index: -1;
+  trasition: opacity 0.1s ease 0s;
+  padding: 5px;
+  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.MainMessagesMessage__Highlighter--highlighted {
+  opacity: 1;
+}
+
+.MainMessagesMessage__HighlighterBox {
+  border-bottom: 3px solid $color-accent;
+  height: 100%;
+  border-radius: 7px;
+}
