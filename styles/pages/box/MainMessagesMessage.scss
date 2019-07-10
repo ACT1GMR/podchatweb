@@ -2,7 +2,7 @@
   position: absolute;
   width: calc(100% - 10px);
   height: 40px;
-  bottom: 5px;
+  bottom: 2px;
   left: 5px;
   border-radius: 0 0 5px 5px;
   background-color: lighten($color-background, 3%);
@@ -58,7 +58,7 @@
 
 .MainMessagesMessage__Highlighter {
   position: absolute;
-  bottom: -3px;
+  bottom: -6px;
   left: 0;
   height: 100%;
   width: 100%;
@@ -77,4 +77,13 @@
   border-bottom: 3px solid $color-accent;
   height: 100%;
   border-radius: 7px;
+}
+
+
+.MainMessagesMessage__SentIcon {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.MainMessagesMessage__SentIcon:hover {
+  transform: scale(1.2);
 }

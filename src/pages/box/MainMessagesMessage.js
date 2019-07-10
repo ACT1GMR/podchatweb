@@ -57,7 +57,7 @@ function datePetrification(time) {
   return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
 }
 
-function forwardFragment(message) {
+export function ForwardFragment(message) {
   const forwardInfo = message.forwardInfo;
   if (forwardInfo) {
     const participant = forwardInfo.participant;
@@ -75,15 +75,15 @@ function forwardFragment(message) {
 }
 
 
-function personNameFragment(message, messages, user, showNameOrAvatar, isMessageByMe) {
+export function PersonNameFragment(message, user, isFirstMessage, isMessageByMe) {
   const messageParticipant = message.participant;
   const color = avatarNameGenerator(messageParticipant.name).color;
-  return showNameOrAvatar(message, messages) &&
+  return isFirstMessage &&
     <Text size="sm" bold
-          style={{color: color}}>{isMessageByMe(message, user) ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
+          style={{color: color}}>{isMessageByMe ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
 }
 
-function replyFragment(message, gotoMessageFunc) {
+export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
   if (message.replyInfo) {
     const replyInfo = message.replyInfo;
     let meta = "";
@@ -107,12 +107,18 @@ function replyFragment(message, gotoMessageFunc) {
       }
     }
     const imageLinkString = `url(${imageLink})`;
+    const inlineStyle = {
+      borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"
+    };
+    if (isMessageByMe) {
+      inlineStyle.backgroundColor = "#ffecdc";
+    }
     return (
       <Container
         cursor="pointer"
         onClick={gotoMessageFunc.bind(null, replyInfo.repliedToMessageTime, replyInfo.deleted)}>
         <Paper colorBackground
-               style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
+               style={inlineStyle}>
           <Text bold size="xs">{strings.replyTo}:</Text>
           {isImage && text ?
             <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
@@ -148,8 +154,8 @@ function replyFragment(message, gotoMessageFunc) {
   return "";
 }
 
-function seenFragment(isMessageByMe, message, user, thread, messageSeenListClick, onRetry, onCancel) {
-  if (!isMessageByMe(message, user)) {
+export function SeenFragment({isMessageByMe, message, user, thread, onMessageSeenListClick, onRetry, onCancel}) {
+  if (!isMessageByMe) {
     return null;
   }
   if (message.hasError) {
@@ -180,10 +186,10 @@ function seenFragment(isMessageByMe, message, user, thread, messageSeenListClick
   }
   return <MdDone className={isGroup ? style.MainMessagesMessage__SentIcon : ""} size={style.iconSizeXs}
                  style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}}
-                 onClick={isGroup ? messageSeenListClick : null}/>
+                 onClick={isGroup ? onMessageSeenListClick : null}/>
 }
 
-function editFragment(message) {
+export function EditFragment({message}) {
   if (message.edited) {
     return (
       <Gap x={2}>
@@ -194,7 +200,7 @@ function editFragment(message) {
   return "";
 }
 
-function highLighterFragment(message, highLightMessage) {
+export function HighLighterFragment({message, highLightMessage}) {
   const classNames = classnames({
     [style.MainMessagesMessage__Highlighter]: true,
     [style["MainMessagesMessage__Highlighter--highlighted"]]: highLightMessage && highLightMessage === message.time
@@ -206,24 +212,34 @@ function highLighterFragment(message, highLightMessage) {
   );
 }
 
-function paperFragment(message, messages, user, gotoMessageFunc, showNameOrAvatar, isMessageByMe, {children}) {
+export function PaperFragment({message, messages, user, onRepliedMessageClicked, isFirstMessage, isMessageByMe, children}) {
+  const style = {
+    borderRadius: "5px"
+  };
+  if (isMessageByMe) {
+    style.backgroundColor = "#ffdbbc";
+  }
   return (
-    <Paper style={{borderRadius: "5px"}} hasShadow colorBackgroundLight>
-      {personNameFragment(message, messages, user, showNameOrAvatar, isMessageByMe)}
-      {replyFragment(message, gotoMessageFunc)}
-      {forwardFragment(message)}
+    <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe}>
+      {PersonNameFragment(message, user, isFirstMessage, isMessageByMe)}
+      {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked)}
+      {ForwardFragment(message)}
       {children}
     </Paper>
   )
 }
 
-function paperFragmentFooter(message, onMessageControlShow, {messageControlShow,  messageTriggerShow, children}) {
+export function PaperFooterFragment({message, onMessageControlShow, messageControlShow, messageTriggerShow, isMessageByMe, children}) {
   const classNames = classnames({
     [style.MainMessagesMessage__OpenTriggerIconContainer]: true,
     [style["MainMessagesMessage__OpenTriggerIconContainer--show"]]: message.id && !messageControlShow && messageTriggerShow,
   });
+  const inlineStyle = {};
+  if (isMessageByMe) {
+    inlineStyle.color = "#bf936d"
+  }
   return (
-    <PaperFooter>
+    <PaperFooter style={inlineStyle}>
       {children}
       {datePetrification(message.time)}
       <Container inline left inSpace className={classNames}>
@@ -235,7 +251,10 @@ function paperFragmentFooter(message, onMessageControlShow, {messageControlShow,
   );
 }
 
-function controlFragment(isMessageByMe, message, onMessageControlHide, user, onDelete, onForward, onReply, {isText, messageControlShow, children}) {
+/**
+ * @return {string}
+ */
+export function ControlFragment({isMessageByMe, message, onMessageControlHide, user, onDelete, onForward, onReply, isText, messageControlShow, children}) {
   return messageControlShow ? (
     <Container className={style.MainMessagesMessage__Control}>
       <Container topLeft>
@@ -245,14 +264,14 @@ function controlFragment(isMessageByMe, message, onMessageControlHide, user, onD
                       onClick={onMessageControlHide}/>
       </Container>
       <Container className={style.MainMessagesMessage__ControlIconContainer}>
-        {isMessageByMe(message, user) &&
-          <Container inline>
-            {isText && message.editable && children}
-            <MdDelete size={styleVar.iconSizeMd}
-                       className={style.MainMessagesMessage__ControlIcon}
-                       onClick={onDelete}/>
+        {isMessageByMe &&
+        <Container inline>
+          {isText && message.editable && children}
+          <MdDelete size={styleVar.iconSizeMd}
+                    className={style.MainMessagesMessage__ControlIcon}
+                    onClick={onDelete}/>
 
-          </Container>
+        </Container>
         }
         <MdForward size={styleVar.iconSizeMd}
                    className={style.MainMessagesMessage__ControlIcon}
@@ -278,6 +297,7 @@ export default class MainMessagesMessage extends Component {
     this.onReply = this.onReply.bind(this);
     this.onMessageControlHide = this.onMessageControlHide.bind(this);
     this.onMessageControlShow = this.onMessageControlShow.bind(this);
+    this.onMessageSeenListClick = this.onMessageSeenListClick.bind(this);
     this.containerRef = React.createRef();
     this.state = {
       messageControlShow: false,
@@ -286,11 +306,11 @@ export default class MainMessagesMessage extends Component {
   }
 
 
-  onMessageSeenListClick(message, e) {
+  onMessageSeenListClick(e) {
+    const {message, dispatch} = this.props;
     e.stopPropagation();
-    this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id));
+    dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id));
   }
-
 
   onMouseOver() {
     if (mobileCheck()) {
@@ -314,7 +334,7 @@ export default class MainMessagesMessage extends Component {
   }
 
   onMessageControlHide(e) {
-    if(!this.state.messageControlShow) {
+    if (!this.state.messageControlShow) {
       return;
     }
     if (e) {
@@ -328,7 +348,7 @@ export default class MainMessagesMessage extends Component {
   }
 
   onMessageControlShow(isClick, e) {
-    if(this.state.messageControlShow) {
+    if (this.state.messageControlShow) {
       return;
     }
     if (isClick === true && !mobileCheck()) {
@@ -373,36 +393,41 @@ export default class MainMessagesMessage extends Component {
     } = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const args = {
-      ControlFragment: controlFragment.bind(null, messageControlShow, isMessageByMe, message, this.onMessageControlHide, user, this.onDelete, this.onForward, this.onReply),
-      HighLighterFragment: highLighterFragment.bind(null, message, highLightMessage),
-      SeenFragment: seenFragment.bind(null, isMessageByMe, message, user, thread, this.onMessageSeenListClick.bind(this, message)),
-      EditFragment: editFragment.bind(null, message),
-      PaperFragment: paperFragment.bind(null, message, messages, user, onRepliedMessageClicked, showNameOrAvatar, isMessageByMe),
-      PaperFooterFragment: paperFragmentFooter.bind(null, message, this.onMessageControlShow),
-      isMessageByMe: isMessageByMe.bind(null, message, user),
+      //new paradaigm
+      onMessageControlShow: this.onMessageControlShow,
+      onMessageSeenListClick: this.onMessageSeenListClick,
+      onMessageControlHide: this.onMessageControlHide,
+      onRepliedMessageClicked: onRepliedMessageClicked,
+      onDelete: this.onDelete,
+      onForward: this.onForward,
+      onReply: this.onReply,
+      isMessageByMe: isMessageByMe(message, user),
       isFirstMessage: showNameOrAvatar(message, messages),
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
+      messages,
       message,
-      user
+      highLightMessage,
+      user,
+      thread
     };
     return (
-      <OutsideClickHandler onOutsideClick={this.onMessageControlHide}>
-        <Container id={message.uuid}
-                   inline inSpace relative
-                   maxWidth="50%" minWidth="220px"
-                   ref={this.containerRef}
-                   onClick={this.onMessageControlShow.bind(this, true)}
-                   onMouseOver={this.onMouseOver}
-                   onMouseLeave={this.onMouseLeave}>
+      <Container id={message.uuid}
+                 inline relative
+                 style={{padding: "2px 5px", minWidth: "220px", maxWidth: "50%"}}
+                 ref={this.containerRef}
+                 onClick={this.onMessageControlShow.bind(this, true)}
+                 onMouseOver={this.onMouseOver}
+                 onMouseLeave={this.onMouseLeave}>
+        <OutsideClickHandler onOutsideClick={this.onMessageControlHide}>
           {isFile(message) ?
             <MainMessagesFile {...args}/>
             :
             <MainMessagesText {...args}/>
           }
-        </Container>
-      </OutsideClickHandler>
+        </OutsideClickHandler>
+      </Container>
     )
   }
 }

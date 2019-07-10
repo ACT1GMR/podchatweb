@@ -1,6 +1,5 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
@@ -22,6 +21,13 @@ import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
 import Gap from "../../../../uikit/src/gap";
+import {
+  PaperFragment,
+  PaperFooterFragment,
+  ControlFragment,
+  HighLighterFragment,
+  SeenFragment
+} from "./MainMessagesMessage";
 
 //styling
 import {
@@ -131,7 +137,23 @@ class MainMessagesFile extends Component {
   }
 
   render() {
-    const {ControlFragment, HighLighterFragment, PaperFragment, PaperFooterFragment, SeenFragment, message, leftAsideShowing, smallVersion} = this.props;
+    const {
+      onDelete,
+      onForward,
+      onReply, isMessageByMe,
+      isFirstMessage,
+      thread,
+      messageControlShow,
+      messageTriggerShow,
+      message,
+      user,
+      highLightMessage,
+      onMessageControlShow,
+      onRepliedMessageClicked,
+      onMessageSeenListClick,
+      onMessageControlHide,
+      leftAsideShowing, smallVersion
+    } = this.props;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const isImage = metaData.mimeType.indexOf("image") > -1;
@@ -144,13 +166,22 @@ class MainMessagesFile extends Component {
 
     return (
       <Container className={style.MainMessagesFile} key={message.uuid}>
-        <HighLighterFragment/>
-        <ControlFragment>
+        <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
+        <ControlFragment
+          isMessageByMe={isMessageByMe}
+          messageControlShow={messageControlShow}
+          message={message}
+          onMessageControlHide={onMessageControlHide}
+          user={user}
+          onDelete={onDelete} onForward={onForward} onReply={onReply}
+          isText={true}
+        >
           <MdArrowDownward className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
                            size={styleVar.iconSizeMd}
                            onClick={this.onDownload.bind(this, metaData)}/>
         </ControlFragment>
-        <PaperFragment>
+        <PaperFragment message={message} user={user} onRepliedMessageClicked={onRepliedMessageClicked}
+                       isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <Container relative
                      className={style.MainMessagesFile__FileContainer}>
             {isImage ?
@@ -209,8 +240,11 @@ class MainMessagesFile extends Component {
                 : ""}
             </Container>
           </Container>
-          <PaperFooterFragment>
-            <SeenFragment onRetry={this.onRetry} onCancel={this.onCancel}/>
+          <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow} isMessageByMe={isMessageByMe}
+                               messageControlShow={messageControlShow} messageTriggerShow={messageTriggerShow}>
+            <SeenFragment isMessageByMe={isMessageByMe} message={message} user={user} thread={thread}
+                          onMessageSeenListClick={onMessageSeenListClick} onRetry={this.onRetry}
+                          onCancel={this.onCancel}/>
           </PaperFooterFragment>
         </PaperFragment>
       </Container>
