@@ -77,7 +77,7 @@ export function avatarNameGenerator(firstName, lastName) {
       }
     }
     return {
-      letter,
+      letter: letter.length > 1 ? `${letter[0]}&#8239${letter[1]}` : letter,
       color: colorLogic['1500-1550']
     }
   }

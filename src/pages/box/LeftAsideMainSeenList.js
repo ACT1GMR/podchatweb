@@ -72,6 +72,7 @@ export default class LeftAsideMain extends Component {
 
   render() {
     const {seenList, seeListLoading} = this.state;
+    console.log(seenList);
     return (
       <Container relative>
         {seeListLoading ?
