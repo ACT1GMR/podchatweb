@@ -9,15 +9,15 @@ import Container from "../../../../../uikit/src/container";
 
 //styling
 
-function getName(contanct) {
-  if (contanct.contactName) {
-    return contanct.contactName;
+function getName(contact) {
+  if (contact.contactName) {
+    return contact.contactName;
   }
-  if (contanct.name) {
-    return contanct.name;
+  if (contact.name) {
+    return contact.name;
   }
-  if (contanct.firstName) {
-    return `${contanct.firstName} ${contanct.lastName}`;
+  if (contact.firstName) {
+    return `${contact.firstName}${contact.lastName ?  `${contact.lastName} ` : ""}`;
   }
 
 }

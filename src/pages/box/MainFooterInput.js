@@ -16,7 +16,7 @@ import {
   messageReply,
   messageForward
 } from "../../actions/messageActions";
-import {threadIsSendingMessage} from "../../actions/threadActions";
+import {threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
 import MainFooterInputEmoji from "./MainFooterInputEmoji";
@@ -203,7 +203,7 @@ export default class MainFooterInput extends Component {
         if (isEmptyMessage) {
           return;
         }
-        this.props.dispatch(messageEdit(clearMessageText, msgEditingId));
+        dispatch(messageEdit(clearMessageText, msgEditingId));
       }
     } else {
       if (isEmptyMessage) {
@@ -212,6 +212,7 @@ export default class MainFooterInput extends Component {
       dispatch(messageSend(clearMessageText, threadId));
     }
     dispatch(messageEditing());
+    dispatch(threadEmojiShowing(false));
     this.setInputText("");
   }
 

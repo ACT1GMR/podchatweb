@@ -11,12 +11,12 @@ import {messageGetSeenList} from "../../actions/messageActions";
 
 //styling
 import Container from "../../../../uikit/src/container";
+import Gap from "../../../../uikit/src/gap";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {Text} from "../../../../uikit/src/typography";
 import strings from "../../constants/localization";
-import Message from "../../../../uikit/src/message";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import {threadCreate} from "../../actions/threadActions";
 
@@ -24,7 +24,8 @@ import {threadCreate} from "../../actions/threadActions";
   return {
     smallVersion: store.chatSmallVersion,
     thread: store.thread.thread,
-    leftAsideShowing: store.threadLeftAsideShowing
+    leftAsideShowing: store.threadLeftAsideShowing,
+    user: store.user
   }
 })
 export default class LeftAsideMain extends Component {
@@ -72,7 +73,6 @@ export default class LeftAsideMain extends Component {
 
   render() {
     const {seenList, seeListLoading} = this.state;
-    console.log(seenList);
     return (
       <Container relative>
         {seeListLoading ?
@@ -81,7 +81,7 @@ export default class LeftAsideMain extends Component {
               <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
             </Container>
           </Container>
-          : seenList && seenList.length ?
+          : seenList && seenList.length > 1 ?
             <List>
               {seenList.map(el => (
                 <ListItem key={el.id} selection invert>
@@ -103,7 +103,8 @@ export default class LeftAsideMain extends Component {
             :
             <Container relative>
               <Container topCenter>
-                <Message>{strings.noBodyReadMessage}</Message>
+                <Gap y={2}/>
+                <Text>{strings.noBodyReadMessage}</Text>
               </Container>
             </Container>
         }

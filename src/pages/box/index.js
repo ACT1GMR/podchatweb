@@ -57,6 +57,7 @@ class Box extends Component {
     this.modalMediaRef = React.createRef(this.modalMediaRef);
     this.modalImageCaptionRef = React.createRef(this.modalImageCaptionRef);
     this.firstContactFetching = true;
+    this.deletingDatabases = false;
   }
 
   componentDidUpdate(oldProps) {
@@ -78,7 +79,8 @@ class Box extends Component {
       this.firstContactFetching = false;
     }
     if (chatInstance) {
-      if (clearCache) {
+      if (clearCache && !this.deletingDatabases) {
+        this.deletingDatabases = true;
         return dispatch(chatClearCache());
       }
       if (!user.id) {
@@ -108,10 +110,6 @@ class Box extends Component {
     if (routerLess) {
       dispatch(chatRouterLess(routerLess))
     }
-  }
-
-  componentWillUpdate(chatInstance) {
-
   }
 
   setToken(token) {

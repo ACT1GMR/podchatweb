@@ -30,7 +30,7 @@ let strings = new LocalizedStrings({
     },
     thereIsNoChat: "گفتگویی وجود ندارد",
     select: "انتخاب",
-    forwardTo: "انتخاب چت برای فرستادن",
+    forwardTo: "انتخاب گفتگو برای فرستادن",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     unknown: "نامشخص",
@@ -48,7 +48,7 @@ let strings = new LocalizedStrings({
     addMember: "اضافه کردن عضو",
     saveSettings: "ذخیره تغییرات",
     groupSettings: "تنظیمات گروه",
-    chatInfo: "اطلاعات چت",
+    chatInfo: "اطلاعات گفتگو",
     years: "سال",
     months: "ماه",
     days: "روز",
@@ -63,7 +63,6 @@ let strings = new LocalizedStrings({
     groupInfo: "اطلاعات گروه",
     contactInfo: "اطلاعات مخاطب",
     contacts: "مخاطبین",
-    dropYourFileHere: "فایلاتون رو بندازید اینجا",
     imageText: "متن تصویر",
     send: "بفرست",
     sendingImages: "ارسال عکس ( ها )",
@@ -129,7 +128,7 @@ let strings = new LocalizedStrings({
       return `${person} گروهی ساخت`
     },
     createdAChat(person) {
-      return `${person} چتی ساخت`
+      return `${person} گفتگویی ساخت`
     },
     noResult: "نتیجه ای وجود ندارد",
     noBodyReadMessage: "کسی این پیام را نخوانده",

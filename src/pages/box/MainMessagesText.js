@@ -70,12 +70,12 @@ export default class MainMessagesText extends Component {
       messageControlShow,
       messageTriggerShow,
       message,
-      user,
       highLightMessage,
       onMessageControlShow,
       onRepliedMessageClicked,
       onMessageSeenListClick,
-      onMessageControlHide
+      onMessageControlHide,
+      forceSeen
     } = this.props;
     return (
       <Container className={style.MainMessagesText}>
@@ -84,14 +84,13 @@ export default class MainMessagesText extends Component {
                          messageControlShow={messageControlShow}
                          message={message}
                          onMessageControlHide={onMessageControlHide}
-                         user={user}
                          onDelete={onDelete} onForward={onForward} onReply={onReply}
                          isText={true}>
           <MdEdit className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
                   size={styleVar.iconSizeMd}
                   onClick={this.onEdit.bind(this, message)}/>
         </ControlFragment>
-        <PaperFragment message={message} user={user} onRepliedMessageClicked={onRepliedMessageClicked}
+        <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
@@ -101,7 +100,7 @@ export default class MainMessagesText extends Component {
           <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}
                                isMessageByMe={isMessageByMe}
                                messageControlShow={messageControlShow} messageTriggerShow={messageTriggerShow}>
-            <SeenFragment isMessageByMe={isMessageByMe} message={message} user={user} thread={thread}
+            <SeenFragment isMessageByMe={isMessageByMe} message={message} thread={thread} forceSeen={forceSeen}
                           onMessageSeenListClick={onMessageSeenListClick} onRetry={this.onRetry.bind(this, message)}
                           onCancel={this.onCancel.bind(this, message)}/>
             <EditFragment message={message}/>

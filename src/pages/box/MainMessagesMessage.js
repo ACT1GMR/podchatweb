@@ -57,13 +57,19 @@ function datePetrification(time) {
   return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
 }
 
-export function ForwardFragment(message) {
+export function ForwardFragment(message, isMessageByMe) {
   const forwardInfo = message.forwardInfo;
   if (forwardInfo) {
     const participant = forwardInfo.participant;
+    const inlineStyle = {
+      borderRadius: "5px"
+    };
+    if (isMessageByMe) {
+      inlineStyle.backgroundColor = "#dee8d2";
+    }
     return (
       <Container>
-        <Paper colorBackground style={{borderRadius: "5px"}}>
+        <Paper colorBackground style={inlineStyle}>
           <Text italic size="xs">{strings.forwardFrom}</Text>
           <Text bold>{participant.contactName || participant.name}:</Text>
         </Paper>
@@ -71,11 +77,11 @@ export function ForwardFragment(message) {
       </Container>
     )
   }
-  return "";
+  return null;
 }
 
 
-export function PersonNameFragment(message, user, isFirstMessage, isMessageByMe) {
+export function PersonNameFragment(message, isFirstMessage, isMessageByMe) {
   const messageParticipant = message.participant;
   const color = avatarNameGenerator(messageParticipant.name).color;
   return isFirstMessage &&
@@ -111,7 +117,7 @@ export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
       borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"
     };
     if (isMessageByMe) {
-      inlineStyle.backgroundColor = "#ffecdc";
+      inlineStyle.backgroundColor = "#dee8d2";
     }
     return (
       <Container
@@ -154,7 +160,7 @@ export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
   return "";
 }
 
-export function SeenFragment({isMessageByMe, message, user, thread, onMessageSeenListClick, onRetry, onCancel}) {
+export function SeenFragment({isMessageByMe, message, thread, onMessageSeenListClick, onRetry, onCancel, forceSeen}) {
   if (!isMessageByMe) {
     return null;
   }
@@ -180,7 +186,7 @@ export function SeenFragment({isMessageByMe, message, user, thread, onMessageSee
     return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
   }
   if (!isGroup) {
-    if (message.seen) {
+    if (message.seen || forceSeen) {
       return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
     }
   }
@@ -212,18 +218,18 @@ export function HighLighterFragment({message, highLightMessage}) {
   );
 }
 
-export function PaperFragment({message, messages, user, onRepliedMessageClicked, isFirstMessage, isMessageByMe, children}) {
+export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, children}) {
   const style = {
     borderRadius: "5px"
   };
   if (isMessageByMe) {
-    style.backgroundColor = "#ffdbbc";
+    style.backgroundColor = "#effdde";
   }
   return (
     <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe}>
-      {PersonNameFragment(message, user, isFirstMessage, isMessageByMe)}
+      {PersonNameFragment(message, isFirstMessage, isMessageByMe)}
       {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked)}
-      {ForwardFragment(message)}
+      {ForwardFragment(message, isMessageByMe)}
       {children}
     </Paper>
   )
@@ -236,7 +242,7 @@ export function PaperFooterFragment({message, onMessageControlShow, messageContr
   });
   const inlineStyle = {};
   if (isMessageByMe) {
-    inlineStyle.color = "#bf936d"
+    inlineStyle.color = "#8e9881"
   }
   return (
     <PaperFooter style={inlineStyle}>
@@ -254,9 +260,13 @@ export function PaperFooterFragment({message, onMessageControlShow, messageContr
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, message, onMessageControlHide, user, onDelete, onForward, onReply, isText, messageControlShow, children}) {
+export function ControlFragment({isMessageByMe, message, onMessageControlHide, onDelete, onForward, onReply, isText, messageControlShow, children}) {
+  const classNames = classnames({
+    [style.MainMessagesMessage__Control]: true,
+    [style["MainMessagesMessage__Control--mine"]]: isMessageByMe,
+  });
   return messageControlShow ? (
-    <Container className={style.MainMessagesMessage__Control}>
+    <Container className={classNames}>
       <Container topLeft>
         <MdExpandMore size={styleVar.iconSizeMd}
                       className={style.MainMessagesMessage__TriggerIcon}
@@ -267,12 +277,11 @@ export function ControlFragment({isMessageByMe, message, onMessageControlHide, u
         {isMessageByMe &&
         <Container inline>
           {isText && message.editable && children}
-          <MdDelete size={styleVar.iconSizeMd}
-                    className={style.MainMessagesMessage__ControlIcon}
-                    onClick={onDelete}/>
-
         </Container>
         }
+        <MdDelete size={styleVar.iconSizeMd}
+                  className={style.MainMessagesMessage__ControlIcon}
+                  onClick={onDelete}/>
         <MdForward size={styleVar.iconSizeMd}
                    className={style.MainMessagesMessage__ControlIcon}
                    onClick={onForward}/>
@@ -360,9 +369,9 @@ export default class MainMessagesMessage extends Component {
   }
 
   onDelete() {
-    const {dispatch, message} = this.props;
+    const {dispatch, message, user, isMessageByMe} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, true));
+      dispatch(messageDelete(message.id, isMessageByMe(message, user) && message.editable));
       dispatch(chatModalPrompt());
     }));
     this.onMessageControlHide();
@@ -406,6 +415,7 @@ export default class MainMessagesMessage extends Component {
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
+      forceSeen: messages && messages.length && messages[messages.length - 1].seen,
       messages,
       message,
       highLightMessage,

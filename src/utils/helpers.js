@@ -65,19 +65,20 @@ export function avatarNameGenerator(firstName, lastName) {
     if (letter.length > 1) {
       code = code - (code - letter[1].charCodeAt(0));
     }
+    const realLetter = letter.length > 1 ? `${letter[0]}\xa0${letter[1]}` : letter;
     for (const range in colorLogic) {
       const split = range.split('-');
       const lowRange = +split[0];
       const highRange = +split[1];
       if (code >= lowRange && code < highRange) {
         return {
-          letter,
+          letter: realLetter,
           color: colorLogic[range]
         }
       }
     }
     return {
-      letter: letter.length > 1 ? `${letter[0]}&#8239${letter[1]}` : letter,
+      letter: realLetter,
       color: colorLogic['1500-1550']
     }
   }

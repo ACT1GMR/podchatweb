@@ -67,7 +67,7 @@ export default class MainFooterAttachment extends Component {
   render() {
     const {isSendingText} = this.props;
     return (
-      <Container inline className={style.MainFooterAttachment} relative onClick={this.onClick.bind(this)}>
+      <Container className={style.MainFooterAttachment} inline relative onClick={this.onClick.bind(this)}>
         {
           isSendingText ?
             <Container>

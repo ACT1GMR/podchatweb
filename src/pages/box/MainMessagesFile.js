@@ -46,6 +46,9 @@ function getImage(metaData, isFromServer, smallVersion, fileObject) {
   let height = metaData.height;
 
   const ratio = height / width;
+  if (ratio < 0.25 || ratio > 5) {
+    return false;
+  }
   const maxWidth = smallVersion || window.innerWidth <= 700 ? 190 : ratio >= 2 ? 200 : 300;
   if (!isFromServer) {
     if (fileObject && fileObject.type) {
@@ -146,19 +149,23 @@ class MainMessagesFile extends Component {
       messageControlShow,
       messageTriggerShow,
       message,
-      user,
       highLightMessage,
       onMessageControlShow,
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
-      leftAsideShowing, smallVersion
+      leftAsideShowing,
+      smallVersion,
+      forceSeen
     } = this.props;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
-    const isImage = metaData.mimeType.indexOf("image") > -1;
+    let isImage = metaData.mimeType.indexOf("image") > -1;
     const isVideo = metaData.mimeType.indexOf("video") > -1;
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing, message.fileObject) : false;
+    if(!imageSizeLink) {
+      isImage = false;
+    }
     const mainMessagesFileImageClassNames = classnames({
       [style.MainMessagesFile__Image]: true,
       [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
@@ -172,15 +179,17 @@ class MainMessagesFile extends Component {
           messageControlShow={messageControlShow}
           message={message}
           onMessageControlHide={onMessageControlHide}
-          user={user}
-          onDelete={onDelete} onForward={onForward} onReply={onReply}
-          isText={true}
-        >
+          onDelete={onDelete} onForward={onForward} onReply={onReply}>
           <MdArrowDownward className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
                            size={styleVar.iconSizeMd}
                            onClick={this.onDownload.bind(this, metaData)}/>
         </ControlFragment>
-        <PaperFragment message={message} user={user} onRepliedMessageClicked={onRepliedMessageClicked}
+        {isUploading(message) ?
+          <Container className={style.MainMessagesFile__Progress}
+                     style={{width: `${message.progress ? message.progress : 0}%`}}
+                     title={`${message.progress && message.progress}`}/>
+          : ""}
+        <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <Container relative
                      className={style.MainMessagesFile__FileContainer}>
@@ -213,7 +222,7 @@ class MainMessagesFile extends Component {
                 <Text wordWrap="breakWord" bold>
                   {metaData.originalName}
                 </Text>
-                <Text size="xs" color="gray">
+                <Text size="xs" color="gray" dark={isMessageByMe}>
                   {humanFileSize(metaData.size, true)}
                 </Text>
               </Container>
@@ -240,9 +249,10 @@ class MainMessagesFile extends Component {
                 : ""}
             </Container>
           </Container>
-          <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow} isMessageByMe={isMessageByMe}
+          <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}
+                               isMessageByMe={isMessageByMe}
                                messageControlShow={messageControlShow} messageTriggerShow={messageTriggerShow}>
-            <SeenFragment isMessageByMe={isMessageByMe} message={message} user={user} thread={thread}
+            <SeenFragment isMessageByMe={isMessageByMe} message={message} thread={thread} forceSeen={forceSeen}
                           onMessageSeenListClick={onMessageSeenListClick} onRetry={this.onRetry}
                           onCancel={this.onCancel}/>
           </PaperFooterFragment>

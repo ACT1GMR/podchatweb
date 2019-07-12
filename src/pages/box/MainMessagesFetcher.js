@@ -75,7 +75,7 @@ function showNameOrAvatar(message, messages) {
   }
 }
 
-function noMessageFragment() {
+function NoMessageFragment() {
   return (
     <Container className={style.MainMessages}>
       <Container center centerTextAlign relative style={{width: "100%"}}>
@@ -87,12 +87,20 @@ function noMessageFragment() {
   )
 }
 
-function loadingFragment() {
+function LoadingFragment() {
   return (
     <Container className={style.MainMessages}>
       <Container center centerTextAlign style={{width: "100%"}}>
         <Loading hasSpace><LoadingBlinkDots/></Loading>
       </Container>
+    </Container>
+  )
+}
+
+function PartialLoadingFragment() {
+  return (
+    <Container topCenter centerTextAlign style={{zIndex: 1}}>
+      <Loading><LoadingBlinkDots size="sm"/></Loading>
     </Container>
   )
 }
@@ -400,19 +408,28 @@ export default class MainMessages extends Component {
     });
 
     if (!thread.id || fetching || threadGetMessageListByMessageIdFetching) {
-      return loadingFragment();
+      return <LoadingFragment/>;
     }
 
     if (!messages.length) {
-      return noMessageFragment();
+      return <NoMessageFragment/>;
     }
 
-    const args = {thread, messages, user, highLightMessage, onRepliedMessageClicked: this.onRepliedMessageClicked, isMessageByMe, showNameOrAvatar};
+    const args = {
+      thread,
+      messages,
+      user,
+      highLightMessage,
+      onRepliedMessageClicked: this.onRepliedMessageClicked,
+      isMessageByMe,
+      showNameOrAvatar
+    };
 
     return (
       <Container className={style.MainMessages}>
+        {threadMessagesPartialFetching && <PartialLoadingFragment/>}
         <Scroller ref={this.scroller}
-                  threshold={10}
+                  threshold={6}
                   onScrollBottomEnd={this.onScrollBottomEnd}
                   onScrollBottomThreshold={this.onScrollBottomThreshold}
                   onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}

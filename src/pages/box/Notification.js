@@ -4,7 +4,6 @@ import {connect} from "react-redux";
 import "moment/locale/fa";
 import Push from "push.js";
 import MetaTags from "react-meta-tags";
-import {isFile} from "./MainMessagesFetcher";
 
 //strings
 
@@ -21,6 +20,17 @@ function isMessageByMe(message, user) {
   if (user) {
     if (message) {
       return message.participant.id === user.id;
+    }
+  }
+}
+
+function isFile(message) {
+  if (message) {
+    if (message.metadata) {
+      if (typeof message.metadata === "object") {
+        return message.metadata.file;
+      }
+      return JSON.parse(message.metadata).file;
     }
   }
 }
@@ -95,8 +105,11 @@ export default class Notification extends Component {
               const text = messageNew.message;
               tag.innerHTML = messageNew.message;
               const isEmoji = text && text.indexOf('img') > -1;
+              const newMessageText = messageNew.message;
+              const personName = `${thread.group ? `${messageNew.participant.contactName || messageNew.participant.name}: ` : ""}`;
+              const notificationMessage =`${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText}`;
               Push.create(thread.title, {
-                body: isMessageFile ? messageNew.message ? messageNew.message : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText,
+                body: notificationMessage,
                 icon: thread.image || defaultAvatar,
                 timeout: 60000,
                 onClick: function () {
