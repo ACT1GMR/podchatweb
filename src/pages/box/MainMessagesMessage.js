@@ -418,7 +418,7 @@ export default class MainMessagesMessage extends Component {
       messageTriggerShow,
       forceSeen: messages && messages.length && messages[messages.length - 1].seen,
       isChannel: thread.group && thread.type === 8,
-      isMessageByMeReal,
+      isMessageByMe: isMessageByMeReal,
       isGroup,
       messages,
       message,
