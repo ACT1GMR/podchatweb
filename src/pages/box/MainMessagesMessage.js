@@ -260,7 +260,7 @@ export function PaperFooterFragment({message, onMessageControlShow, messageContr
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, message, onMessageControlHide, onDelete, onForward, onReply, isText, messageControlShow, children}) {
+export function ControlFragment({isMessageByMe, message, onMessageControlHide, onDelete, onForward, onReply, isText, messageControlShow, children, isChannel}) {
   const classNames = classnames({
     [style.MainMessagesMessage__Control]: true,
     [style["MainMessagesMessage__Control--mine"]]: isMessageByMe,
@@ -285,9 +285,13 @@ export function ControlFragment({isMessageByMe, message, onMessageControlHide, o
         <MdForward size={styleVar.iconSizeMd}
                    className={style.MainMessagesMessage__ControlIcon}
                    onClick={onForward}/>
+
+        {isChannel &&
         <MdReply size={styleVar.iconSizeMd}
                  className={style.MainMessagesMessage__ControlIcon}
                  onClick={onReply}/>
+        }
+
         {!isText && children}
       </Container>
     </Container>

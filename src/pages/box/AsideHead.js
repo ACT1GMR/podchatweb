@@ -68,7 +68,7 @@ class AsideHead extends Component {
         type: CONTACT_MODAL_CREATE_GROUP_SHOWING
       },
       {
-        name: strings.createGroup,
+        name: strings.createGroup(true),
         type: CONTACT_MODAL_CREATE_CHANNEL_SHOWING
       },
       {
