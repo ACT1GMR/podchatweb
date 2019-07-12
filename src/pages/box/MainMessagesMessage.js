@@ -286,10 +286,10 @@ export function ControlFragment({isMessageByMe, message, onMessageControlHide, o
                    className={style.MainMessagesMessage__ControlIcon}
                    onClick={onForward}/>
 
-        {isChannel &&
-        <MdReply size={styleVar.iconSizeMd}
-                 className={style.MainMessagesMessage__ControlIcon}
-                 onClick={onReply}/>
+        {!isChannel &&
+          <MdReply size={styleVar.iconSizeMd}
+                   className={style.MainMessagesMessage__ControlIcon}
+                   onClick={onReply}/>
         }
 
         {!isText && children}

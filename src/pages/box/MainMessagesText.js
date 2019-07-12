@@ -84,6 +84,7 @@ export default class MainMessagesText extends Component {
         <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
         <ControlFragment isMessageByMe={isMessageByMe}
                          messageControlShow={messageControlShow}
+                         isChannel={isChannel}
                          message={message}
                          onMessageControlHide={onMessageControlHide}
                          onDelete={onDelete} onForward={onForward} onReply={onReply}

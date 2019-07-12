@@ -178,6 +178,7 @@ class MainMessagesFile extends Component {
         <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
         <ControlFragment
           isMessageByMe={isMessageByMe}
+          isChannel={isChannel}
           messageControlShow={messageControlShow}
           message={message}
           onMessageControlHide={onMessageControlHide}
