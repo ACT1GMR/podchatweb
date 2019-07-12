@@ -79,6 +79,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
   render() {
     const {groupName, groupDesc, image} = this.state;
     const {thread} = this.props;
+    const isChannel = thread.type === 8;
     return (
       <Container>
         <Container relative>
@@ -101,13 +102,13 @@ export default class ModalThreadInfoGroupSettings extends Component {
               <AvatarName>
                 <InputText onChange={this.groupNameChange.bind(this)}
                            value={groupName}
-                           placeholder={strings.groupName}/>
+                           placeholder={strings.groupName(isChannel)}/>
               </AvatarName>
             </Avatar>
           </Container>
           <InputText onChange={this.groupDescChange.bind(this)}
                      value={groupDesc}
-                     placeholder={strings.groupDescription}/>
+                     placeholder={strings.groupDescription(isChannel)}/>
         </Container>
 
       </Container>

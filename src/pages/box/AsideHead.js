@@ -6,8 +6,11 @@ import {signOut, retry} from "podauth";
 
 //strings
 import strings from "../../constants/localization";
-import {CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_GROUP_SHOWING} from "../../constants/actionTypes";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_GROUP} from "../../constants/routes";
+import {
+  CONTACT_ADDING, CONTACT_LIST_SHOWING, CONTACT_MODAL_CREATE_CHANNEL_SHOWING,
+  CONTACT_MODAL_CREATE_GROUP_SHOWING
+} from "../../constants/actionTypes";
+import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_CHANNEL, ROUTE_CREATE_GROUP} from "../../constants/routes";
 
 //actions
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
@@ -65,6 +68,10 @@ class AsideHead extends Component {
         type: CONTACT_MODAL_CREATE_GROUP_SHOWING
       },
       {
+        name: strings.createChannel,
+        type: CONTACT_MODAL_CREATE_CHANNEL_SHOWING
+      },
+      {
         name: strings.signedOut,
         type: "CHAT_SIGN_OUT"
       }
@@ -97,6 +104,10 @@ class AsideHead extends Component {
       case CONTACT_MODAL_CREATE_GROUP_SHOWING:
         dispatch(contactModalCreateGroupShowing(true));
         routeChange(history, ROUTE_CREATE_GROUP, chatRouterLess);
+        break;
+      case CONTACT_MODAL_CREATE_CHANNEL_SHOWING:
+        dispatch(contactModalCreateGroupShowing(true, true));
+        routeChange(history, ROUTE_CREATE_CHANNEL, chatRouterLess);
         break;
       default:
         signOut();

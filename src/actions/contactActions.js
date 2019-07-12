@@ -51,11 +51,11 @@ export const contactListShowing = (isShowing) => {
   }
 };
 
-export const contactModalCreateGroupShowing = (isShowing) => {
+export const contactModalCreateGroupShowing = (isShowing, isChannel) => {
   return dispatch => {
     return dispatch({
       type: CONTACT_MODAL_CREATE_GROUP_SHOWING,
-      payload: isShowing
+      payload: {isShowing, isChannel}
     });
   }
 };

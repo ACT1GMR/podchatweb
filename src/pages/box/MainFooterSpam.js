@@ -8,7 +8,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {contactBlock, contactGetList} from "../../actions/contactActions";
-import {threadParticipantList, threadSpamPv} from "../../actions/threadActions";
+import {threadNotification, threadParticipantList, threadSpamPv} from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 //components
@@ -19,6 +19,26 @@ import Text from "../../../../uikit/src/typography/Text";
 import style from "../../../styles/pages/box/MainFooterSpam.scss";
 import Gap from "../../../../uikit/src/gap";
 
+
+function showMuteForChannel(props) {
+  const {
+    thread,
+    user
+  } = props;
+  if (!thread || !user) {
+    return false;
+  }
+
+  if (!thread.group) {
+    return false;
+  }
+
+  if (thread.type !== 8) {
+    return false;
+  }
+
+  return thread.inviter.id !== user.id;
+}
 
 function showSpam(props) {
   const {
@@ -52,7 +72,7 @@ function showSpam(props) {
     return false;
   }
   participant = participants.filter(e => e.id !== user.id)[0];
-  if(!participant) {
+  if (!participant) {
     return false;
   }
   for (const contact of contacts) {
@@ -91,6 +111,21 @@ function showBlock(props) {
   return participant.blocked;
 }
 
+function ActionBaseFragment({onClick, classNamesObject, text}) {
+  const newClassNamesObject = {
+    ...classNamesObject, ...{
+      [style.MainFooterSpam__ActionBase]: true
+    }
+  };
+  const classNames = classnames(newClassNamesObject);
+  return (
+    <Container className={classNames} userSelect="none" onClick={onClick}>
+      <Container className={style.MainFooterSpam__ActionBaseTextContainer}>
+        <Text color="accent" bold>{text}</Text>
+      </Container>
+    </Container>)
+}
+
 @connect(store => {
   return {
     contacts: store.contactGetList.contacts,
@@ -108,6 +143,7 @@ export default class MainFooterSpam extends Component {
     this.reportSpamClick = this.reportSpamClick.bind(this);
     this.onUnblockSelect = this.onUnblockSelect.bind(this);
     this.onBlockSelect = this.onBlockSelect.bind(this);
+    this.onThreadMute = this.onThreadMute.bind(this);
   }
 
   reportSpamClick() {
@@ -134,20 +170,20 @@ export default class MainFooterSpam extends Component {
     }, null, strings.accept));
   }
 
+  onThreadMute(){
+    const {dispatch, thread} = this.props;
+    dispatch(threadNotification(thread.id, !thread.mute));
+  }
+
   render() {
+    const {thread} = this.props;
     const showSpamming = showSpam(this.props);
     const showBlockIs = showBlock(this.props);
+    const showMuteForChannelIs = showMuteForChannel(this.props);
     let classNamesObject = {
       [style.MainFooterSpam]: true,
-      [style["MainFooterSpam--active"]]: showSpamming || showBlockIs
+      [style["MainFooterSpam--active"]]: showSpamming || showBlockIs || showMuteForChannelIs
     };
-    if (showBlockIs) {
-      classNamesObject = {
-        ...classNamesObject, ...{
-          [style.MainFooterSpam__Blocked]: true
-        }
-      }
-    }
     const classNames = classnames(classNamesObject);
     return (
       showSpamming ?
@@ -166,14 +202,7 @@ export default class MainFooterSpam extends Component {
             </Container>
           </Container>
         </Container>
-        :
-        <Container className={classNames} userSelect="none">
-          <Container className={style.MainFooterSpam__BlockedTextContainer} onClick={this.onUnblockSelect}>
-            <Text linkStyle color="accent" bold>
-              {strings.unBlock}
-            </Text>
-          </Container>
-        </Container>
+        : <ActionBaseFragment classNamesObject={classNamesObject} text={showBlockIs ? strings.unBlock : thread.mute ? strings.unmute : strings.mute} onClick={showBlockIs ? this.onUnblockSelect : this.onThreadMute}/>
     );
   }
 }

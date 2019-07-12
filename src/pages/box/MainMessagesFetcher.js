@@ -42,7 +42,17 @@ const statics = {
   historyFetchCount: 20,
 };
 
-function isMessageByMe(message, user) {
+function isMessageByMe(message, user, thread) {
+  if (thread && user) {
+    const isGroup = thread.group;
+    if (isGroup) {
+      if (thread.type === 8) {
+        if (thread.inviter.id === user.id) {
+          return true;
+        }
+      }
+    }
+  }
   if (message) {
     if (message) {
       if (!message.id) {
@@ -53,6 +63,7 @@ function isMessageByMe(message, user) {
       }
     }
   }
+
 }
 
 function messageSelectedCondition(message, threadCheckedMessageList) {
@@ -116,7 +127,7 @@ function messageTickFragment(message, onAddToCheckedMessage, threadCheckedMessag
 
 function getAvatar(message, messages, onAvatarClick, thread, user) {
   const showAvatar = showNameOrAvatar(message, messages);
-  const enableClickCondition = !isMessageByMe(message, user) && thread.group;
+  const enableClickCondition = !isMessageByMe(message, user, thread) && thread.group;
   const fragment =
     showAvatar ?
       <Avatar onClick={enableClickCondition ? onAvatarClick.bind(null, message.participant) : null}
@@ -204,17 +215,18 @@ export default class MainMessages extends Component {
     }
 
     //functionality after allowing newMessage to come for calculation
-    if (this.scroller.current) {
-      if (isMessageByMe(messageNew, user)) {
-        if (hasNext) {
-          dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
-          return false;
-        } else {
-          dispatch(threadNewMessage(messageNew));
-          this.gotoBottom = true;
-          return false;
-        }
+
+    if (isMessageByMe(messageNew, user)) {
+      if (hasNext) {
+        dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+        return false;
       } else {
+        dispatch(threadNewMessage(messageNew));
+        this.gotoBottom = true;
+        return false;
+      }
+    } else {
+      if (this.scroller.current) {
         const scrollPositionInfo = this.scroller.current.getInfo();
         if (!hasNext && scrollPositionInfo.isInBottomEnd) {
           dispatch(threadNewMessage(messageNew));
@@ -229,6 +241,7 @@ export default class MainMessages extends Component {
         }
       }
     }
+
     return true;
   }
 
@@ -350,7 +363,7 @@ export default class MainMessages extends Component {
   }
 
   goToSpecificMessage(messageTime) {
-    const {thread, dispatch} = this.props;
+    const {thread} = this.props;
     const result = this.scroller.current.gotoElement(`message-${messageTime}`);
     const setHighlighter = () => {
       this.setState({
@@ -364,6 +377,11 @@ export default class MainMessages extends Component {
     };
 
     if (!result) {
+
+      //If last request was the same message and if this message is not exists in history fetch from init
+      if (messageTime === this.hasPendingMessageToGo) {
+        return this._fetchInitHistory();
+      }
       this.hasPendingMessageToGo = messageTime;
       this._fetchHistoryFromMiddle(thread.id, messageTime);
       return setHighlighter();
@@ -404,7 +422,7 @@ export default class MainMessages extends Component {
     const {highLightMessage, bottomButtonShowing} = this.state;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
-      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
+      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user, thread)
     });
 
     if (!thread.id || fetching || threadGetMessageListByMessageIdFetching) {
@@ -446,7 +464,7 @@ export default class MainMessages extends Component {
                 <Container className={MainMessagesMessageContainerClassNames(message)}
                            id={`message-${message.time}`}
                            relative>
-                  {getAvatar(message, messages, this.onAvatarClick, thread, user)}
+                  {thread.group && thread.type !== 8 && getAvatar(message, messages, this.onAvatarClick, thread, user)}
                   <MainMessagesMessage {...args} message={message}/>
                   {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
                 </Container>

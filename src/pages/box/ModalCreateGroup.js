@@ -31,7 +31,7 @@ const constants = {
 
 @connect(store => {
   return {
-    isShow: store.contactModalCreateGroupShowing,
+    contactModalCreateGroup: store.contactModalCreateGroupShowing,
     contacts: store.contactGetList.contacts,
     contactsFetching: store.contactGetList.fetching,
     chatInstance: store.chatInstance.chatSDK,
@@ -77,9 +77,9 @@ class ModalCreateGroup extends Component {
     });
   }
 
-  onCreate(groupName) {
+  onCreate(groupName, isChannel) {
     const {dispatch, chatRouterLess, history} = this.props;
-    dispatch(threadCreate(this.state.threadContacts, null, groupName));
+    dispatch(threadCreate(this.state.threadContacts, null, groupName, null, isChannel));
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }
@@ -133,17 +133,18 @@ class ModalCreateGroup extends Component {
   }
 
   render() {
-    const {contacts, isShow, smallVersion, chatInstance, contactsFetching} = this.props;
+    const {contacts, contactModalCreateGroup, smallVersion, chatInstance, contactsFetching} = this.props;
     const {threadContacts, step, groupName} = this.state;
+    const {isShowing, isChannel} = contactModalCreateGroup;
     const showLoading = contactsFetching;
 
     let filteredContacts = contacts.filter(e => e.hasUser);
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{strings.selectContacts}</Heading>
+          <Heading h3>{step === constants.SELECT_CONTACT ? strings.selectContacts : isChannel ? strings.createChannel : strings.createGroup}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -195,7 +196,7 @@ class ModalCreateGroup extends Component {
               </Button>
               : ""
             :
-            <Button text onClick={this.onCreate.bind(this, groupName)}>{strings.createGroup}</Button>
+            <Button text onClick={this.onCreate.bind(this, groupName, isChannel)}>{strings.createGroup(isChannel)}</Button>
           }
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
         </ModalFooter>

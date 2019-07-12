@@ -110,7 +110,7 @@ export const contactListShowingReducer = (state = false, action) => {
   }
 };
 
-export const contactModalCreateGroupShowingReducer = (state = false, action) => {
+export const contactModalCreateGroupShowingReducer = (state = {isShowing: false, isChannel: false}, action) => {
   switch (action.type) {
     case CONTACT_MODAL_CREATE_GROUP_SHOWING:
       return action.payload;

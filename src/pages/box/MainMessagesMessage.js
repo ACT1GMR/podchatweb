@@ -218,7 +218,7 @@ export function HighLighterFragment({message, highLightMessage}) {
   );
 }
 
-export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, children}) {
+export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, isChannel, children}) {
   const style = {
     borderRadius: "5px"
   };
@@ -227,7 +227,7 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
   }
   return (
     <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe}>
-      {PersonNameFragment(message, isFirstMessage, isMessageByMe)}
+      {isGroup && PersonNameFragment(message, isFirstMessage, isMessageByMe)}
       {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked)}
       {ForwardFragment(message, isMessageByMe)}
       {children}
@@ -401,6 +401,8 @@ export default class MainMessagesMessage extends Component {
       isMessageByMe
     } = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
+    const isGroup = thread.group && thread.type !== 8;
+    const isMessageByMeReal = isMessageByMe(message, user, thread);
     const args = {
       //new paradaigm
       onMessageControlShow: this.onMessageControlShow,
@@ -410,12 +412,14 @@ export default class MainMessagesMessage extends Component {
       onDelete: this.onDelete,
       onForward: this.onForward,
       onReply: this.onReply,
-      isMessageByMe: isMessageByMe(message, user),
       isFirstMessage: showNameOrAvatar(message, messages),
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
       forceSeen: messages && messages.length && messages[messages.length - 1].seen,
+      isChannel: thread.group && thread.type === 8,
+      isMessageByMeReal,
+      isGroup,
       messages,
       message,
       highLightMessage,
@@ -425,7 +429,13 @@ export default class MainMessagesMessage extends Component {
     return (
       <Container id={message.uuid}
                  inline relative
-                 style={{padding: "2px 5px", minWidth: "220px", maxWidth: "50%"}}
+                 style={{
+                   padding: "2px 5px",
+                   minWidth: "220px",
+                   maxWidth: "50%",
+                   marginRight: isGroup ? null : isMessageByMeReal ? "5px" : null,
+                   marginLeft: isGroup ? null : isMessageByMeReal ? null : "5px"
+                 }}
                  ref={this.containerRef}
                  onClick={this.onMessageControlShow.bind(this, true)}
                  onMouseOver={this.onMouseOver}

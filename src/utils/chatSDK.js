@@ -129,7 +129,7 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  createThread(resolve, reject, params, threadName, idType) {
+  createThread(resolve, reject, params, threadName, idType, isChannel) {
     let invitees = [{"id": params, "idType": idType || "TO_BE_USER_CONTACT_ID"}];
     const isGroup = params instanceof Array;
     if (isGroup) {
@@ -139,7 +139,7 @@ export default class ChatSDK {
       }
     }
     const createThreadParams = {
-      type: isGroup ? "OWNER_GROUP" : "NORMAL",
+      type: isChannel ? "CHANNEL" : isGroup ? "OWNER_GROUP" : "NORMAL",
       invitees
     };
     if (threadName) {

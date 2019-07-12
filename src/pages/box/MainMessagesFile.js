@@ -156,7 +156,9 @@ class MainMessagesFile extends Component {
       onMessageControlHide,
       leftAsideShowing,
       smallVersion,
-      forceSeen
+      forceSeen,
+      isChannel,
+      isGroup
     } = this.props;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -190,6 +192,7 @@ class MainMessagesFile extends Component {
                      title={`${message.progress && message.progress}`}/>
           : ""}
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
+                       isChannel={isChannel} isGroup={isGroup}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <Container relative
                      className={style.MainMessagesFile__FileContainer}>

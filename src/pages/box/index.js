@@ -8,7 +8,7 @@ import classnames from "classnames";
 import strings from "../../constants/localization";
 import {
   ROUTE_ADD_CONTACT,
-  ROUTE_CONTACTS,
+  ROUTE_CONTACTS, ROUTE_CREATE_CHANNEL,
   ROUTE_CREATE_GROUP, ROUTE_THREAD,
   ROUTE_THREAD_INFO
 } from "../../constants/routes";
@@ -136,7 +136,7 @@ class Box extends Component {
     };
     const popups = (
       <Container>
-        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CREATE_GROUP}
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : [ROUTE_CREATE_GROUP, ROUTE_CREATE_CHANNEL]}
                render={() => <ModalCreateGroup smallVersion={small}/>}/>
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CONTACTS}
                render={() => <ModalContactList smallVersion={small}/>}/>

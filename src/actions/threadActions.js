@@ -38,7 +38,7 @@ import {stateGeneratorState} from "../utils/storeHelper";
 const {CANCELED} = stateGeneratorState;
 
 
-export const threadCreate = (contactId, thread, threadName, idType) => {
+export const threadCreate = (contactId, thread, threadName, idType, isChannel) => {
   return (dispatch, getState) => {
     dispatch(threadShowing(true));
     dispatch(threadSelectMessageShowing(false));
@@ -54,7 +54,7 @@ export const threadCreate = (contactId, thread, threadName, idType) => {
     const chatSDK = state.chatInstance.chatSDK;
     return dispatch({
       type: THREAD_CREATE(),
-      payload: chatSDK.createThread(contactId, threadName, idType)
+      payload: chatSDK.createThread(contactId, threadName, idType, isChannel)
     });
   }
 };

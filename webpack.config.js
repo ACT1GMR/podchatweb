@@ -61,12 +61,24 @@ module.exports = (e, argv) => {
         },
         {
           test: /\.(png|jpg|gif|ttf|eot|woff2|woff)$/,
+          exclude: /oneone\.png/,
           use: [
             {
               loader: "url-loader",
               options: {
                 limit: 8000,
                 name: "assets/[hash].[ext]"
+              }
+            }
+          ]
+        },
+        {
+          test: /oneone\.png/,
+          use: [
+            {
+              loader: "file-loader",
+              options: {
+                name: "assets/oneone.[ext]"
               }
             }
           ]

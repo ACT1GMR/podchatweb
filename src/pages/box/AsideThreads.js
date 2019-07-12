@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
+import {isFile} from "./MainMessagesMessage"
 
 //strings
 import strings from "../../constants/localization";
@@ -12,7 +13,7 @@ import {ROUTE_THREAD} from "../../constants/routes";
 import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
-import {MdGroup} from "react-icons/lib/md";
+import {MdGroup, MdRecordVoiceOver, MdDoneAll, MdDone} from "react-icons/lib/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
@@ -34,15 +35,15 @@ function sliceMessage(message, to) {
   return message;
   //TODO: maybe cause of failure on Aside design due overflow
   /*  const tag = document.createElement("p");
-    tag.innerHTML = message;
-    const text = tag.innerText;
-    const childElementCount = tag.childElementCount * 1.5;
-    if (text) {
-      if ((text.length + childElementCount) >= 15) {
-        return `${text.slice(0, to || 15)}...`;
-      }
-    }
-    return message;*/
+   tag.innerHTML = message;
+   const text = tag.innerText;
+   const childElementCount = tag.childElementCount * 1.5;
+   if (text) {
+   if ((text.length + childElementCount) >= 15) {
+   return `${text.slice(0, to || 15)}...`;
+   }
+   }
+   return message;*/
 }
 
 function prettifyMessageDate(passedTime) {
@@ -54,17 +55,6 @@ function prettifyMessageDate(passedTime) {
   return date.prettifySince(diff);
 }
 
-function isFile(message) {
-  if (message) {
-    if (message.metadata) {
-      if (typeof message.metadata === "object") {
-        return message.metadata.file;
-      }
-      return JSON.parse(message.metadata).file
-    }
-  }
-}
-
 function getTitle(title) {
   if (!title) {
     return "";
@@ -74,6 +64,76 @@ function getTitle(title) {
   }
   return title;
 }
+
+
+function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage, inviter}) {
+  const isFileReal = isFile(lastMessageVO);
+  const hasLastMessage = lastMessage || lastMessageVO;
+  const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
+  const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
+                                    sanitizeRule={sanitizeRule}
+                                    dark>{sliceMessage(lastMessage, 30)}</Text>;
+  const createdAThreadFragment = <Text size="sm" inline
+                                       color="accent">{sliceMessage(strings.createdAThread(inviter.contactName || inviter.name, isGroup, isChannel), 30)}</Text>;
+
+  return (
+    <Container> {
+      isGroup && !isChannel ?
+        hasLastMessage ?
+          <Container>
+            <Text size="sm" inline
+                  color="accent">{lastMessageVO.participant.contactName || lastMessageVO.participant.name}: </Text>
+            {isFileReal ? sentAFileFragment : lastMessageFragment }
+          </Container>
+          :
+          createdAThreadFragment
+        :
+        hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
+    }
+    </Container>
+  )
+}
+
+function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO}) {
+  return (
+    <Container>
+      <Container topLeft>
+        {
+          lastMessageVO && !isGroup && !isChannel &&
+          <Container inline>
+            {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeXs}/> : <MdDone size={style.iconSizeXs}/>}
+            <Gap x={3}/>
+          </Container>
+        }
+        <Container inline>
+          <Text size="xs"
+                color="gray">{prettifyMessageDate(time || lastMessageVO.time)}</Text>
+        </Container>
+
+      </Container>
+
+    </Container>
+  )
+}
+
+function LastMessageFragment({thread}) {
+  const {group, type, lastMessageVO, lastMessage, inviter, time} = thread;
+  const args = {
+    isGroup: group && type !== 8,
+    isChannel: group && type === 8,
+    lastMessageVO,
+    lastMessage,
+    inviter,
+    time
+  };
+  return (
+    <Container>
+      <LastMessageTextFragment {...args}/>
+      <LastMessageInfoFragment {...args}/>
+    </Container>
+  )
+}
+
 
 const sanitizeRule = {
   allowedTags: ["img"],
@@ -103,7 +163,7 @@ class AsideThreads extends Component {
 
   onThreadClick(thread) {
     const {chatRouterLess, history, threadId} = this.props;
-    if(thread.id === threadId) {
+    if (thread.id === threadId) {
       return;
     }
     if (!chatRouterLess) {
@@ -166,49 +226,21 @@ class AsideThreads extends Component {
                       <AvatarName invert>
                         {el.group &&
                         <Container inline>
-                          <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          {el.type === 8 ?
+                            <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                            :
+                            <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          }
                           <Gap x={2}/>
                         </Container>
                         }
                         {getTitle(el.title)}
                         <AvatarText>
-                          {el.group ?
-                            el.lastMessage || el.lastMessageVO ?
-                              <Container>
-                                <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
-                                {isFile(el.lastMessageVO) ?
-                                  <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
-                                  :
-                                  <Text isHTML size="sm" inline color="gray" dark
-                                        sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
-                                }
-                              </Container>
-                              :
-                              <Text size="sm" inline
-                                    color="accent">{sliceMessage(strings.createdAGroup(el.inviter.contactName || el.inviter.name), 30)}</Text>
-                            :
-                            el.lastMessage || el.lastMessageVO ?
-                              isFile(el.lastMessageVO) ?
-                                <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
-                                :
-                                <Text isHTML size="sm" inline color="gray"
-                                      sanitizeRule={sanitizeRule}
-                                      dark>{sliceMessage(el.lastMessage, 30)}</Text>
-                              :
-                              <Text size="sm" inline
-                                    color="accent">{sliceMessage(strings.createdAChat(el.inviter.contactName || el.inviter.name), 35)}</Text>
-                          }
-                          {el.lastMessageVO || el.time ?
-                            <Container topLeft>
-                              <Text size="xs"
-                                    color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
-                            </Container>
-                            : ""}
-
+                          <LastMessageFragment thread={el}/>
                         </AvatarText>
                       </AvatarName>
                     </Avatar>
-                    {el.unreadCount?
+                    {el.unreadCount ?
                       <Container absolute centerLeft>
                         <Gap y={10} block/>
                         <Shape color="accent">
@@ -226,5 +258,5 @@ class AsideThreads extends Component {
   }
 }
 
-const exportDefault =  withRouter(AsideThreads);
+const exportDefault = withRouter(AsideThreads);
 export {getTitle, sliceMessage, isFile, sanitizeRule, prettifyMessageDate, exportDefault as default};

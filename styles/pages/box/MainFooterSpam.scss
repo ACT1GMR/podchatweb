@@ -8,17 +8,18 @@
   display: flex;
 }
 
-.MainFooterSpam__Blocked {
+.MainFooterSpam__ActionBase {
   position: absolute;
-  top: 0;
+  top: -1px;
   right: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% + 1px);
   z-index: 2;
   background-color: $color-background-light;
   align-items: center;
+  cursor: pointer;
 }
 
-.MainFooterSpam__BlockedTextContainer {
+.MainFooterSpam__ActionBaseTextContainer {
   margin: 0 auto;
 }

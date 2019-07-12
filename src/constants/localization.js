@@ -12,7 +12,7 @@ let strings = new LocalizedStrings({
     add: "اضافه کردن",
     addContact: "اضافه کردن مخاطب",
     editContact: contact => {
-      if(!contact) {
+      if (!contact) {
         return "اصلاح مخاطب";
       }
       return `اصلاح مخاطب ${contact.firstName || ""} ${contact.lastName || ""}`;
@@ -23,7 +23,7 @@ let strings = new LocalizedStrings({
     close: "بستن",
     startChat: "شروع گفتگو",
     edited: "اصلاح شد",
-    groupDescription: "توضیحات گروه",
+    groupDescription: isChannel=> `توضیحات ${isChannel ?  "کانال" : "گروه"}`,
     waitingForMessageFetching: "در حالت دریافت پیامهای قبلی",
     creatingChatWith: (firstName, lastName) => {
       return `در حال ایجاد گفتگو با ${firstName} ${lastName}`;
@@ -36,18 +36,18 @@ let strings = new LocalizedStrings({
     unknown: "نامشخص",
     required: "اجباری",
     firstName: "نام",
-    groupName: "نام گروه",
+    groupName: isChannel=> `نام ${isChannel ?  "کانال" : "گروه"}`,
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
     isNotPodUser: "کاربر پاد نیست",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
-    createGroup: "ایجاد گروه",
+    createGroup: isChannel=> `ایجاد ${isChannel ?  "کانال" : "گروه"}`,
     member: "عضو",
     you: "شما",
     addMember: "اضافه کردن عضو",
     saveSettings: "ذخیره تغییرات",
-    groupSettings: "تنظیمات گروه",
+    groupSettings: isChannel=> `تنظیمات ${isChannel ?  "کانال" : "گروه"}`,
     chatInfo: "اطلاعات گفتگو",
     years: "سال",
     months: "ماه",
@@ -60,7 +60,7 @@ let strings = new LocalizedStrings({
     sentAFile: "فایلی فرستاده شد",
     sentAMessage: "پیغامی فرستاده شد",
     remove: "حذف",
-    groupInfo: "اطلاعات گروه",
+    groupInfo: isChannel=> `اطلاعات ${isChannel ?  "کانال" : "گروه"}`,
     contactInfo: "اطلاعات مخاطب",
     contacts: "مخاطبین",
     imageText: "متن تصویر",
@@ -86,11 +86,11 @@ let strings = new LocalizedStrings({
       }
       return `از خارج کردن این مخاطب از لیست سیاه مطمئنید`
     },
-    areYouSureAboutLeavingGroup(threadName) {
-      return `میخواهید گروه "${threadName}" را ترک کنید`;
+    areYouSureAboutLeavingGroup(threadName, isChannel) {
+      return `میخواهید ${isChannel ? "کانال" : "گروه"} "${threadName}" را ترک کنید`;
     },
-    areYouSureAboutRemovingMember(participantName) {
-      return `میخواهید "${participantName}" از گروه حذف کنید`;
+    areYouSureAboutRemovingMember(participantName, isChannel) {
+      return `میخواهید "${participantName}" از ${isChannel ? "کانال" : "گروه"} حذف کنید`;
     },
     modalMedia: {
       CLOSE: "بستن",
@@ -113,7 +113,7 @@ let strings = new LocalizedStrings({
       return `مخاطبی با مشخصات "${keyword}" وجود ندارد `;
     },
     prettifyDateString(string) {
-      if(string === strings.unknown) {
+      if (string === strings.unknown) {
         return string;
       }
       if (string === "دیروز") {
@@ -124,10 +124,13 @@ let strings = new LocalizedStrings({
       }
       return `${string} پیش`;
     },
-    createdAGroup(person) {
-      return `${person} گروهی ساخت`
-    },
-    createdAChat(person) {
+    createdAThread(person, isGroup, isChannel) {
+      if(isChannel) {
+        return `${person} کانالی ساخت`
+      }
+      if(isGroup) {
+        return `${person} گروهی ساخت`
+      }
       return `${person} گفتگویی ساخت`
     },
     noResult: "نتیجه ای وجود ندارد",
@@ -144,7 +147,7 @@ let strings = new LocalizedStrings({
     inActive: "غیرفعال",
     reportSpam: "اعلام گفتگو هجو",
     areYouSureToDoIt: "از انجام این کار مطمئنید",
-    leaveGroup: "ترک گروه",
+    leaveGroup: isChannel=> `ترک ${isChannel ?  "کانال" : "گروه"}`,
     chatState: {
       networkDisconnected: "در انتظار شبکه",
       reconnecting: "اتصال به شبکه",
@@ -161,7 +164,10 @@ let strings = new LocalizedStrings({
     description: "توضیحات",
     photo: "عکس",
     video: "ویدیو",
-    unreaded: "خوانده نشده"
+    unreaded: "خوانده نشده",
+    createChannel: "ایجاد کانال",
+    mute: "قطع اعلانات",
+    unmute: "برقراری اعلانانات"
   },
   it: {}
 });

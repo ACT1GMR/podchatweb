@@ -75,7 +75,9 @@ export default class MainMessagesText extends Component {
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
-      forceSeen
+      forceSeen,
+      isChannel,
+      isGroup
     } = this.props;
     return (
       <Container className={style.MainMessagesText}>
@@ -91,6 +93,7 @@ export default class MainMessagesText extends Component {
                   onClick={this.onEdit.bind(this, message)}/>
         </ControlFragment>
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
+                       isChannel={isChannel} isGroup={isGroup}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>

@@ -165,7 +165,7 @@ class ModalThreadInfoGroup extends Component {
 
   onLeaveSelect() {
     const {dispatch, thread} = this.props;
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutLeavingGroup(thread.title)}؟`, () => {
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutLeavingGroup(thread.title, thread.type === 8)}؟`, () => {
       dispatch(threadLeave(thread.id));
       dispatch(threadModalThreadInfoShowing());
       dispatch(chatModalPrompt());
@@ -188,7 +188,7 @@ class ModalThreadInfoGroup extends Component {
   onRemoveParticipant(participant) {
     const {thread, dispatch} = this.props;
     const {removingParticipantIds} = this.state;
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(participant.name)}؟`, () => {
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(participant.name, thread.type === 8)}؟`, () => {
       dispatch(threadRemoveParticipant(thread.id, [participant.id]));
       dispatch(chatModalPrompt());
       this.setState({
@@ -201,6 +201,7 @@ class ModalThreadInfoGroup extends Component {
     const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching, notificationPending, GapFragment} = this.props;
     const {removingParticipantIds, partialParticipantLoading} = this.state;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
+    const isChannel = thread.type === 8;
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
     const filteredContacts = contacts.filter(a => a.hasUser && !participants.filter(b => a.id === b.contactId).length);
@@ -254,7 +255,7 @@ class ModalThreadInfoGroup extends Component {
 
         <ModalHeader>
           <Heading
-            h3>{constants.GROUP_INFO === step ? strings.groupInfo : constants.ON_SETTINGS === step ? strings.groupSettings : strings.addMember}</Heading>
+            h3>{constants.GROUP_INFO === step ? strings.groupInfo(isChannel) : constants.ON_SETTINGS === step ? strings.groupSettings(isChannel) : strings.addMember}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -319,7 +320,7 @@ class ModalThreadInfoGroup extends Component {
                     <Container relative>
                       <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                       <Gap x={20}>
-                        <Text>{strings.leaveGroup}</Text>
+                        <Text>{strings.leaveGroup(isChannel)}</Text>
                       </Gap>
                     </Container>
                   </ListItem>

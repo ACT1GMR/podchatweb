@@ -14,6 +14,7 @@ import Container from "../../../../uikit/src/container";
 //styling
 import emojiStyle from "../../../styles/utils/emoji.scss";
 import style from "../../../styles/pages/box/MainFooterEmojiIcons.scss";
+import oneoneImage from "../../../styles/images/_common/oneone.png";
 
 const emojies = [
   {
@@ -44,7 +45,7 @@ export default class MainFooterEmojiIcons extends Component {
       [emojiStyle[`emoji-${emoji.name}`]]: true
     });
     const img = <img className={classNames}
-                     src="../../../styles/images/_common/oneone.png"
+                     src={oneoneImage}
                      style={{backgroundPosition: `${el.x / emoji.scale}px ${el.y / emoji.scale}px`}}/>;
     setInputText(ReactDOMServer.renderToStaticMarkup(img), true);
   }
