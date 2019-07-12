@@ -64,11 +64,11 @@ class AsideHead extends Component {
         type: CONTACT_LIST_SHOWING
       },
       {
-        name: strings.createGroup,
+        name: strings.createGroup(),
         type: CONTACT_MODAL_CREATE_GROUP_SHOWING
       },
       {
-        name: strings.createChannel,
+        name: strings.createGroup,
         type: CONTACT_MODAL_CREATE_CHANNEL_SHOWING
       },
       {

@@ -1,4 +1,4 @@
-function createParams(threadId, offset, loadAfter, query, count) {
+function createParams(threadId, offset, loadAfter, query, count, cache = true) {
   const isOffset = offset && (offset + "").length < 19;
   return {
     threadId,
@@ -6,13 +6,14 @@ function createParams(threadId, offset, loadAfter, query, count) {
     toTimeFull: isOffset ? null : loadAfter ? null : offset,
     fromTimeFull: isOffset ? null : loadAfter ? offset : null,
     order: isOffset ? "DESC" : loadAfter ? "ASC" : "DESC",
+    cache,
     query,
     count
   }
 }
 
-function _getThreadHistory(chatSDK, threadId, count, offsetOrTimeNanos, loadAfter, query) {
-  return chatSDK.getThreadMessageList(createParams(threadId, offsetOrTimeNanos, loadAfter, query, count));
+function _getThreadHistory(chatSDK, threadId, count, offsetOrTimeNanos, loadAfter, query, cache) {
+  return chatSDK.getThreadMessageList(createParams(threadId, offsetOrTimeNanos, loadAfter, query, count, cache));
 }
 
 export function getThreadHistory() {
@@ -20,7 +21,7 @@ export function getThreadHistory() {
 }
 
 export function getThreadHistoryByQuery(chatSDK, threadId, query, count) {
-  return _getThreadHistory(chatSDK, threadId, count, null, null, query);
+  return _getThreadHistory(chatSDK, threadId, count, null, null, query, false);
 }
 
 export function getThreadHistoryInMiddle(chatSDK, threadId, timeNano, count) {

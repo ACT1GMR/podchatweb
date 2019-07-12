@@ -363,7 +363,7 @@ export default class MainMessages extends Component {
   }
 
   goToSpecificMessage(messageTime) {
-    const {thread} = this.props;
+    const {thread, threadGoToMessageId} = this.props;
     const result = this.scroller.current.gotoElement(`message-${messageTime}`);
     const setHighlighter = () => {
       this.setState({
@@ -380,7 +380,9 @@ export default class MainMessages extends Component {
 
       //If last request was the same message and if this message is not exists in history fetch from init
       if (messageTime === this.hasPendingMessageToGo) {
-        return this._fetchInitHistory();
+        if(messageTime !== threadGoToMessageId){
+          return this._fetchInitHistory();
+        }
       }
       this.hasPendingMessageToGo = messageTime;
       this._fetchHistoryFromMiddle(thread.id, messageTime);

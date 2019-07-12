@@ -165,7 +165,6 @@ let strings = new LocalizedStrings({
     photo: "عکس",
     video: "ویدیو",
     unreaded: "خوانده نشده",
-    createChannel: "ایجاد کانال",
     mute: "قطع اعلانات",
     unmute: "برقراری اعلانانات"
   },
