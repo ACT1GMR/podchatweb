@@ -3,8 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
-import {isFile} from "./MainMessagesMessage"
-import Ripples from 'react-ripples'
+import {isFile} from "./MainMessagesMessage";
 
 //strings
 import strings from "../../constants/localization";
@@ -220,37 +219,35 @@ class AsideThreads extends Component {
 
                 <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
-                  <Ripples>
-                    <Container relative>
-                      <Avatar>
-                        <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                     textBg={avatarNameGenerator(el.title).color}/>
-                        <AvatarName invert>
-                          {el.group &&
-                          <Container inline>
-                            {el.type === 8 ?
-                              <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                              :
-                              <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                            }
-                            <Gap x={2}/>
-                          </Container>
+                  <Container relative>
+                    <Avatar>
+                      <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                   textBg={avatarNameGenerator(el.title).color}/>
+                      <AvatarName invert>
+                        {el.group &&
+                        <Container inline>
+                          {el.type === 8 ?
+                            <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                            :
+                            <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
                           }
-                          {getTitle(el.title)}
-                          <AvatarText>
-                            <LastMessageFragment thread={el}/>
-                          </AvatarText>
-                        </AvatarName>
-                      </Avatar>
-                      {el.unreadCount ?
-                        <Container absolute centerLeft>
-                          <Gap y={10} block/>
-                          <Shape color="accent">
-                            <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                          </Shape>
-                        </Container> : ""}
-                    </Container>
-                  </Ripples>
+                          <Gap x={2}/>
+                        </Container>
+                        }
+                        {getTitle(el.title)}
+                        <AvatarText>
+                          <LastMessageFragment thread={el}/>
+                        </AvatarText>
+                      </AvatarName>
+                    </Avatar>
+                    {el.unreadCount ?
+                      <Container absolute centerLeft>
+                        <Gap y={10} block/>
+                        <Shape color="accent">
+                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                        </Shape>
+                      </Container> : ""}
+                  </Container>
                 </ListItem>
 
               ))}
