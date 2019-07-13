@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage"
+import Ripples from 'react-ripples'
 
 //strings
 import strings from "../../constants/localization";
@@ -74,7 +75,7 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
                                     sanitizeRule={sanitizeRule}
                                     dark>{sliceMessage(lastMessage, 30)}</Text>;
   const createdAThreadFragment = <Text size="sm" inline
-                                       color="accent">{sliceMessage(strings.createdAThread(inviter.contactName || inviter.name, isGroup, isChannel), 30)}</Text>;
+                                       color="accent">{sliceMessage(strings.createdAThread(inviter && (inviter.contactName || inviter.name), isGroup, isChannel), 30)}</Text>;
 
   return (
     <Container> {
@@ -82,7 +83,7 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
         hasLastMessage ?
           <Container>
             <Text size="sm" inline
-                  color="accent">{lastMessageVO.participant.contactName || lastMessageVO.participant.name}: </Text>
+                  color="accent">{lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}: </Text>
             {isFileReal ? sentAFileFragment : lastMessageFragment }
           </Container>
           :
@@ -216,39 +217,42 @@ class AsideThreads extends Component {
             :
             <List>
               {filteredThreads.map(el => (
+
                 <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                           active={activeThread === el.id}>
-
-                  <Container relative>
-                    <Avatar>
-                      <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                   textBg={avatarNameGenerator(el.title).color}/>
-                      <AvatarName invert>
-                        {el.group &&
-                        <Container inline>
-                          {el.type === 8 ?
-                            <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                            :
-                            <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                  <Ripples>
+                    <Container relative>
+                      <Avatar>
+                        <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                     textBg={avatarNameGenerator(el.title).color}/>
+                        <AvatarName invert>
+                          {el.group &&
+                          <Container inline>
+                            {el.type === 8 ?
+                              <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                              :
+                              <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                            }
+                            <Gap x={2}/>
+                          </Container>
                           }
-                          <Gap x={2}/>
-                        </Container>
-                        }
-                        {getTitle(el.title)}
-                        <AvatarText>
-                          <LastMessageFragment thread={el}/>
-                        </AvatarText>
-                      </AvatarName>
-                    </Avatar>
-                    {el.unreadCount ?
-                      <Container absolute centerLeft>
-                        <Gap y={10} block/>
-                        <Shape color="accent">
-                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                        </Shape>
-                      </Container> : ""}
-                  </Container>
+                          {getTitle(el.title)}
+                          <AvatarText>
+                            <LastMessageFragment thread={el}/>
+                          </AvatarText>
+                        </AvatarName>
+                      </Avatar>
+                      {el.unreadCount ?
+                        <Container absolute centerLeft>
+                          <Gap y={10} block/>
+                          <Shape color="accent">
+                            <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                          </Shape>
+                        </Container> : ""}
+                    </Container>
+                  </Ripples>
                 </ListItem>
+
               ))}
             </List>
           }

@@ -71,7 +71,7 @@ export function ForwardFragment(message, isMessageByMe) {
       <Container>
         <Paper colorBackground style={inlineStyle}>
           <Text italic size="xs">{strings.forwardFrom}</Text>
-          <Text bold>{participant.contactName || participant.name}:</Text>
+          <Text bold>{participant && (participant.contactName || participant.name)}:</Text>
         </Paper>
         <Gap block y={5}/>
       </Container>
