@@ -32,9 +32,9 @@ export default class LeftAsideMain extends Component {
 
   componentDidUpdate(oldProps) {
     const {thread: oldThread} = oldProps;
-    const {thread} = this.props;
-    if (oldThread !== thread) {
-      return this.props.dispatch(threadLeftAsideShowing(false));
+    const {thread, dispatch} = this.props;
+    if (oldThread.id !== thread.id) {
+      return dispatch(threadLeftAsideShowing(false));
     }
   }
 

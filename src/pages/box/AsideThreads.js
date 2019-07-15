@@ -101,7 +101,7 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO}) {
         {
           lastMessageVO && !isGroup && !isChannel &&
           <Container inline>
-            {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeXs}/> : <MdDone size={style.iconSizeXs}/>}
+            {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> : <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
             <Gap x={3}/>
           </Container>
         }

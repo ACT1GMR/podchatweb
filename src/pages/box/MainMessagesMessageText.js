@@ -39,7 +39,7 @@ function urlify(text) {
 }
 
 @connect()
-export default class MainMessagesText extends Component {
+export default class MainMessagesMessageText extends Component {
 
   constructor(props) {
     super(props);
@@ -81,21 +81,21 @@ export default class MainMessagesText extends Component {
     } = this.props;
     return (
       <Container className={style.MainMessagesText}>
-        <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
-        <ControlFragment isMessageByMe={isMessageByMe}
-                         messageControlShow={messageControlShow}
-                         isChannel={isChannel}
-                         message={message}
-                         onMessageControlHide={onMessageControlHide}
-                         onDelete={onDelete} onForward={onForward} onReply={onReply}
-                         isText={true}>
-          <MdEdit className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
-                  size={styleVar.iconSizeMd}
-                  onClick={this.onEdit.bind(this, message)}/>
-        </ControlFragment>
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
                        isChannel={isChannel} isGroup={isGroup}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
+          <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
+          <ControlFragment isMessageByMe={isMessageByMe}
+                           messageControlShow={messageControlShow}
+                           isChannel={isChannel}
+                           message={message}
+                           onMessageControlHide={onMessageControlHide}
+                           onDelete={onDelete} onForward={onForward} onReply={onReply}
+                           isText={true}>
+            <MdEdit className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
+                    size={styleVar.iconSizeMd}
+                    onClick={this.onEdit.bind(this, message)}/>
+          </ControlFragment>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
               {urlify(message.message)}

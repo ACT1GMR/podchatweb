@@ -1,74 +1,82 @@
 // src/list/BoxSceneMessages
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
-import date from "../../utils/date";
 import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
 
 //actions
-import {messageSeen, messageGet} from "../../actions/messageActions";
+import {messageSeen} from "../../actions/messageActions";
 import {
-  threadFilesToUpload,
   threadMessageGetListByMessageId,
   threadMessageGetListPartial,
   threadMessageGetList,
   threadCheckedMessageList,
-  threadLeftAsideShowing
+  threadNewMessage,
+  threadCreate
 } from "../../actions/threadActions";
 
 //components
 import {ButtonFloating} from "../../../../uikit/src/button"
 import List, {ListItem} from "../../../../uikit/src/list"
-import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import Avatar, {AvatarImage} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
-import Paper from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
 import {Text} from "../../../../uikit/src/typography";
-import Gap from "../../../../uikit/src/gap";
-import MainMessagesFile from "./MainMessagesFile";
-import MainMessagesText from "./MainMessagesText";
+import Scroller from "../../../../uikit/src/Scroller";
 
 //styling
 import {
-  MdDoneAll,
-  MdVideocam,
-  MdDone,
   MdChatBubbleOutline,
-  MdErrorOutline,
-  MdSchedule,
   MdExpandMore,
-  MdCameraAlt,
-  MdInsertDriveFile
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../../constants/actionTypes";
+import MainMessagesMessage from "./MainMessagesMessage";
 
-function isMessageByMe(message, user) {
+const statics = {
+  historyFetchCount: 20,
+};
+
+function isMessageByMe(message, user, thread) {
+  if (thread && user) {
+    const isGroup = thread.group;
+    if (isGroup) {
+      if (thread.type === 8) {
+        if (thread.inviter.id === user.id) {
+          return true;
+        }
+      }
+    }
+  }
   if (message) {
     if (message) {
       if (!message.id) {
         return true;
       }
       if (user) {
-        return message.ownerId === user.id;
+        return message.participant.id === user.id;
       }
     }
   }
+
 }
 
-function showNameOrAvatar(message, threadMessages) {
+function messageSelectedCondition(message, threadCheckedMessageList) {
+  const fileIndex = threadCheckedMessageList.findIndex((msg => msg.uniqueId === message.uniqueId));
+  return fileIndex >= 0;
+}
+
+function showNameOrAvatar(message, messages) {
   const msgOwnerId = message.participant.id;
   const msgId = message.id || message.uniqueId;
-  const index = threadMessages.findIndex(e => e.id === msgId || e.uniqueId === msgId);
+  const index = messages.findIndex(e => e.id === msgId || e.uniqueId === msgId);
   if (~index) {
-    const lastMessage = threadMessages[index - 1];
+    const lastMessage = messages[index - 1];
     if (lastMessage) {
       if (lastMessage.participant.id === msgOwnerId) {
         return false;
@@ -78,605 +86,405 @@ function showNameOrAvatar(message, threadMessages) {
   }
 }
 
-function isFile(message) {
-  if (message) {
-    if (message.metadata) {
-      if (typeof message.metadata === "object") {
-        return message.metadata.file;
-      }
-      return JSON.parse(message.metadata).file
-    }
-  }
+function NoMessageFragment() {
+  return (
+    <Container className={style.MainMessages}>
+      <Container center centerTextAlign relative style={{width: "100%"}}>
+        <div className={style.MainMessages__Empty}/>
+        <Message size="lg">{strings.thereIsNoMessageToShow}</Message>
+        <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
+      </Container>
+    </Container>
+  )
 }
 
-function datePetrification(time) {
-  const correctTime = time / Math.pow(10, 6);
-  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
+function LoadingFragment() {
+  return (
+    <Container className={style.MainMessages}>
+      <Container center centerTextAlign style={{width: "100%"}}>
+        <Loading hasSpace><LoadingBlinkDots/></Loading>
+      </Container>
+    </Container>
+  )
 }
 
-const statics = {
-  scrollThresholdMultiply: 10,
-  gotoBottomButtonShowingThreshold: 100,
-  messageFetchingCount: 20,
-};
+function PartialLoadingFragment() {
+  return (
+    <Container topCenter centerTextAlign style={{zIndex: 1}}>
+      <Loading><LoadingBlinkDots size="sm"/></Loading>
+    </Container>
+  )
+}
+
+function messageTickFragment(message, onAddToCheckedMessage, threadCheckedMessageList) {
+  const isExisted = messageSelectedCondition(message, threadCheckedMessageList);
+  const classNames = classnames({
+    [style.MainMessages__Tick]: true,
+    [style["MainMessages__Tick--selected"]]: isExisted
+  });
+  return <Container className={classNames} onClick={onAddToCheckedMessage.bind(null, message, !isExisted)}/>;
+}
+
+function getAvatar(message, messages, onAvatarClick, thread, user) {
+  const showAvatar = showNameOrAvatar(message, messages);
+  const enableClickCondition = !isMessageByMe(message, user, thread) && thread.group;
+  const fragment =
+    showAvatar ?
+      <Avatar onClick={enableClickCondition ? onAvatarClick.bind(null, message.participant) : null}
+              cursor={enableClickCondition ? "pointer" : null}>
+        <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
+                     textBg={avatarNameGenerator(message.participant.name).color}/>
+      </Avatar>
+      :
+      <div style={{width: "50px", display: "inline-block"}}/>;
+  return showAvatar ?
+    <Container inline inSpace style={{maxWidth: "50px", verticalAlign: "top"}}>
+      {fragment}
+    </Container> : fragment;
+}
 
 @connect(store => {
   return {
-    isGroup: store.thread.thread.group,
-    threadId: store.thread.thread.id,
-    threadUnreadCount: store.thread.thread.unreadCount,
-    threadLastMessage: store.thread.thread.lastMessageVO,
-    threadMessages: store.threadMessages.messages,
-    threadMessagesHasNext: store.threadMessages.hasNext,
-    threadMessagesHasPrevious: store.threadMessages.hasPrevious,
-    threadMessagesFetching: store.threadMessages.fetching,
+    thread: store.thread.thread,
+    threadMessages: store.threadMessages,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
-    threadMessagesNextOffset: store.threadMessages.nextOffset,
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
-    threadGoToMessageId: store.threadGoToMessageId,
-    threadFetching: store.thread.fetching,
     threadSelectMessageShowing: store.threadSelectMessageShowing,
     threadCheckedMessageList: store.threadCheckedMessageList,
+    threadGoToMessageId: store.threadGoToMessageId,
+    messageNew: store.messageNew,
     user: store.user.user,
-    contact: store.contactChatting.contact
   };
 })
 export default class MainMessages extends Component {
-  seenMessages = [];
-  lastMessage = null;
-  gotoBottom = true;
-  freeScroll = true;
-  lastPosition = null;
 
   constructor(props) {
     super(props);
-    this.boxSceneMessagesNode = React.createRef();
-    this.messageListNode = React.createRef();
-    this.onScroll = this.onScroll.bind(this);
-    this.onFileDrop = this.onFileDrop.bind(this);
-    this.onGotoBottom = this.onGotoBottom.bind(this);
     this.state = {
+      bottomButtonShowing: false,
       highLightMessage: null,
-      gotoBottomButtonShowing: false
+      newMessageUnreadCount: 0
     };
+    this.scroller = React.createRef();
+    this.onScrollBottomEnd = this.onScrollBottomEnd.bind(this);
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
+    this.onScrollTop = this.onScrollTop.bind(this);
+    this.onGotoBottomClicked = this.onGotoBottomClicked.bind(this);
+    this.onAvatarClick = this.onAvatarClick.bind(this);
+    this.onRepliedMessageClicked = this.onRepliedMessageClicked.bind(this);
+
+    //Controller fields
+    this.gotoBottom = false;
+    this.hasPendingMessageToGo = null;
+    this.lastSeenMessage = null;
+  }
+
+  componentDidMount() {
+    const {thread} = this.props;
+    if (thread) {
+      if (thread.id) {
+        this._fetchInitHistory();
+      }
+    }
   }
 
   shouldComponentUpdate(nextProps) {
-    const {
-      threadId: currentThreadId,
-      threadMessages: currentThreadMessages
-    } = this.props;
-    const {
-      threadId,
-      threadUnreadCount,
-      threadLastMessage,
-      threadMessagesFetching,
-      threadMessages
-    } = nextProps;
-    const currentLastMessage = currentThreadMessages[currentThreadMessages.length - 1];
-    const lastMessage = threadMessages[threadMessages.length - 1];
-    const setBarAndCount = (showBar) => {
-      this.showUnreadCountBar = showBar;
-      this.showUnreadCountBarCount = showBar ? threadUnreadCount : 0;
-      this.showUnreadCountBarLastMessage = lastMessage;
+    const {messageNew: oldNewMessage, threadGoToMessageId: oldThreadGoToMessageId, threadMessages, dispatch, user} = this.props;
+    const {messageNew, thread, threadGoToMessageId} = nextProps;
+    const {hasNext} = threadMessages;
+
+    if (threadGoToMessageId !== oldThreadGoToMessageId) {
+      this.hasPendingMessageToGo = threadGoToMessageId;
+    }
+
+    //Check for allow rendering
+    if (!oldNewMessage && !messageNew) {
       return true;
-    };
-    if (currentThreadId !== threadId) {
-      this.showUnreadCountBar = false;
-      this.showUnreadCountBarCount = 0;
-      this.showUnreadCountBarLastMessage = undefined;
     }
-
-    if (!threadMessagesFetching) {
-      if (this.showUnreadCountBarLastMessage) {
-        if (lastMessage) {
-          if (this.showUnreadCountBarLastMessage.id !== lastMessage.id) {
-            return setBarAndCount();
-          }
+    if (oldNewMessage && messageNew) {
+      if (oldNewMessage.uniqueId === messageNew.uniqueId) {
+        if (!oldNewMessage.id && messageNew.id) {
+          dispatch(threadNewMessage(messageNew));
         }
-      }
-      if (threadUnreadCount >= 1) {
-        if (this.showUnreadCountBarLastMessage) {
-          if (this.showUnreadCountBarLastMessage.threadId === threadLastMessage.threadId) {
-            return true;
-          }
-        }
-        if (currentLastMessage) {
-          if (currentLastMessage.threadId === threadId) {
-            return true;
-
-          }
-        }
-        if (lastMessage) {
-          if (lastMessage.id === threadLastMessage.id) {
-            if (lastMessage.threadId === threadLastMessage.threadId) {
-              return setBarAndCount(true);
-            }
-          }
-        }
+        return true;
       }
     }
+    if (messageNew.threadId !== thread.id) {
+      return true;
+    }
+
+    //functionality after allowing newMessage to come for calculation
+
+    if (isMessageByMe(messageNew, user)) {
+      if (hasNext) {
+        dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+        return false;
+      } else {
+        dispatch(threadNewMessage(messageNew));
+        this.gotoBottom = true;
+        return false;
+      }
+    } else {
+      if (this.scroller.current) {
+        const scrollPositionInfo = this.scroller.current.getInfo();
+        if (!hasNext) {
+          dispatch(threadNewMessage(messageNew));
+          if (scrollPositionInfo.isInBottomEnd) {
+            this.gotoBottom = true;
+            this.lastSeenMessage = messageNew;
+          }
+          return false;
+        } else if (hasNext) {
+          this.setState({
+            newMessageUnreadCount: this.state.newMessageUnreadCount + 1
+          });
+          return false;
+        }
+      }
+    }
+
     return true;
   }
 
-  onGotoBottom() {
-    const {dispatch, threadId, threadMessagesHasNext} = this.props;
-    const {gotoBottomButtonShowing} = this.state;
-    if (threadMessagesHasNext) {
-      dispatch(threadMessageGetList(threadId));
-      this.gotoBottom = true;
-    } else {
-      let messagesNode = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
-      messagesNode.scrollTop = messagesNode.scrollHeight;
+  componentDidUpdate(oldProps) {
+    const {thread, threadMessages, threadGetMessageListByMessageIdFetching, dispatch} = this.props;
+    const {thread: oldThread} = oldProps;
+    const {fetching} = threadMessages;
+    const threadId = thread.id;
+
+    if (!threadId) {
+      return;
     }
-    if (gotoBottomButtonShowing) {
+
+    //fetch message if thread change
+    if (!oldThread || oldThread.id !== threadId) {
+      return this._fetchInitHistory();
+    }
+
+    //scroll to message if have pending message to go
+    if (fetching || threadGetMessageListByMessageIdFetching) {
+      return;
+    }
+
+    if (this.lastSeenMessage) {
+      dispatch(messageSeen(this.lastSeenMessage));
+      this.lastSeenMessage = null;
+    }
+
+    if (this.hasPendingMessageToGo) {
+      return this.goToSpecificMessage(this.hasPendingMessageToGo);
+    }
+
+    if (this.gotoBottom && this.scroller.current) {
+      this.scroller.current.gotoBottom();
+      return this.gotoBottom = false;
+    }
+  }
+
+  _fetchInitHistory() {
+    this.lastSeenMessage = null;
+    this.gotoBottom = false;
+    this.hasPendingMessageToGo = null;
+    const {thread, dispatch} = this.props;
+    dispatch(threadMessageGetListPartial(null, null, null, null, true));
+    dispatch(threadMessageGetListByMessageId(null, null, null, true));
+    if (thread.unreadCount > statics.historyFetchCount) {
+      this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+      this._fetchHistoryFromMiddle(thread.id, thread.lastSeenMessageTime);
+      this.lastSeenMessage = thread.lastMessageVO;
+    } else {
+      if (thread.lastSeenMessageTime && thread.lastMessageVO) {
+        if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
+          this.gotoBottom = true;
+        } else if (thread.lastMessageVO.previousId === thread.lastSeenMessageId) {
+          this.gotoBottom = true;
+          this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          this.lastSeenMessage = thread.lastMessageVO;
+        } else {
+          this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          this.lastSeenMessage = thread.lastMessageVO;
+        }
+      } else {
+        if (thread.lastMessageVO) {
+          this.lastSeenMessage = thread.lastMessageVO;
+        }
+      }
+      dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+    }
+  }
+
+  _fetchHistoryFromMiddle(threadId, messageTime) {
+    this.props.dispatch(threadMessageGetListByMessageId(threadId, messageTime, statics.historyFetchCount));
+  }
+
+  onGotoBottomClicked() {
+    const {threadMessages, messageNew, thread} = this.props;
+    const {hasNext} = threadMessages;
+    if (hasNext) {
+      this._fetchInitHistory();
+    } else {
+      if (thread.unreadCount) {
+        this.lastSeenMessage = messageNew;
+      }
+      this.scroller.current.gotoBottom();
+    }
+    this.setState({
+      bottomButtonShowing: false
+    });
+  }
+
+  onScrollTopThreshold() {
+    const {thread, threadMessages, dispatch} = this.props;
+    const {messages} = threadMessages;
+    dispatch(threadMessageGetListPartial(thread.id, messages[0].time - 200, false, statics.historyFetchCount));
+  }
+
+  onScrollBottomThreshold() {
+    const {thread, threadMessages, dispatch} = this.props;
+    const {messages} = threadMessages;
+    dispatch(threadMessageGetListPartial(thread.id, messages[messages.length - 1].time + 200, true, statics.historyFetchCount));
+  }
+
+  onScrollBottomEnd() {
+    const {thread, messageNew} = this.props;
+    if (thread.unreadCount > 0) {
+      this.lastSeenMessage = messageNew;
+    }
+    this.setState({
+      bottomButtonShowing: false
+    });
+  }
+
+  onScrollTop() {
+    if (!this.state.bottomButtonShowing && !this.props.threadMessages.fetching) {
       this.setState({
-        gotoBottomButtonShowing: false
+        bottomButtonShowing: true
       });
     }
   }
 
-  onScroll() {
-    const {threadMessages, threadMessagesPartialFetching, threadMessagesHasNext, threadMessagesHasPrevious, threadMessagesNextOffset, dispatch} = this.props;
-    const {gotoBottomButtonShowing} = this.state;
-    if (!this.freeScroll || threadMessagesPartialFetching) {
-      return false;
-    }
-    const current = window.current = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
-    const scrollTop = current.scrollTop;
-    const goingToUp = scrollTop < this.lastPosition;
-    const scrollHeight = current.scrollHeight;
-    if (threadMessagesHasNext || scrollTop <= (scrollHeight - statics.gotoBottomButtonShowingThreshold)) {
-      if (!gotoBottomButtonShowing) {
+  goToSpecificMessage(messageTime) {
+    const {thread, threadGoToMessageId} = this.props;
+    const result = this.scroller.current.gotoElement(`message-${messageTime}`);
+    clearTimeout(this.highLighterTimeOut);
+    const setHighlighter = () => {
+      this.setState({
+        highLightMessage: messageTime
+      });
+      this.highLighterTimeOut = setTimeout(() => {
         this.setState({
-          gotoBottomButtonShowing: true
+          highLightMessage: false
         });
-      }
-    } else {
-      if (gotoBottomButtonShowing) {
-        this.setState({
-          gotoBottomButtonShowing: false
-        });
-      }
-    }
+      }, 2500);
+    };
 
-    if (threadMessagesHasPrevious || threadMessagesHasNext) {
-      this.lastPosition = scrollTop;
-      let message;
-      let loadBefore = false;
-      if (goingToUp) {
-        if (threadMessagesHasPrevious) {
-          if (scrollTop <= (scrollHeight / statics.scrollThresholdMultiply)) {
-            message = threadMessages[0];
-            loadBefore = true;
-          }
-        }
-      } else {
-        if (threadMessagesHasNext) {
-          if (scrollTop + current.offsetHeight > (scrollHeight - (scrollHeight / statics.scrollThresholdMultiply))) {
-            message = threadMessages[threadMessages.length - 1];
-          }
+    if (!result) {
+
+      //If last request was the same message and if this message is not exists in history fetch from init
+      if (messageTime === this.hasPendingMessageToGo) {
+        if (messageTime !== threadGoToMessageId) {
+          return this._fetchInitHistory();
         }
       }
-      if (message) {
-        dispatch(threadMessageGetListPartial(message.threadId, message.time + (loadBefore ? -20000 : 20000), !loadBefore, statics.messageFetchingCount));
-      }
-    } else {
-      this.lastPosition = scrollTop;
+      this.hasPendingMessageToGo = messageTime;
+      this._fetchHistoryFromMiddle(thread.id, messageTime);
+      return setHighlighter();
     }
+    setHighlighter();
+    this.hasPendingMessageToGo = null;
   }
 
-  componentDidUpdate(oldProps) {
-    let messagesNode = ReactDOM.findDOMNode(this.boxSceneMessagesNode.current);
-    if (messagesNode) {
-      const {threadMessages, user, threadId, threadGoToMessageId, threadMessagesFetching} = this.props;
-      const {threadId: oldThreadId, threadMessagesFetching: oldThreadMessagesFetching, threadMessages: oldThreadMessages} = oldProps;
-      const lastMessage = threadMessages[threadMessages.length - 1];
-      const gotoBottom = () => {
-        messagesNode.scrollTop = messagesNode.scrollHeight;
-        this.lastMessage = lastMessage.uniqueId;
-        if (lastMessage) {
-          if (!~this.seenMessages.indexOf(lastMessage.uniqueId)) {
-            if (!lastMessage.seen && !isMessageByMe(lastMessage, user)) {
-              this.seenMessages.push(lastMessage.uniqueId);
-              this.props.dispatch(messageSeen(lastMessage));
-            }
-          }
-        }
-      };
-      if (this.pendingGoToId) {
-        this.gotoMessage(this.pendingGoToId);
-        this.freeScroll = false;
-      } else if (this.gotoBottom) {
-        if (oldThreadMessages !== threadMessages) {
-          if (threadMessages) {
-            gotoBottom();
-          }
-          this.gotoBottom = false;
-        }
-      } else if (oldProps.threadGoToMessageId !== threadGoToMessageId) {
-        return this.goToMessageId(threadGoToMessageId.threadId, threadGoToMessageId);
-      } else {
-        if (oldThreadId !== threadId) {
-          this.seenMessages = [];
-          this.gotoBottom = true;
-        } else if (lastMessage.newMessage && this.lastMessage !== lastMessage.uniqueId) {
-          gotoBottom();
-        } else if (oldThreadId === threadId) {
-          if (oldThreadMessagesFetching !== threadMessagesFetching) {
-            gotoBottom();
-          }
-        }
-      }
-    }
-  }
-
-  gotoMessage(pendingGoToId) {
-    if (pendingGoToId) {
-      const index = this.props.threadMessages.findIndex(e => e.id === pendingGoToId);
-      if (~index) {
-        document.getElementById(pendingGoToId).scrollIntoView();
-        this.pendingGoToId = null;
-        this.setState({
-          highLightMessage: pendingGoToId
-        });
-        setTimeout(() => {
-          this.setState({
-            highLightMessage: false
-          });
-        }, 2500);
-        setTimeout(() => {
-          this.freeScroll = true;
-        }, 1500);
-      }
-    }
-  }
-
-  goToMessageId(threadId, message, isDeleted, e) {
-    if (e) {
-      e.stopPropagation();
-    }
+  onRepliedMessageClicked(time, isDeleted, e) {
+    e.stopPropagation();
     if (isDeleted) {
       return;
     }
-    const {dispatch, threadMessages} = this.props;
-    const gotToMessageId = (message) => {
-      const msgId = message.id;
-      const msgTime = message.time;
-      const index = threadMessages.findIndex(e => e.id === msgId);
-      if (~index) {
-        return this.gotoMessage(msgId);
-      }
-      this.pendingGoToId = msgId;
-      dispatch(threadMessageGetListByMessageId(threadId, msgTime, statics.messageFetchingCount));
-    };
-    //TODO this is a mess, we need time field on replyInfoObject
-    const repliedToMessageId = message.repliedToMessageId;
-    if (repliedToMessageId) {
-      const index = threadMessages.findIndex(e => e.id === repliedToMessageId);
-      if (~index) {
-        return gotToMessageId(threadMessages[index]);
-      }
-      return dispatch(messageGet(threadId, message.repliedToMessageId)).then(gotToMessageId);
-    }
-    gotToMessageId(message);
-  }
-
-  onDragOver(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-
-  onDragEnter(e) {
-    e.stopPropagation();
+    this.goToSpecificMessage(time);
   }
 
   onAddToCheckedMessage(message, isAdd, e) {
     e.stopPropagation();
-    const {dispatch} = this.props;
-    dispatch(threadCheckedMessageList(isAdd, message));
+    this.props.dispatch(threadCheckedMessageList(isAdd, message));
   }
 
-  onFileDrop(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    const dt = e.dataTransfer;
-    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') !== -1 : dt.types.contains('Files'))) {
-      this.props.dispatch(threadFilesToUpload(dt.files));
-    }
-    return false;
-  }
-
-  onMessageSeenListClick(message) {
-    this.props.dispatch(threadLeftAsideShowing(true, THREAD_LEFT_ASIDE_SEEN_LIST, message.id))
+  onAvatarClick(participant) {
+    this.props.dispatch(threadCreate(participant.id, null, null, "TO_BE_USER_ID"));
   }
 
   render() {
     const {
-      isGroup,
-      threadGetMessageListByMessageIdFetching,
-      threadMessagesFetching,
-      threadMessagesPartialFetching,
       threadMessages,
-      threadFetching,
-      threadSelectMessageShowing,
+      threadMessagesPartialFetching,
+      threadGetMessageListByMessageIdFetching,
+      user,
+      thread,
       threadCheckedMessageList,
-      user
+      threadSelectMessageShowing
     } = this.props;
-    const {highLightMessage, gotoBottomButtonShowing} = this.state;
-    const showUnreadCountBar = this.showUnreadCountBar;
-    const showUnreadCountBarCount = this.showUnreadCountBarCount;
-    const modifiedThreadMessages = [...threadMessages];
-    if (threadMessagesFetching || threadFetching || threadGetMessageListByMessageIdFetching) {
-      return (
-        <Container className={style.MainMessages}>
-          <Container center centerTextAlign style={{width: "100%"}}>
-            <Loading hasSpace><LoadingBlinkDots/></Loading>
-          </Container>
-        </Container>
-      )
-    }
-    let partialLoading = "";
-
-    if (!threadMessages.length) {
-      return (
-        <Container className={style.MainMessages}>
-          <Container center centerTextAlign relative style={{width: "100%"}}>
-            <div className={style.MainMessages__Empty}/>
-            <Message size="lg">{strings.thereIsNoMessageToShow}</Message>
-            <MdChatBubbleOutline size={styleVar.iconSizeXlg} color={styleVar.colorAccent}/>
-          </Container>
-        </Container>
-      )
-    }
-    if (threadMessagesPartialFetching) {
-      partialLoading =
-        (
-          <Container topCenter centerTextAlign style={{zIndex: 1}}>
-            <Loading><LoadingBlinkDots size="sm"/></Loading>
-          </Container>
-        )
-    }
-    const seenFragment = (el, onRetry, onCancel) => {
-      if (!isMessageByMe(el, user)) {
-        return null;
-      }
-      if (el.hasError) {
-        return (
-          <Container inline>
-            <MdErrorOutline size={style.iconSizeXs} style={{margin: "0 5px"}}/>
-            <Gap x={2}>
-              <Container onClick={onRetry} inline>
-                <Text size="xs" color="accent" linkStyle>{strings.tryAgain}</Text>
-              </Container>
-              <Gap x={5}/>
-              <Container onClick={onCancel} inline>
-                <Text size="xs" color="accent" linkStyle>{strings.cancel}</Text>
-              </Container>
-            </Gap>
-            <Gap x={3}/>
-          </Container>
-        )
-      }
-      if (!el.id) {
-        return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
-      }
-      if (!isGroup) {
-        if (el.seen) {
-          return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
-        }
-      }
-      return <MdDone className={isGroup ? style.MainMessages__SentIcon : ""} size={style.iconSizeXs}
-                     style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}}
-                     onClick={isGroup ? this.onMessageSeenListClick.bind(this, el) : null}/>
-    };
-
-    const editFragment = (el) => {
-      if (el.edited) {
-        return (
-          <Gap x={2}>
-            <Text italic size="xs" inline>{strings.edited}</Text>
-          </Gap>
-        )
-      }
-    };
-    const replyFragment = (el) => {
-      if (el.replyInfo) {
-        const replyInfo = el.replyInfo;
-        let meta = "";
-        try {
-          meta = JSON.parse(replyInfo.metadata);
-        } catch (e) {
-        }
-        const text = replyInfo.message;
-        const file = meta && meta.file;
-        let isImage, isVideo, imageLink;
-        if (file) {
-          isImage = file.mimeType.indexOf("image") > -1;
-          isVideo = file.mimeType.indexOf("video") > -1;
-          if (isImage) {
-            let width = file.width;
-            let height = file.height;
-            const ratio = height / width;
-            const maxWidth = 100;
-            height = Math.ceil(maxWidth * ratio);
-            imageLink = `${file.link}&width=${maxWidth}&height=${height}`;
-          }
-        }
-        return (
-          <Container
-            cursor="pointer"
-            onClick={this.goToMessageId.bind(this, el.threadId, replyInfo, replyInfo.deleted)}>
-            <Paper colorBackground
-                   style={{borderRadius: "5px", maxHeight: "70px", overflow: "hidden", position: "relative"}}>
-              <Text bold size="xs">{strings.replyTo}:</Text>
-              {isImage && text ?
-                <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
-                :
-                isImage && !text ?
-                  <Container>
-                    <MdCameraAlt size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
-                    <Text inline size="sm" bold color="gray" dark>{strings.photo}</Text>
-                  </Container> :
-                  isVideo ?
-                    <Container>
-                      <MdVideocam size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
-                      <Text inline size="sm" bold color="gray" dark>{strings.video}</Text>
-                    </Container> :
-                    file ?
-                      <Container>
-                        <MdInsertDriveFile size={style.iconSizeSm} color={style.colorGrayDark}
-                                           style={{margin: "0 5px"}}/>
-                        <Text inline size="sm" bold color="gray" dark>{file.originalName}</Text>
-                      </Container>
-                      :
-                      <Text italic size="xs" isHTML>{text}</Text>}
-
-              {isImage &&
-              <Container className={style.MainMessages__ReplyFragmentImage}
-                         style={{backgroundImage: `url(${imageLink})`}}/>
-              }
-            </Paper>
-            <Gap block y={5}/>
-          </Container>
-        )
-      }
-      return "";
-    };
-    const forwardFragment = (el) => {
-      if (el.forwardInfo) {
-        return (
-          <Container>
-            <Paper colorBackground style={{borderRadius: "5px"}}>
-              <Text italic size="xs">{strings.forwardFrom}</Text>
-              <Text bold>{el.forwardInfo.participant.name}:</Text>
-            </Paper>
-            <Gap block y={5}/>
-          </Container>
-        )
-      }
-      return "";
-    };
-
-    const highLighterFragment = message => {
-      const classNames = classnames({
-        [style.MainMessages__Highlighter]: true,
-        [style["MainMessages__Highlighter--highlighted"]]: highLightMessage && highLightMessage === message.id
-      });
-      return (
-        <Container className={classNames}>
-          <Container className={style.MainMessages__HighlighterBox}/>
-        </Container>
-      );
-    };
-
-    const messageSelectedCondition = message => {
-      const fileIndex = threadCheckedMessageList.findIndex((msg => msg.uniqueId === message.uniqueId));
-      return fileIndex >= 0;
-    };
-
-    const messageTick = message => {
-      const isExisted = messageSelectedCondition(message);
-      const classNames = classnames({
-        [style.MainMessages__Tick]: true,
-        [style["MainMessages__Tick--selected"]]: isExisted
-      });
-      return <Container className={classNames} onClick={this.onAddToCheckedMessage.bind(this, message, !isExisted)}/>;
-    };
-
-    const personNameFragment = message => {
-      const messageParticipant = message.participant;
-      const color = avatarNameGenerator(messageParticipant.name).color;
-      return showNameOrAvatar(message, threadMessages) &&
-        <Text size="sm" bold
-              style={{color: color}}>{isMessageByMe(message, user) ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
-    };
-
-    const messageArguments = message => {
-      return {
-        highLighterFragment,
-        seenFragment,
-        editFragment,
-        replyFragment,
-        forwardFragment,
-        personNameFragment,
-        isMessageByMe,
-        datePetrification,
-        message,
-        user,
-        isFirstMessage: showNameOrAvatar(message, threadMessages)
-      }
-    };
-
-    const message = message => isFile(message) ?
-      <MainMessagesFile {...messageArguments(message)}/>
-      :
-      <MainMessagesText {...messageArguments(message)}/>;
-
-    const avatar = message => {
-      const showAvatar = showNameOrAvatar(message, threadMessages);
-      const fragment =
-        showAvatar ?
-          <Avatar>
-            <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
-                         textBg={avatarNameGenerator(message.participant.name).color}/>
-          </Avatar> :
-          <div style={{width: "50px", display: "inline-block"}}/>;
-      return showAvatar ?
-        <Container inline inSpace style={{maxWidth: "50px", verticalAlign: "top"}}>
-          {fragment}
-        </Container> : fragment;
-    };
-
-
+    const {messages, fetching} = threadMessages;
+    const {hasPrevious, hasNext} = threadMessages;
+    const {highLightMessage, bottomButtonShowing} = this.state;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
-      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user)
+      [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user, thread)
     });
 
-    if (showUnreadCountBar) {
-      modifiedThreadMessages.splice(modifiedThreadMessages.length - showUnreadCountBarCount, 0, {unreadContBar: true});
+    if (!thread.id || fetching || threadGetMessageListByMessageIdFetching) {
+      return <LoadingFragment/>;
     }
 
+    if (!messages.length) {
+      return <NoMessageFragment/>;
+    }
+
+    const args = {
+      thread,
+      messages,
+      user,
+      highLightMessage,
+      onRepliedMessageClicked: this.onRepliedMessageClicked,
+      isMessageByMe,
+      showNameOrAvatar
+    };
+
     return (
-      <Container className={style.MainMessages} onScroll={this.onScroll}
-                 userSelect="none"
-                 onDragEnter={this.onDragEnter}
-                 onDragOver={this.onDragOver}
-                 onDrop={this.onFileDrop}>
-        {threadMessagesPartialFetching && partialLoading}
-        <Container className={style.MainMessages__Messages}
-                   ref={this.boxSceneMessagesNode}>
-          <List ref={this.messageListNode}>
-            {modifiedThreadMessages.map(el =>
-              el.unreadContBar ?
-                <ListItem noPadding key="unreadCountBar">
-                  <Container className={style.MainMessages__UnreadCountBar} centerTextAlign>
-                    <Text bold color="accent">{strings.unreaded}</Text>
-                  </Container>
-                </ListItem>
-                :
-                <ListItem key={el.id || el.uniqueId} data={el}
-                          noPadding
-                          active={threadSelectMessageShowing && messageSelectedCondition(el)} activeColor="gray">
-                  <Container className={MainMessagesMessageContainerClassNames(el)} id={`${el.id || el.uniqueId}`}
-                             relative>
-                    {avatar(el)}
-                    {message(el)}
-                    {threadSelectMessageShowing && messageTick(el)}
-                  </Container>
-                </ListItem>
+      <Container className={style.MainMessages}>
+        {threadMessagesPartialFetching && <PartialLoadingFragment/>}
+        <Scroller ref={this.scroller}
+                  className={style.MainMessages__Messages}
+                  threshold={6}
+                  onScrollBottomEnd={this.onScrollBottomEnd}
+                  onScrollBottomThreshold={this.onScrollBottomThreshold}
+                  onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}
+                  onScrollTop={this.onScrollTop}
+                  onScrollTopThreshold={this.onScrollTopThreshold}
+                  onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}>
+          <List>
+            {messages.map(message =>
+              <ListItem key={message.time}
+                        data={message}
+                        active={threadSelectMessageShowing && messageSelectedCondition(message, threadCheckedMessageList)}
+                        activeColor="gray"
+                        noPadding>
+                <Container className={MainMessagesMessageContainerClassNames(message)}
+                           id={`message-${message.time}`}
+                           relative>
+                  {thread.group && thread.type !== 8 && getAvatar(message, messages, this.onAvatarClick, thread, user)}
+                  <MainMessagesMessage {...args} message={message}/>
+                  {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
+                </Container>
+              </ListItem>
             )}
 
           </List>
-        </Container>
-        {gotoBottomButtonShowing ?
-          <ButtonFloating onClick={this.onGotoBottom} size="sm" position={{right: 0, bottom: 0}}>
+        </Scroller>
+        {bottomButtonShowing ?
+          <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>
             <MdExpandMore size={style.iconSizeMd} style={{margin: "0 5px"}}/>
           </ButtonFloating> :
           ""}
-
       </Container>
-    );
+    )
   }
 }

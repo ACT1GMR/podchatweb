@@ -15,7 +15,7 @@ import {
 
 //actions
 import {chatClearCache, chatRouterLess, chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
-import {threadCreate, threadShowing} from "../../actions/threadActions";
+import {threadCreate, threadParticipantList, threadShowing} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
 //components
@@ -45,7 +45,8 @@ import {contactGetList} from "../../actions/contactActions";
     userFetching: store.user.fetching,
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing.isShowing,
-    threadImages: store.threadLeftAsideShowing
+    threadImages: store.threadLeftAsideShowing,
+    threadId: store.thread.thread.id,
   };
 }, null, null, {withRef: true})
 class Box extends Component {
@@ -61,8 +62,14 @@ class Box extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {token, location, user, userFetching, chatInstance, dispatch, clearCache} = this.props;
-    const {token: oldToken} = oldProps;
+    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, threadId} = this.props;
+    const {token: oldToken, threadId: oldThreadId} = oldProps;
+
+    if (oldThreadId && threadId) {
+      if (oldThreadId !== threadId) {
+        dispatch(threadParticipantList());
+      }
+    }
 
     if (oldProps.location.pathname !== location.pathname) {
       if (location.pathname === "/") {

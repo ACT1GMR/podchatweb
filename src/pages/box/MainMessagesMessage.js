@@ -5,6 +5,8 @@ import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
 import date from "../../utils/date";
+import MainMessagesMessageFile from "./MainMessagesMessageFile";
+import MainMessagesMessageText from "./MainMessagesMessageText";
 
 //strings
 import strings from "../../constants/localization";
@@ -19,8 +21,6 @@ import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
-import MainMessagesFile from "./MainMessagesFile";
-import MainMessagesText from "./MainMessagesText";
 
 //styling
 import {
@@ -67,11 +67,12 @@ export function ForwardFragment(message, isMessageByMe) {
     if (isMessageByMe) {
       inlineStyle.backgroundColor = "#dee8d2";
     }
+    const name  = !participant ? forwardInfo.conversation.title : participant && (participant.contactName || participant.name);
     return (
       <Container>
         <Paper colorBackground style={inlineStyle}>
           <Text italic size="xs">{strings.forwardFrom}</Text>
-          <Text bold>{participant && (participant.contactName || participant.name)}:</Text>
+          <Text bold>{name}:</Text>
         </Paper>
         <Gap block y={5}/>
       </Container>
@@ -226,7 +227,7 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
     style.backgroundColor = "#effdde";
   }
   return (
-    <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe}>
+    <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe} relative>
       {isGroup && PersonNameFragment(message, isFirstMessage, isMessageByMe)}
       {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked)}
       {ForwardFragment(message, isMessageByMe)}
@@ -446,9 +447,9 @@ export default class MainMessagesMessage extends Component {
                  onMouseLeave={this.onMouseLeave}>
         <OutsideClickHandler onOutsideClick={this.onMessageControlHide}>
           {isFile(message) ?
-            <MainMessagesFile {...args}/>
+            <MainMessagesMessageFile {...args}/>
             :
-            <MainMessagesText {...args}/>
+            <MainMessagesMessageText {...args}/>
           }
         </OutsideClickHandler>
       </Container>

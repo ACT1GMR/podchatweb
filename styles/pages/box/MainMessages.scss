@@ -5,12 +5,11 @@
   z-index: $z-index-1;
   display: flex;
   overflow: hidden;
+  flex-direction: column-reverse;
 }
 
 .MainMessages__Messages {
-  flex: 1 1 0;
-  overflow: hidden;
-  overflow-y: auto;
+  padding-bottom: 10px;
 }
 
 .MainMessages__Empty {

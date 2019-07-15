@@ -18,7 +18,7 @@ import {threadInit, threadMessageGetList, threadShowing} from "../../actions/thr
 
 //components
 import MainHead from "./MainHead";
-import MainMessagesFetcher from "./MainMessagesFetcher";
+import MainMessagesFetcher from "./MainMessages";
 import MainFooter from "./MainFooter";
 import Message from "../../../../uikit/src/message";
 import Gap from "../../../../uikit/src/gap";

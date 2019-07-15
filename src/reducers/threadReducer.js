@@ -506,6 +506,8 @@ export const threadParticipantListReducer = (state = {
   switch (action.type) {
     case THREAD_PARTICIPANT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING, {participants: state.participants})};
+      case THREAD_PARTICIPANT_GET_LIST(CANCELED):
+      return {...state, ...{participants: []}};
     case THREAD_PARTICIPANTS_LIST_CHANGE:
     case THREAD_PARTICIPANT_GET_LIST(SUCCESS):
 

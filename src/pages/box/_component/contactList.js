@@ -17,7 +17,7 @@ function getName(contact) {
     return contact.name;
   }
   if (contact.firstName) {
-    return `${contact.firstName}${contact.lastName ?  `${contact.lastName} ` : ""}`;
+    return `${contact.firstName}${contact.lastName ?  ` ${contact.lastName}` : ""}`;
   }
 
 }

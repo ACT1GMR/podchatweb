@@ -67,6 +67,16 @@ export default class Notification extends Component {
     }, false);
   }
 
+  shouldComponentUpdate(prevProps) {
+    const {messageNew} = this.props;
+    const {messageNew: oldMessageNew} = prevProps;
+    if (messageNew && oldMessageNew) {
+      if (messageNew.time < oldMessageNew.time) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   componentDidUpdate(oldProps) {
     if (Push.Permission.request()) {
@@ -107,7 +117,7 @@ export default class Notification extends Component {
               const isEmoji = text && text.indexOf('img') > -1;
               const newMessageText = messageNew.message;
               const personName = `${thread.group ? `${messageNew.participant && (messageNew.participant.contactName || messageNew.participant.name)}: ` : ""}`;
-              const notificationMessage =`${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText}`;
+              const notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText}`;
               Push.create(thread.title, {
                 body: notificationMessage,
                 icon: thread.image || defaultAvatar,

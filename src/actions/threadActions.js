@@ -212,6 +212,11 @@ export const threadParticipantList = threadId => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if(!threadId) {
+      return dispatch({
+        type: THREAD_PARTICIPANT_GET_LIST(CANCELED)
+      });
+    }
     dispatch({
       type: THREAD_PARTICIPANT_GET_LIST(),
       payload: chatSDK.getThreadParticipantList(threadId)

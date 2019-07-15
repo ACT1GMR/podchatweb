@@ -144,7 +144,7 @@ class ModalCreateGroup extends Component {
              userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{step === constants.SELECT_CONTACT ? strings.selectContacts : isChannel ? strings.createChannel : strings.createGroup}</Heading>
+          <Heading h3>{step === constants.SELECT_CONTACT ? strings.selectContacts : isChannel ? strings.createGroup(true) : strings.createGroup()}</Heading>
         </ModalHeader>
 
         <ModalBody>

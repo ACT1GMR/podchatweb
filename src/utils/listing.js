@@ -26,8 +26,8 @@ export function getThreadHistoryByQuery(chatSDK, threadId, query, count) {
 
 export function getThreadHistoryInMiddle(chatSDK, threadId, timeNano, count) {
   return new Promise((resolve, reject) => {
-    _getThreadHistory(chatSDK, threadId, count, timeNano + 200, true).then(afterResult => {
-      _getThreadHistory(chatSDK, threadId, count, timeNano, false).then(beforeResult => {
+    _getThreadHistory(chatSDK, threadId, count, timeNano + 200, true, null, false).then(afterResult => {
+      _getThreadHistory(chatSDK, threadId, count, timeNano, false, null, false).then(beforeResult => {
         resolve({
           threadId,
           messagesCount: afterResult.contentCount + beforeResult.contentCount,

@@ -17,6 +17,7 @@ import Container from "../../../../uikit/src/container";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Message from "../../../../uikit/src/message";
+import {sanitizeRule, sliceMessage} from "./AsideThreads";
 
 //styling
 
@@ -104,15 +105,16 @@ export default class LeftAsideMainSearch extends Component {
                   <ListItem key={el.id} onSelect={this.onSearchItemClicked.bind(this, el.time, el.id)} selection invert>
                     <Container relative userSelect="none">
                       <Container inline>
-                        <Text wordWrap="breakWord"
-                              size="sm">{el.message.length > 30 ? `${el.message.slice(0, 30)}...` : el.message}</Text>
+                        <Text isHTML
+                              size="sm"
+                              sanitizeRule={sanitizeRule}>{el.message.length > 30 ? `${el.message.slice(0, 30)}...` : el.message}</Text>
                         <Text wordWrap="breakWord"
                               color="gray"
                               size="sm">{datePetrification(el.time)}</Text>
                       </Container>
                       <Container inline centerLeft>
                         <Text wordWrap="breakWord"
-                              size="sm">{el.participant.name}</Text>
+                              size="sm">{el.participant.contactName || el.participant.name}</Text>
                       </Container>
                     </Container>
                   </ListItem>

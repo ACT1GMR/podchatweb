@@ -93,7 +93,7 @@ function hasError(message) {
     leftAsideShowing: store.threadLeftAsideShowing.isShowing
   };
 })
-class MainMessagesFile extends Component {
+class MainMessagesMessageFile extends Component {
 
   constructor(props) {
     super(props);
@@ -175,18 +175,7 @@ class MainMessagesFile extends Component {
 
     return (
       <Container className={style.MainMessagesFile} key={message.uuid}>
-        <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
-        <ControlFragment
-          isMessageByMe={isMessageByMe}
-          isChannel={isChannel}
-          messageControlShow={messageControlShow}
-          message={message}
-          onMessageControlHide={onMessageControlHide}
-          onDelete={onDelete} onForward={onForward} onReply={onReply}>
-          <MdArrowDownward className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
-                           size={styleVar.iconSizeMd}
-                           onClick={this.onDownload.bind(this, metaData)}/>
-        </ControlFragment>
+
         {isUploading(message) ?
           <Container className={style.MainMessagesFile__Progress}
                      style={{width: `${message.progress ? message.progress : 0}%`}}
@@ -195,6 +184,18 @@ class MainMessagesFile extends Component {
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
                        isChannel={isChannel} isGroup={isGroup}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
+          <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
+          <ControlFragment
+            isMessageByMe={isMessageByMe}
+            isChannel={isChannel}
+            messageControlShow={messageControlShow}
+            message={message}
+            onMessageControlHide={onMessageControlHide}
+            onDelete={onDelete} onForward={onForward} onReply={onReply}>
+            <MdArrowDownward className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
+                             size={styleVar.iconSizeMd}
+                             onClick={this.onDownload.bind(this, metaData)}/>
+          </ControlFragment>
           <Container relative
                      className={style.MainMessagesFile__FileContainer}>
             {isImage ?
@@ -266,4 +267,4 @@ class MainMessagesFile extends Component {
   }
 }
 
-export default withRouter(MainMessagesFile);
+export default withRouter(MainMessagesMessageFile);
