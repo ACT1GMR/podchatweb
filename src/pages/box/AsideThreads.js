@@ -116,7 +116,7 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO}) {
   )
 }
 
-function LastMessageFragment({thread}) {
+export function LastMessageFragment({thread}) {
   const {group, type, lastMessageVO, lastMessage, inviter, time} = thread;
   const args = {
     isGroup: group && type !== 8,

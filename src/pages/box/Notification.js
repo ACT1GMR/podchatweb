@@ -67,6 +67,17 @@ export default class Notification extends Component {
     }, false);
   }
 
+  shouldComponentUpdate(nextProps) {
+    const {messageNew} = nextProps;
+    const {messageNew: oldMessageNew} = this.props;
+    if (messageNew && oldMessageNew) {
+      if (messageNew.time < oldMessageNew.time) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   componentDidUpdate(oldProps) {
     if (Push.Permission.request()) {
       const {messageNew, chatInstance, dispatch, user} = this.props;

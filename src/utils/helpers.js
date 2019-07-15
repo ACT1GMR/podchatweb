@@ -1,4 +1,4 @@
-import {THREAD_GET_LIST} from "../constants/actionTypes";
+import {ifvisible} from "ifvisible.js";
 
 export function humanFileSize(bytes, si) {
   const thresh = si ? 1000 : 1024;
@@ -105,34 +105,9 @@ export function avatarNameGenerator(firstName, lastName) {
 }
 
 
-export function serverCachePromise(dispatch, actionType, func, params) {
-  function success(result) {
-    dispatch({
-      type: actionType("SUCCESS"),
-      payload: result.result
-    });
-  }
-
-  function error(error) {
-    dispatch({
-      type: actionType("ERROR"),
-      payload: error
-    });
-  }
-
-  function pending() {
-    dispatch({
-      type: actionType("PENDING"),
-      payload: null
-    });
-  }
-
-  func.apply(null, params).then(result => {
-    pending();
-    success(result);
-    if (result.cache) {
-      pending();
-      func.apply(null, params).then(success, error);
-    }
-  }, error);
+export function OnWindowFocusInOut(onFocusedOut, onFocusedIn) {
+  ifvisible.on("blur",onFocusedOut);
+  ifvisible.on("focus", onFocusedIn);
+  window.addEventListener("blur", onFocusedOut);
+  window.addEventListener("focus", onFocusedIn);
 }

@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
-import {avatarNameGenerator} from "../../utils/helpers";
+import {avatarNameGenerator, OnWindowFocusInOut} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -26,7 +26,6 @@ import Avatar, {AvatarImage} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
-import {Text} from "../../../../uikit/src/typography";
 import Scroller from "../../../../uikit/src/Scroller";
 
 //styling
@@ -178,6 +177,15 @@ export default class MainMessages extends Component {
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
     this.lastSeenMessage = null;
+    this.windowFocused = true;
+
+    OnWindowFocusInOut(() => this.windowFocused = false, () => {
+      this.windowFocused = true;
+      if (this.lastSeenMessage) {
+        this.props.dispatch(messageSeen(this.lastSeenMessage));
+        this.lastSeenMessage = null;
+      }
+    });
   }
 
   componentDidMount() {
@@ -268,8 +276,10 @@ export default class MainMessages extends Component {
     }
 
     if (this.lastSeenMessage) {
-      dispatch(messageSeen(this.lastSeenMessage));
-      this.lastSeenMessage = null;
+      if (this.windowFocused) {
+        dispatch(messageSeen(this.lastSeenMessage));
+        this.lastSeenMessage = null;
+      }
     }
 
     if (this.hasPendingMessageToGo) {

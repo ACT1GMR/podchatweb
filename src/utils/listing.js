@@ -13,7 +13,7 @@ function createParams(threadId, offset, loadAfter, query, count, cache = true) {
 }
 
 function _getThreadHistory(chatSDK, threadId, count, offsetOrTimeNanos, loadAfter, query, cache) {
-  return chatSDK.getThreadMessageList(createParams(threadId, offsetOrTimeNanos, loadAfter, query, count, cache));
+  return chatSDK.getThreadMessageList(createParams(threadId, offsetOrTimeNanos, loadAfter, query, count, false));
 }
 
 export function getThreadHistory() {

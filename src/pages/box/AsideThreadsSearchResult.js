@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
-import {getTitle, sliceMessage, isFile, sanitizeRule, prettifyMessageDate} from "./AsideThreads";
+import {getTitle, LastMessageFragment} from "./AsideThreads";
 
 //strings
 import strings from "../../constants/localization";
@@ -15,7 +15,7 @@ import {contactChatting} from "../../actions/contactActions";
 import {threadCreate} from "../../actions/threadActions";
 
 //UI components
-import {MdGroup} from "react-icons/lib/md";
+import {MdGroup, MdRecordVoiceOver} from "react-icons/lib/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
@@ -24,7 +24,6 @@ import {Text} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
 
 //styling
-import style from "../../../styles/pages/box/AsideThreadsSearchResult.scss";
 import styleVar from "../../../styles/variables.scss";
 
 @connect(store => {
@@ -72,8 +71,8 @@ class AsideThreadsSearchResult extends Component {
           <Container>
             <List>
               {filteredThreads.map(el => (
-                <ListItem onSelect={this.onThreadClick.bind(this, el)} selection>
 
+                <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection>
                   <Container relative>
                     <Avatar>
                       <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
@@ -81,50 +80,30 @@ class AsideThreadsSearchResult extends Component {
                       <AvatarName invert>
                         {el.group &&
                         <Container inline>
-                          <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          {el.type === 8 ?
+                            <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                            :
+                            <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          }
                           <Gap x={2}/>
                         </Container>
                         }
                         {getTitle(el.title)}
                         <AvatarText>
-                          {el.group ?
-                            el.lastMessage || el.lastMessageVO ?
-                              <Container>
-                                <Text size="sm" inline color="accent">{el.lastParticipantName}: </Text>
-                                {isFile(el.lastMessageVO) ?
-                                  <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
-                                  :
-                                  <Text isHTML size="sm" inline color="gray" dark
-                                        sanitizeRule={sanitizeRule}>{sliceMessage(el.lastMessage)}</Text>
-                                }
-                              </Container>
-                              :
-                              <Text size="sm" inline
-                                    color="accent">{sliceMessage(strings.createdAGroup(el.lastParticipantName), 30)}</Text>
-                            :
-                            el.lastMessage || el.lastMessageVO ?
-                              isFile(el.lastMessageVO) ?
-                                <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>
-                                :
-                                <Text isHTML size="sm" inline color="gray"
-                                      sanitizeRule={sanitizeRule}
-                                      dark>{sliceMessage(el.lastMessage, 30)}</Text>
-                              :
-                              <Text size="sm" inline
-                                    color="accent">{sliceMessage(strings.createdAChat(el.lastParticipantName), 35)}</Text>
-                          }
-                          {el.lastMessageVO || el.time ?
-                            <Container topLeft>
-                              <Text size="xs"
-                                    color="gray">{prettifyMessageDate(el.time || el.lastMessageVO.time)}</Text>
-                            </Container>
-                            : ""}
-
+                          <LastMessageFragment thread={el}/>
                         </AvatarText>
                       </AvatarName>
                     </Avatar>
+                    {el.unreadCount ?
+                      <Container absolute centerLeft>
+                        <Gap y={10} block/>
+                        <Shape color="accent">
+                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                        </Shape>
+                      </Container> : ""}
                   </Container>
                 </ListItem>
+
               ))}
             </List>
           </Container> :
