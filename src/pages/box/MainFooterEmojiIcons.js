@@ -15,6 +15,7 @@ import Container from "../../../../uikit/src/container";
 import emojiStyle from "../../../styles/utils/emoji.scss";
 import style from "../../../styles/pages/box/MainFooterEmojiIcons.scss";
 import oneoneImage from "../../../styles/images/_common/oneone.png";
+import {mobileCheck} from "../../utils/helpers";
 
 const emojies = [
   {
@@ -48,7 +49,9 @@ export default class MainFooterEmojiIcons extends Component {
                      src={oneoneImage}
                      style={{backgroundPosition: `${el.x / emoji.scale}px ${el.y / emoji.scale}px`}}/>;
     setInputText(ReactDOMServer.renderToStaticMarkup(img), true);
-    focusInputNode();
+    if(!mobileCheck()) {
+      focusInputNode();
+    }
   }
 
   calculations() {

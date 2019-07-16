@@ -25,6 +25,7 @@ import Gap from "../../../../uikit/src/gap";
 
 //styling
 import styleVar from "../../../styles/variables.scss";
+import style from "../../../styles/pages/box/AsideThreads.scss";
 
 @connect(store => {
   return {};
