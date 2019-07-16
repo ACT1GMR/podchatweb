@@ -26,6 +26,8 @@ export default class MainFooter extends Component {
     super(props);
     this.mainFooterInputRef = React.createRef();
     this.sendMessage = this.sendMessage.bind(this);
+    this.setInputText = this.setInputText.bind(this);
+    this.focusInputNode = this.focusInputNode.bind(this);
   }
 
   sendMessage() {
@@ -34,6 +36,10 @@ export default class MainFooter extends Component {
 
   setInputText(value, append) {
     this.mainFooterInputRef.current.getWrappedInstance().setInputText(value, append);
+  }
+
+  focusInputNode() {
+    this.mainFooterInputRef.current.getWrappedInstance().focus();
   }
 
   render() {
@@ -54,7 +60,7 @@ export default class MainFooter extends Component {
 
         {emojiShowing &&
           <Container className={style.MainFooter__EmojiIconsContainer}>
-            <MainFooterEmojiIcons setInputText={this.setInputText.bind(this)}/>
+            <MainFooterEmojiIcons setInputText={this.setInputText.bind(this)} focusInputNode={this.focusInputNode.bind(this)}/>
           </Container>
         }
       </Container>

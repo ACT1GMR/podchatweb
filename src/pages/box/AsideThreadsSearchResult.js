@@ -74,7 +74,7 @@ class AsideThreadsSearchResult extends Component {
 
                 <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection>
                   <Container relative>
-                    <Avatar>
+                    <Avatar className={style.AsideThreads__AvatarContainer}>
                       <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
                                    textBg={avatarNameGenerator(el.title).color}/>
                       <AvatarName invert>

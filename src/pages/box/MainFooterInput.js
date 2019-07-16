@@ -140,6 +140,13 @@ export default class MainFooterInput extends Component {
     dispatch(threadIsSendingMessage(false));
   }
 
+  focus(){
+    const current = this.inputNode.current;
+    if (current) {
+      current.focus();
+    }
+  }
+
   componentDidMount() {
     const {dispatch, threadId, messageEditing: msgEditing} = this.props;
     dispatch(messageEditing());
@@ -254,7 +261,7 @@ export default class MainFooterInput extends Component {
               value={messageText}/>
           </Container>
           <Container centerLeft>
-            <MainFooterInputEmoji/>
+            <MainFooterInputEmoji inputNode={this.inputNode}/>
           </Container>
         </Container>
       </Container>

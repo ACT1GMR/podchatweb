@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
-import {avatarNameGenerator, OnWindowFocusInOut} from "../../utils/helpers";
+import {avatarNameGenerator, OnWindowFocusInOut, mobileCheck} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -179,13 +179,15 @@ export default class MainMessages extends Component {
     this.lastSeenMessage = null;
     this.windowFocused = true;
 
-    OnWindowFocusInOut(() => this.windowFocused = false, () => {
-      this.windowFocused = true;
-      if (this.lastSeenMessage) {
-        this.props.dispatch(messageSeen(this.lastSeenMessage));
-        this.lastSeenMessage = null;
-      }
-    });
+    if (!mobileCheck()) {
+      OnWindowFocusInOut(() => this.windowFocused = false, () => {
+        this.windowFocused = true;
+        if (this.lastSeenMessage) {
+          this.props.dispatch(messageSeen(this.lastSeenMessage));
+          this.lastSeenMessage = null;
+        }
+      });
+    }
   }
 
   componentDidMount() {

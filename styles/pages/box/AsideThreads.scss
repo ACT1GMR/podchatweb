@@ -8,6 +8,7 @@
   overflow-y: auto;
 }
 
-.AsideThreads--smallVersion {
-
+.AsideThreads__AvatarContainer {
+  width: calc(100% - 30px);
+  overflow: hidden;
 }

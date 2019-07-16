@@ -38,7 +38,7 @@ export default class MainFooterEmojiIcons extends Component {
   onEmojiClick(el, emoji, e) {
     e.preventDefault();
     e.stopPropagation();
-    const {setInputText} = this.props;
+    const {setInputText, focusInputNode} = this.props;
     const classNames = classnames({
       [emojiStyle.emoji]: true,
       [emojiStyle["emoji-inline"]]: true,
@@ -48,6 +48,7 @@ export default class MainFooterEmojiIcons extends Component {
                      src={oneoneImage}
                      style={{backgroundPosition: `${el.x / emoji.scale}px ${el.y / emoji.scale}px`}}/>;
     setInputText(ReactDOMServer.renderToStaticMarkup(img), true);
+    focusInputNode();
   }
 
   calculations() {
