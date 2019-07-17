@@ -52,7 +52,6 @@ class ModalThreadInfo extends Component {
   componentDidMount() {
     const {thread, dispatch, match, isShow} = this.props;
     if (thread.id) {
-      dispatch(threadParticipantList(thread.id));
       if (!isShow) {
         if (match.path === ROUTE_THREAD_INFO) {
           dispatch(threadModalThreadInfoShowing(true));

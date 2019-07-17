@@ -205,7 +205,8 @@ export default class MainMessages extends Component {
     const {hasNext} = threadMessages;
 
     if (threadGoToMessageId !== oldThreadGoToMessageId) {
-      this.hasPendingMessageToGo = threadGoToMessageId;
+      this.goToSpecificMessage(threadGoToMessageId);
+      return false;
     }
 
     //Check for allow rendering
@@ -377,7 +378,7 @@ export default class MainMessages extends Component {
   }
 
   goToSpecificMessage(messageTime) {
-    const {thread, threadGoToMessageId} = this.props;
+    const {thread} = this.props;
     const result = this.scroller.current.gotoElement(`message-${messageTime}`);
     clearTimeout(this.highLighterTimeOut);
     const setHighlighter = () => {
@@ -395,10 +396,10 @@ export default class MainMessages extends Component {
 
       //If last request was the same message and if this message is not exists in history fetch from init
       if (messageTime === this.hasPendingMessageToGo) {
-        if (messageTime !== threadGoToMessageId) {
-          return this._fetchInitHistory();
-        }
+        return this._fetchInitHistory();
       }
+
+      this.lastFailedResultGotoMessageId = messageTime;
       this.hasPendingMessageToGo = messageTime;
       this._fetchHistoryFromMiddle(thread.id, messageTime);
       return setHighlighter();
@@ -465,7 +466,7 @@ export default class MainMessages extends Component {
         {threadMessagesPartialFetching && <PartialLoadingFragment/>}
         <Scroller ref={this.scroller}
                   className={style.MainMessages__Messages}
-                  threshold={6}
+                  threshold={5}
                   onScrollBottomEnd={this.onScrollBottomEnd}
                   onScrollBottomThreshold={this.onScrollBottomThreshold}
                   onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}

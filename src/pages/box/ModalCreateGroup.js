@@ -182,7 +182,7 @@ class ModalCreateGroup extends Component {
             :
             <InputText onChange={this.groupNameChange.bind(this)}
                        value={groupName}
-                       placeholder={strings.groupName}/>
+                       placeholder={strings.groupName(isChannel)}/>
           }
 
 

@@ -9,6 +9,7 @@ import {
   CONTACT_BLOCK
 } from "../constants/actionTypes";
 import {threadCreate, threadParticipantList, threadShowing} from "./threadActions";
+import {messageEditing} from "./messageActions";
 
 export const contactGetList = () => {
   return (dispatch, getState) => {
@@ -83,6 +84,7 @@ export const contactBlock = (threadId, block) => {
         payload: null
       });
       dispatch(threadParticipantList(threadId));
+      dispatch(messageEditing());
     }, () => {
       dispatch({
         type: CONTACT_BLOCK(),

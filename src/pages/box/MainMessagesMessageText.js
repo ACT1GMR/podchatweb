@@ -75,6 +75,7 @@ export default class MainMessagesMessageText extends Component {
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
+      isParticipantBlocked,
       forceSeen,
       isChannel,
       isGroup
@@ -86,6 +87,7 @@ export default class MainMessagesMessageText extends Component {
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
           <ControlFragment isMessageByMe={isMessageByMe}
+                           isParticipantBlocked={isParticipantBlocked}
                            messageControlShow={messageControlShow}
                            isChannel={isChannel}
                            message={message}

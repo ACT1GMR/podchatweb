@@ -62,7 +62,7 @@
 
 .MainMessagesMessage__Highlighter {
   position: absolute;
-  top: 0;
+  bottom: 3px;
   left: 0;
   width: 100%;
   height: 5px;
@@ -75,11 +75,11 @@
 }
 
 .MainMessagesMessage__HighlighterBox {
-  border-top: 3px solid $color-accent;
   height: 100%;
-  border-radius: 7px 7px 0 0;
-}
+  border-radius: 0 0 7px 7px;
+  box-shadow: 0 3px 0 $color-accent;
 
+}
 
 .MainMessagesMessage__SentIcon {
   transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;

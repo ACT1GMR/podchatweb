@@ -150,7 +150,8 @@ const sanitizeRule = {
     threadId: store.thread.thread.id,
     chatInstance: store.chatInstance.chatSDK,
     chatRouterLess: store.chatRouterLess,
-    chatSearchResult: store.chatSearchResult
+    chatSearchResult: store.chatSearchResult,
+    user: store.user.user
   };
 })
 class AsideThreads extends Component {
@@ -162,14 +163,14 @@ class AsideThreads extends Component {
   }
 
   onThreadClick(thread) {
-    const {chatRouterLess, history, threadId} = this.props;
+    const {chatRouterLess, history, threadId, dispatch} = this.props;
     if (thread.id === threadId) {
       return;
     }
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }
-    this.props.dispatch(threadCreate(null, thread));
+    dispatch(threadCreate(null, thread));
   }
 
   componentDidUpdate(oldProps) {
@@ -185,14 +186,14 @@ class AsideThreads extends Component {
   }
 
   render() {
-    const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult} = this.props;
+    const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult, user} = this.props;
     const {activeThread} = this.state;
     const classNames = classnames({
       [style.AsideThreads]: true,
       [style["AsideThreads--isThreadShow"]]: threadShowing
     });
     let filteredThreads = threads;
-    if (threadsFetching || !chatInstance) {
+    if (threadsFetching || !chatInstance || !user.id) {
       return (
         <section className={classNames}>
           <Loading hasSpace><LoadingBlinkDots invert rtl/></Loading>

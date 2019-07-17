@@ -14,7 +14,7 @@ import strings from "../../constants/localization";
 
 //actions
 import {contactAdding, contactListShowing} from "../../actions/contactActions";
-import {threadInit, threadMessageGetList, threadShowing} from "../../actions/threadActions";
+import {threadInit, threadMessageGetList, threadParticipantList, threadShowing} from "../../actions/threadActions";
 
 //components
 import MainHead from "./MainHead";
@@ -47,7 +47,11 @@ class Main extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {history, dispatch} = this.props;
+    const {history, dispatch, threadId} = this.props;
+    const {threadId: oldThreadId} = oldProps;
+    if(threadId !== oldThreadId) {
+      dispatch(threadParticipantList(threadId));
+    }
     if(mobileCheck()) {
       if(history.location.pathname === "/") {
         dispatch(threadInit());

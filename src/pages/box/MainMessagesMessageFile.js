@@ -154,6 +154,7 @@ class MainMessagesMessageFile extends Component {
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
+      isParticipantBlocked,
       leftAsideShowing,
       smallVersion,
       forceSeen,
@@ -186,6 +187,7 @@ class MainMessagesMessageFile extends Component {
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
           <ControlFragment
+            isParticipantBlocked={isParticipantBlocked}
             isMessageByMe={isMessageByMe}
             isChannel={isChannel}
             messageControlShow={messageControlShow}

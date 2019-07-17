@@ -31,7 +31,7 @@ import List, {ListItem} from "../../../../uikit/src/list";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 //styling
-import {MdGroupAdd, MdGroup, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
+import {MdGroupAdd, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
 import style from "./../../../styles/pages/box/ModalThreadInfoGroup.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
@@ -269,7 +269,7 @@ class ModalThreadInfoGroup extends Component {
                                  textBg={avatarNameGenerator(thread.title).color}/>
                     <AvatarName>
                       <Heading h1>{thread.title}</Heading>
-                      <Text>{participants.length} {strings.member}</Text>
+                      <Text>{thread.participantCount} {strings.member}</Text>
                     </AvatarName>
                   </Avatar>
                 </Container>

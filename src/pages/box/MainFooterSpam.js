@@ -87,7 +87,7 @@ function showSpam(props) {
 }
 
 
-function showBlock(props) {
+export function showBlock(props) {
   const {
     thread,
     user,

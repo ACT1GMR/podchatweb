@@ -35,6 +35,7 @@ import {
   THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
+
 const {CANCELED} = stateGeneratorState;
 
 
@@ -102,7 +103,7 @@ export const threadMessageGetListPartial = (threadId, msgTime, loadAfter, count,
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    if(reset) {
+    if (reset) {
       return dispatch({
         type: THREAD_GET_MESSAGE_LIST_PARTIAL(CANCELED),
         payload: null
@@ -119,7 +120,7 @@ export const threadMessageGetListByMessageId = (threadId, msgTime, count, reset)
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    if(reset) {
+    if (reset) {
       return dispatch({
         type: THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(CANCELED),
         payload: null
@@ -197,7 +198,7 @@ export const threadLeave = (threadId, kickedOut) => {
   }
 };
 
-export const threadNewMessage = message =>{
+export const threadNewMessage = message => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
@@ -212,7 +213,7 @@ export const threadParticipantList = threadId => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    if(!threadId) {
+    if (!threadId) {
       return dispatch({
         type: THREAD_PARTICIPANT_GET_LIST(CANCELED)
       });

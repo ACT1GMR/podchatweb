@@ -3,7 +3,7 @@ import LocalizedStrings from "react-localization";
 let strings = new LocalizedStrings({
   fa: {
     admin: "مدیر",
-    podchat: "پادچت",
+    podchat: "تاک",
     search: "جستجو",
     tryAgain: "تلاش دوباره",
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کن!!",
@@ -166,7 +166,8 @@ let strings = new LocalizedStrings({
     video: "ویدیو",
     unreaded: "خوانده نشده",
     mute: "قطع اعلانات",
-    unmute: "برقراری اعلانات"
+    unmute: "برقراری اعلانات",
+    messageDeleted: "پیام پاک شده است"
   },
   it: {}
 });

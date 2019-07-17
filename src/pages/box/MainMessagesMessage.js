@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
 import date from "../../utils/date";
+import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
 
@@ -67,7 +68,7 @@ export function ForwardFragment(message, isMessageByMe) {
     if (isMessageByMe) {
       inlineStyle.backgroundColor = "#dee8d2";
     }
-    const name  = !participant ? forwardInfo.conversation.title : participant && (participant.contactName || participant.name);
+    const name = !participant ? forwardInfo.conversation.title : participant && (participant.contactName || participant.name);
     return (
       <Container>
         <Paper colorBackground style={inlineStyle}>
@@ -122,36 +123,44 @@ export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
     }
     return (
       <Container
-        cursor="pointer"
+        cursor={replyInfo.deleted ? "default" : "pointer"}
         onClick={gotoMessageFunc.bind(null, replyInfo.repliedToMessageTime, replyInfo.deleted)}>
         <Paper colorBackground
                style={inlineStyle}>
           <Text bold size="xs">{strings.replyTo}:</Text>
-          {isImage && text ?
-            <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
+          {replyInfo.deleted ?
+            <Text bold size="xs" italic color="gray" dark>{strings.messageDeleted}</Text>
             :
-            isImage && !text ?
-              <Container>
-                <MdCameraAlt size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
-                <Text inline size="sm" bold color="gray" dark>{strings.photo}</Text>
-              </Container> :
-              isVideo ?
-                <Container>
-                  <MdVideocam size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
-                  <Text inline size="sm" bold color="gray" dark>{strings.video}</Text>
-                </Container> :
-                file ?
+            <Container>
+              {isImage && text ?
+                <Text italic size="xs" isHTML>{text && text.slice(0, 25)}</Text>
+                :
+                isImage && !text ?
                   <Container>
-                    <MdInsertDriveFile size={style.iconSizeSm} color={style.colorGrayDark}
-                                       style={{margin: "0 5px"}}/>
-                    <Text inline size="sm" bold color="gray" dark>{file.originalName}</Text>
-                  </Container>
-                  :
-                  <Text italic size="xs" isHTML>{text}</Text>}
+                    <MdCameraAlt size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
+                    <Text inline size="sm" bold color="gray" dark>{strings.photo}</Text>
+                  </Container> :
+                  isVideo ?
+                    <Container>
+                      <MdVideocam size={style.iconSizeSm} color={style.colorGrayDark} style={{margin: "0 5px"}}/>
+                      <Text inline size="sm" bold color="gray" dark>{strings.video}</Text>
+                    </Container> :
+                    file ?
+                      <Container>
+                        <MdInsertDriveFile size={style.iconSizeSm} color={style.colorGrayDark}
+                                           style={{margin: "0 5px"}}/>
+                        <Text inline size="sm" bold color="gray" dark>{file.originalName}</Text>
+                      </Container>
+                      :
+                      <Text italic size="xs" isHTML>{text}</Text>}
 
-          {isImage &&
-          <Container className={style.MainMessagesMessage__ReplyFragmentImage}
-                     style={{backgroundImage: imageLinkString}}/>
+              {isImage &&
+              <Container className={style.MainMessagesMessage__ReplyFragmentImage}
+                         style={{backgroundImage: imageLinkString}}/>
+              }
+
+            </Container>
+
           }
         </Paper>
         <Gap block y={5}/>
@@ -261,7 +270,7 @@ export function PaperFooterFragment({message, onMessageControlShow, messageContr
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, message, onMessageControlHide, onDelete, onForward, onReply, isText, messageControlShow, children, isChannel}) {
+export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onMessageControlHide, onDelete, onForward, onReply, isText, messageControlShow, children, isChannel}) {
   const classNames = classnames({
     [style.MainMessagesMessage__Control]: true,
     [style["MainMessagesMessage__Control--mine"]]: isMessageByMe,
@@ -287,10 +296,10 @@ export function ControlFragment({isMessageByMe, message, onMessageControlHide, o
                    className={style.MainMessagesMessage__ControlIcon}
                    onClick={onForward}/>
 
-        {!isChannel &&
-          <MdReply size={styleVar.iconSizeMd}
-                   className={style.MainMessagesMessage__ControlIcon}
-                   onClick={onReply}/>
+        {!isChannel && !isParticipantBlocked &&
+        <MdReply size={styleVar.iconSizeMd}
+                 className={style.MainMessagesMessage__ControlIcon}
+                 onClick={onReply}/>
         }
 
         {!isText && children}
@@ -299,7 +308,12 @@ export function ControlFragment({isMessageByMe, message, onMessageControlHide, o
   ) : "";
 }
 
-@connect()
+@connect(store => {
+  return {
+    participants: store.threadParticipantList.participants,
+    participantsFetching: store.threadParticipantList.fetching,
+  };
+})
 export default class MainMessagesMessage extends Component {
 
   constructor(props) {
@@ -403,7 +417,9 @@ export default class MainMessagesMessage extends Component {
       highLightMessage,
       showNameOrAvatar,
       onRepliedMessageClicked,
-      isMessageByMe
+      isMessageByMe,
+      participantsFetching,
+      participants
     } = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const isGroup = thread.group && thread.type !== 8;
@@ -424,6 +440,7 @@ export default class MainMessagesMessage extends Component {
       forceSeen: messages && messages.length && messages[messages.length - 1].seen,
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
+      isParticipantBlocked: showBlock({user, thread, participantsFetching, participants}),
       isGroup,
       messages,
       message,
