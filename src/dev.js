@@ -9,7 +9,7 @@ import Box from "./pages/box";
 import {auth} from "podauth";
 
 auth({
-  clientId: "2051121e4348af52664cf7de0bda",
+  clientId: "84994fec93b1402825b650dba",
   scope: "social:write",
   onNewToken: token => {
     render(

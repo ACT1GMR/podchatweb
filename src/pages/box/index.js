@@ -46,7 +46,7 @@ import {contactGetList} from "../../actions/contactActions";
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing.isShowing,
     threadImages: store.threadLeftAsideShowing,
-    threadId: store.thread.thread.id,
+    threadId: store.thread.thread.id
   };
 }, null, null, {withRef: true})
 class Box extends Component {
