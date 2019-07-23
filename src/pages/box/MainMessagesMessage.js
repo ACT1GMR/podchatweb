@@ -441,20 +441,20 @@ export default class MainMessagesMessage extends Component {
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
       isParticipantBlocked: showBlock({user, thread, participantsFetching, participants}),
+      user,
+      thread,
+      message,
       isGroup,
       messages,
-      message,
-      highLightMessage,
-      user,
-      thread
+      highLightMessage
     };
     return (
       <Container id={message.uuid}
                  inline relative
                  style={{
                    padding: "2px 5px",
-                   minWidth: "220px",
-                   maxWidth: "50%",
+                   minWidth: "175px",
+                   maxWidth: mobileCheck() ? "90%" : "50%",
                    marginRight: isGroup ? null : isMessageByMeReal ? "5px" : null,
                    marginLeft: isGroup ? null : isMessageByMeReal ? null : "5px"
                  }}

@@ -65,6 +65,7 @@ class ModalThreadInfoGroup extends Component {
     this.onSelect = this.onSelect.bind(this);
     this.onDeselect = this.onDeselect.bind(this);
     this.onAddMember = this.onAddMember.bind(this);
+    this.onStartChat = this.onStartChat.bind(this);
     this.onAddMemberSelect = this.onAddMemberSelect.bind(this);
     this.onSettingsSelect = this.onSettingsSelect.bind(this);
     this.onPrevious = this.onPrevious.bind(this);
@@ -124,7 +125,7 @@ class ModalThreadInfoGroup extends Component {
     contactsClone.push(id);
     const removingParticipantIdsClone = [...removingParticipantIds];
     const index = removingParticipantIdsClone.indexOf(contact.userId);
-    if(index > -1 ) {
+    if (index > -1) {
       removingParticipantIdsClone.splice(index, 1);
     }
     this.setState({
@@ -149,7 +150,10 @@ class ModalThreadInfoGroup extends Component {
     });
   }
 
-  onStartChat(id, isParticipant) {
+  onStartChat(participantId, participant) {
+    const participantContactId = participant.contactId;
+    const id = participantContactId || participantId;
+    const isParticipant = !participantContactId;
     this.onClose();
     this.props.dispatch(threadCreate(id, null, null, isParticipant ? "TO_BE_USER_ID" : null));
   }
@@ -215,16 +219,13 @@ class ModalThreadInfoGroup extends Component {
           <Text size="sm" color="accent">{strings.admin}</Text>
         </Container>
       );
-      if(user.id === participantId) {
-        if(isCreator) {
+      if (user.id === participantId) {
+        if (isCreator) {
           return adminFragment;
         }
         return "";
       }
-      const participantContactId = participant.contactId;
       const isRemovingParticipant = removingParticipantIds.indexOf(participantId) > -1;
-      const id = participantContactId || participantId;
-      const isParticipant = !participantContactId;
       return (
         <Container>
           {isRemovingParticipant ?
@@ -233,15 +234,12 @@ class ModalThreadInfoGroup extends Component {
             </Container>
             :
             <Container>
-              <Button onClick={this.onStartChat.bind(this, id, isParticipant)} text size="sm">
-                {strings.startChat}
-              </Button>
-              {isCreator && adminFragment}
               {thread.inviter && thread.group && user.id === thread.inviter.id ? (
                 <Button onClick={this.onRemoveParticipant.bind(this, participant)} text size="sm">
                   {strings.remove}
                 </Button>
               ) : ""}
+              {isCreator && adminFragment}
             </Container>
           }
 
@@ -358,7 +356,10 @@ class ModalThreadInfoGroup extends Component {
                     <Text>{strings.waitingForContact}...</Text>
                   </Container>
                   :
-                  <ContactList invert selection contacts={participants} actions={conversationAction}/>
+                  <ContactList invert
+                               selection
+                               onSelect={this.onStartChat}
+                               contacts={participants} actions={conversationAction}/>
                 }
               </Container>
             </Container>

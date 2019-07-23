@@ -28,6 +28,7 @@ import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
 import classnames from "classnames";
 import {chatSearchShow} from "../../actions/chatActions";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 
 const statics = {
   headMenuSize: 59
@@ -81,13 +82,26 @@ class AsideHead extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: false
+      isOpen: false,
+      reConnecting: false
     };
     this.container = React.createRef();
     this.onCloseMenu = this.onCloseMenu.bind(this);
     this.onOpenMenu = this.onOpenMenu.bind(this);
     this.onRetryClick = this.onRetryClick.bind(this);
     this.onChatSearchToggle = this.onChatSearchToggle.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    const {reConnecting} = this.state;
+    if (reConnecting) {
+      const {isConnected} = this.socketStatus();
+      if (isConnected) {
+        this.setState({
+          reConnecting: false
+        });
+      }
+    }
   }
 
   onMenuSelect(type) {
@@ -117,16 +131,28 @@ class AsideHead extends Component {
   onCloseMenu() {
     this.setState({
       isOpen: false
-    })
+    });
   }
 
   onOpenMenu() {
     this.setState({
       isOpen: true
-    })
+    });
   }
 
   onRetryClick() {
+    this.setState({
+      reConnecting: true
+    });
+    clearTimeout(this.timeOutForTryButton);
+    this.timeOutForTryButton = setTimeout(e => {
+      const {isDisconnected} = this.socketStatus();
+      if (isDisconnected) {
+        this.setState({
+          reConnecting: false
+        });
+      }
+    }, 5000);
     retry(true, true).then(e => {
       const {chatInstance} = this.props;
       chatInstance.setToken(e.access_token);
@@ -135,19 +161,25 @@ class AsideHead extends Component {
   }
 
   onChatSearchToggle() {
-    const {chatSearchShowing} = this.props;
-    this.props.dispatch(chatSearchShow(!chatSearchShowing));
+    const {chatSearchShowing, dispatch} = this.props;
+    dispatch(chatSearchShow(!chatSearchShowing));
+  }
+
+  socketStatus(defineProps) {
+    const {chatState} = defineProps || this.props;
+    const isReconnecting = chatState.socketState == 1 && !chatState.deviceRegister;
+    const isConnected = chatState.socketState == 1 && chatState.deviceRegister;
+    const isDisconnected = chatState.socketState == 3;
+    return {isReconnecting, isConnected, isDisconnected, timeUntilReconnect: chatState.timeUntilReconnect};
   }
 
   render() {
     const {menuItems, chatState, chatInstance, smallVersion, chatSearchShowing} = this.props;
-    const {isOpen} = this.state;
+    const {isOpen, reConnecting} = this.state;
+    const {isReconnecting, isConnected, isDisconnected} = this.socketStatus();
     const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
     const firstInit = !chatInstance;
-    const isReconnecting = chatState.socketState == 1 && !chatState.deviceRegister;
-    const isConnected = chatState.socketState == 1 && chatState.deviceRegister;
-    const isDisconnected = chatState.socketState == 3;
     const classNames = classnames({
       [style.AsideHead]: true,
       [style["AsideHead--smallVersion"]]: smallVersion
@@ -167,11 +199,16 @@ class AsideHead extends Component {
         <Container centerRight className={style.AsideHead__ConnectionHandlerContainer}>
           <Container inline>
             <Text size="lg" color="gray" light
-                  bold>{firstInit ? `${strings.chatState.connectingToChat}...` : isConnected ? strings.podchat : isReconnecting ? `${strings.chatState.reconnecting}...` : `${strings.chatState.networkDisconnected}...`}</Text>
+                  bold>{firstInit || reConnecting ? `${strings.chatState.connectingToChat}${reConnecting ? "" : "..."}` : isConnected ? strings.podchat : isReconnecting ? `${strings.chatState.reconnecting}...` : `${strings.chatState.networkDisconnected}...`}</Text>
           </Container>
-          {isDisconnected &&
+          {isDisconnected && !reConnecting &&
           <Container inline onClick={this.onRetryClick}>
             <Text size="xs" color="gray" light linkStyle>{strings.tryAgain}</Text>
+          </Container>
+          }
+          {reConnecting &&
+          <Container inline>
+            <Loading><LoadingBlinkDots size="sm" invert/></Loading>
           </Container>
           }
 

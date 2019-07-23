@@ -1,7 +1,8 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
-
+import classnames from "classnames";
+import {mobileCheck} from "../../utils/helpers";
 //strings
 
 //actions
@@ -44,8 +45,12 @@ export default class MainFooter extends Component {
 
   render() {
     const {emojiShowing} = this.props;
+    const classNames = classnames({
+      [style.MainFooter]: true,
+      [style["MainFooter--isMobile"]]: mobileCheck()
+    });
     return (
-      <Container className={style.MainFooter}>
+      <Container className={classNames}>
         <Container className={style.MainFooter__SpamContainer}>
           <MainFooterSpam/>
         </Container>

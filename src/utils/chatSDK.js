@@ -1,6 +1,5 @@
-import PodChat from "podchat";
+import PodChat from "podchat-browser";
 import {promiseDecorator} from "./decorators";
-import Box from "../pages/box";
 import React from "react";
 
 const errorCodes = {

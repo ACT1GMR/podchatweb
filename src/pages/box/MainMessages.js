@@ -483,7 +483,7 @@ export default class MainMessages extends Component {
                 <Container className={MainMessagesMessageContainerClassNames(message)}
                            id={`message-${message.time}`}
                            relative>
-                  {thread.group && thread.type !== 8 && getAvatar(message, messages, this.onAvatarClick, thread, user)}
+                  {thread.group && thread.type !== 8 && !isMessageByMe(message, user, thread) && getAvatar(message, messages, this.onAvatarClick, thread, user)}
                   <MainMessagesMessage {...args} message={message}/>
                   {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
                 </Container>
@@ -492,7 +492,7 @@ export default class MainMessages extends Component {
 
           </List>
         </Scroller>
-        {bottomButtonShowing ?
+        {bottomButtonShowing && !this.gotoBottom ?
           <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>
             <MdExpandMore size={style.iconSizeMd} style={{margin: "0 5px"}}/>
           </ButtonFloating> :
