@@ -454,7 +454,7 @@ export default class MainMessagesMessage extends Component {
                  style={{
                    padding: "2px 5px",
                    minWidth: "175px",
-                   maxWidth: mobileCheck() ? "90%" : "50%",
+                   maxWidth: mobileCheck() ? "70%" : "50%",
                    marginRight: isGroup ? null : isMessageByMeReal ? "5px" : null,
                    marginLeft: isGroup ? null : isMessageByMeReal ? null : "5px"
                  }}
