@@ -29,7 +29,8 @@ const constants = {
   return {
     isShow: store.threadModalListShowing.isShowing,
     message: store.threadModalListShowing.message,
-    threads: store.threadList.threads
+    threads: store.threadList.threads,
+    user: store.user.user
   };
 }, null, null, {withRef: true})
 export default class ModalContactList extends Component {
@@ -50,18 +51,20 @@ export default class ModalContactList extends Component {
   }
 
   render() {
-    const {threads, isShow, smallVersion} = this.props;
+    const {threads, isShow, smallVersion, user} = this.props;
+    const realThreads = threads.filter(thread => !thread.group || thread.type !== 8 || thread.inviter.id === user.id);
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none">
 
         <ModalHeader>
           <Heading h3>{strings.forwardTo}</Heading>
         </ModalHeader>
 
         <ModalBody>
-          {threads.length ?
+          {realThreads.length ?
             <List>
-              {threads.map(el => (
+              {realThreads.map(el => (
                 <ListItem key={el.id} selection invert onSelect={this.onSend.bind(this, el)}>
                   <Container relative>
 

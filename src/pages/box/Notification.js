@@ -70,6 +70,9 @@ export default class Notification extends Component {
   shouldComponentUpdate(nextProps) {
     const {messageNew} = nextProps;
     const {messageNew: oldMessageNew} = this.props;
+    if (messageNew && messageNew.cache) {
+      return;
+    }
     if (messageNew && oldMessageNew) {
       if (messageNew.time < oldMessageNew.time) {
         return false;

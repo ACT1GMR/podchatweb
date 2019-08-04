@@ -27,6 +27,7 @@ import {
 import style from "../../../styles/pages/box/MainMessagesText.scss";
 import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
+import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 function urlify(text) {
   if (!text) {
@@ -100,7 +101,7 @@ export default class MainMessagesMessageText extends Component {
           </ControlFragment>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
-              {urlify(message.message)}
+              {urlify(decodeEmoji(message.message))}
             </Text>
           </Container>
           <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}

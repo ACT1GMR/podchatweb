@@ -32,11 +32,11 @@ import {
   THREAD_NOTIFICATION,
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
-  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE
+  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
-const {CANCELED} = stateGeneratorState;
+const {CANCELED, SUCCESS} = stateGeneratorState;
 
 
 export const threadCreate = (contactId, thread, threadName, idType, isChannel) => {
@@ -73,13 +73,21 @@ export const threadInit = () => {
   }
 };
 
-export const threadGetList = threadIds => {
+export const threadGetList = isBackground => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if (isBackground) {
+      return chatSDK.getThreads().then(threads => {
+        dispatch({
+          type: THREAD_GET_LIST(SUCCESS),
+          payload: threads
+        });
+      })
+    }
     dispatch({
       type: THREAD_GET_LIST(),
-      payload: chatSDK.getThreads(threadIds)
+      payload: chatSDK.getThreads()
     });
   }
 };

@@ -23,6 +23,7 @@ import Container from "../../../../uikit/src/container";
 
 //styling
 import {MdArrowForward} from "react-icons/lib/md";
+import Message from "../../../../uikit/src/message";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -77,13 +78,25 @@ class ModalCreateGroup extends Component {
     });
   }
 
-  onCreate(groupName, isChannel) {
+  onCreate(groupName, isChannel, e) {
+    if (e) {
+      e.preventDefault();
+    }
+    if (!groupName || !groupName.trim()) {
+      this.setState({
+        nameNotEntered: true
+      });
+      return;
+    }
     const {dispatch, chatRouterLess, history} = this.props;
     dispatch(threadCreate(this.state.threadContacts, null, groupName, null, isChannel));
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }
     this.onClose(false, true);
+    this.setState({
+      nameNotEntered: false
+    });
   }
 
   onClose(e, noHistory) {
@@ -128,13 +141,14 @@ class ModalCreateGroup extends Component {
 
   groupNameChange(event) {
     this.setState({
-      groupName: event.target.value
+      groupName: event.target.value,
+      nameNotEntered: false
     })
   }
 
   render() {
     const {contacts, contactModalCreateGroup, smallVersion, chatInstance, contactsFetching} = this.props;
-    const {threadContacts, step, groupName} = this.state;
+    const {threadContacts, step, groupName, nameNotEntered} = this.state;
     const {isShowing, isChannel} = contactModalCreateGroup;
     const showLoading = contactsFetching;
 
@@ -144,7 +158,8 @@ class ModalCreateGroup extends Component {
              userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{step === constants.SELECT_CONTACT ? strings.selectContacts : isChannel ? strings.createGroup(true) : strings.createGroup()}</Heading>
+          <Heading
+            h3>{step === constants.SELECT_CONTACT ? strings.selectContacts : isChannel ? strings.createGroup(true) : strings.createGroup()}</Heading>
         </ModalHeader>
 
         <ModalBody>
@@ -180,9 +195,13 @@ class ModalCreateGroup extends Component {
                   <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
                 </Container>
             :
-            <InputText onChange={this.groupNameChange.bind(this)}
-                       value={groupName}
-                       placeholder={strings.groupName(isChannel)}/>
+            <form onSubmit={this.onCreate.bind(this, groupName, isChannel)}>
+              <InputText onChange={this.groupNameChange.bind(this)}
+                         max={15}
+                         value={groupName}
+                         placeholder={strings.groupName(isChannel)}/>
+              <input type="submit" style={{display: "none"}}/>
+            </form>
           }
 
 
@@ -196,9 +215,15 @@ class ModalCreateGroup extends Component {
               </Button>
               : ""
             :
-            <Button text onClick={this.onCreate.bind(this, groupName, isChannel)}>{strings.createGroup(isChannel)}</Button>
+            <Button text
+                    onClick={this.onCreate.bind(this, groupName, isChannel)}>{strings.createGroup(isChannel)}</Button>
           }
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
+          <Container inline>
+            <Message warn>
+              {nameNotEntered && strings.groupNameNotEntered(isChannel)}
+            </Message>
+          </Container>
         </ModalFooter>
 
       </Modal>

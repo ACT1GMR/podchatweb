@@ -19,6 +19,7 @@ import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainFooterInputEditing.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
+import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 const constants = {
   replying: "REPLYING",
@@ -140,7 +141,7 @@ export default class MainFooterInputEditing extends Component {
                 </Container>
                 : ""}
               <Container inline>
-                <Text size="sm" isHTML>{editObject.text}</Text>
+                <Text size="sm" isHTML>{decodeEmoji(editObject.text)}</Text>
               </Container>
             </Container>
 

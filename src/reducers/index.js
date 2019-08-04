@@ -5,7 +5,7 @@ import {
   contactBlockReducer,
   contactListShowingReducer,
   contactModalCreateGroupShowingReducer,
-  contactChattingReducer
+  contactChattingReducer, contactGetListPartialReducer
 } from "./contactReducer";
 import {
   threadNotificationReducer,
@@ -58,6 +58,7 @@ const rootReducer = {
   chatSearchResult: chatSearchResultReducer,
   chatSearchShow: chatSearchShowReducer,
   contactGetList: contactGetListReducer,
+  contactGetListPartial: contactGetListPartialReducer,
   contactListShowing: contactListShowingReducer,
   contactModalCreateGroupShowing: contactModalCreateGroupShowingReducer,
   contactAdding: contactAddingReducer,

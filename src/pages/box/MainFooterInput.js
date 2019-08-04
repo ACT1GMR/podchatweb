@@ -27,6 +27,7 @@ import {InputTextArea} from "../../../../uikit/src/input";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";
+import {codeEmoji} from "./MainFooterEmojiIcons";
 
 const constants = {
   replying: "REPLYING",
@@ -37,7 +38,7 @@ const sanitizeRule = {
   allowedTags: ["img", "br", "div"],
 
   allowedAttributes: {
-    img: ["src", "style", "class"]
+    img: ["src", "style", "class", "name"]
   },
   allowedSchemes: ["data"],
   exclusiveFilter: function (frame) {
@@ -186,7 +187,7 @@ export default class MainFooterInput extends Component {
   sendMessage() {
     const {threadId, dispatch, messageEditing: msgEditing} = this.props;
     const {messageText} = this.state;
-    const clearMessageText = clearHtml(messageText);
+    const clearMessageText = codeEmoji(clearHtml(messageText));
     let isEmptyMessage = false;
     if (!clearMessageText) {
       isEmptyMessage = true;
@@ -252,8 +253,8 @@ export default class MainFooterInput extends Component {
           <Container className={style.MainFooterInput__EditBoxInputContainer}>
             <InputTextArea
               className={style.MainFooterInput__InputContainer}
-              sanitizeRule={sanitizeRule}
               inputClassName={style.MainFooterInput__Input}
+              sanitizeRule={sanitizeRule}
               ref={this.inputNode}
               placeholder={strings.pleaseWriteHere}
               onChange={this.onTextChange}

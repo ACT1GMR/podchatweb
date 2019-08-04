@@ -40,6 +40,7 @@ import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../../constants/actionTypes";
 import {avatarNameGenerator, mobileCheck} from "../../utils/helpers";
 import {messageDelete, messageEditing} from "../../actions/messageActions";
 import {chatModalPrompt} from "../../actions/chatActions";
+import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 
 export function isFile(message) {
@@ -99,7 +100,7 @@ export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
       meta = JSON.parse(replyInfo.metadata);
     } catch (e) {
     }
-    const text = replyInfo.message;
+    const text = decodeEmoji(replyInfo.message);
     const file = meta && meta.file;
     let isImage, isVideo, imageLink;
     if (file) {
@@ -289,9 +290,12 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
           {isText && message.editable && children}
         </Container>
         }
-        <MdDelete size={styleVar.iconSizeMd}
-                  className={style.MainMessagesMessage__ControlIcon}
-                  onClick={onDelete}/>
+        {
+          (!isChannel || (isChannel && isMessageByMe)) &&
+          <MdDelete size={styleVar.iconSizeMd}
+                    className={style.MainMessagesMessage__ControlIcon}
+                    onClick={onDelete}/>
+        }
         <MdForward size={styleVar.iconSizeMd}
                    className={style.MainMessagesMessage__ControlIcon}
                    onClick={onForward}/>
@@ -390,7 +394,7 @@ export default class MainMessagesMessage extends Component {
   onDelete() {
     const {dispatch, message, user, isMessageByMe} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, isMessageByMe(message, user) && message.editable));
+      dispatch(messageDelete(message.id, isMessageByMe(message, user) && message.deletable));
       dispatch(chatModalPrompt());
     }));
     this.onMessageControlHide();

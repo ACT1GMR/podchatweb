@@ -41,7 +41,7 @@ const statics = {
   historyFetchCount: 20,
 };
 
-function isMessageByMe(message, user, thread) {
+export function isMessageByMe(message, user, thread) {
   if (thread && user) {
     const isGroup = thread.group;
     if (isGroup) {

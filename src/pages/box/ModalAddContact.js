@@ -11,7 +11,6 @@ import {
   contactAdd,
   contactAdding,
   contactChatting,
-  contactGetList,
   contactListShowing
 } from "../../actions/contactActions";
 
@@ -41,6 +40,7 @@ class ModalAddContact extends Component {
 
   constructor(props) {
     super(props);
+    this.onSubmit = this.onSubmit.bind(this);
     this.state = {
       notEnteredFirstOrFamilyName: false,
       notEnteredMobilePhone: false,
@@ -101,7 +101,10 @@ class ModalAddContact extends Component {
     }
   }
 
-  onSubmit() {
+  onSubmit(e) {
+    if(e) {
+      e.preventDefault();
+    }
     const {mobilePhone, firstName, lastName} = this.state;
     if (!mobilePhone) {
       return this.setState({
@@ -158,21 +161,25 @@ class ModalAddContact extends Component {
         </ModalHeader>
 
         <ModalBody>
-          {!contactEdit &&
-          <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
-                     value={mobilePhone}
-                     placeholder={`${strings.mobilePhone} ( ${strings.required} )`}/>
-          }
-          <InputText max={15} onChange={this.onFieldChange.bind(this, "firstName")}
-                     placeholder={`${strings.firstName} ( ${strings.required} )`}
-                     value={firstName}/>
-          <InputText max={15} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}
-                     value={lastName}/>
+          <form onSubmit={this.onSubmit}>
+            {!contactEdit &&
+            <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
+                       value={mobilePhone}
+                       placeholder={`${strings.mobilePhone} ( ${strings.required} )`}/>
+            }
+            <InputText max={15} onChange={this.onFieldChange.bind(this, "firstName")}
+                       placeholder={`${strings.firstName} ( ${strings.required} )`}
+                       value={firstName}/>
+            <InputText max={15} onChange={this.onFieldChange.bind(this, "lastName")} placeholder={strings.lastName}
+                       value={lastName}/>
+            <input type="submit" style={{display: "none"}}/>
+          </form>
+
         </ModalBody>
 
         <ModalFooter>
           <Button text loading={contactAddPending}
-                  onClick={this.onSubmit.bind(this)}>{contactEdit ? strings.edit : strings.add}</Button>
+                  onClick={this.onSubmit}>{contactEdit ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
           {((contactAdd && !contactAdd.linkedUser) || notEnteredFirstOrFamilyName || notEnteredMobilePhone) &&
 

@@ -7,8 +7,8 @@ import classnames from "classnames";
 import strings from "../../constants/localization";
 
 //actions
-import {contactBlock, contactGetList} from "../../actions/contactActions";
-import {threadNotification, threadParticipantList, threadSpamPv} from "../../actions/threadActions";
+import {contactBlock} from "../../actions/contactActions";
+import {threadNotification, threadSpamPv} from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 //components
@@ -108,6 +108,9 @@ export function showBlock(props) {
     return false;
   }
   participant = participants.filter(e => e.id !== user.id)[0];
+  if(!participant) {
+    return false;
+  }
   return participant.blocked;
 }
 

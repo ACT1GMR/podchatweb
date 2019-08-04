@@ -26,6 +26,50 @@ const emojies = [
     name: "common-telegram"
   }];
 
+function buildEmojiIcon(sizeX, sizeY, name) {
+  const string = `${name}#${sizeX}*${sizeY}`;
+  let scale;
+  for(const emoji of emojies) {
+    if(emoji.name === name) {
+      scale=emoji.scale;
+    }
+  }
+  const classNames = classnames({
+    [emojiStyle.emoji]: true,
+    [emojiStyle["emoji-inline"]]: true,
+    [emojiStyle[`emoji-${name}`]]: true
+  });
+  const img = <img className={classNames}
+                   name={string}
+                   src={oneoneImage}
+                   style={{backgroundPosition: `${+sizeX / scale}px ${+sizeY / scale}px`}}/>;
+
+  return ReactDOMServer.renderToStaticMarkup(img);
+}
+
+export function codeEmoji(html) {
+  if (!html) {
+    return html;
+  }
+  return html.replace(/<img class="emoji.+?>/g, img => {
+    const name = img.match(/name=".+?"/)[0];
+    const split = name.split("=")[1];
+    return `:emoji#${split.substring(1, split.length - 1)}:`;
+  });
+}
+
+export function decodeEmoji(string) {
+  if (!string) {
+    return string;
+  }
+  return string.replace(/:emoji#.+?:/g, match => {
+    const realMatch = match.substring(1, match.length - 1);
+    const split = realMatch.split("#");
+    const size = split[2].split("*");
+    return buildEmojiIcon(size[0], size[1], split[1]);
+  });
+}
+
 @connect()
 export default class MainFooterEmojiIcons extends Component {
 
@@ -40,16 +84,8 @@ export default class MainFooterEmojiIcons extends Component {
     e.preventDefault();
     e.stopPropagation();
     const {setInputText, focusInputNode} = this.props;
-    const classNames = classnames({
-      [emojiStyle.emoji]: true,
-      [emojiStyle["emoji-inline"]]: true,
-      [emojiStyle[`emoji-${emoji.name}`]]: true
-    });
-    const img = <img className={classNames}
-                     src={oneoneImage}
-                     style={{backgroundPosition: `${el.x / emoji.scale}px ${el.y / emoji.scale}px`}}/>;
-    setInputText(ReactDOMServer.renderToStaticMarkup(img), true);
-    if(!mobileCheck()) {
+    setInputText(buildEmojiIcon(el.x, el.y, emoji.name), true);
+    if (!mobileCheck()) {
       focusInputNode();
     }
   }
@@ -86,7 +122,8 @@ export default class MainFooterEmojiIcons extends Component {
       <Container inline className={style.MainFooterEmojiIcons} relative onClick={this.onClick}>
         {emojies.map(emoji => (
           emoji.emojies.map(el => (
-            <Container key={`${emoji.name}-${el.x}${el.y}`} className={style.MainFooterEmojiIcons__Icon} onClick={this.onEmojiClick.bind(this, el, emoji.info)}>
+            <Container key={`${emoji.name}-${el.x}${el.y}`} className={style.MainFooterEmojiIcons__Icon}
+                       onClick={this.onEmojiClick.bind(this, el, emoji.info)}>
               <Container className={`${emojiStyle[`emoji-${emoji.info.name}`]} ${classNames}`}
                          style={{backgroundPosition: `${el.x}px ${el.y}px`}}/>
             </Container>

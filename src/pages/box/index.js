@@ -2,6 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {Route, withRouter} from "react-router-dom";
+import {statics as contactListStatics} from "./ModalContactList";
 import classnames from "classnames";
 
 //strings
@@ -45,8 +46,7 @@ import {contactGetList} from "../../actions/contactActions";
     userFetching: store.user.fetching,
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing.isShowing,
-    threadImages: store.threadLeftAsideShowing,
-    threadId: store.thread.thread.id
+    thread: store.thread.thread
   };
 }, null, null, {withRef: true})
 class Box extends Component {
@@ -62,12 +62,16 @@ class Box extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, threadId} = this.props;
-    const {token: oldToken, threadId: oldThreadId} = oldProps;
+    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, thread} = this.props;
+    const {token: oldToken, thread: oldThread} = oldProps;
 
-    if (oldThreadId && threadId) {
-      if (oldThreadId !== threadId) {
-        dispatch(threadParticipantList());
+    if ((oldThread.id !== thread.id) || (!oldThread.id && thread.id)) {
+      if (thread.type === 8) {
+        if (thread.inviter.id === user.id) {
+          dispatch(threadParticipantList(thread.id));
+        }
+      } else {
+        dispatch(threadParticipantList(thread.id));
       }
     }
 
@@ -82,13 +86,13 @@ class Box extends Component {
       }
     }
     if (this.firstContactFetching) {
-      dispatch(contactGetList());
+      dispatch(contactGetList(contactListStatics.offset, contactListStatics.count));
       this.firstContactFetching = false;
     }
     if (chatInstance) {
       if (clearCache && !this.deletingDatabases) {
         this.deletingDatabases = true;
-        return dispatch(chatClearCache());
+        dispatch(chatClearCache());
       }
       if (!user.id) {
         if (!userFetching) {

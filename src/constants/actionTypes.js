@@ -27,6 +27,7 @@ export const CHAT_MODAL_PROMPT_SHOWING = "CHAT_MODAL_PROMPT_SHOWING";
 export const CHAT_SEARCH_RESULT = "CHAT_SEARCH_RESULT";
 export const CHAT_SEARCH_SHOW = "CHAT_SEARCH_SHOW";
 export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST");
+export const CONTACT_GET_LIST_PARTIAL = buildPromiseMessage.bind(null, "CONTACT_GET_LIST_PARTIAL");
 export const CONTACTS_LIST_CHANGE = "CONTACTS_LIST_CHANGE";
 export const CONTACT_GET_BLOCK_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_BLOCK_LIST");
 export const CONTACT_ADD = buildPromiseMessage.bind(null, "CONTACT_ADD");

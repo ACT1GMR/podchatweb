@@ -30,6 +30,33 @@ import Container from "../../../../uikit/src/container";
 import style from "../../../styles/pages/box/Main.scss";
 import styleVar from "../../../styles/variables.scss";
 
+function isMyThread(thread, user) {
+  if (!thread || !user) {
+    return false
+  }
+  if (thread.inviter.id === user.id) {
+    return true
+  }
+}
+
+function isChannel(thread) {
+  if (thread.group) {
+    if (thread.type === 8) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isGroup(thread) {
+  if (thread.group) {
+    if (thread.type !== 8) {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 @connect(store => {
   return {
@@ -47,13 +74,10 @@ class Main extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {history, dispatch, threadId} = this.props;
-    const {threadId: oldThreadId} = oldProps;
-    if(threadId !== oldThreadId) {
-      dispatch(threadParticipantList(threadId));
-    }
-    if(mobileCheck()) {
-      if(history.location.pathname === "/") {
+    const {history, dispatch} = this.props;
+
+    if (mobileCheck()) {
+      if (history.location.pathname === "/") {
         dispatch(threadInit());
       }
     }

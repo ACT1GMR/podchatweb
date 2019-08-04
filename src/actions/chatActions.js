@@ -1,21 +1,26 @@
 // src/actions/messageActions.js
+import {threadGetList, threadLeave} from "./threadActions";
+import ChatSDK from "../utils/chatSDK";
+import {reconnect} from "../pages/box/AsideHead";
+
 import {
   CHAT_GET_INSTANCE,
   CHAT_SMALL_VERSION,
-  THREAD_NEW,
-  THREAD_CHANGED,
-  THREAD_FILE_UPLOADING,
   CHAT_STATE,
   CHAT_MODAL_PROMPT_SHOWING,
-  THREAD_REMOVED_FROM,
   CHAT_ROUTER_LESS,
   CHAT_SEARCH_RESULT,
   CHAT_SEARCH_SHOW,
+  THREAD_NEW,
+  THREAD_CHANGED,
+  THREAD_FILE_UPLOADING,
+  THREAD_REMOVED_FROM,
   THREAD_PARTICIPANTS_LIST_CHANGE,
-  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_DELETE
+  THREADS_LIST_CHANGE,
+  THREAD_LEAVE_PARTICIPANT
 } from "../constants/actionTypes";
-import {threadLeave} from "./threadActions";
-import ChatSDK from "../utils/chatSDK";
+
+let firstReadyPassed = false;
 
 export const chatSetInstance = config => {
   return (dispatch, state) => {
@@ -35,16 +40,16 @@ export const chatSetInstance = config => {
             return dispatch({
               type: type,
               payload:
-                type === THREAD_NEW ? thread.result.thread
+                type === THREAD_NEW ? {redirectToThread: thread.redirectToThread, thread: thread.result.thread}
                 :
                 type === THREADS_LIST_CHANGE ? thread.result.threads
-                :
-                type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
-                :
-                type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
-                  threadId: thread.threadId,
-                  participants: thread.result.participants
-                } : thread
+                  :
+                  type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
+                    :
+                    type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
+                      threadId: thread.threadId,
+                      participants: thread.result.participants
+                    } : thread
             });
           case THREAD_REMOVED_FROM:
             return dispatch(threadLeave(thread.result.thread, true));
@@ -81,9 +86,16 @@ export const chatSetInstance = config => {
         });
       },
       onChatError(e) {
+        if (e && e.message && e.message.toLowerCase().indexOf("client not") > -1) {
+          reconnect(state().chatInstance.chatSDK);
+        }
         console.log(e)
       },
       onChatReady(e) {
+        if (firstReadyPassed) {
+          dispatch(threadGetList(true));
+        }
+        firstReadyPassed = true;
         dispatch({
           type: CHAT_GET_INSTANCE("SUCCESS"),
           payload: e
@@ -156,7 +168,7 @@ export const chatSearchShow = isShow => {
   }
 };
 
-export const chatClearCache = ()=>{
+export const chatClearCache = () => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;

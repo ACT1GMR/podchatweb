@@ -189,7 +189,10 @@ class ModalThreadInfoGroup extends Component {
     });
   }
 
-  onRemoveParticipant(participant) {
+  onRemoveParticipant(participant, e) {
+    if (e) {
+      e.stopPropagation();
+    }
     const {thread, dispatch} = this.props;
     const {removingParticipantIds} = this.state;
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(participant.name, thread.type === 8)}؟`, () => {
@@ -210,7 +213,7 @@ class ModalThreadInfoGroup extends Component {
     const isGroup = thread.group;
     const filteredContacts = contacts.filter(a => a.hasUser && !participants.filter(b => a.id === b.contactId).length);
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
-
+    const hasAllowToSeenParticipant = thread.type !== 8 || thread.inviter.id === user.id;
     const conversationAction = participant => {
       const participantId = participant.id;
       const isCreator = participant.coreUserId === thread.inviter.coreUserId;
@@ -227,7 +230,7 @@ class ModalThreadInfoGroup extends Component {
       }
       const isRemovingParticipant = removingParticipantIds.indexOf(participantId) > -1;
       return (
-        <Container>
+        <Container onMouseDown={e => e.stopPropagation()}>
           {isRemovingParticipant ?
             <Container centerTextAlign>
               <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
@@ -346,22 +349,23 @@ class ModalThreadInfoGroup extends Component {
                   </ListItem>
                 </List>
               </Container>
+              {hasAllowToSeenParticipant && <GapFragment/> }
 
-              <GapFragment/>
-
-              <Container>
-                {participantsFetching && !partialParticipantLoading ?
-                  <Container centerTextAlign>
-                    <Loading hasSpace><LoadingBlinkDots/></Loading>
-                    <Text>{strings.waitingForContact}...</Text>
-                  </Container>
-                  :
-                  <ContactList invert
-                               selection
-                               onSelect={this.onStartChat}
-                               contacts={participants} actions={conversationAction}/>
-                }
-              </Container>
+              {hasAllowToSeenParticipant &&
+                <Container>
+                  {participantsFetching && !partialParticipantLoading ?
+                    <Container centerTextAlign>
+                      <Loading hasSpace><LoadingBlinkDots/></Loading>
+                      <Text>{strings.waitingForContact}...</Text>
+                    </Container>
+                    :
+                    <ContactList invert
+                                 selection
+                                 onSelect={this.onStartChat}
+                                 contacts={participants} actions={conversationAction}/>
+                  }
+                </Container>
+              }
             </Container>
             :
             step === constants.ON_SETTINGS ?

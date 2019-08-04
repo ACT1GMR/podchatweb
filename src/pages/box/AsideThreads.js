@@ -4,6 +4,9 @@ import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
+import {isMessageByMe} from "./MainMessages";
+import {decodeEmoji} from "./MainFooterEmojiIcons";
+
 
 //strings
 import strings from "../../constants/localization";
@@ -30,20 +33,8 @@ import style from "../../../styles/pages/box/AsideThreads.scss";
 import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
 import styleVar from "../../../styles/variables.scss";
-
 function sliceMessage(message, to) {
-  return message;
-  //TODO: maybe cause of failure on Aside design due overflow
-  /*  const tag = document.createElement("p");
-   tag.innerHTML = message;
-   const text = tag.innerText;
-   const childElementCount = tag.childElementCount * 1.5;
-   if (text) {
-   if ((text.length + childElementCount) >= 15) {
-   return `${text.slice(0, to || 15)}...`;
-   }
-   }
-   return message;*/
+  return decodeEmoji(message);
 }
 
 function prettifyMessageDate(passedTime) {
@@ -94,12 +85,12 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   )
 }
 
-function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO}) {
+function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMessageByMe}) {
   return (
     <Container>
       <Container topLeft>
         {
-          lastMessageVO && !isGroup && !isChannel &&
+          lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
           <Container inline>
             {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> : <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
             <Gap x={3}/>
@@ -116,7 +107,7 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO}) {
   )
 }
 
-export function LastMessageFragment({thread}) {
+export function LastMessageFragment({thread, user}) {
   const {group, type, lastMessageVO, lastMessage, inviter, time} = thread;
   const args = {
     isGroup: group && type !== 8,
@@ -124,7 +115,8 @@ export function LastMessageFragment({thread}) {
     lastMessageVO,
     lastMessage,
     inviter,
-    time
+    time,
+    isMessageByMe: isMessageByMe(lastMessageVO, user)
   };
   return (
     <Container>
@@ -237,7 +229,7 @@ class AsideThreads extends Component {
                         }
                         {getTitle(el.title)}
                         <AvatarText>
-                          <LastMessageFragment thread={el}/>
+                          <LastMessageFragment thread={el} user={user}/>
                         </AvatarText>
                       </AvatarName>
                     </Avatar>

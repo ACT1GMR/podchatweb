@@ -7,7 +7,6 @@ import strings from "../../constants/localization";
 
 //actions
 import {
-  contactGetList,
   contactBlock,
   contactAdding,
   contactRemove,

@@ -1,6 +1,7 @@
 // src/actions/messageActions.js
 import {
   CONTACT_GET_LIST,
+  CONTACT_GET_LIST_PARTIAL,
   CONTACT_ADD,
   CONTACT_ADDING,
   CONTACT_LIST_SHOWING,
@@ -11,13 +12,13 @@ import {
 import {threadCreate, threadParticipantList, threadShowing} from "./threadActions";
 import {messageEditing} from "./messageActions";
 
-export const contactGetList = () => {
+export const contactGetList = (offset = 0, count, name) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
-      type: CONTACT_GET_LIST(),
-      payload: chatSDK.getContactList()
+      type: offset > 0 ? CONTACT_GET_LIST_PARTIAL() : CONTACT_GET_LIST(),
+      payload: chatSDK.getContactList(offset, count)
     });
   }
 };
@@ -140,7 +141,9 @@ export const contactRemove = (contactId, threadId) => {
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.removeContact(contactId).then(e => {
       dispatch(contactGetList());
-      dispatch(threadParticipantList(threadId));
+      if(threadId) {
+        dispatch(threadParticipantList(threadId));
+      }
     });
   }
 };

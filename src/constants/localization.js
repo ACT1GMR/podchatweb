@@ -37,6 +37,7 @@ let strings = new LocalizedStrings({
     required: "اجباری",
     firstName: "نام",
     groupName: isChannel => `نام ${isChannel ? "کانال" : "گروه"}`,
+    groupNameNotEntered: isChannel => `نام ${isChannel ? "کانال" : "گروه"} وارد نشده است`,
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
     isNotPodUser: "کاربر پاد نیست",

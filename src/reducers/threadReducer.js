@@ -1,9 +1,7 @@
 import {
-  MESSAGE_NEW,
   MESSAGE_SEEN,
   MESSAGE_EDIT,
   MESSAGE_DELETE,
-  MESSAGE_SEND,
   MESSAGE_SENDING_ERROR,
   MESSAGE_FILE_UPLOAD_CANCEL,
   THREAD_CREATE,
@@ -55,7 +53,10 @@ export const threadCreateReducer = (state = {
     case THREAD_CREATE(PENDING):
       return {...state, ...stateGenerator(PENDING, {}, "thread")};
     case THREAD_NEW:
-      return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
+      if (action.payload.redirectToThread) {
+        return {...state, ...stateGenerator(SUCCESS, action.payload.thread, "thread")};
+      }
+      return state;
     case THREAD_CREATE("CACHE"):
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
     case THREADS_LIST_CHANGE:
@@ -207,7 +208,7 @@ export const threadsReducer = (state = {
       return {...state, ...stateGenerator(SUCCESS, sortThreads(action.payload), "threads")};
     case THREAD_NEW:
     case THREAD_CHANGED: {
-      let threads = updateStore(state.threads, action.payload, {
+      let threads = updateStore(state.threads, state.type === THREAD_CHANGED ? action.payload : action.payload.thread, {
         method: listUpdateStrategyMethods.UPDATE,
         upsert: true,
         by: "id"
@@ -231,7 +232,6 @@ export const threadsReducer = (state = {
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
     }
-    case MESSAGE_DELETE:
     case MESSAGE_EDIT(): {
       const filteredThread = state.threads.filter(thread => thread.lastMessageVO && thread.lastMessageVO.id === action.payload.id);
       if (!filteredThread.length) {
@@ -369,8 +369,8 @@ export const threadMessageListReducer = (state = {
     case THREAD_CREATE("CACHE"):
     case THREAD_CREATE(PENDING):
     case THREAD_CREATE(SUCCESS): {
-      if(action.type === THREAD_CREATE("CACHE")) {
-        if(state.threadId === action.payload.id) {
+      if (action.type === THREAD_CREATE("CACHE")) {
+        if (state.threadId === action.payload.id) {
           return state;
         }
       }
@@ -506,7 +506,7 @@ export const threadParticipantListReducer = (state = {
   switch (action.type) {
     case THREAD_PARTICIPANT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING, {participants: state.participants})};
-      case THREAD_PARTICIPANT_GET_LIST(CANCELED):
+    case THREAD_PARTICIPANT_GET_LIST(CANCELED):
       return {...state, ...{participants: []}};
     case THREAD_PARTICIPANTS_LIST_CHANGE:
     case THREAD_PARTICIPANT_GET_LIST(SUCCESS):

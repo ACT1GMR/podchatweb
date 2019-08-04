@@ -5,7 +5,7 @@ import {
   CONTACT_ADDING,
   CONTACT_ADD,
   CONTACT_CHATTING,
-  CONTACT_BLOCK, CONTACTS_LIST_CHANGE
+  CONTACT_BLOCK, CONTACTS_LIST_CHANGE, CONTACT_GET_LIST_PARTIAL, THREAD_GET_MESSAGE_LIST_PARTIAL
 } from "../constants/actionTypes";
 import {stateGenerator, stateGeneratorState} from "../utils/storeHelper";
 
@@ -13,27 +13,53 @@ const {PENDING, SUCCESS, ERROR} = stateGeneratorState;
 
 export const contactGetListReducer = (state = {
   contacts: [],
+  hasNext: false,
+  nextOffset: 0,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  function sortContacts(contacts) {
+    if (contacts.length) {
+      contacts = contacts.sort((a, b) => {
+        if (!a.firstName) {
+          return
+        }
+        return a.firstName.localeCompare(b.firstName);
+      });
+    }
+    return contacts;
+  }
+
+  switch (action.type) {
+    case CONTACT_GET_LIST(PENDING):
+      return {...state, ...stateGenerator(PENDING)};
+    case CONTACTS_LIST_CHANGE:
+    case CONTACT_GET_LIST(SUCCESS): {
+      const {contacts, hasNext, nextOffset} = action.payload;
+      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: sortContacts(contacts)})};
+    }
+    case CONTACT_GET_LIST_PARTIAL(SUCCESS): {
+      const {contacts, hasNext, nextOffset} = action.payload;
+      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: sortContacts(state.contacts.concat(contacts))})};
+    }
+    case CONTACT_GET_LIST(ERROR):
+      return {...state, ...stateGenerator(ERROR, action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const contactGetListPartialReducer = (state = {
   fetching: false,
   fetched: false,
   error: false
 }, action) => {
   switch (action.type) {
-    case CONTACT_GET_LIST(PENDING):
+    case CONTACT_GET_LIST_PARTIAL(PENDING):
       return {...state, ...stateGenerator(PENDING)};
-    case CONTACTS_LIST_CHANGE:
-    case CONTACT_GET_LIST(SUCCESS):
-      let contacts = action.payload;
-      if (contacts.length) {
-        contacts = contacts.sort((a, b) => {
-          if (!a.firstName) {
-            return
-          }
-          return a.firstName.localeCompare(b.firstName);
-        });
-      }
-      return {...state, ...stateGenerator(SUCCESS, contacts, "contacts")};
-    case CONTACT_GET_LIST(ERROR):
-      return {...state, ...stateGenerator(ERROR, action.payload)};
+    case CONTACT_GET_LIST_PARTIAL(SUCCESS):
+      return {...state, ...stateGenerator(SUCCESS)};
     default:
       return state;
   }

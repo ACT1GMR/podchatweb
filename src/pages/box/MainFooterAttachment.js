@@ -71,13 +71,13 @@ export default class MainFooterAttachment extends Component {
         {
           isSendingText ?
             <Container>
-              <MdChevronRight size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
+              <MdChevronRight size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "5px 6px"}}/>
             </Container>
             :
             <Container>
               <input className={style.MainFooterAttachment__Button} type="file" onChange={this.onAttachmentChange}
                      multiple ref={this.fileInput}/>
-              <MdAttachFile size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "3px 4px"}}/>
+              <MdAttachFile size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "5px 6px"}}/>
             </Container>
         }
       </Container>

@@ -40,6 +40,13 @@ function routeChange(history, route, chatRouterLess) {
   }
 }
 
+export function reconnect(chatInstance) {
+  retry(true, true).then(e => {
+    chatInstance.setToken(e.access_token);
+    chatInstance.reconnect();
+  });
+}
+
 @connect(store => {
   return {
     threads: store.threadList.threads,
@@ -153,11 +160,7 @@ class AsideHead extends Component {
         });
       }
     }, 5000);
-    retry(true, true).then(e => {
-      const {chatInstance} = this.props;
-      chatInstance.setToken(e.access_token);
-      chatInstance.reconnect();
-    });
+    reconnect(this.props.chatInstance);
   }
 
   onChatSearchToggle() {
