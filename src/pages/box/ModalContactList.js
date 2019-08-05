@@ -75,7 +75,7 @@ function AvatarTextFragment({contact}) {
 
 function LeftActionFragment(onRemoveContact, {contact}) {
   return !contact.linkedUser &&
-    <Container>
+    <Container onMouseDown={e => e.stopPropagation()}>
       <Button onClick={onRemoveContact.bind(null, contact)} text size="sm">
         {strings.remove}
       </Button>
@@ -101,21 +101,24 @@ class ModalContactList extends Component {
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
     this.inputRef = React.createRef();
     this.scroller = React.createRef();
+    this.modalBodyRef = React.createRef();
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.removeContact = this.removeContact.bind(this);
     this.state = {
-      searchInput: false
+      searchInput: false,
+      query: null
     };
   }
 
-  componentDidUpdate(oldProps) {
-    const {chatInstance, dispatch} = this.props;
-    if (oldProps.chatInstance !== chatInstance) {
-      dispatch(contactGetList(statics.offset, statics.count));
+  componentDidUpdate({isShow: oldIsShow, chatInstance: oldChatInstance}) {
+    const {chatInstance, dispatch, isShow} = this.props;
+    const {searchInput} = this.state;
+    if (oldChatInstance !== chatInstance) {
+      dispatch(contactGetList(0, statics.count, searchInput));
     }
-    if (oldProps.isShow !== this.props.isShow) {
+    if (oldIsShow !== isShow) {
       if (chatInstance) {
-        dispatch(contactGetList(0, statics.count));
+        dispatch(contactGetList(0, statics.count, searchInput));
       }
     }
     if (this.state.searchInput) {
@@ -128,6 +131,7 @@ class ModalContactList extends Component {
 
   componentDidMount() {
     const {match, dispatch, isShow, chatInstance} = this.props;
+    dispatch(contactGetList(null, null, null, true));
     if (chatInstance) {
       dispatch(contactGetList(0, statics.count));
     }
@@ -159,10 +163,10 @@ class ModalContactList extends Component {
     }
   }
 
-  onStartChat(contact) {
+  onStartChat(contactId, contact) {
     const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactChatting(contact));
-    dispatch(threadCreate(contact.id));
+    dispatch(threadCreate(contactId));
     this.onClose(true);
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
@@ -176,6 +180,9 @@ class ModalContactList extends Component {
   }
 
   onSearchQueryChange(e) {
+    const {dispatch} = this.props;
+    const {query} = this.state;
+    dispatch(contactGetList(0, statics.count, query));
     this.setState({
       query: e.target ? e.target.value : e
     });
@@ -183,7 +190,8 @@ class ModalContactList extends Component {
 
   onScrollBottomThreshold() {
     const {contactsNextOffset, dispatch} = this.props;
-    dispatch(contactGetList(contactsNextOffset, statics.count));
+    const {query} = this.state;
+    dispatch(contactGetList(contactsNextOffset, statics.count, query));
   }
 
   removeContact(contact, e) {
@@ -201,11 +209,6 @@ class ModalContactList extends Component {
   render() {
     const {contacts, isShow, smallVersion, contactsFetching, chatInstance, contactsHasNext, contactsPartialFetching} = this.props;
     const {searchInput, query} = this.state;
-    const showLoading = contactsFetching;
-    let contactsFilter = contacts;
-    if (searchInput) {
-      contactsFilter = isContains("firstName|lastName|cellphoneNumber", query, contactsFilter);
-    }
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
@@ -243,20 +246,20 @@ class ModalContactList extends Component {
         </ModalHeader>
 
         <ModalBody threshold={5}
+                   ref={this.modalBodyRef}
                    onScrollBottomThresholdCondition={contactsHasNext && !contactsPartialFetching}
                    onScrollBottomThreshold={this.onScrollBottomThreshold}>
 
-          {contactsFilter.length ?
+          {contacts.length ?
             <Container relative>
               <ContactListSelective hasUser={false}
                                     AvatarTextFragment={AvatarTextFragment}
                                     LeftActionFragment={LeftActionFragment.bind(null, this.removeContact)}
                                     invert
                                     onSelect={this.onStartChat.bind(this)}
-                                    contacts={contactsFilter}/>
+                                    contacts={contacts}/>
               {contactsPartialFetching && <PartialLoadingFragment/>}
             </Container>
-
             :
             searchInput ?
               <Container relative>
@@ -267,7 +270,7 @@ class ModalContactList extends Component {
                 </Gap>
               </Container>
               :
-              showLoading || !chatInstance ?
+              contactsFetching || !chatInstance ?
                 <Container centerTextAlign className={style.ModalContactList__Loading}>
                   <Loading hasSpace><LoadingBlinkDots/></Loading>
                   <Text>{strings.waitingForContact}...</Text>

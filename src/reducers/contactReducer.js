@@ -9,7 +9,7 @@ import {
 } from "../constants/actionTypes";
 import {stateGenerator, stateGeneratorState} from "../utils/storeHelper";
 
-const {PENDING, SUCCESS, ERROR} = stateGeneratorState;
+const {PENDING, SUCCESS, ERROR, CANCELED} = stateGeneratorState;
 
 export const contactGetListReducer = (state = {
   contacts: [],
@@ -19,29 +19,31 @@ export const contactGetListReducer = (state = {
   fetched: false,
   error: false
 }, action) => {
-  function sortContacts(contacts) {
-    if (contacts.length) {
-      contacts = contacts.sort((a, b) => {
-        if (!a.firstName) {
-          return
-        }
-        return a.firstName.localeCompare(b.firstName);
-      });
-    }
-    return contacts;
-  }
+  /*  function sortContacts(contacts) {
+      if (contacts.length) {
+        contacts = contacts.sort((a, b) => {
+          if (!a.firstName) {
+            return
+          }
+          return a.firstName.localeCompare(b.firstName);
+        });
+      }
+      return contacts;
+    }*/
 
   switch (action.type) {
+    case CONTACT_GET_LIST(CANCELED):
+      return {...state, ...stateGenerator(CANCELED, {hasNext: false, nextOffset: 0})};
     case CONTACT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case CONTACTS_LIST_CHANGE:
     case CONTACT_GET_LIST(SUCCESS): {
       const {contacts, hasNext, nextOffset} = action.payload;
-      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: sortContacts(contacts)})};
+      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: contacts})};
     }
     case CONTACT_GET_LIST_PARTIAL(SUCCESS): {
       const {contacts, hasNext, nextOffset} = action.payload;
-      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: sortContacts(state.contacts.concat(contacts))})};
+      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: state.contacts.concat(contacts)})};
     }
     case CONTACT_GET_LIST(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
@@ -56,6 +58,8 @@ export const contactGetListPartialReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
+    case THREAD_GET_MESSAGE_LIST_PARTIAL(CANCELED):
+      return {...state, ...stateGenerator(CANCELED)};
     case CONTACT_GET_LIST_PARTIAL(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case CONTACT_GET_LIST_PARTIAL(SUCCESS):

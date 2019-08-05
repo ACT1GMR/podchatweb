@@ -6,6 +6,9 @@ export function stateGenerator(state, response, payloadKey) {
     object = {fetching: false, fetched: false, error: response};
   } else if (state === "CANCELED") {
     object = {fetching: false, fetched: false, error: false};
+    if (response) {
+      object = {...object, ...response};
+    }
   } else {
     object = {fetching: false, fetched: true, error: false};
   }

@@ -11,14 +11,28 @@ import {
 } from "../constants/actionTypes";
 import {threadCreate, threadParticipantList, threadShowing} from "./threadActions";
 import {messageEditing} from "./messageActions";
+import {stateGeneratorState} from "../utils/storeHelper";
 
-export const contactGetList = (offset = 0, count, name) => {
+
+const {CANCELED} = stateGeneratorState;
+
+export const contactGetList = (offset = 0, count, name, reset) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if (reset) {
+      dispatch({
+        type: CONTACT_GET_LIST(CANCELED),
+        payload: null
+      });
+      return dispatch({
+        type: CONTACT_GET_LIST_PARTIAL(CANCELED),
+        payload: null
+      });
+    }
     dispatch({
       type: offset > 0 ? CONTACT_GET_LIST_PARTIAL() : CONTACT_GET_LIST(),
-      payload: chatSDK.getContactList(offset, count)
+      payload: chatSDK.getContactList(offset, count, name)
     });
   }
 };
@@ -141,7 +155,7 @@ export const contactRemove = (contactId, threadId) => {
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.removeContact(contactId).then(e => {
       dispatch(contactGetList());
-      if(threadId) {
+      if (threadId) {
         dispatch(threadParticipantList(threadId));
       }
     });

@@ -510,9 +510,11 @@ export default class ChatSDK {
       count
     };
     if (typeof name === "string") {
-      getContactsParams.name = name;
+      if(name.trim()) {
+        getContactsParams.query = name;
+      }
     }
-    this.chatAgent.getContacts(getContactsParams, (result) => {
+    this.chatAgent.getContacts(getContactsParams, result => {
       if (!this._onError(result, reject)) {
         this.getBlockList(getContactsParams).then(blockedResult => {
           return resolve({contacts: result.result.contacts.concat(blockedResult), hasNext: result.result.hasNext, nextOffset: result.result.nextOffset});
