@@ -35,7 +35,7 @@ export function isNodeDescendant(parent, child) {
   return false;
 }
 
-function isContains(flds, keyword, arr) {
+export function isContains(flds, keyword, arr) {
   const fields = flds.split('|');
   if (!keyword || !keyword.trim()) {
     return arr;

@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {isContains} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
@@ -23,7 +24,7 @@ import {MdSearch, MdClose} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
-import {ContactListSelective} from "./_component/contactList";
+import {ContactList, ContactListSelective} from "./_component/contactList";
 
 
 export const statics = {
@@ -65,6 +66,7 @@ export default class ModalContactList extends Component {
     this.inputRef = React.createRef();
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onClose = this.onClose.bind(this);
     this.state = {
       query: null
     };
@@ -97,13 +99,19 @@ export default class ModalContactList extends Component {
     }
   }
 
+  onClose() {
+    const {onClose} = this.props;
+    if (onClose) {
+      onClose();
+    }
+    this.onSearchQueryChange("");
+  }
+
   onSearchQueryChange(e) {
     const {dispatch} = this.props;
-    const {query} = this.state;
+    const query = e.target ? e.target.value : e;
+    this.setState({query});
     dispatch(contactGetList(0, statics.count, query));
-    this.setState({
-      query: e.target ? e.target.value : e
-    });
   }
 
   onScrollBottomThreshold() {
@@ -113,10 +121,23 @@ export default class ModalContactList extends Component {
   }
 
   render() {
-    const {contacts, isShow, smallVersion, chatInstance, onClose, onAdd, onSelect, contactsHasNext, contactsFetching, contactsPartialFetching, FooterFragment, LeftActionFragment} = this.props;
-    const {searchInput, query} = this.state;
+    const {
+      contacts, isShow, smallVersion, chatInstance, onAdd, onSelect, onDeselect,
+      contactsHasNext, contactsFetching, contactsPartialFetching,
+      FooterFragment, LeftActionFragment,
+      selectiveMode, activeList
+    } = this.props;
+    const {query} = this.state;
+    const commonArgs = {
+      AvatarTextFragment,
+      LeftActionFragment,
+      onSelect,
+      contacts,
+      invert: true,
+      hasUser: false
+    };
     return (
-      <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion}
+      <Modal isOpen={isShow} onClose={this.onClose} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
@@ -137,7 +158,6 @@ export default class ModalContactList extends Component {
                              style={{cursor: "pointer"}}
                              onClick={this.onSearchQueryChange.bind(this, "")}/>
                     : ""
-
                 }
               </Gap>
             </Container>
@@ -151,20 +171,23 @@ export default class ModalContactList extends Component {
 
           {contacts.length ?
             <Container relative>
-              <ContactListSelective invert
-                                    hasUser={false}
-                                    AvatarTextFragment={AvatarTextFragment}
-                                    LeftActionFragment={LeftActionFragment}
-                                    onSelect={onSelect}
-                                    contacts={contacts}/>
+              {selectiveMode ?
+                <ContactListSelective activeWithTick
+                                      activeList={activeList}
+                                      onDeselect={onDeselect}
+                                      {...commonArgs}/>
+                :
+                <ContactList {...commonArgs}/>
+              }
+
               {contactsPartialFetching && <PartialLoadingFragment/>}
             </Container>
             :
-            searchInput ?
-              <Container relative>
+            query && query.trim() ?
+              <Container relative centerTextAlign>
                 <Gap y={5}>
-                  <Container topCenter>
-                    <Message>{strings.thereIsNoContactWithThisKeyword(query)}</Message>
+                  <Container>
+                    <Text>{strings.thereIsNoContactWithThisKeyword(query)}</Text>
                   </Container>
                 </Gap>
               </Container>
@@ -183,7 +206,7 @@ export default class ModalContactList extends Component {
         </ModalBody>
 
         <ModalFooter>
-          <FooterFragment/>
+          {FooterFragment && <FooterFragment/>}
         </ModalFooter>
 
       </Modal>

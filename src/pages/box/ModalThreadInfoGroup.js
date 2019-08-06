@@ -362,7 +362,7 @@ class ModalThreadInfoGroup extends Component {
                     <ContactList invert
                                  selection
                                  onSelect={this.onStartChat}
-                                 contacts={participants} actions={conversationAction}/>
+                                 contacts={participants} LeftActionFragment={conversationAction}/>
                   }
                 </Container>
               }

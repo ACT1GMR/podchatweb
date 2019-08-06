@@ -24,6 +24,7 @@ import Container from "../../../../uikit/src/container";
 //styling
 import {MdArrowForward} from "react-icons/lib/md";
 import Message from "../../../../uikit/src/message";
+import ModalContactList, {statics as modalContactListStatics} from "./ModalContactList";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
@@ -51,6 +52,8 @@ class ModalCreateGroup extends Component {
     this.onAdd = this.onAdd.bind(this);
     this.onCreate = this.onCreate.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.onSelect = this.onSelect.bind(this);
+    this.onDeselect = this.onDeselect.bind(this);
   }
 
   componentDidMount() {
@@ -130,7 +133,7 @@ class ModalCreateGroup extends Component {
     });
   }
 
-  onDeSelect(id) {
+  onDeselect(id) {
     const {threadContacts} = this.state;
     let contactsClone = [...threadContacts];
     contactsClone.splice(contactsClone.indexOf(id), 1);
@@ -165,24 +168,13 @@ class ModalCreateGroup extends Component {
         <ModalBody>
           {step === constants.SELECT_CONTACT ?
             contacts.length ?
-              <List>
-                {filteredContacts.map(el => (
-                  <ListItem key={el.id} invert selection activeWithTick multiple
-                            active={threadContacts.indexOf(el.id) > -1}
-                            onSelect={this.onSelect.bind(this, el.id)}
-                            onDeselect={this.onDeSelect.bind(this, el.id)}>
-                    <Container>
-
-                      <Avatar>
-                        <AvatarImage src={el.image} text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
-                                     textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
-                        <AvatarName>{el.firstName} {el.lastName}</AvatarName>
-                      </Avatar>
-
-                    </Container>
-                  </ListItem>
-                ))}
-              </List>
+              <ModalContactList isShow
+                                selectiveMode
+                                activeList={threadContacts}
+                                userType={modalContactListStatics.userType.HAS_POD_USER}
+                                onClose={this.onClose}
+                                onSelect={this.onSelect}
+                                onDeselect={this.onDeselect}/>
               :
               showLoading || !chatInstance ?
                 <Container centerTextAlign>

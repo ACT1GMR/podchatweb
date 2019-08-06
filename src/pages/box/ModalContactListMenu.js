@@ -5,7 +5,7 @@ import ModalContactList, {statics as modalContactListStatics} from "./ModalConta
 
 //strings
 import strings from "../../constants/localization";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_THREAD} from "../../constants/routes";
+import {ROUTE_ADD_CONTACT, ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {
@@ -24,13 +24,7 @@ import {Button} from "../../../../uikit/src/button";
 
 //styling
 
-
-
-export const statics = {
-  count: 15
-};
-
-function ModalContactListMenuFooterFragment({onAdd, onClose}) {
+function ModalContactListMenuFooterFragment(onAdd, onClose) {
   return (
     <Container>
       <Button text onClick={onAdd}>{strings.add}</Button>
@@ -79,7 +73,6 @@ class ModalContactListMenu extends Component {
   onClose(e, noHistory) {
     const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactListShowing());
-    this.onSearchQueryChange("");
     if (!chatRouterLess) {
       if (!noHistory) {
         history.push("/");

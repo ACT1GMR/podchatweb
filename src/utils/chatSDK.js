@@ -518,13 +518,7 @@ export default class ChatSDK {
     this.chatAgent.getContacts(getContactsParams, result => {
       if (!this._onError(result, reject)) {
         const {contacts, hasNext, nextOffset} = result.result;
-        if (offset === 0) {
-          this.getBlockList(getContactsParams).then(blockedResult => {
-            return resolve({contacts: contacts.concat(blockedResult), hasNext, nextOffset});
-          });
-        } else {
-          return resolve({contacts, hasNext, nextOffset});
-        }
+        return resolve({contacts, hasNext, nextOffset});
       }
     });
   }
