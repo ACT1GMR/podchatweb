@@ -60,7 +60,8 @@ export default class ChatSDK {
         }
       }
       if (reject) {
-        return reject(response.errorMessage);
+        reject(response.errorMessage);
+        return true;
       }
     }
   }
@@ -510,15 +511,20 @@ export default class ChatSDK {
       count
     };
     if (typeof name === "string") {
-      if(name.trim()) {
+      if (name.trim()) {
         getContactsParams.query = name;
       }
     }
     this.chatAgent.getContacts(getContactsParams, result => {
       if (!this._onError(result, reject)) {
-        this.getBlockList(getContactsParams).then(blockedResult => {
-          return resolve({contacts: result.result.contacts.concat(blockedResult), hasNext: result.result.hasNext, nextOffset: result.result.nextOffset});
-        });
+        const {contacts, hasNext, nextOffset} = result.result;
+        if (offset === 0) {
+          this.getBlockList(getContactsParams).then(blockedResult => {
+            return resolve({contacts: contacts.concat(blockedResult), hasNext, nextOffset});
+          });
+        } else {
+          return resolve({contacts, hasNext, nextOffset});
+        }
       }
     });
   }

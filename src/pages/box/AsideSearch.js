@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import {signOut, retry} from "podauth";
-import {isContains} from "./ModalContactList";
+import {isContains} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";

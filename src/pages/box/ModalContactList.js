@@ -1,64 +1,39 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {withRouter} from "react-router-dom";
-import {avatarNameGenerator} from "../../utils/helpers";
 
 //strings
 import strings from "../../constants/localization";
-import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {
-  contactListShowing,
-  contactAdding,
   contactGetList,
-  contactChatting,
-  contactUnblock, contactRemove
 } from "../../actions/contactActions";
-import {threadCreate} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
 import {Button} from "../../../../uikit/src/button";
 import {Heading, Text} from "../../../../uikit/src/typography";
-import List, {ListItem} from "../../../../uikit/src/list";
-import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Gap from "../../../../uikit/src/gap";
 import {InputText} from "../../../../uikit/src/input";
+import {MdSearch, MdClose} from "react-icons/lib/md";
 
 //styling
-import {MdClose, MdSearch} from "react-icons/lib/md";
-
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
 import {ContactListSelective} from "./_component/contactList";
-import {chatModalPrompt} from "../../actions/chatActions";
 
 
 export const statics = {
-  count: 15
-};
-
-function isContains(flds, keyword, arr) {
-  const fields = flds.split('|');
-  if (!keyword || !keyword.trim()) {
-    return arr;
+  count: 15,
+  userType: {
+    ALL: "ALL",
+    HAS_POD_USER: "HAS_POD_USER",
+    NOT_POD_USER: "NOT_POD_USER"
   }
-
-  return arr.filter(item => {
-    for (const field of fields) {
-      const value = item[field];
-      if (value) {
-        if (value.indexOf(keyword) > -1) {
-          return true;
-        }
-      }
-    }
-  })
-}
+};
 
 function PartialLoadingFragment() {
   return (
@@ -73,39 +48,24 @@ function AvatarTextFragment({contact}) {
                color={contact.blocked ? "red" : "accent"}>{contact.blocked ? strings.blocked : contact.linkedUser ? "" : strings.isNotPodUser}</Text>;
 }
 
-function LeftActionFragment(onRemoveContact, {contact}) {
-  return !contact.linkedUser &&
-    <Container onMouseDown={e => e.stopPropagation()}>
-      <Button onClick={onRemoveContact.bind(null, contact)} text size="sm">
-        {strings.remove}
-      </Button>
-    </Container>
-}
-
 @connect(store => {
   return {
-    isShow: store.contactListShowing,
     contacts: store.contactGetList.contacts,
     contactsHasNext: store.contactGetList.hasNext,
     contactsNextOffset: store.contactGetList.nextOffset,
     contactsFetching: store.contactGetList.fetching,
     contactsPartialFetching: store.contactGetListPartial.fetching,
-    chatInstance: store.chatInstance.chatSDK,
-    chatRouterLess: store.chatRouterLess
+    chatInstance: store.chatInstance.chatSDK
   };
-}, null, null, {withRef: true})
-class ModalContactList extends Component {
+})
+export default class ModalContactList extends Component {
 
   constructor(props) {
     super(props);
-    this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
     this.inputRef = React.createRef();
-    this.scroller = React.createRef();
-    this.modalBodyRef = React.createRef();
+    this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
-    this.removeContact = this.removeContact.bind(this);
     this.state = {
-      searchInput: false,
       query: null
     };
   }
@@ -121,7 +81,7 @@ class ModalContactList extends Component {
         dispatch(contactGetList(0, statics.count, searchInput));
       }
     }
-    if (this.state.searchInput) {
+    if (searchInput) {
       const current = this.inputRef.current;
       if (current) {
         this.inputRef.current.focus();
@@ -130,53 +90,11 @@ class ModalContactList extends Component {
   }
 
   componentDidMount() {
-    const {match, dispatch, isShow, chatInstance} = this.props;
-    dispatch(contactGetList(null, null, null, true));
+    const {dispatch, chatInstance} = this.props;
     if (chatInstance) {
+      dispatch(contactGetList(null, null, null, true));
       dispatch(contactGetList(0, statics.count));
     }
-    if (!isShow) {
-      if (match.path === ROUTE_CONTACTS) {
-        dispatch(contactListShowing(true));
-      }
-    }
-  }
-
-  onAdd() {
-    const {chatRouterLess, history} = this.props;
-    this.props.dispatch(contactAdding(true));
-    this.onContactSearchClick(false);
-    if (!chatRouterLess) {
-      history.push(ROUTE_ADD_CONTACT);
-    }
-  }
-
-  onClose(e, noHistory) {
-    const {history, chatRouterLess, dispatch} = this.props;
-    dispatch(contactListShowing());
-    this.onContactSearchClick(false);
-    this.onSearchQueryChange("");
-    if (!chatRouterLess) {
-      if (!noHistory) {
-        history.push("/");
-      }
-    }
-  }
-
-  onStartChat(contactId, contact) {
-    const {history, chatRouterLess, dispatch} = this.props;
-    dispatch(contactChatting(contact));
-    dispatch(threadCreate(contactId));
-    this.onClose(true);
-    if (!chatRouterLess) {
-      history.push(ROUTE_THREAD);
-    }
-  }
-
-  onContactSearchClick(isOpen) {
-    this.setState({
-      searchInput: isOpen
-    });
   }
 
   onSearchQueryChange(e) {
@@ -194,69 +112,50 @@ class ModalContactList extends Component {
     dispatch(contactGetList(contactsNextOffset, statics.count, query));
   }
 
-  removeContact(contact, e) {
-    if (e) {
-      e.stopPropagation();
-    }
-    const {dispatch} = this.props;
-    const text = strings.areYouSureAboutDeletingContact();
-    dispatch(chatModalPrompt(true, `${text}؟`, () => {
-      dispatch(contactRemove(contact.id));
-      dispatch(chatModalPrompt());
-    }, () => dispatch(contactListShowing(true))));
-  }
-
   render() {
-    const {contacts, isShow, smallVersion, contactsFetching, chatInstance, contactsHasNext, contactsPartialFetching} = this.props;
+    const {contacts, isShow, smallVersion, chatInstance, onClose, onAdd, onSelect, contactsHasNext, contactsFetching, contactsPartialFetching, FooterFragment, LeftActionFragment} = this.props;
     const {searchInput, query} = this.state;
     return (
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+      <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
+          <Heading h3>{strings.contactList}</Heading>
           <Container relative>
-            {
-              searchInput ?
-                <Container>
-                  <InputText className={style.ModalContactList__Input} onChange={this.onSearchQueryChange} value={query}
-                             placeholder={strings.search} ref={this.inputRef}/>
+            <Container centerRight>
+              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorGrayDark}/>
+            </Container>
+            <InputText className={style.ModalContactList__Input} onChange={this.onSearchQueryChange} value={query}
+                       placeholder={strings.search} ref={this.inputRef}/>
+            <Container centerLeft>
+              <Gap x={5}>
+                {
+                  query && query.trim() ?
 
-                  <Container centerLeft>
-                    <Gap x={5}>
-                      <MdClose size={styleVar.iconSizeMd} color={styleVar.colorPrimaryLight}
-                               onClick={this.onContactSearchClick.bind(this, false)}/>
-                    </Gap>
-                  </Container>
-                </Container>
-                :
-                <Container>
-                  <Heading h3>{strings.contactList}</Heading>
-                  <Container centerLeft>
-                    <Gap x={5}>
-                      <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorPrimaryLight}
-                                onClick={this.onContactSearchClick.bind(this, true)}/>
-                    </Gap>
-                  </Container>
-                </Container>
-            }
+                    <MdClose size={styleVar.iconSizeMd}
+                             color={styleVar.colorGrayDark}
+                             style={{cursor: "pointer"}}
+                             onClick={this.onSearchQueryChange.bind(this, "")}/>
+                    : ""
 
-
+                }
+              </Gap>
+            </Container>
           </Container>
 
         </ModalHeader>
 
         <ModalBody threshold={5}
-                   ref={this.modalBodyRef}
                    onScrollBottomThresholdCondition={contactsHasNext && !contactsPartialFetching}
                    onScrollBottomThreshold={this.onScrollBottomThreshold}>
 
           {contacts.length ?
             <Container relative>
-              <ContactListSelective hasUser={false}
+              <ContactListSelective invert
+                                    hasUser={false}
                                     AvatarTextFragment={AvatarTextFragment}
-                                    LeftActionFragment={LeftActionFragment.bind(null, this.removeContact)}
-                                    invert
-                                    onSelect={this.onStartChat.bind(this)}
+                                    LeftActionFragment={LeftActionFragment}
+                                    onSelect={onSelect}
                                     contacts={contacts}/>
               {contactsPartialFetching && <PartialLoadingFragment/>}
             </Container>
@@ -278,20 +177,16 @@ class ModalContactList extends Component {
                 :
                 <Container centerTextAlign className={style.ModalContactList__Loading}>
                   <Text>{strings.noContactPleaseAddFirst}</Text>
-                  <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
+                  <Button text onClick={onAdd.bind(this)}>{strings.add}</Button>
                 </Container>
           }
         </ModalBody>
 
         <ModalFooter>
-          <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
-          <Button text onClick={this.onClose.bind(this)}>{strings.close}</Button>
+          <FooterFragment/>
         </ModalFooter>
 
       </Modal>
     )
   }
 }
-
-const exportDefault = withRouter(ModalContactList);
-export {isContains, exportDefault as default};

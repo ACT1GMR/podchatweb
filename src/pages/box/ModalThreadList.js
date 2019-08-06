@@ -33,7 +33,7 @@ const constants = {
     user: store.user.user
   };
 }, null, null, {withRef: true})
-export default class ModalContactList extends Component {
+export default class ModalThreadList extends Component {
 
   constructor(props) {
     super(props);

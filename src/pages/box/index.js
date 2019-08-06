@@ -25,7 +25,7 @@ import Main from "./Main";
 import LeftAside from "./LeftAside";
 import Container from "../../../../uikit/src/container";
 import {ModalMedia} from "../../../../uikit/src/modal";
-import ModalContactList from "./ModalContactList";
+import ModalContactListMenu from "./ModalContactListMenu";
 import ModalAddContact from "./ModalAddContact";
 import ModalThreadList from "./ModalThreadList";
 import ModalCreateGroup from "./ModalCreateGroup";
@@ -150,7 +150,7 @@ class Box extends Component {
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : [ROUTE_CREATE_GROUP, ROUTE_CREATE_CHANNEL]}
                render={() => <ModalCreateGroup smallVersion={small}/>}/>
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_CONTACTS}
-               render={() => <ModalContactList smallVersion={small}/>}/>
+               render={() => <ModalContactListMenu smallVersion={small}/>}/>
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_ADD_CONTACT}
                render={() => <ModalAddContact smallVersion={small}/>}/>
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_THREAD_INFO}

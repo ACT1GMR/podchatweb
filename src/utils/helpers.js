@@ -35,6 +35,24 @@ export function isNodeDescendant(parent, child) {
   return false;
 }
 
+function isContains(flds, keyword, arr) {
+  const fields = flds.split('|');
+  if (!keyword || !keyword.trim()) {
+    return arr;
+  }
+
+  return arr.filter(item => {
+    for (const field of fields) {
+      const value = item[field];
+      if (value) {
+        if (value.indexOf(keyword) > -1) {
+          return true;
+        }
+      }
+    }
+  })
+}
+
 export function avatarNameGenerator(firstName, lastName) {
   const colorLogic = {
     "0-20": "#d30850",
