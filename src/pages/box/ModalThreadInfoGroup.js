@@ -273,8 +273,8 @@ class ModalThreadInfoGroup extends Component {
 
     if (step === constants.ADD_MEMBER) {
       return <ModalContactList isShow
-                               headingTitle={strings.selectContacts}
                                selectiveMode
+                               headingTitle={strings.selectContacts}
                                activeList={addMembers}
                                FooterFragment={ModalContactListFooterFragment.bind(this, addMembers, this.onPrevious, this.onClose)}
                                userType={modalContactListStatics.userType.HAS_POD_USER_NOT_BLOCKED}

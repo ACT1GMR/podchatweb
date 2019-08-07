@@ -19,6 +19,7 @@ import {Text} from "../../../../uikit/src/typography";
 import strings from "../../constants/localization";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import {threadCreate} from "../../actions/threadActions";
+import {getName} from "./_component/contactList";
 
 @connect(store => {
   return {
@@ -89,10 +90,10 @@ export default class LeftAsideMain extends Component {
                     <Container maxWidth="calc(100% - 75px)">
                       <Avatar>
                         <AvatarImage src={el.image}
-                                     text={avatarNameGenerator(el.name).letter}
-                                     textBg={avatarNameGenerator(el.name).color}/>
+                                     text={avatarNameGenerator(getName(el)).letter}
+                                     textBg={avatarNameGenerator(getName(el)).color}/>
                         <AvatarName>
-                          {el.name}
+                          {getName(el)}
                         </AvatarName>
                       </Avatar>
                     </Container>

@@ -10,7 +10,7 @@ import {
   contactBlock,
   contactAdding,
   contactRemove,
-  contactListShowing
+  contactListShowing, contactSearch
 } from "../../actions/contactActions";
 import {threadNotification} from "../../actions/threadActions";
 
@@ -33,6 +33,17 @@ import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import {ROUTE_ADD_CONTACT} from "../../constants/routes";
 import {chatModalPrompt} from "../../actions/chatActions";
 
+function getParticipant(participants, user) {
+  let participant;
+  if (participants) {
+    participant = participants.filter(e => e.id !== user.id)[0];
+  }
+  if (!participant) {
+    participant = {};
+  }
+  return participant;
+}
+
 @connect(store => {
   return {
     contactBlocking: store.contactBlock.fetching,
@@ -46,6 +57,32 @@ export default class ModalThreadInfo extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      contact: {}
+    };
+  }
+
+  componentDidMount() {
+    const {participants, user, dispatch, contacts} = this.props;
+    if (!participants || !participants.length) {
+      return;
+    }
+    const participant = getParticipant(participants, user);
+    if (!participant.id) {
+      return;
+    }
+    if (!participant.contactId) {
+      return;
+    }
+    if (contacts && contacts.length) {
+      let contact = contacts.findIndex(contact => contact.id === participant.contactId);
+      if (contact > -1) {
+        return this.setState({contact: contacts[0]})
+      }
+    }
+    dispatch(contactSearch({id: participant.contactId})).then(contact => {
+      this.setState({contact})
+    });
   }
 
   onBlockSelect(threadId, blocked) {
@@ -82,21 +119,10 @@ export default class ModalThreadInfo extends Component {
 
   render() {
     const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, contacts, GapFragment} = this.props;
-    let participant = participants;
-    if (participants) {
-      participant = participants.filter(e => e.id !== user.id)[0];
-    }
-    if (!participant) {
-      participant = {};
-    }
-    let contact = contacts.findIndex(contact => contact.id === participant.contactId);
-    if (contact < 0) {
-      contact = {};
-    } else {
-      contact = contacts[contact];
-    }
+    let participant = getParticipant(participants, user);
     const participantImage = participant.image;
     const isMyContact = participant.contactId;
+    const contact = this.state.contact || {};
     return (
       <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
 

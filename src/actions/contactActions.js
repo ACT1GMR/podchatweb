@@ -158,6 +158,14 @@ export const contactUpdate = (contactId, editObject) => {
   }
 };
 
+export const contactSearch = query => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.searchContact(query);
+  }
+};
+
 export const contactRemove = (contactId, threadId) => {
   return (dispatch, getState) => {
     const state = getState();

@@ -29,7 +29,7 @@ import {ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 
 export const statics = {
-  count: 15,
+  count: 50,
   userType: {
     ALL: "ALL",
     HAS_POD_USER: "HAS_POD_USER",
@@ -93,11 +93,21 @@ class ModalContactList extends Component {
     };
   }
 
-  componentDidUpdate({isShow: oldIsShow, chatInstance: oldChatInstance}) {
-    const {chatInstance, dispatch, isShow} = this.props;
+  componentDidUpdate({isShow: oldIsShow, chatInstance: oldChatInstance, contactsNextOffset: oldContactsNextOffset}) {
+    const {chatInstance, dispatch, isShow, userType, contacts, contactsHasNext, contactsNextOffset} = this.props;
     const {searchInput} = this.state;
+
     if (oldChatInstance !== chatInstance) {
       dispatch(contactGetList(0, statics.count, searchInput));
+    }
+
+    const filterContacts = filterContactList(contacts, userType);
+    if(!filterContacts.length) {
+      if(oldContactsNextOffset !== contactsNextOffset) {
+        if(contactsHasNext) {
+          dispatch(contactGetList(contactsNextOffset, statics.count, searchInput));
+        }
+      }
     }
     if (oldIsShow !== isShow) {
       if (chatInstance) {
@@ -174,7 +184,7 @@ class ModalContactList extends Component {
             <Container centerRight>
               <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorGrayDark}/>
             </Container>
-            <InputText className={style.ModalContactList__Input} onChange={this.onSearchQueryChange} value={query}
+            <InputText className={style.ModalContactList__Input} onChange={this.onSearchQueryChange} value={query || ""}
                        placeholder={strings.search} ref={this.inputRef}/>
             <Container centerLeft>
               <Gap x={5}>

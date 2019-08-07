@@ -7,7 +7,7 @@ import {
   CONTACT_CHATTING,
   CONTACT_BLOCK, CONTACTS_LIST_CHANGE, CONTACT_GET_LIST_PARTIAL, THREAD_GET_MESSAGE_LIST_PARTIAL
 } from "../constants/actionTypes";
-import {stateGenerator, stateGeneratorState} from "../utils/storeHelper";
+import {listUpdateStrategyMethods, stateGenerator, stateGeneratorState, updateStore} from "../utils/storeHelper";
 
 const {PENDING, SUCCESS, ERROR, CANCELED} = stateGeneratorState;
 
@@ -36,8 +36,15 @@ export const contactGetListReducer = (state = {
       return {...state, ...stateGenerator(CANCELED, {hasNext: false, nextOffset: 0})};
     case CONTACT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
-    case CONTACTS_LIST_CHANGE:
-      return {...state, ...stateGenerator(SUCCESS, action.payload, "contacts")};
+    case CONTACTS_LIST_CHANGE: {
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.contacts, action.payload, {
+          by: "id",
+          upsert: true,
+          method: listUpdateStrategyMethods.UPDATE
+        }), "contacts")
+      };
+    }
     case CONTACT_GET_LIST(SUCCESS): {
       const {contacts, hasNext, nextOffset} = action.payload;
       return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: contacts})};
@@ -59,7 +66,7 @@ export const contactGetListPartialReducer = (state = {
   error: false
 }, action) => {
   switch (action.type) {
-    case THREAD_GET_MESSAGE_LIST_PARTIAL(CANCELED):
+    case CONTACT_GET_LIST_PARTIAL(CANCELED):
       return {...state, ...stateGenerator(CANCELED)};
     case CONTACT_GET_LIST_PARTIAL(PENDING):
       return {...state, ...stateGenerator(PENDING)};

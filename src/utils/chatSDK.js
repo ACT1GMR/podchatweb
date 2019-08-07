@@ -22,7 +22,7 @@ export default class ChatSDK {
       connectionCheckTimeout: 10000, // Socket connection live time on server
       messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
-      enableCache: true,
+      enableCache: false,
       fullResponseObject: true,
       dynamicHistoryCount: true,
       asyncLogging: {
@@ -453,6 +453,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  searchContact(resolve, reject, query) {
+    this.chatAgent.searchContacts(query, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.contacts[0]);
+      }
+    });
+  }
+
+  @promiseDecorator
   blockContact(resolve, reject, threadId, block) {
     const blockContactParam = {
       threadId,
@@ -531,7 +540,7 @@ export default class ChatSDK {
     this.chatAgent.getContacts(getContactsParams, result => {
       if (!this._onError(result, reject)) {
         const {contacts, hasNext, nextOffset} = result.result;
-        return resolve({contacts, hasNext, nextOffset});
+        return resolve({contacts, hasNext, nextOffset, offset});
       }
     });
   }
