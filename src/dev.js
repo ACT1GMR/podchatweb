@@ -12,10 +12,15 @@ auth({
   clientId: "2051121e4348af52664cf7de0bda",
   scope: "social:write",
   onNewToken: token => {
+    const serverConfig = {
+      socketAddress: "wss://msg.pod.land/ws",
+      platformHost: "https://api.pod.land/srv/core",
+      fileServer: "https://core.pod.land"
+    };
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <Box token={token}/>
+          <Box token={token} {...serverConfig}/>
         </BrowserRouter>
       </Provider>,
       document.getElementById("app")

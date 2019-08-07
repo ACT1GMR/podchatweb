@@ -77,7 +77,33 @@ export default class ModalThreadInfo extends Component {
     if (contacts && contacts.length) {
       let contact = contacts.findIndex(contact => contact.id === participant.contactId);
       if (contact > -1) {
-        return this.setState({contact: contacts[0]})
+        return this.setState({contact: contacts[contact]});
+      }
+    }
+    dispatch(contactSearch({id: participant.contactId})).then(contact => {
+      this.setState({contact})
+    });
+  }
+
+  componentDidUpdate({participants: oldParticipants}){
+    const {participants, user, dispatch, contacts} = this.props;
+    if (!participants || !participants.length) {
+      return;
+    }
+    const participant = getParticipant(participants, user);
+    const oldParticipant = getParticipant(oldParticipants, user);
+    if (!participant.id && !oldParticipant.id) {
+      return;
+    } else if(participant.id === oldParticipant.id) {
+      return;
+    }
+    if (!participant.contactId) {
+      return;
+    }
+    if (contacts && contacts.length) {
+      let contact = contacts.findIndex(contact => contact.id === participant.contactId);
+      if (contact > -1) {
+        return this.setState({contact: contacts[contact]});
       }
     }
     dispatch(contactSearch({id: participant.contactId})).then(contact => {

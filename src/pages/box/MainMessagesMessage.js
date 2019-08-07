@@ -392,9 +392,11 @@ export default class MainMessagesMessage extends Component {
   }
 
   onDelete() {
-    const {dispatch, message, user, isMessageByMe} = this.props;
+    const {dispatch, message, user, isMessageByMe, thread} = this.props;
+    const deleteForAllCondition = (isMessageByMe(message, user)  && message.deletable ) || (thread.group && thread.inviter.id === user.id);
+
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, isMessageByMe(message, user) && message.deletable));
+      dispatch(messageDelete(message.id, deleteForAllCondition));
       dispatch(chatModalPrompt());
     }));
     this.onMessageControlHide();
