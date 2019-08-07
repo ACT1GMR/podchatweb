@@ -10,7 +10,7 @@ import AvatarText from "../../../../../uikit/src/avatar/AvatarText";
 
 //styling
 
-function getName(contact) {
+export function getName(contact) {
   if (contact.contactName) {
     return contact.contactName;
   }
@@ -38,11 +38,8 @@ function getImage(contact) {
 }
 
 export function ContactList(props) {
-  const {hasUser, contacts, activeList, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment} = props;
+  const {contacts, activeList, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment} = props;
   let filterContacts = [...contacts];
-  if (hasUser) {
-    filterContacts = filterContacts.filter(e => e.hasUser);
-  }
   return (
     <List>
       {filterContacts.map(el => (
@@ -84,7 +81,7 @@ export function ContactList(props) {
 }
 
 export function ContactListSelective(props) {
-  let newProps = {...{activeWithTick: true, selection: true, multiple: true, hasUser: true}, ...props};
+  let newProps = {...{activeWithTick: true, selection: true, multiple: true}, ...props};
   return ContactList(newProps);
 }
 

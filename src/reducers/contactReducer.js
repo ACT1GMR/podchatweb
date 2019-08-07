@@ -37,6 +37,7 @@ export const contactGetListReducer = (state = {
     case CONTACT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case CONTACTS_LIST_CHANGE:
+      return {...state, ...stateGenerator(SUCCESS, action.payload, "contacts")};
     case CONTACT_GET_LIST(SUCCESS): {
       const {contacts, hasNext, nextOffset} = action.payload;
       return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, contacts: contacts})};

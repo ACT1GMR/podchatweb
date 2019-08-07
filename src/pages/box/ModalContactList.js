@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {isContains} from "../../utils/helpers";
+import {withRouter} from "react-router-dom";
 
 //strings
 import strings from "../../constants/localization";
 
 //actions
 import {
+  contactAdding,
   contactGetList,
 } from "../../actions/contactActions";
 
@@ -15,7 +16,6 @@ import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/
 import {Button} from "../../../../uikit/src/button";
 import {Heading, Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
-import Message from "../../../../uikit/src/message";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Gap from "../../../../uikit/src/gap";
 import {InputText} from "../../../../uikit/src/input";
@@ -25,6 +25,7 @@ import {MdSearch, MdClose} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../../styles/variables.scss";
 import {ContactList, ContactListSelective} from "./_component/contactList";
+import {ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 
 export const statics = {
@@ -32,6 +33,8 @@ export const statics = {
   userType: {
     ALL: "ALL",
     HAS_POD_USER: "HAS_POD_USER",
+    HAS_POD_USER_NOT_BLOCKED: "HAS_POD_USER_NOT_BLOCKED",
+    HAS_POD_USER_BLOCKED: "HAS_POD_USER_BLOCKED",
     NOT_POD_USER: "NOT_POD_USER"
   }
 };
@@ -49,6 +52,23 @@ function AvatarTextFragment({contact}) {
                color={contact.blocked ? "red" : "accent"}>{contact.blocked ? strings.blocked : contact.linkedUser ? "" : strings.isNotPodUser}</Text>;
 }
 
+function filterContactList(contacts, userType) {
+  const {ALL, HAS_POD_USER, HAS_POD_USER_BLOCKED, HAS_POD_USER_NOT_BLOCKED} = statics.userType;
+  if (!userType || userType === ALL) {
+    return contacts;
+  }
+  if (userType === HAS_POD_USER) {
+    return contacts.filter(e => e.hasUser);
+  }
+  if (userType === HAS_POD_USER_BLOCKED) {
+    return contacts.filter(e => e.hasUser && e.blocked);
+  }
+  if (userType === HAS_POD_USER_NOT_BLOCKED) {
+    return contacts.filter(e => e.hasUser && !e.blocked);
+  }
+  return contacts.filter(e => !e.hasUser);
+}
+
 @connect(store => {
   return {
     contacts: store.contactGetList.contacts,
@@ -56,10 +76,11 @@ function AvatarTextFragment({contact}) {
     contactsNextOffset: store.contactGetList.nextOffset,
     contactsFetching: store.contactGetList.fetching,
     contactsPartialFetching: store.contactGetListPartial.fetching,
-    chatInstance: store.chatInstance.chatSDK
+    chatInstance: store.chatInstance.chatSDK,
+    chatRouterLess: store.chatRouterLess
   };
-})
-export default class ModalContactList extends Component {
+}, null, null, {withRef: true})
+class ModalContactList extends Component {
 
   constructor(props) {
     super(props);
@@ -99,6 +120,14 @@ export default class ModalContactList extends Component {
     }
   }
 
+  onAdd() {
+    const {chatRouterLess, history, dispatch} = this.props;
+    dispatch(contactAdding(true));
+    if (!chatRouterLess) {
+      history.push(ROUTE_ADD_CONTACT);
+    }
+  }
+
   onClose() {
     const {onClose} = this.props;
     if (onClose) {
@@ -122,26 +151,25 @@ export default class ModalContactList extends Component {
 
   render() {
     const {
-      contacts, isShow, smallVersion, chatInstance, onAdd, onSelect, onDeselect,
+      contacts, isShow, smallVersion, chatInstance, onSelect, onDeselect,
       contactsHasNext, contactsFetching, contactsPartialFetching,
       FooterFragment, LeftActionFragment,
-      selectiveMode, activeList
+      selectiveMode, activeList, headingTitle, userType
     } = this.props;
     const {query} = this.state;
     const commonArgs = {
-      AvatarTextFragment,
-      LeftActionFragment,
+      contacts: filterContactList(contacts, userType),
       onSelect,
-      contacts,
       invert: true,
-      hasUser: false
+      AvatarTextFragment,
+      LeftActionFragment
     };
     return (
       <Modal isOpen={isShow} onClose={this.onClose} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{strings.contactList}</Heading>
+          <Heading h3>{headingTitle || strings.contactList}</Heading>
           <Container relative>
             <Container centerRight>
               <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorGrayDark}/>
@@ -177,7 +205,8 @@ export default class ModalContactList extends Component {
                                       onDeselect={onDeselect}
                                       {...commonArgs}/>
                 :
-                <ContactList {...commonArgs}/>
+                <ContactList selection
+                             {...commonArgs}/>
               }
 
               {contactsPartialFetching && <PartialLoadingFragment/>}
@@ -200,7 +229,7 @@ export default class ModalContactList extends Component {
                 :
                 <Container centerTextAlign className={style.ModalContactList__Loading}>
                   <Text>{strings.noContactPleaseAddFirst}</Text>
-                  <Button text onClick={onAdd.bind(this)}>{strings.add}</Button>
+                  <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
                 </Container>
           }
         </ModalBody>
@@ -213,3 +242,5 @@ export default class ModalContactList extends Component {
     )
   }
 }
+
+export default withRouter(ModalContactList);

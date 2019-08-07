@@ -54,8 +54,8 @@ class ModalContactListMenu extends Component {
     super(props);
     this.removeContact = this.removeContact.bind(this);
     this.onClose = this.onClose.bind(this);
-    this.onAdd = this.onAdd.bind(this);
     this.onStartChat = this.onStartChat.bind(this);
+    this.onAdd = this.onAdd.bind(this);
   }
 
   componentDidUpdate({isShow: oldIsShow, chatInstance: oldChatInstance}) {
@@ -108,7 +108,6 @@ class ModalContactListMenu extends Component {
     return (
       <ModalContactList isShow={isShow}
                         onClose={this.onClose}
-                        onAdd={this.onAdd}
                         userType={modalContactListStatics.userType.ALL}
                         onSelect={this.onStartChat}
                         LeftActionFragment={LeftActionFragment.bind(this, this.removeContact)}

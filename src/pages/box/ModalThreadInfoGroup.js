@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {getName} from "./_component/contactList";
+import ModalContactList, {statics as modalContactListStatics} from "./ModalContactList";
 
 //strings
 import strings from "../../constants/localization";
@@ -37,11 +39,30 @@ import styleVar from "./../../../styles/variables.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 
 
+
 const constants = {
   GROUP_INFO: "GROUP_INFO",
   ADD_MEMBER: "ADD_MEMBER",
   ON_SETTINGS: "ON_SETTINGS"
 };
+
+function ModalContactListFooterFragment(addMembers, onPrevious, onClose) {
+  return (
+    <Container>
+      {
+        addMembers.length > 0 &&
+        <Button text onClick={this.onAddMember}>
+          {strings.add}
+        </Button>
+      }
+      <Button text onClick={onClose}>{strings.close}</Button>
+      <Button text onClick={onPrevious}>
+        <MdArrowBack/>
+      </Button>
+    </Container>
+  )
+}
+
 
 @connect(store => {
   return {
@@ -195,7 +216,7 @@ class ModalThreadInfoGroup extends Component {
     }
     const {thread, dispatch} = this.props;
     const {removingParticipantIds} = this.state;
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(participant.name, thread.type === 8)}؟`, () => {
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutRemovingMember(getName(participant), thread.type === 8)}؟`, () => {
       dispatch(threadRemoveParticipant(thread.id, [participant.id]));
       dispatch(chatModalPrompt());
       this.setState({
@@ -211,10 +232,9 @@ class ModalThreadInfoGroup extends Component {
     const isChannel = thread.type === 8;
     const {addMembers, step} = this.state;
     const isGroup = thread.group;
-    const filteredContacts = contacts.filter(a => a.hasUser && !participants.filter(b => a.id === b.contactId).length);
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
     const hasAllowToSeenParticipant = thread.type !== 8 || thread.inviter.id === user.id;
-    const conversationAction = participant => {
+    const conversationAction = ({contact: participant}) => {
       const participantId = participant.id;
       const isCreator = participant.coreUserId === thread.inviter.coreUserId;
       const adminFragment = (
@@ -250,6 +270,18 @@ class ModalThreadInfoGroup extends Component {
 
       )
     };
+
+    if (step === constants.ADD_MEMBER) {
+      return <ModalContactList isShow
+                               headingTitle={strings.selectContacts}
+                               selectiveMode
+                               activeList={addMembers}
+                               FooterFragment={ModalContactListFooterFragment.bind(this, addMembers, this.onPrevious, this.onClose)}
+                               userType={modalContactListStatics.userType.HAS_POD_USER_NOT_BLOCKED}
+                               onClose={this.onClose}
+                               onSelect={this.onSelect}
+                               onDeselect={this.onDeselect}/>
+    }
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
@@ -278,13 +310,11 @@ class ModalThreadInfoGroup extends Component {
                 <Container bottomLeft>
                   {isOwner ?
                     <Container inline>
-                      {filteredContacts.length ?
-                        <Container inline>
-                          <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                                      onClick={this.onAddMemberSelect}/>
-                          <Gap x={5}/>
-                        </Container> : ""
-                      }
+                      <Container inline>
+                        <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
+                                    onClick={this.onAddMemberSelect}/>
+                        <Gap x={5}/>
+                      </Container>
                       <MdSettings size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
                                   onClick={this.onSettingsSelect}/>
                       <Gap x={5}/>
@@ -307,7 +337,7 @@ class ModalThreadInfoGroup extends Component {
               <Container>
                 <List>
                   {
-                    isOwner && filteredContacts.length ?
+                    isOwner ?
                       <ListItem selection invert onSelect={this.onAddMemberSelect}>
                         <Container relative>
                           <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
@@ -352,19 +382,19 @@ class ModalThreadInfoGroup extends Component {
               {hasAllowToSeenParticipant && <GapFragment/> }
 
               {hasAllowToSeenParticipant &&
-                <Container>
-                  {participantsFetching && !partialParticipantLoading ?
-                    <Container centerTextAlign>
-                      <Loading hasSpace><LoadingBlinkDots/></Loading>
-                      <Text>{strings.waitingForContact}...</Text>
-                    </Container>
-                    :
-                    <ContactList invert
-                                 selection
-                                 onSelect={this.onStartChat}
-                                 contacts={participants} LeftActionFragment={conversationAction}/>
-                  }
-                </Container>
+              <Container>
+                {participantsFetching && !partialParticipantLoading ?
+                  <Container centerTextAlign>
+                    <Loading hasSpace><LoadingBlinkDots/></Loading>
+                    <Text>{strings.waitingForContact}...</Text>
+                  </Container>
+                  :
+                  <ContactList invert
+                               selection
+                               onSelect={this.onStartChat}
+                               contacts={participants} LeftActionFragment={conversationAction}/>
+                }
+              </Container>
               }
             </Container>
             :
@@ -387,7 +417,7 @@ class ModalThreadInfoGroup extends Component {
 
         <ModalFooter>
           {step === constants.GROUP_INFO ?
-            isGroup && isOwner && filteredContacts.length ?
+            isGroup && isOwner ?
               <Button text onClick={this.onAddMemberSelect}>
                 {strings.addMember}
               </Button>
@@ -397,12 +427,7 @@ class ModalThreadInfoGroup extends Component {
               <Button text onClick={this.onSaveSettings}>
                 {strings.saveSettings}
               </Button>
-              :
-              addMembers.length > 0 ?
-                <Button text onClick={this.onAddMember}>
-                  {strings.add}
-                </Button>
-                : ""
+              : ""
           }
           <Button text onClick={this.onClose}>{strings.close}</Button>
           {step !== constants.GROUP_INFO ?

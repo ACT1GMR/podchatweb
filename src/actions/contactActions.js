@@ -134,7 +134,6 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
       if (e.linkedUser) {
         dispatch(threadCreate(e.id, null, true));
         dispatch(threadShowing(true));
-        dispatch(contactGetList());
       }
     }, e => {
       dispatch({
@@ -146,6 +145,16 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
       type: CONTACT_ADD("PENDING"),
       payload: null
     });
+  }
+};
+
+export const contactUpdate = (contactId, editObject) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.updateContact(contactId, editObject).then(e => {
+      dispatch(contactAdding());
+    })
   }
 };
 

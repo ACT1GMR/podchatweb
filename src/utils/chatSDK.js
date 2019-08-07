@@ -22,7 +22,7 @@ export default class ChatSDK {
       connectionCheckTimeout: 10000, // Socket connection live time on server
       messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
-      enableCache: false,
+      enableCache: true,
       fullResponseObject: true,
       dynamicHistoryCount: true,
       asyncLogging: {
@@ -433,6 +433,19 @@ export default class ChatSDK {
       cellphoneNumber
     };
     this.chatAgent.addContacts(addContactParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.contacts[0]);
+      }
+    });
+  }
+
+  @promiseDecorator
+  updateContact(resolve, reject, contactId, updateObject) {
+    const editContactParams = {
+      id: contactId,
+      ...updateObject
+    };
+    this.chatAgent.updateContacts(editContactParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.contacts[0]);
       }

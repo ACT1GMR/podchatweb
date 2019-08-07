@@ -1,42 +1,47 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {avatarNameGenerator} from "../../utils/helpers";
+import ModalContactList, {statics as modalContactListStatics} from "./ModalContactList";
 
 //strings
 import strings from "../../constants/localization";
 import {ROUTE_CREATE_GROUP, ROUTE_THREAD, ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 //actions
-import {contactAdding, contactGetList, contactModalCreateGroupShowing} from "../../actions/contactActions";
+import {contactModalCreateGroupShowing} from "../../actions/contactActions";
 import {threadCreate} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
-import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import {Button} from "../../../../uikit/src/button";
 import {Heading, Text} from "../../../../uikit/src/typography";
-import List, {ListItem} from "../../../../uikit/src/list";
 import {InputText} from "../../../../uikit/src/input";
-import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
 
 //styling
 import {MdArrowForward} from "react-icons/lib/md";
 import Message from "../../../../uikit/src/message";
-import ModalContactList, {statics as modalContactListStatics} from "./ModalContactList";
 
 const constants = {
   GROUP_NAME: "GROUP_NAME",
   SELECT_CONTACT: "SELECT_CONTACT"
 };
 
+function ModalContactListFooterFragment(threadContacts, onNext, onClose) {
+  return (<Container>
+    {
+      threadContacts.length > 1 &&
+      <Button text onClick={onNext}>
+        <MdArrowForward/>
+      </Button>
+    }
+    <Button text onClick={onClose}>{strings.cancel}</Button>
+  </Container>)
+}
+
 @connect(store => {
   return {
     contactModalCreateGroup: store.contactModalCreateGroupShowing,
-    contacts: store.contactGetList.contacts,
-    contactsFetching: store.contactGetList.fetching,
-    chatInstance: store.chatInstance.chatSDK,
     chatRouterLess: store.chatRouterLess
   };
 }, null, null, {withRef: true})
@@ -49,29 +54,19 @@ class ModalCreateGroup extends Component {
       groupName: "",
       step: constants.SELECT_CONTACT
     };
-    this.onAdd = this.onAdd.bind(this);
     this.onCreate = this.onCreate.bind(this);
     this.onClose = this.onClose.bind(this);
     this.onSelect = this.onSelect.bind(this);
     this.onDeselect = this.onDeselect.bind(this);
+    this.onNext = this.onNext.bind(this);
   }
 
   componentDidMount() {
-    const {isShow, dispatch, match, chatInstance} = this.props;
-    if (chatInstance) {
-      dispatch(contactGetList());
-    }
+    const {isShow, dispatch, match} = this.props;
     if (!isShow) {
       if (match.path === ROUTE_CREATE_GROUP) {
         dispatch(contactModalCreateGroupShowing(true));
       }
-    }
-  }
-
-  componentDidUpdate(oldProps) {
-    const {dispatch, chatInstance} = this.props;
-    if (oldProps.chatInstance !== chatInstance) {
-      dispatch(contactGetList());
     }
   }
 
@@ -116,14 +111,6 @@ class ModalCreateGroup extends Component {
     }
   }
 
-  onAdd() {
-    const {history, chatRouterLess, dispatch} = this.props;
-    dispatch(contactAdding(true));
-    if (!chatRouterLess) {
-      history.push(ROUTE_ADD_CONTACT);
-    }
-  }
-
   onSelect(id) {
     const {threadContacts} = this.state;
     let contactsClone = [...threadContacts];
@@ -150,66 +137,41 @@ class ModalCreateGroup extends Component {
   }
 
   render() {
-    const {contacts, contactModalCreateGroup, smallVersion, chatInstance, contactsFetching} = this.props;
+    const {contactModalCreateGroup, smallVersion} = this.props;
     const {threadContacts, step, groupName, nameNotEntered} = this.state;
     const {isShowing, isChannel} = contactModalCreateGroup;
-    const showLoading = contactsFetching;
-
-    let filteredContacts = contacts.filter(e => e.hasUser);
+    if (step === constants.SELECT_CONTACT) {
+      return <ModalContactList isShow
+                               headingTitle={strings.selectContacts}
+                               selectiveMode
+                               activeList={threadContacts}
+                               FooterFragment={ModalContactListFooterFragment.bind(this, threadContacts, this.onNext, this.onClose)}
+                               userType={modalContactListStatics.userType.HAS_POD_USER_NOT_BLOCKED}
+                               onClose={this.onClose}
+                               onSelect={this.onSelect}
+                               onDeselect={this.onDeselect}/>
+    }
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
-          <Heading
-            h3>{step === constants.SELECT_CONTACT ? strings.selectContacts : isChannel ? strings.createGroup(true) : strings.createGroup()}</Heading>
+          <Heading h3>{strings.createGroup(isChannel)}</Heading>
         </ModalHeader>
 
         <ModalBody>
-          {step === constants.SELECT_CONTACT ?
-            contacts.length ?
-              <ModalContactList isShow
-                                selectiveMode
-                                activeList={threadContacts}
-                                userType={modalContactListStatics.userType.HAS_POD_USER}
-                                onClose={this.onClose}
-                                onSelect={this.onSelect}
-                                onDeselect={this.onDeselect}/>
-              :
-              showLoading || !chatInstance ?
-                <Container centerTextAlign>
-                  <Loading hasSpace><LoadingBlinkDots/></Loading>
-                  <Text>{strings.waitingForContact}...</Text>
-                </Container>
-                :
-                <Container centerTextAlign>
-                  <Text>{strings.noContactPleaseAddFirst}</Text>
-                  <Button text onClick={this.onAdd.bind(this)}>{strings.add}</Button>
-                </Container>
-            :
-            <form onSubmit={this.onCreate.bind(this, groupName, isChannel)}>
-              <InputText onChange={this.groupNameChange.bind(this)}
-                         max={15}
-                         value={groupName}
-                         placeholder={strings.groupName(isChannel)}/>
-              <input type="submit" style={{display: "none"}}/>
-            </form>
-          }
-
-
+          <form onSubmit={this.onCreate.bind(this, groupName, isChannel)}>
+            <InputText onChange={this.groupNameChange.bind(this)}
+                       max={15}
+                       value={groupName}
+                       placeholder={strings.groupName(isChannel)}/>
+            <input type="submit" style={{display: "none"}}/>
+          </form>
         </ModalBody>
 
         <ModalFooter>
-          {step === constants.SELECT_CONTACT ?
-            threadContacts.length > 1 ?
-              <Button text onClick={this.onNext.bind(this)}>
-                <MdArrowForward/>
-              </Button>
-              : ""
-            :
-            <Button text
-                    onClick={this.onCreate.bind(this, groupName, isChannel)}>{strings.createGroup(isChannel)}</Button>
-          }
+          <Button text
+                  onClick={this.onCreate.bind(this, groupName, isChannel)}>{strings.createGroup(isChannel)}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
           <Container inline>
             <Message warn>

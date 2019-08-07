@@ -208,7 +208,7 @@ export const threadsReducer = (state = {
       return {...state, ...stateGenerator(SUCCESS, sortThreads(action.payload), "threads")};
     case THREAD_NEW:
     case THREAD_CHANGED: {
-      let threads = updateStore(state.threads, state.type === THREAD_CHANGED ? action.payload : action.payload.thread, {
+      let threads = updateStore(state.threads, action.type === THREAD_CHANGED ? action.payload : action.payload.thread, {
         method: listUpdateStrategyMethods.UPDATE,
         upsert: true,
         by: "id"

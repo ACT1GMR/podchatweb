@@ -11,7 +11,7 @@ import {
   contactAdd,
   contactAdding,
   contactChatting,
-  contactListShowing
+  contactListShowing, contactUpdate
 } from "../../actions/contactActions";
 
 //UI components
