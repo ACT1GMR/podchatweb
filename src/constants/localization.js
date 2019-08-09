@@ -113,6 +113,12 @@ let strings = new LocalizedStrings({
       }
       return `مخاطبی با مشخصات "${keyword}" وجود ندارد `;
     },
+    thereIsNoThreadsWithThisKeyword(keyword) {
+      if (!keyword && !keyword.trim()) {
+        return 'گفتگویی تحت این عنوان یافت نشد...'
+      }
+      return `گفتگوی تحت عنوان "${keyword}" وجود ندارد `;
+    },
     prettifyDateString(string) {
       if (string === strings.unknown) {
         return string;

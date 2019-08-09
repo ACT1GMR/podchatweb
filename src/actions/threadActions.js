@@ -32,7 +32,8 @@ import {
   THREAD_NOTIFICATION,
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
-  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO
+  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO, THREAD_PARTICIPANT_GET_LIST_PARTIAL,
+  THREAD_GET_LIST_PARTIAL
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
@@ -73,21 +74,16 @@ export const threadInit = () => {
   }
 };
 
-export const threadGetList = isBackground => {
+export const threadGetList = (offset = 0, count, name, direct) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    if (isBackground) {
-      return chatSDK.getThreads().then(threads => {
-        dispatch({
-          type: THREAD_GET_LIST(SUCCESS),
-          payload: threads
-        });
-      })
+    if (direct) {
+      return chatSDK.getThreads(offset, count, name);
     }
     dispatch({
-      type: THREAD_GET_LIST(),
-      payload: chatSDK.getThreads()
+      type: offset > 0 ? THREAD_GET_LIST_PARTIAL() : THREAD_GET_LIST(),
+      payload: chatSDK.getThreads(offset, count, name)
     });
   }
 };
@@ -217,7 +213,7 @@ export const threadNewMessage = message => {
   }
 };
 
-export const threadParticipantList = threadId => {
+export const threadParticipantList = (threadId, offset = 0, count, name, reset) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
@@ -227,8 +223,8 @@ export const threadParticipantList = threadId => {
       });
     }
     dispatch({
-      type: THREAD_PARTICIPANT_GET_LIST(),
-      payload: chatSDK.getThreadParticipantList(threadId)
+      type: offset > 0 ? THREAD_PARTICIPANT_GET_LIST_PARTIAL() : THREAD_PARTICIPANT_GET_LIST(),
+      payload: chatSDK.getThreadParticipantList(threadId, offset, count, name)
     });
   }
 };

@@ -14,9 +14,11 @@ import {
   threadCreate, threadLeave, threadModalThreadInfoShowing, threadNotification, threadParticipantList,
   threadRemoveParticipant
 } from "../../actions/threadActions";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
-import {ContactList, ContactListSelective} from "./_component/contactList";
+import {ContactList} from "./_component/contactList";
+import {ContactSearchFragment, PartialLoadingFragment} from "./ModalContactList";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import ModalThreadInfoGroupSettings from "./ModalThreadInfoGroupSettings";
 import {Button} from "../../../../uikit/src/button";
@@ -24,13 +26,11 @@ import Gap from "../../../../uikit/src/gap";
 import {Heading, Text} from "../../../../uikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
-import Divider from "../../../../uikit/src/divider";
 import Modal from "../../../../uikit/src/modal";
 import ModalHeader from "../../../../uikit/src/modal/ModalHeader";
 import ModalBody from "../../../../uikit/src/modal/ModalBody";
 import ModalFooter from "../../../../uikit/src/modal/ModalFooter";
 import List, {ListItem} from "../../../../uikit/src/list";
-import {chatModalPrompt} from "../../actions/chatActions";
 
 //styling
 import {MdGroupAdd, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
@@ -39,11 +39,11 @@ import styleVar from "./../../../styles/variables.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";
 
 
-
 const constants = {
   GROUP_INFO: "GROUP_INFO",
   ADD_MEMBER: "ADD_MEMBER",
-  ON_SETTINGS: "ON_SETTINGS"
+  ON_SETTINGS: "ON_SETTINGS",
+  count: 50
 };
 
 function ModalContactListFooterFragment(addMembers, onPrevious, onClose) {
@@ -63,12 +63,15 @@ function ModalContactListFooterFragment(addMembers, onPrevious, onClose) {
   )
 }
 
-
 @connect(store => {
   return {
     threadParticipantAdd: store.threadParticipantAdd.thread,
     notificationPending: store.threadNotification.fetching,
-    contacts: store.contactGetList.contacts
+    contacts: store.contactGetList.contacts,
+    participantsFetching: store.threadParticipantList.fetching,
+    participantsPartialFetching: store.threadParticipantListPartial.fetching,
+    participantsHasNext: store.threadParticipantList.hasNext,
+    participantsNextOffset: store.threadParticipantList.nextOffset
   }
 }, null, null, {withRef: true})
 class ModalThreadInfoGroup extends Component {
@@ -79,7 +82,8 @@ class ModalThreadInfoGroup extends Component {
       addMembers: [],
       step: constants.GROUP_INFO,
       removingParticipantIds: [],
-      partialParticipantLoading: false
+      partialParticipantLoading: false,
+      query: null
     };
     this.settingsRef = React.createRef();
     this.onClose = this.onClose.bind(this);
@@ -93,6 +97,9 @@ class ModalThreadInfoGroup extends Component {
     this.onSaveSettings = this.onSaveSettings.bind(this);
     this.onLeaveSelect = this.onLeaveSelect.bind(this);
     this.onNotificationSelect = this.onNotificationSelect.bind(this);
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onSearchInputChange = this.onSearchInputChange.bind(this);
+    this.onSearchChange = this.onSearchChange.bind(this);
   }
 
   componentDidUpdate(oldProps) {
@@ -102,7 +109,7 @@ class ModalThreadInfoGroup extends Component {
         this.setState({
           partialParticipantLoading: false
         });
-        dispatch(threadParticipantList(thread.id));
+        dispatch(threadParticipantList(thread.id, 0, constants.count));
       }
     }
 
@@ -172,19 +179,27 @@ class ModalThreadInfoGroup extends Component {
   }
 
   onStartChat(participantId, participant) {
+    const {user, dispatch} = this.props;
+    if (participant.id === user.id) {
+      return;
+    }
     const participantContactId = participant.contactId;
     const id = participantContactId || participantId;
     const isParticipant = !participantContactId;
     this.onClose();
-    this.props.dispatch(threadCreate(id, null, null, isParticipant ? "TO_BE_USER_ID" : null));
+    dispatch(threadCreate(id, null, null, isParticipant ? "TO_BE_USER_ID" : null));
   }
 
   onClose(dontGoBack) {
-    const {onClose} = this.props;
+    const {onClose, thread, dispatch} = this.props;
     onClose(dontGoBack);
+    if (this.state.query) {
+      dispatch(threadParticipantList(thread.id, 0, constants.count));
+    }
     this.setState({
       step: constants.GROUP_INFO,
-      addMembers: []
+      addMembers: [],
+      query: null
     });
   }
 
@@ -225,9 +240,28 @@ class ModalThreadInfoGroup extends Component {
     }, null));
   }
 
+  onSearchInputChange(query) {
+    this.setState({query});
+  }
+
+  onSearchChange(query) {
+    const {dispatch, thread} = this.props;
+    dispatch(threadParticipantList(thread.id, 0, constants.count, query));
+  }
+
+  onScrollBottomThreshold() {
+    const {participantsNextOffset, dispatch, thread} = this.props;
+    const {query} = this.state;
+    dispatch(threadParticipantList(thread.id, participantsNextOffset, constants.count, query));
+  }
+
   render() {
-    const {participants, thread, user, isShow, contacts, smallVersion, participantsFetching, notificationPending, GapFragment} = this.props;
-    const {removingParticipantIds, partialParticipantLoading} = this.state;
+    const {
+      participants, thread, user, isShow, smallVersion,
+      participantsFetching, participantsHasNext, participantsPartialFetching, notificationPending,
+      GapFragment
+    } = this.props;
+    const {removingParticipantIds, partialParticipantLoading, query} = this.state;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
     const isChannel = thread.type === 8;
     const {addMembers, step} = this.state;
@@ -291,7 +325,9 @@ class ModalThreadInfoGroup extends Component {
             h3>{constants.GROUP_INFO === step ? strings.groupInfo(isChannel) : constants.ON_SETTINGS === step ? strings.groupSettings(isChannel) : strings.addMember}</Heading>
         </ModalHeader>
 
-        <ModalBody>
+        <ModalBody threshold={5}
+                   onScrollBottomThresholdCondition={participantsHasNext && !participantsPartialFetching}
+                   onScrollBottomThreshold={this.onScrollBottomThreshold}>
           {step === constants.GROUP_INFO ?
             <Container>
               <Container relative>
@@ -382,6 +418,11 @@ class ModalThreadInfoGroup extends Component {
               {hasAllowToSeenParticipant && <GapFragment/> }
 
               {hasAllowToSeenParticipant &&
+              <ContactSearchFragment onSearchInputChange={this.onSearchInputChange}
+                                     onSearchChange={this.onSearchChange} query={query}
+                                     inputClassName={style.ModalThreadInfoGroup__SearchInput}/>
+              }
+              {hasAllowToSeenParticipant &&
               <Container>
                 {participantsFetching && !partialParticipantLoading ?
                   <Container centerTextAlign>
@@ -389,29 +430,27 @@ class ModalThreadInfoGroup extends Component {
                     <Text>{strings.waitingForContact}...</Text>
                   </Container>
                   :
-                  <ContactList invert
-                               selection
-                               onSelect={this.onStartChat}
-                               contacts={participants} LeftActionFragment={conversationAction}/>
+                  participants.length ?
+                    <Container relative>
+                      <ContactList invert
+                                   selection
+                                   onSelect={this.onStartChat}
+                                   contacts={participants} LeftActionFragment={conversationAction}/>
+                      {participantsPartialFetching && <PartialLoadingFragment/>}
+                    </Container> :
+                    query && query.trim() &&
+                    <Container relative centerTextAlign>
+                      <Gap y={5}>
+                        <Container>
+                          <Text>{strings.thereIsNoContactWithThisKeyword(query)}</Text>
+                        </Container>
+                      </Gap>
+                    </Container>
                 }
               </Container>
               }
             </Container>
-            :
-            step === constants.ON_SETTINGS ?
-              <ModalThreadInfoGroupSettings thread={thread} ref={this.settingsRef}/>
-              :
-              <Container>
-                {contacts.length ?
-                  <ContactListSelective invert onSelect={this.onSelect} onDeselect={this.onDeselect}
-                                        contacts={filteredContacts}
-                                        activeList={addMembers}/>
-                  :
-                  <Container center>
-                    <Button text onClick={this.onAdd}>{strings.add}</Button>
-                  </Container>
-                }
-              </Container>
+            : <ModalThreadInfoGroupSettings thread={thread} ref={this.settingsRef}/>
           }
         </ModalBody>
 

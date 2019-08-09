@@ -35,7 +35,8 @@ import {
   THREAD_PARTICIPANTS_REMOVED,
   THREAD_NOTIFICATION,
   THREAD_PARTICIPANTS_LIST_CHANGE,
-  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL, THREAD_NEW_MESSAGE
+  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL, THREAD_NEW_MESSAGE,
+  THREAD_PARTICIPANT_GET_LIST_PARTIAL, THREAD_GET_LIST_PARTIAL
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 
@@ -196,6 +197,8 @@ export const threadIsSendingMessageReducer = (state = false, action) => {
 
 export const threadsReducer = (state = {
   threads: [],
+  hasNext: false,
+  nextOffset: 0,
   fetching: false,
   fetched: false,
   error: false
@@ -204,8 +207,14 @@ export const threadsReducer = (state = {
   switch (action.type) {
     case THREAD_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING, [], "threads")};
-    case THREAD_GET_LIST(SUCCESS):
-      return {...state, ...stateGenerator(SUCCESS, sortThreads(action.payload), "threads")};
+    case THREAD_GET_LIST(SUCCESS): {
+      const {threads, hasNext, nextOffset} = action.payload;
+      return {...state, ...stateGenerator(SUCCESS, {threads: sortThreads(threads), hasNext, nextOffset})};
+    }
+    case THREAD_GET_LIST_PARTIAL(SUCCESS): {
+      const {threads, hasNext, nextOffset} = action.payload;
+      return {...state, ...stateGenerator(SUCCESS, {threads: sortThreads(state.threads.concat(threads)), hasNext, nextOffset})};
+    }
     case THREAD_NEW:
     case THREAD_CHANGED: {
       let threads = updateStore(state.threads, action.type === THREAD_CHANGED ? action.payload : action.payload.thread, {
@@ -252,6 +261,24 @@ export const threadsReducer = (state = {
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
     }
+    default:
+      return state;
+  }
+};
+
+
+export const threadsPartialReducer = (state = {
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_GET_LIST_PARTIAL(CANCELED):
+      return {...state, ...stateGenerator(CANCELED)};
+    case THREAD_GET_LIST_PARTIAL(PENDING):
+      return {...state, ...stateGenerator(PENDING)};
+    case THREAD_GET_LIST_PARTIAL(SUCCESS):
+      return {...state, ...stateGenerator(SUCCESS)};
     default:
       return state;
   }
@@ -499,6 +526,8 @@ export const threadCheckedMessageListReducer = (state = [], action) => {
 export const threadParticipantListReducer = (state = {
   participants: [],
   threadId: null,
+  hasNext: false,
+  nextOffset: 0,
   fetching: false,
   fetched: false,
   error: false
@@ -507,21 +536,26 @@ export const threadParticipantListReducer = (state = {
     case THREAD_PARTICIPANT_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING, {participants: state.participants})};
     case THREAD_PARTICIPANT_GET_LIST(CANCELED):
-      return {...state, ...{participants: []}};
+      return {...state, ...{participants: [], hasNext: false, nextOffset: 0}};
     case THREAD_PARTICIPANTS_LIST_CHANGE:
-    case THREAD_PARTICIPANT_GET_LIST(SUCCESS):
+    case THREAD_PARTICIPANT_GET_LIST(SUCCESS):{
 
       if (action.type === THREAD_PARTICIPANTS_LIST_CHANGE) {
         if (state.threadId !== action.payload.threadId) {
           return state;
         }
       }
+      const {participants, hasNext, nextOffset, threadId} = action.payload;
       return {
         ...state, ...stateGenerator(SUCCESS, {
-          threadId: action.payload.threadId,
-          participants: action.payload.participants
+          participants, hasNext, nextOffset, threadId
         })
       };
+    }
+    case THREAD_PARTICIPANT_GET_LIST_PARTIAL(SUCCESS): {
+      const {participants, hasNext, nextOffset} = action.payload;
+      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, participants: state.participants.concat(participants)})};
+    }
     case THREAD_PARTICIPANTS_REMOVED:
     case THREAD_LEAVE_PARTICIPANT:
       return {
@@ -534,6 +568,23 @@ export const threadParticipantListReducer = (state = {
       };
     case THREAD_PARTICIPANT_GET_LIST(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadParticipantListPartialReducer = (state = {
+   fetching: false,
+   fetched: false,
+   error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_PARTICIPANT_GET_LIST_PARTIAL(CANCELED):
+      return {...state, ...stateGenerator(CANCELED)};
+    case THREAD_PARTICIPANT_GET_LIST_PARTIAL(PENDING):
+      return {...state, ...stateGenerator(PENDING)};
+    case THREAD_PARTICIPANT_GET_LIST_PARTIAL(SUCCESS):
+      return {...state, ...stateGenerator(SUCCESS)};
     default:
       return state;
   }

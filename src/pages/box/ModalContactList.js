@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import classnames from "classnames";
 
 //strings
 import strings from "../../constants/localization";
@@ -28,6 +29,7 @@ import {ContactList, ContactListSelective} from "./_component/contactList";
 import {ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 
+
 export const statics = {
   count: 50,
   userType: {
@@ -39,7 +41,7 @@ export const statics = {
   }
 };
 
-function PartialLoadingFragment() {
+export function PartialLoadingFragment() {
   return (
     <Container bottomCenter centerTextAlign style={{zIndex: 1}}>
       <Loading><LoadingBlinkDots size="sm"/></Loading>
@@ -47,6 +49,51 @@ function PartialLoadingFragment() {
   )
 }
 
+
+export function ContactSearchFragment({onSearchInputChange, onSearchChange, query, inputRef, inputClassName}) {
+
+  function onSearchQueryChange(e) {
+    const query = e.target ? e.target.value : "";
+    onSearchInputChange(query);
+    clearTimeout(window.toSearchTimoutId);
+    if (!query.slice()) {
+      return onSearchChange(query.slice());
+    }
+
+    window.toSearchTimoutId = setTimeout(e => {
+      clearTimeout(window.toSearchTimoutId);
+      onSearchChange(query);
+    }, 750);
+  }
+
+  const classNames = classnames({
+    [style.ModalContactList__Input]: true,
+    [inputClassName]: inputClassName
+  });
+
+  return (
+    <Container relative>
+      <Container centerRight>
+        <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorGrayDark}/>
+      </Container>
+      <InputText className={classNames} onChange={onSearchQueryChange} value={query || ""}
+                 placeholder={strings.search} ref={inputRef}/>
+      <Container centerLeft>
+        <Gap x={5}>
+          {
+            query && query.trim() ?
+
+              <MdClose size={styleVar.iconSizeMd}
+                       color={styleVar.colorGrayDark}
+                       style={{cursor: "pointer"}}
+                       onClick={onSearchQueryChange.bind(null, "")}/>
+              : ""
+          }
+        </Gap>
+      </Container>
+    </Container>
+  )
+}
 function AvatarTextFragment({contact}) {
   return <Text size="xs" inline
                color={contact.blocked ? "red" : "accent"}>{contact.blocked ? strings.blocked : contact.linkedUser ? "" : strings.isNotPodUser}</Text>;
@@ -85,7 +132,8 @@ class ModalContactList extends Component {
   constructor(props) {
     super(props);
     this.inputRef = React.createRef();
-    this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
+    this.onSearchInputChange = this.onSearchInputChange.bind(this);
+    this.onSearchChange = this.onSearchChange.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.onClose = this.onClose.bind(this);
     this.state = {
@@ -102,9 +150,9 @@ class ModalContactList extends Component {
     }
 
     const filterContacts = filterContactList(contacts, userType);
-    if(!filterContacts.length) {
-      if(oldContactsNextOffset !== contactsNextOffset) {
-        if(contactsHasNext) {
+    if (!filterContacts.length) {
+      if (oldContactsNextOffset !== contactsNextOffset) {
+        if (contactsHasNext) {
           dispatch(contactGetList(contactsNextOffset, statics.count, searchInput));
         }
       }
@@ -143,13 +191,15 @@ class ModalContactList extends Component {
     if (onClose) {
       onClose();
     }
-    this.onSearchQueryChange("");
+    this.onSearchInputChange("");
   }
 
-  onSearchQueryChange(e) {
-    const {dispatch} = this.props;
-    const query = e.target ? e.target.value : e;
+  onSearchInputChange(query) {
     this.setState({query});
+  }
+
+  onSearchChange(query) {
+    const {dispatch} = this.props;
     dispatch(contactGetList(0, statics.count, query));
   }
 
@@ -180,27 +230,8 @@ class ModalContactList extends Component {
 
         <ModalHeader>
           <Heading h3>{headingTitle || strings.contactList}</Heading>
-          <Container relative>
-            <Container centerRight>
-              <MdSearch size={styleVar.iconSizeMd} color={styleVar.colorGrayDark}/>
-            </Container>
-            <InputText className={style.ModalContactList__Input} onChange={this.onSearchQueryChange} value={query || ""}
-                       placeholder={strings.search} ref={this.inputRef}/>
-            <Container centerLeft>
-              <Gap x={5}>
-                {
-                  query && query.trim() ?
-
-                    <MdClose size={styleVar.iconSizeMd}
-                             color={styleVar.colorGrayDark}
-                             style={{cursor: "pointer"}}
-                             onClick={this.onSearchQueryChange.bind(this, "")}/>
-                    : ""
-                }
-              </Gap>
-            </Container>
-          </Container>
-
+          <ContactSearchFragment onSearchInputChange={this.onSearchInputChange} onSearchChange={this.onSearchChange}
+                                 query={query} inputRef={this.inputRef}/>
         </ModalHeader>
 
         <ModalBody threshold={5}

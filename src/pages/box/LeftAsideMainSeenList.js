@@ -1,25 +1,24 @@
 // src/
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {getName, ContactList} from "./_component/contactList";
 
 //strings
 
 //actions
 import {messageGetSeenList} from "../../actions/messageActions";
+import {threadCreate} from "../../actions/threadActions";
 
 //UI components
-
-//styling
 import Container from "../../../../uikit/src/container";
 import Gap from "../../../../uikit/src/gap";
-import List, {ListItem} from "../../../../uikit/src/list";
-import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
-import {avatarNameGenerator} from "../../utils/helpers";
+import Scroller from "../../../../uikit/src/scroller";
 import {Text} from "../../../../uikit/src/typography";
 import strings from "../../constants/localization";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
-import {threadCreate} from "../../actions/threadActions";
-import {getName} from "./_component/contactList";
+
+//styling
+
 
 @connect(store => {
   return {
@@ -33,6 +32,8 @@ export default class LeftAsideMain extends Component {
 
   constructor(props) {
     super(props);
+    this.onStartChat = this.onStartChat.bind(this);
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.state = {
       seenList: null
     }
@@ -56,7 +57,6 @@ export default class LeftAsideMain extends Component {
     this.props.dispatch(threadCreate(id, null, null, "TO_BE_USER_ID"));
   }
 
-
   getMessageSeenList(messageId) {
     const {dispatch} = this.props;
     this.setState({
@@ -68,39 +68,32 @@ export default class LeftAsideMain extends Component {
         seenList: result,
         seeListLoading: false
       })
-    })
+    });
   }
 
+  onScrollBottomThreshold(){
+
+  }
 
   render() {
     const {seenList, seeListLoading} = this.state;
+    if (seeListLoading) {
+      return (
+        <Container relative userSelect="none">
+          <Container topCenter>
+            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+          </Container>
+        </Container>
+      )
+    }
     return (
       <Container relative>
-        {seeListLoading ?
-          <Container relative userSelect="none">
-            <Container topCenter>
-              <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
-            </Container>
-          </Container>
-          : seenList && seenList.length > 1 ?
-            <List>
-              {seenList.map(el => (
-                <ListItem key={el.id} selection invert>
-                  <Container relative onClick={this.onStartChat.bind(this, el.id)}>
-                    <Container maxWidth="calc(100% - 75px)">
-                      <Avatar>
-                        <AvatarImage src={el.image}
-                                     text={avatarNameGenerator(getName(el)).letter}
-                                     textBg={avatarNameGenerator(getName(el)).color}/>
-                        <AvatarName>
-                          {getName(el)}
-                        </AvatarName>
-                      </Avatar>
-                    </Container>
-                  </Container>
-                </ListItem>
-              ))}
-            </List>
+        {
+          seenList && seenList.length > 1 ?
+            <ContactList contacts={seenList}
+                         selection
+                         invert
+                         onSelect={this.onStartChat}/>
             :
             <Container relative>
               <Container topCenter>

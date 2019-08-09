@@ -82,6 +82,9 @@ class ModalContactListMenu extends Component {
 
   onStartChat(contactId, contact) {
     const {history, chatRouterLess, dispatch} = this.props;
+    if (!contact || !contact.linkedUser) {
+      return;
+    }
     dispatch(contactChatting(contact));
     dispatch(threadCreate(contactId));
     this.onClose(true);

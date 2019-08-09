@@ -183,17 +183,23 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreads(resolve, reject, threadIds) {
+  getThreads(resolve, reject, offset, count, name, threadIds) {
     let getThreadsParams = {
-      count: 50,
-      offset: 0
+      count,
+      offset
     };
     if (threadIds) {
       getThreadsParams = {...getThreadsParams, threadIds};
     }
+    if (typeof name === "string") {
+      if (name.trim()) {
+        getThreadsParams.name = name;
+      }
+    }
     this.chatAgent.getThreads(getThreadsParams, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.threads);
+        const {threads, hasNext, nextOffset} = result.result;
+        return resolve({threads, hasNext, nextOffset});
       }
     });
   }
@@ -418,7 +424,7 @@ export default class ChatSDK {
 
   @promiseDecorator
   getThreadInfo(resolve, reject, threadId) {
-    this.getThreads([threadId]).then(result => {
+    this.getThreads(0, 50, [threadId]).then(result => {
       if (!this._onError(result, reject)) {
         return resolve(result[0]);
       }
@@ -546,15 +552,21 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadParticipantList(resolve, reject, threadId) {
+  getThreadParticipantList(resolve, reject, threadId, offset, count, name) {
     const getParticipantsParams = {
-      count: 50,
-      offset: 0,
+      count,
+      offset,
       threadId
     };
+    if (typeof name === "string") {
+      if (name.trim()) {
+        getParticipantsParams.name = name;
+      }
+    }
     this.chatAgent.getThreadParticipants(getParticipantsParams, result => {
       if (!this._onError(result, reject)) {
-        return resolve({threadId, participants: result.result.participants});
+        const {participants, hasNext, nextOffset} = result.result;
+        return resolve({threadId, participants, hasNext, nextOffset});
       }
     });
   }

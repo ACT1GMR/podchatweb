@@ -49,7 +49,6 @@ export function reconnect(chatInstance) {
 
 @connect(store => {
   return {
-    threads: store.threadList.threads,
     threadId: store.thread.thread.id,
     chatState: store.chatState,
     chatInstance: store.chatInstance.chatSDK,

@@ -12,8 +12,10 @@ import {
   threadMessageListReducer,
   threadMessageListPartialReducer,
   threadParticipantListReducer,
+  threadParticipantListPartialReducer,
   threadCreateReducer,
   threadsReducer,
+  threadsPartialReducer,
   threadModalListShowingReducer,
   threadModalThreadInfoShowingReducer,
   threadFilesToUploadReducer,
@@ -29,14 +31,11 @@ import {
   threadGetMessageListByMessageIdReducer,
   threadSelectMessageShowingReducer,
   threadCheckedMessageListReducer,
-  threadEmojiShowingReducer, threadSpamPVReducer, threadLeaveReducer
+  threadEmojiShowingReducer
 } from "./threadReducer";
 import {
-  messageSendReducer,
   messageNewReducer,
-  messageEditingReducer,
-  messageEditReducer,
-  messageDeleteReducer
+  messageEditingReducer
 } from "./messageReducer";
 import {
   chatSmallVersionReducer,
@@ -74,8 +73,10 @@ const rootReducer = {
   threadModalThreadInfoShowing: threadModalThreadInfoShowingReducer,
   threadModalMedialShowing: threadModalMedialShowingReducer,
   threadModalImageCaptionShowing: threadModalImageCaptionShowingReducer,
-  threadList: threadsReducer,
+  threads: threadsReducer,
+  threadsPartial: threadsPartialReducer,
   threadParticipantList: threadParticipantListReducer,
+  threadParticipantListPartial: threadParticipantListPartialReducer,
   threadParticipantAdd: threadParticipantAddReducer,
   threadFilesToUpload: threadFilesToUploadReducer,
   threadImagesToCaption: threadImagesToCaptionReducer,

@@ -24,7 +24,7 @@ import classnames from "classnames";
 
 @connect(store => {
   return {
-    threads: store.threadList.threads,
+    threads: store.threads.threads,
     contacts: store.contactGetList.contacts,
     chatSearchShow: store.chatSearchShow
   };

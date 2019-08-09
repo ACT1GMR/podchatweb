@@ -2,7 +2,7 @@
 import {threadGetList, threadLeave} from "./threadActions";
 import ChatSDK from "../utils/chatSDK";
 import {reconnect} from "../pages/box/AsideHead";
-
+import {stateGeneratorState} from "../utils/storeHelper";
 import {
   CHAT_GET_INSTANCE,
   CHAT_SMALL_VERSION,
@@ -17,10 +17,14 @@ import {
   THREAD_REMOVED_FROM,
   THREAD_PARTICIPANTS_LIST_CHANGE,
   THREADS_LIST_CHANGE,
-  THREAD_LEAVE_PARTICIPANT
+  THREAD_LEAVE_PARTICIPANT,
+  THREAD_GET_LIST
 } from "../constants/actionTypes";
 
+
 let firstReadyPassed = false;
+
+const {CANCELED, SUCCESS} = stateGeneratorState;
 
 export const chatSetInstance = config => {
   return (dispatch, state) => {
@@ -93,7 +97,12 @@ export const chatSetInstance = config => {
       },
       onChatReady(e) {
         if (firstReadyPassed) {
-          dispatch(threadGetList(true));
+          dispatch(threadGetList(0, 50, null, true)).then(threads => {
+            dispatch({
+              type: THREAD_GET_LIST(SUCCESS),
+              payload: threads
+            });
+          })
         }
         firstReadyPassed = true;
         dispatch({

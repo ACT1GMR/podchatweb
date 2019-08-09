@@ -26,7 +26,7 @@ import Avatar, {AvatarImage} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Container from "../../../../uikit/src/container";
 import Message from "../../../../uikit/src/message";
-import Scroller from "../../../../uikit/src/Scroller";
+import Scroller from "../../../../uikit/src/scroller";
 
 //styling
 import {
@@ -465,6 +465,7 @@ export default class MainMessages extends Component {
       <Container className={style.MainMessages}>
         {threadMessagesPartialFetching && <PartialLoadingFragment/>}
         <Scroller ref={this.scroller}
+                  checkForSnapping
                   className={style.MainMessages__Messages}
                   threshold={5}
                   onScrollBottomEnd={this.onScrollBottomEnd}

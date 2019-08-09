@@ -16,9 +16,11 @@ import {ROUTE_THREAD} from "../../constants/routes";
 import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
+import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
 import {MdGroup, MdRecordVoiceOver, MdDoneAll, MdDone} from "react-icons/lib/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
+import Scroller from "../../../../uikit/src/scroller";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
 import Container from "../../../../uikit/src/container";
 import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
@@ -26,7 +28,6 @@ import Loading from "../../../../uikit/src/loading";
 import {Text} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
 import date from "../../utils/date";
-import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
 
 //styling
 import style from "../../../styles/pages/box/AsideThreads.scss";
@@ -92,7 +93,8 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMes
         {
           lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
           <Container inline>
-            {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> : <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
+            {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
+              <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
             <Gap x={3}/>
           </Container>
         }
@@ -126,6 +128,14 @@ export function LastMessageFragment({thread, user}) {
   )
 }
 
+function PartialLoadingFragment() {
+  return (
+    <Container bottomCenter centerTextAlign style={{zIndex: 1}}>
+      <Loading><LoadingBlinkDots size="sm" invert/></Loading>
+    </Container>
+  )
+}
+
 
 const sanitizeRule = {
   allowedTags: ["img"],
@@ -135,10 +145,17 @@ const sanitizeRule = {
   allowedSchemes: ["data"]
 };
 
+export const statics = {
+  count: 50
+};
+
 @connect(store => {
   return {
-    threads: store.threadList.threads,
-    threadsFetching: store.threadList.fetching,
+    threads: store.threads.threads,
+    threadsFetching: store.threads.fetching,
+    threadsHasNext: store.threads.hasNext,
+    threadsNextOffset: store.threads.nextOffset,
+    threadsPartialFetching: store.threadsPartial.fetching,
     threadId: store.thread.thread.id,
     chatInstance: store.chatInstance.chatSDK,
     chatRouterLess: store.chatRouterLess,
@@ -151,6 +168,7 @@ class AsideThreads extends Component {
   constructor(props) {
     super(props);
     this.onThreadClick.bind(this);
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.state = {activeThread: null};
   }
 
@@ -166,9 +184,9 @@ class AsideThreads extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {chatInstance} = this.props;
+    const {chatInstance, dispatch} = this.props;
     if (oldProps.chatInstance !== chatInstance) {
-      this.props.dispatch(threadGetList());
+      dispatch(threadGetList(0, statics.count));
     }
     if (oldProps.threadId !== this.props.threadId) {
       this.setState({
@@ -177,8 +195,13 @@ class AsideThreads extends Component {
     }
   }
 
+  onScrollBottomThreshold() {
+    const {threadsNextOffset, dispatch} = this.props;
+    dispatch(threadGetList(threadsNextOffset, statics.count));
+  }
+
   render() {
-    const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult, user} = this.props;
+    const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult, user, threadsHasNext, threadsPartialFetching} = this.props;
     const {activeThread} = this.state;
     const classNames = classnames({
       [style.AsideThreads]: true,
@@ -202,52 +225,53 @@ class AsideThreads extends Component {
           </section>
         )
       }
+      if (chatSearchResult) {
+        return <Container className={classNames}><AsideThreadsSearchResult chatSearchResult={chatSearchResult}/></Container>
+      }
       return (
-        <Container className={classNames}>
-          {chatSearchResult ?
-            <AsideThreadsSearchResult chatSearchResult={chatSearchResult}/>
-            :
-            <List>
-              {filteredThreads.map(el => (
+        <Scroller className={classNames}
+                  threshold={5}
+                  onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching}
+                  onScrollBottomThreshold={this.onScrollBottomThreshold}>
+          <List>
+            {filteredThreads.map(el => (
 
-                <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
-                          active={activeThread === el.id}>
-                  <Container relative>
-                    <Avatar className={style.AsideThreads__AvatarContainer}>
-                      <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                   textBg={avatarNameGenerator(el.title).color}/>
-                      <AvatarName invert>
-                        {el.group &&
-                        <Container inline>
-                          {el.type === 8 ?
-                            <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                            :
-                            <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                          }
-                          <Gap x={2}/>
-                        </Container>
+              <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+                        active={activeThread === el.id}>
+                <Container relative>
+                  <Avatar className={style.AsideThreads__AvatarContainer}>
+                    <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                 textBg={avatarNameGenerator(el.title).color}/>
+                    <AvatarName invert>
+                      {el.group &&
+                      <Container inline>
+                        {el.type === 8 ?
+                          <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                          :
+                          <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
                         }
-                        {getTitle(el.title)}
-                        <AvatarText>
-                          <LastMessageFragment thread={el} user={user}/>
-                        </AvatarText>
-                      </AvatarName>
-                    </Avatar>
-                    {el.unreadCount ?
-                      <Container absolute centerLeft>
-                        <Gap y={10} block/>
-                        <Shape color="accent">
-                          <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                        </Shape>
-                      </Container> : ""}
-                  </Container>
-                </ListItem>
-
-              ))}
-            </List>
-          }
-        </Container>
-      );
+                        <Gap x={2}/>
+                      </Container>
+                      }
+                      {getTitle(el.title)}
+                      <AvatarText>
+                        <LastMessageFragment thread={el} user={user}/>
+                      </AvatarText>
+                    </AvatarName>
+                  </Avatar>
+                  {el.unreadCount ?
+                    <Container absolute centerLeft>
+                      <Gap y={10} block/>
+                      <Shape color="accent">
+                        <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                      </Shape>
+                    </Container> : ""}
+                </Container>
+              </ListItem>
+            ))}
+          </List>
+          {threadsPartialFetching && <PartialLoadingFragment/> }
+        </Scroller>);
     }
   }
 }

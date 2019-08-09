@@ -6,7 +6,7 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {threadModalListShowing} from "../../actions/threadActions";
+import {threadGetList, threadModalListShowing} from "../../actions/threadActions";
 import {threadCreate} from "../../actions/threadActions";
 import {messageEditing} from "../../actions/messageActions";
 
@@ -14,22 +14,26 @@ import {messageEditing} from "../../actions/messageActions";
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
 import {Button} from "../../../../uikit/src/button";
 import {Heading} from "../../../../uikit/src/typography";
-import Message from "../../../../uikit/src/message";
+import Gap from "../../../../uikit/src/gap";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
+import {ContactSearchFragment, PartialLoadingFragment} from "./ModalContactList";
 
 //styling
 
 const constants = {
-  forwarding: "FORWARDING"
+  forwarding: "FORWARDING",
+  count: 50
 };
 
 @connect(store => {
   return {
+    threads: store.threads.threads,
+    threadsNextOffset: store.threads.nextOffset,
+    threadsHasNext: store.threads.hasNext,
     isShow: store.threadModalListShowing.isShowing,
     message: store.threadModalListShowing.message,
-    threads: store.threadList.threads,
     user: store.user.user
   };
 }, null, null, {withRef: true})
@@ -37,6 +41,25 @@ export default class ModalThreadList extends Component {
 
   constructor(props) {
     super(props);
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.state = {
+      remainingThreadsNextOffset: 0,
+      remainingThreadsHasNext: false,
+      remainingThreadsPartialFetching: false,
+      remainingThreads: [],
+      query: null
+    }
+  }
+
+  componentDidUpdate({threadsNextOffset: oldThreadsNextOffset, isShow: oldIsShow}) {
+    const {threadsHasNext, threadsNextOffset, threads, isShow} = this.props;
+    if (oldThreadsNextOffset !== threadsNextOffset || isShow !== oldIsShow) {
+      this.setState({
+        remainingThreadsHasNext: threadsHasNext,
+        remainingThreadsNextOffset: threadsNextOffset,
+        remainingThreads: threads
+      });
+    }
   }
 
   onSend(thread) {
@@ -48,41 +71,89 @@ export default class ModalThreadList extends Component {
 
   onClose() {
     this.props.dispatch(threadModalListShowing(false));
+    this.setState({
+      remainingThreadsNextOffset: 0,
+      remainingThreadsHasNext: false,
+      remainingThreadsPartialFetching: false,
+      remainingThreads: [],
+      query: null
+    });
+  }
+
+  _directThreadListRequest(contactsNextOffset, onSearch, query) {
+    const {dispatch, threads: oldThreads} = this.props;
+    dispatch(threadGetList(contactsNextOffset || 0, constants.count, query, true))
+      .then(({threads, nextOffset, hasNext}) => {
+        const {remainingThreads} = this.state;
+        let realThreads = remainingThreads.concat(threads);
+        if (onSearch) {
+          if (!query || !query.trim()) {
+            realThreads = oldThreads
+          } else {
+            realThreads = threads
+          }
+        }
+        this.setState({
+          remainingThreadsNextOffset: nextOffset,
+          remainingThreadsHasNext: hasNext,
+          remainingThreads: realThreads,
+          remainingThreadsPartialFetching: false
+        })
+      })
+  }
+
+  onScrollBottomThreshold() {
+    const {remainingThreadsNextOffset} = this.state;
+    this.setState({
+      remainingThreadsPartialFetching: true
+    });
+    this._directThreadListRequest(remainingThreadsNextOffset, false, this.state.query);
   }
 
   render() {
     const {threads, isShow, smallVersion, user} = this.props;
-    const realThreads = threads.filter(thread => !thread.group || thread.type !== 8 || thread.inviter.id === user.id);
+    const {query, remainingThreadsHasNext, remainingThreadsPartialFetching, remainingThreads, isQuerying} = this.state;
+    const realThreads = remainingThreads.filter(thread => !thread.group || thread.type !== 8 || thread.inviter.id === user.id);
+
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
           <Heading h3>{strings.forwardTo}</Heading>
+          <ContactSearchFragment onSearchInputChange={query => this.setState({query})}
+                                 onSearchChange={query => this._directThreadListRequest(0, true, query)} query={query}/>
         </ModalHeader>
 
-        <ModalBody>
+        <ModalBody threshold={5}
+                   onScrollBottomThresholdCondition={remainingThreadsHasNext && !remainingThreadsPartialFetching}
+                   onScrollBottomThreshold={this.onScrollBottomThreshold}>
           {realThreads.length ?
-            <List>
-              {realThreads.map(el => (
-                <ListItem key={el.id} selection invert onSelect={this.onSend.bind(this, el)}>
-                  <Container relative>
+            <Container relative>
+              <List>
+                {realThreads.map(el => (
+                  <ListItem key={el.id} selection invert onSelect={this.onSend.bind(this, el)}>
+                    <Container relative>
 
-                    <Avatar>
-                      <AvatarImage src={el.image} text={avatarNameGenerator(el.title).letter}
-                                   textBg={avatarNameGenerator(el.title).color}/>
-                      <AvatarName>{el.title}</AvatarName>
-                    </Avatar>
+                      <Avatar>
+                        <AvatarImage src={el.image} text={avatarNameGenerator(el.title).letter}
+                                     textBg={avatarNameGenerator(el.title).color}/>
+                        <AvatarName>{el.title}</AvatarName>
+                      </Avatar>
 
-                  </Container>
-                </ListItem>
-              ))}
-            </List>
+                    </Container>
+                  </ListItem>
+                ))}
+              </List>
+              {remainingThreadsPartialFetching && <PartialLoadingFragment/>}
+            </Container>
             :
-            <Container center>
-              <Message warn>
-                {strings.thereIsNoChat}
-              </Message>
+            <Container relative centerTextAlign>
+              <Gap y={5}>
+                <Container>
+                  <Text>{ query && query.trim() ? strings.thereIsNoThreadsWithThisKeyword(query) : strings.thereIsNoChat}</Text>
+                </Container>
+              </Gap>
             </Container>
           }
 
