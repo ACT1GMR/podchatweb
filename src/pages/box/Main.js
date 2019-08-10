@@ -30,7 +30,7 @@ import Container from "../../../../uikit/src/container";
 import style from "../../../styles/pages/box/Main.scss";
 import styleVar from "../../../styles/variables.scss";
 
-function isMyThread(thread, user) {
+export function isMyThread(thread, user) {
   if (!thread || !user) {
     return false
   }
@@ -39,7 +39,7 @@ function isMyThread(thread, user) {
   }
 }
 
-function isChannel(thread) {
+export function isChannel(thread) {
   if (thread.group) {
     if (thread.type === 8) {
       return true;
@@ -48,7 +48,7 @@ function isChannel(thread) {
   return false;
 }
 
-function isGroup(thread) {
+export function isGroup(thread) {
   if (thread.group) {
     if (thread.type !== 8) {
       return true;

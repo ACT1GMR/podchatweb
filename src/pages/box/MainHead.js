@@ -101,7 +101,7 @@ class MainHead extends Component {
               </Gap>
             </Container>
             :
-            threadSelectMessageShowing ? <MainHeadBatchActions/> : <MainHeadThreadInfo/>
+            threadSelectMessageShowing ? <MainHeadBatchActions thread={thread} threadCheckedMessageList={threadCheckedMessageList}/> : <MainHeadThreadInfo/>
         }
         {!showLoading &&
         <Container centerLeft>

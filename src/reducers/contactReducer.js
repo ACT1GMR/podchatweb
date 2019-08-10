@@ -55,6 +55,15 @@ export const contactGetListReducer = (state = {
     }
     case CONTACT_GET_LIST(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
+    case CONTACT_ADD(SUCCESS): {
+      const contacts = updateStore(state.contacts, action.payload, {
+        by: "id",
+        upsert: true,
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, contacts, "contacts")};
+    }
+
     default:
       return state;
   }
@@ -84,6 +93,8 @@ export const contactAdd = (state = {
   error: false
 }, action) => {
   switch (action.type) {
+    case CONTACT_ADD(CANCELED):
+      return {...state, ...stateGenerator(CANCELED, {contact: null})};
     case CONTACT_ADD(PENDING):
       return {...state, ...stateGenerator(PENDING, null, "contact")};
     case CONTACT_ADD(SUCCESS):

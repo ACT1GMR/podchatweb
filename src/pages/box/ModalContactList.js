@@ -29,7 +29,6 @@ import {ContactList, ContactListSelective} from "./_component/contactList";
 import {ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 
-
 export const statics = {
   count: 50,
   userType: {
@@ -48,7 +47,15 @@ export function PartialLoadingFragment() {
     </Container>
   )
 }
-
+export function NoResultFragment({children}) {
+  return <Container relative centerTextAlign>
+    <Gap y={5}>
+      <Container>
+        <Text>{children}</Text>
+      </Container>
+    </Gap>
+  </Container>
+}
 
 export function ContactSearchFragment({onSearchInputChange, onSearchChange, query, inputRef, inputClassName}) {
 

@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {getName} from "./_component/contactList";
 
 //actions
 import {
@@ -15,6 +16,8 @@ import Container from "../../../../uikit/src/container";
 import Divider from "../../../../uikit/src/divider";
 
 //UI components
+
+import {BoxModalMediaFragment} from "./index";
 import ModalThreadInfoGroup from "./ModalThreadInfoGroup";
 import ModalThreadInfoPerson from "./ModalThreadInfoPerson";
 
@@ -29,6 +32,19 @@ function GapFragment() {
       </Gap>
     </Container>
   )
+}
+
+function AvatarModalMediaFragment({participant, thread}) {
+  let image, caption;
+  if(participant) {
+    image =  participant.image;
+    caption = getName(participant);
+  } else {
+    image =  thread.image;
+    caption = thread.title;
+  }
+  return image ? <BoxModalMediaFragment link={image} caption={caption}
+                                linkClassName={style.ModalThreadInfo__ModalMediaLink}/> : null;
 }
 
 @connect(store => {
@@ -93,7 +109,8 @@ class ModalThreadInfo extends Component {
       smallVersion,
       participantsFetching,
       history,
-      GapFragment
+      GapFragment,
+      AvatarModalMediaFragment
     };
     return isGroup ? <ModalThreadInfoGroup {...commonProps}/> : <ModalThreadInfoPerson {...commonProps}/>;
   }

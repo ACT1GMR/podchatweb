@@ -16,6 +16,7 @@ import {
 } from "../../actions/messageActions";
 
 //components
+import {BoxModalMediaFragment} from "./index";
 import Image from "../../../../uikit/src/image";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
@@ -202,16 +203,12 @@ class MainMessagesMessageFile extends Component {
                      className={style.MainMessagesFile__FileContainer}>
             {isImage ?
               <Container style={{width: `${imageSizeLink.width}px`}}>
-                <Container className={style.MainMessagesFile__ImageContainer}>
-                  <Text link={imageSizeLink.imageLinkOrig}
-                        linkClearStyle
-                        data-options={`{"caption": "${message.message || ""}"}`}>
-                    <Image className={mainMessagesFileImageClassNames}
-                           onClick={this.onImageClick}
-                           src={imageSizeLink.imageLink}
-                           style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
-                  </Text>
-                </Container>
+                <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} caption={message.message}>
+                  <Image className={mainMessagesFileImageClassNames}
+                         onClick={this.onImageClick}
+                         src={imageSizeLink.imageLink}
+                         style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
+                </BoxModalMediaFragment>
                 <Container>
                   <Text wordWrap="breakWord" bold>
                     {message.message}

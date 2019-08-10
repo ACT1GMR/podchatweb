@@ -24,6 +24,7 @@ import Aside from "./Aside";
 import Main from "./Main";
 import LeftAside from "./LeftAside";
 import Container from "../../../../uikit/src/container";
+import {Text} from "../../../../uikit/src/typography";
 import {ModalMedia} from "../../../../uikit/src/modal";
 import ModalContactListMenu from "./ModalContactListMenu";
 import ModalAddContact from "./ModalAddContact";
@@ -35,8 +36,19 @@ import ModalPrompt from "./ModalPrompt";
 
 //styling
 import style from "../../../styles/pages/box/index.scss";
-import MainMessagesFileStyle from "../../../styles/pages/box/MainMessagesFile.scss";
 import {contactGetList} from "../../actions/contactActions";
+
+export function BoxModalMediaFragment({link, caption, linkClassName, children}) {
+  return <Container className={style.Box__MediaTrigger} inline>
+    <Text link={link}
+          className={linkClassName}
+          linkClearStyle
+          data-options={`{"caption": "${caption || ""}"}`}>
+      {children && children}
+    </Text>
+
+  </Container>
+}
 
 @connect(store => {
   return {
@@ -157,7 +169,7 @@ class Box extends Component {
                render={() => <ModalThreadInfo smallVersion={small}/>}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>
         <ModalImageCaption smallVersion={small} ref={this.modalImageCaptionRef}/>
-        <ModalMedia selector={`.${MainMessagesFileStyle.MainMessagesFile__ImageContainer} a:visible`}
+        <ModalMedia selector={`.${style.Box__MediaTrigger} a:visible`}
                     ref={this.modalMediaRef}
                     lang="fa"
                     i18n={modalMediaI18n}

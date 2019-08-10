@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
+import {statics as modalContactListStatics} from "./ModalContactList";
 
 //strings
 import strings from "../../constants/localization";
@@ -10,7 +11,7 @@ import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_THREAD} from "../../constants/r
 import {
   contactAdd,
   contactAdding,
-  contactChatting,
+  contactChatting, contactGetList,
   contactListShowing, contactUpdate
 } from "../../actions/contactActions";
 
@@ -90,11 +91,6 @@ class ModalAddContact extends Component {
                 history.push(ROUTE_THREAD);
               }
             }
-          } else {
-            if (!chatRouterLess) {
-              history.push(ROUTE_CONTACTS);
-            }
-            dispatch(contactListShowing(true));
           }
         }
       }
@@ -130,6 +126,7 @@ class ModalAddContact extends Component {
   onClose(e, noHistory) {
     const {chatRouterLess, history, dispatch} = this.props;
     dispatch(contactAdding(false));
+    dispatch(contactAdd(null, null, null, false, true));
     this.setState({
       mobilePhone: "",
       firstName: "",

@@ -418,6 +418,9 @@ export default class MainMessages extends Component {
 
   onAddToCheckedMessage(message, isAdd, e) {
     e.stopPropagation();
+    if(!message.id) {
+      return;
+    }
     this.props.dispatch(threadCheckedMessageList(isAdd, message));
   }
 

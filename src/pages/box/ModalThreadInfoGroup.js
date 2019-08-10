@@ -106,18 +106,12 @@ class ModalThreadInfoGroup extends Component {
     const {thread, threadParticipantAdd, dispatch} = this.props;
     if (thread.id) {
       if (oldProps.thread.id !== thread.id) {
-        this.setState({
-          partialParticipantLoading: false
-        });
         dispatch(threadParticipantList(thread.id, 0, constants.count));
       }
     }
 
     if (threadParticipantAdd) {
       if (!oldProps.threadParticipantAdd || oldProps.threadParticipantAdd.timestamp !== threadParticipantAdd.timestamp) {
-        this.setState({
-          partialParticipantLoading: true
-        });
         dispatch(threadParticipantList(thread.id));
       }
     }
@@ -140,6 +134,7 @@ class ModalThreadInfoGroup extends Component {
     const {addMembers, removingParticipantIds} = this.state;
     const removingParticipantIdsClone = [...removingParticipantIds];
     dispatch(threadAddParticipant(thread.id, addMembers));
+    this.onClose(true);
     this.setState({
       step: constants.GROUP_INFO,
       addMembers: [],
@@ -259,7 +254,7 @@ class ModalThreadInfoGroup extends Component {
     const {
       participants, thread, user, isShow, smallVersion,
       participantsFetching, participantsHasNext, participantsPartialFetching, notificationPending,
-      GapFragment
+      GapFragment, AvatarModalMediaFragment
     } = this.props;
     const {removingParticipantIds, partialParticipantLoading, query} = this.state;
     const isOwner = thread.inviter && user.id === thread.inviter.id;
@@ -335,7 +330,9 @@ class ModalThreadInfoGroup extends Component {
                 <Container>
                   <Avatar>
                     <AvatarImage src={thread.image} size="xlg" text={avatarNameGenerator(thread.title).letter}
-                                 textBg={avatarNameGenerator(thread.title).color}/>
+                                 textBg={avatarNameGenerator(thread.title).color}>
+                      <AvatarModalMediaFragment thread={thread}/>
+                    </AvatarImage>
                     <AvatarName>
                       <Heading h1>{thread.title}</Heading>
                       <Text>{thread.participantCount} {strings.member}</Text>

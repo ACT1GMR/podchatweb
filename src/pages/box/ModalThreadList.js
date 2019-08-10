@@ -17,8 +17,9 @@ import {Heading} from "../../../../uikit/src/typography";
 import Gap from "../../../../uikit/src/gap";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
-import {ContactSearchFragment, PartialLoadingFragment} from "./ModalContactList";
+import {ContactSearchFragment, NoResultFragment, PartialLoadingFragment} from "./ModalContactList";
 
 //styling
 
@@ -98,8 +99,8 @@ export default class ModalThreadList extends Component {
           remainingThreadsHasNext: hasNext,
           remainingThreads: realThreads,
           remainingThreadsPartialFetching: false
-        })
-      })
+        });
+      });
   }
 
   onScrollBottomThreshold() {
@@ -111,8 +112,8 @@ export default class ModalThreadList extends Component {
   }
 
   render() {
-    const {threads, isShow, smallVersion, user} = this.props;
-    const {query, remainingThreadsHasNext, remainingThreadsPartialFetching, remainingThreads, isQuerying} = this.state;
+    const {isShow, smallVersion, user} = this.props;
+    const {query, remainingThreadsHasNext, remainingThreadsPartialFetching, remainingThreads} = this.state;
     const realThreads = remainingThreads.filter(thread => !thread.group || thread.type !== 8 || thread.inviter.id === user.id);
 
     return (
@@ -147,14 +148,7 @@ export default class ModalThreadList extends Component {
               </List>
               {remainingThreadsPartialFetching && <PartialLoadingFragment/>}
             </Container>
-            :
-            <Container relative centerTextAlign>
-              <Gap y={5}>
-                <Container>
-                  <Text>{ query && query.trim() ? strings.thereIsNoThreadsWithThisKeyword(query) : strings.thereIsNoChat}</Text>
-                </Container>
-              </Gap>
-            </Container>
+            : <NoResultFragment>{ query && query.trim() ? strings.thereIsNoThreadsWithThisKeyword(query) : strings.thereIsNoChat}</NoResultFragment>
           }
 
         </ModalBody>

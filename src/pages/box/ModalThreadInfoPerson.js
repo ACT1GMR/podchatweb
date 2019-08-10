@@ -2,8 +2,10 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 
+
 //strings
 import strings from "../../constants/localization";
+import {ROUTE_ADD_CONTACT} from "../../constants/routes";
 
 //actions
 import {
@@ -13,7 +15,7 @@ import {
   contactListShowing, contactSearch
 } from "../../actions/contactActions";
 import {threadNotification} from "../../actions/threadActions";
-
+import {chatModalPrompt} from "../../actions/chatActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -22,16 +24,14 @@ import Gap from "../../../../uikit/src/gap";
 import {Heading, Text} from "../../../../uikit/src/typography";
 import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
 import Container from "../../../../uikit/src/container";
-import Divider from "../../../../uikit/src/divider";
 import List, {ListItem} from "../../../../uikit/src/list";
 import date from "../../utils/date";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete} from "react-icons/lib/md";
 
 //styling
-import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
-import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
-import {ROUTE_ADD_CONTACT} from "../../constants/routes";
-import {chatModalPrompt} from "../../actions/chatActions";
+
 
 function getParticipant(participants, user) {
   let participant;
@@ -85,7 +85,7 @@ export default class ModalThreadInfo extends Component {
     });
   }
 
-  componentDidUpdate({participants: oldParticipants}){
+  componentDidUpdate({participants: oldParticipants}) {
     const {participants, user, dispatch, contacts} = this.props;
     if (!participants || !participants.length) {
       return;
@@ -94,7 +94,7 @@ export default class ModalThreadInfo extends Component {
     const oldParticipant = getParticipant(oldParticipants, user);
     if (!participant.id && !oldParticipant.id) {
       return;
-    } else if(participant.id === oldParticipant.id) {
+    } else if (participant.id === oldParticipant.id) {
       return;
     }
     if (!participant.contactId) {
@@ -124,8 +124,8 @@ export default class ModalThreadInfo extends Component {
   onEdit(participant, contact) {
     const {dispatch, history, chatRouterLess, onClose} = this.props;
     dispatch(contactAdding(true, {
-      firstName: participant.contactFirstName,
-      lastName: participant.contactLastName,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
       mobilePhone: contact.cellphoneNumber
     }));
     if (!chatRouterLess) {
@@ -144,7 +144,7 @@ export default class ModalThreadInfo extends Component {
   }
 
   render() {
-    const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, contacts, GapFragment} = this.props;
+    const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, GapFragment, AvatarModalMediaFragment} = this.props;
     let participant = getParticipant(participants, user);
     const participantImage = participant.image;
     const isMyContact = participant.contactId;
@@ -164,7 +164,9 @@ export default class ModalThreadInfo extends Component {
                 <Avatar>
                   <AvatarImage src={participantImage} size="xlg"
                                text={avatarNameGenerator(thread.title).letter}
-                               textBg={avatarNameGenerator(thread.title).color}/>
+                               textBg={avatarNameGenerator(thread.title).color}>
+                    <AvatarModalMediaFragment participant={participant}/>
+                  </AvatarImage>
                   <AvatarName>
                     <Heading h1>{thread.title}</Heading>
                     <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>

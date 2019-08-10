@@ -3,6 +3,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
+import {isChannel, isMyThread} from "./Main";
 
 //strings
 import strings from "../../constants/localization";
@@ -27,10 +28,8 @@ import styleVar from "./../../../styles/variables.scss";
 
 @connect(store => {
   return {
-    smallVersion: store.chatSmallVersion,
-    thread: store.thread.thread,
-    threadShowing: store.threadShowing,
-    threadCheckedMessageList: store.threadCheckedMessageList
+    user: store.user.user,
+    smallVersion: store.chatSmallVersion
   };
 })
 export default class MainHeadBatchActions extends Component {
@@ -68,7 +67,7 @@ export default class MainHeadBatchActions extends Component {
   }
 
   render() {
-    const {smallVersion, threadCheckedMessageList} = this.props;
+    const {smallVersion, threadCheckedMessageList, thread, user} = this.props;
     const classNames = classnames({
       [style.MainHeadBatchActions]: true,
       [style["MainHeadBatchActions--smallVersion"]]: smallVersion
@@ -81,9 +80,12 @@ export default class MainHeadBatchActions extends Component {
             <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
               <MdForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
             </Container>
-            <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
-              <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-            </Container>
+            {(!isChannel(thread) || isMyThread(thread, user)) &&
+              <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
+                <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+              </Container>
+            }
+
           </Container> :
           <Container>
             <Gap x={10}>

@@ -119,10 +119,13 @@ export const contactUnblock = blockId => {
   }
 };
 
-export const contactAdd = (mobilePhone, firstName, lastName, editMode) => {
+export const contactAdd = (mobilePhone, firstName, lastName, editMode, canceled) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if(canceled) {
+      return dispatch({type: CONTACT_ADD(CANCELED)});
+    }
     chatSDK.addContact(mobilePhone, firstName, lastName).then(e => {
       dispatch({
         type: CONTACT_ADD("SUCCESS"),
