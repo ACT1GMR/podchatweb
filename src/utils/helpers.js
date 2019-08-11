@@ -54,6 +54,12 @@ export function isContains(flds, keyword, arr) {
 }
 
 export function avatarNameGenerator(firstName, lastName) {
+  if (firstName) {
+    firstName = firstName.replace(/ +(?= )/g, "");
+  }
+  if (lastName) {
+    lastName = lastName.replace(/ +(?= )/g, "");
+  }
   const colorLogic = {
     "0-20": "#d30850",
     "20-40": "#96cef3",
@@ -124,8 +130,27 @@ export function avatarNameGenerator(firstName, lastName) {
 
 
 export function OnWindowFocusInOut(onFocusedOut, onFocusedIn) {
-  ifvisible.on("blur",onFocusedOut);
+  ifvisible.on("blur", onFocusedOut);
   ifvisible.on("focus", onFocusedIn);
   window.addEventListener("blur", onFocusedOut);
   window.addEventListener("focus", onFocusedIn);
+}
+
+export function getNow() {
+  if (window._universalTalkTimer) {
+    const now = Date.now();
+    return new Date(window._universalTalkTimer + (now - _universalLocalTalkTimer)).getTime();
+  } else {
+    return Date.now();
+  }
+}
+
+export function setApplicationTime() {
+  /*  const xhr = new XMLHttpRequest();
+    xhr.onload = e => {
+      window._universalTalkTimer = new Date(JSON.parse(e.target.responseText).utc_datetime).getTime();
+      window._universalLocalTalkTimer = Date.now();
+    };
+    xhr.open("GET", "http://worldtimeapi.org/api/timezone/Asia/Tehran", true);
+    xhr.send()*/
 }

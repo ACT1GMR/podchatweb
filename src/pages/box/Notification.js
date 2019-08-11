@@ -46,7 +46,6 @@ export default class Notification extends Component {
 
   constructor(props) {
     super(props);
-    this.lastTime = Date.now();
     if (!Push.Permission.has()) {
       Push.Permission.request();
     }

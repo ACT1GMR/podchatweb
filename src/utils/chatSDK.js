@@ -1,6 +1,7 @@
 import PodChat from "podchat-browser";
 import {promiseDecorator} from "./decorators";
 import React from "react";
+import {getNow} from "./helpers";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -219,7 +220,7 @@ export default class ChatSDK {
     resolve({
       ...obj, ...{
         participant: this.user,
-        time: Date.now() * Math.pow(10, 6),
+        time: getNow() * Math.pow(10, 6),
         message: content,
       }
     })
@@ -242,7 +243,7 @@ export default class ChatSDK {
     resolve({
       ...obj, ...{
         message: caption,
-        time: Date.now() * Math.pow(10, 6),
+        time: getNow() * Math.pow(10, 6),
         fileObject: file,
         metadata: {
           file: {
@@ -398,7 +399,7 @@ export default class ChatSDK {
           repliedToMessageTime: time,
           messageType: 0,
         },
-        time: Date.now() * Math.pow(10, 6),
+        time: getNow() * Math.pow(10, 6),
         message: content,
       }
     });
@@ -426,7 +427,7 @@ export default class ChatSDK {
   getThreadInfo(resolve, reject, threadId) {
     this.getThreads(0, 50, null, [threadId]).then(result => {
       if (!this._onError(result, reject)) {
-        return resolve(result[0]);
+        return resolve(result.threads[0]);
       }
     })
   }

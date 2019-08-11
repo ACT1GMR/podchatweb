@@ -39,6 +39,7 @@ import {
   THREAD_PARTICIPANT_GET_LIST_PARTIAL, THREAD_GET_LIST_PARTIAL
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
+import {getNow} from "../utils/helpers";
 
 const {PENDING, SUCCESS, ERROR, CANCELED} = stateGeneratorState;
 
@@ -619,7 +620,7 @@ export const threadParticipantAddReducer = (state = {
       return {...state, ...stateGenerator(PENDING, null, "thread")};
     case THREAD_PARTICIPANT_ADD(SUCCESS): {
       let thread = action.payload;
-      thread.timestamp = Date.now();
+      thread.timestamp = getNow();
       return {...state, ...stateGenerator(SUCCESS, thread, "thread")};
     }
     case THREAD_PARTICIPANT_ADD(ERROR):

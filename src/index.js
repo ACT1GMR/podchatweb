@@ -6,6 +6,7 @@ import "../styles/main.scss";
 import Box from "./pages/box";
 import {BrowserRouter} from "react-router-dom";
 
+
 function PodchatJSX(props) {
   return (
     <Provider store={store}>

@@ -1,7 +1,7 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator} from "../../utils/helpers";
+import {avatarNameGenerator, getNow} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
@@ -39,7 +39,7 @@ function sliceMessage(message, to) {
 }
 
 function prettifyMessageDate(passedTime) {
-  const diff = Date.now() - passedTime;
+  const diff = getNow() - passedTime;
   const isToday = date.isToday(passedTime);
   if (isToday) {
     return date.format(passedTime, "HH:mm", "en")

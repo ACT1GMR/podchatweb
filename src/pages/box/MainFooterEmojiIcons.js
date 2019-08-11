@@ -29,9 +29,9 @@ const emojies = [
 function buildEmojiIcon(sizeX, sizeY, name) {
   const string = `${name}#${sizeX}*${sizeY}`;
   let scale;
-  for(const emoji of emojies) {
-    if(emoji.name === name) {
-      scale=emoji.scale;
+  for (const emoji of emojies) {
+    if (emoji.name === name) {
+      scale = emoji.scale;
     }
   }
   const classNames = classnames({
@@ -86,7 +86,7 @@ export default class MainFooterEmojiIcons extends Component {
     const {setInputText, focusInputNode} = this.props;
     setInputText(buildEmojiIcon(el.x, el.y, emoji.name), true);
     if (!mobileCheck()) {
-      focusInputNode();
+      setTimeout(focusInputNode, 100);
     }
   }
 

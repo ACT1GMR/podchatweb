@@ -18,8 +18,10 @@ import List, {ListItem} from "../../../../uikit/src/list";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Message from "../../../../uikit/src/message";
 import {sanitizeRule, sliceMessage} from "./AsideThreads";
+import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 //styling
+import style from "../../../styles/pages/box/LeftAsideMainSearch.scss";
 
 function datePetrification(time) {
   const correctTime = time / Math.pow(10, 6);
@@ -104,10 +106,10 @@ export default class LeftAsideMainSearch extends Component {
                 {threadSearchMessages.map(el => (
                   <ListItem key={el.id} onSelect={this.onSearchItemClicked.bind(this, el.time, el.id)} selection invert>
                     <Container relative userSelect="none">
-                      <Container inline>
+                      <Container inline className={style.LeftAsideMainSearch__TextContainer}>
                         <Text isHTML
                               size="sm"
-                              sanitizeRule={sanitizeRule}>{el.message.length > 30 ? `${el.message.slice(0, 30)}...` : el.message}</Text>
+                              sanitizeRule={sanitizeRule}>{decodeEmoji(el.message)}</Text>
                         <Text wordWrap="breakWord"
                               color="gray"
                               size="sm">{datePetrification(el.time)}</Text>
