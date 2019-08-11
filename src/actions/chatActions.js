@@ -105,6 +105,7 @@ export const chatSetInstance = config => {
           })
         }
         firstReadyPassed = true;
+        window.instance = e;
         dispatch({
           type: CHAT_GET_INSTANCE("SUCCESS"),
           payload: e

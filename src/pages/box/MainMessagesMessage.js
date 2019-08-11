@@ -4,10 +4,13 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
+import {isMessageByMe} from "./MainMessages"
 import date from "../../utils/date";
+
 import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
+
 
 //strings
 import strings from "../../constants/localization";
@@ -312,6 +315,10 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
   ) : "";
 }
 
+export function deleteForAllCondition(message, user, thread) {
+  return (isMessageByMe(message, user)  && message.deletable ) || (thread.group && thread.inviter.id === user.id);
+}
+
 @connect(store => {
   return {
     participants: store.threadParticipantList.participants,
@@ -393,10 +400,9 @@ export default class MainMessagesMessage extends Component {
 
   onDelete() {
     const {dispatch, message, user, isMessageByMe, thread} = this.props;
-    const deleteForAllCondition = (isMessageByMe(message, user)  && message.deletable ) || (thread.group && thread.inviter.id === user.id);
 
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, deleteForAllCondition));
+      dispatch(messageDelete(message.id, deleteForAllCondition(message, user, thread)));
       dispatch(chatModalPrompt());
     }));
     this.onMessageControlHide();
