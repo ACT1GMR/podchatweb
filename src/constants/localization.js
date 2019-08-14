@@ -81,6 +81,12 @@ let strings = new LocalizedStrings({
       }
       return `از حذف این مخاطب مطمئنید`
     },
+    typing(name) {
+      if(!name) {
+        return "در حال نوشتن"
+      }
+      return `${name} در حال نوشتن `
+    },
     areYouSureAboutUnblockingContact(contactName) {
       if (contactName) {
         return `میخواهید "${contactName}" را از لیست سیاه خارج کنید`;

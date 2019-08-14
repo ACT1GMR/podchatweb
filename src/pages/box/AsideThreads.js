@@ -34,6 +34,7 @@ import style from "../../../styles/pages/box/AsideThreads.scss";
 import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
 import styleVar from "../../../styles/variables.scss";
+
 function sliceMessage(message, to) {
   return decodeEmoji(message);
 }
@@ -58,10 +59,20 @@ function getTitle(title) {
 }
 
 
-function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage, inviter}) {
+function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage, inviter, isTyping}) {
   const isFileReal = isFile(lastMessageVO);
   const hasLastMessage = lastMessage || lastMessageVO;
+  const isTypingReal = isTyping && isTyping.isTyping;
+  const isTypingUserName = isTyping && isTyping.user.user;
+
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
+  const typingFragment =
+    <Container inline>
+      <Container inline> <Text size="sm" color="yellow" inline dark bold>{strings.typing()}</Text></Container>
+      <Container inline>
+        <Loading><LoadingBlinkDots size="sm" invert/></Loading>
+      </Container>
+    </Container>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}
                                     dark>{sliceMessage(lastMessage, 30)}</Text>;
@@ -71,16 +82,18 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   return (
     <Container> {
       isGroup && !isChannel ?
-        hasLastMessage ?
+        hasLastMessage || isTypingReal ?
           <Container>
-            <Text size="sm" inline
-                  color="accent">{lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}: </Text>
-            {isFileReal ? sentAFileFragment : lastMessageFragment }
+            <Container inline>
+              <Text size="sm" inline
+                    color="accent">{isTypingReal ? isTypingUserName : lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}:</Text>
+            </Container>
+            {isTypingReal ? typingFragment : isFileReal ? sentAFileFragment : lastMessageFragment }
           </Container>
           :
           createdAThreadFragment
         :
-        hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
+        isTypingReal ? typingFragment : hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
     }
     </Container>
   )
@@ -110,7 +123,7 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMes
 }
 
 export function LastMessageFragment({thread, user}) {
-  const {group, type, lastMessageVO, lastMessage, inviter, time} = thread;
+  const {group, type, lastMessageVO, lastMessage, inviter, time, isTyping} = thread;
   const args = {
     isGroup: group && type !== 8,
     isChannel: group && type === 8,
@@ -118,6 +131,7 @@ export function LastMessageFragment({thread, user}) {
     lastMessage,
     inviter,
     time,
+    isTyping,
     isMessageByMe: isMessageByMe(lastMessageVO, user)
   };
   return (
@@ -226,7 +240,8 @@ class AsideThreads extends Component {
         )
       }
       if (chatSearchResult) {
-        return <Container className={classNames}><AsideThreadsSearchResult chatSearchResult={chatSearchResult}/></Container>
+        return <Container className={classNames}><AsideThreadsSearchResult
+          chatSearchResult={chatSearchResult}/></Container>
       }
       return (
         <Scroller className={classNames}
@@ -270,7 +285,7 @@ class AsideThreads extends Component {
               </ListItem>
             ))}
           </List>
-          {threadsPartialFetching && <PartialLoadingFragment/> }
+          {threadsPartialFetching && <PartialLoadingFragment/>}
         </Scroller>);
     }
   }

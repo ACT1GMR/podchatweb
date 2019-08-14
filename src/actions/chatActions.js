@@ -18,13 +18,30 @@ import {
   THREAD_PARTICIPANTS_LIST_CHANGE,
   THREADS_LIST_CHANGE,
   THREAD_LEAVE_PARTICIPANT,
-  THREAD_GET_LIST
+  THREAD_GET_LIST, CHAT_STOP_TYPING, CHAT_IS_TYPING
 } from "../constants/actionTypes";
 
 
 let firstReadyPassed = false;
 
 const {CANCELED, SUCCESS} = stateGeneratorState;
+const typing = [];
+
+function findInTyping(threadId, userId, remove) {
+  let index = 0;
+  for (const type of typing) {
+    index++;
+    if (type.user.userId === userId) {
+      if (threadId === type.threadId) {
+        if (remove) {
+          return typing.splice(index, 1);
+        }
+        return type;
+      }
+    }
+  }
+  return {};
+}
 
 export const chatSetInstance = config => {
   return (dispatch, state) => {
@@ -45,15 +62,15 @@ export const chatSetInstance = config => {
               type: type,
               payload:
                 type === THREAD_NEW ? {redirectToThread: thread.redirectToThread, thread: thread.result.thread}
-                :
-                type === THREADS_LIST_CHANGE ? thread.result.threads
                   :
-                  type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
+                  type === THREADS_LIST_CHANGE ? thread.result.threads
                     :
-                    type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
-                      threadId: thread.threadId,
-                      participants: thread.result.participants
-                    } : thread
+                    type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
+                      :
+                      type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
+                        threadId: thread.threadId,
+                        participants: thread.result.participants
+                      } : thread
             });
           case THREAD_REMOVED_FROM:
             return dispatch(threadLeave(thread.result.thread, true));
@@ -82,6 +99,31 @@ export const chatSetInstance = config => {
           type: THREAD_FILE_UPLOADING,
           payload: {...message, hasError: message.state === "UPLOAD_ERROR"}
         });
+      },
+      onSystemEvents: ({result, type}) => {
+        if (type === "IS_TYPING") {
+          const {thread: threadId, user} = result;
+          const {threadId: oldThreadId, user: oldUser} = findInTyping(threadId, user.userId);
+
+          if (oldThreadId) {
+            const timeOutName = `${oldThreadId}${oldUser.userId}TimeOut`;
+            clearTimeout(window[timeOutName]);
+          } else {
+            typing.push({threadId, user});
+          }
+          const timeOutName = `${threadId}${user.userId}TimeOut`;
+          window[timeOutName] = setTimeout(() => {
+            findInTyping(threadId, user.userId, true);
+            dispatch({
+              type: CHAT_STOP_TYPING,
+              payload: {threadId, user}
+            });
+          }, 1500);
+          return dispatch({
+            type: CHAT_IS_TYPING,
+            payload: {threadId, user}
+          });
+        }
       },
       onChatState(e) {
         dispatch({
@@ -183,5 +225,21 @@ export const chatClearCache = () => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.clearCache();
+  }
+};
+
+export const startTyping = threadId => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.startTyping(threadId);
+  }
+};
+
+export const stopTyping = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.stopTyping();
   }
 };

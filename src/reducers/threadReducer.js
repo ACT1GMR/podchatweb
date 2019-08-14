@@ -36,7 +36,7 @@ import {
   THREAD_NOTIFICATION,
   THREAD_PARTICIPANTS_LIST_CHANGE,
   THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL, THREAD_NEW_MESSAGE,
-  THREAD_PARTICIPANT_GET_LIST_PARTIAL, THREAD_GET_LIST_PARTIAL
+  THREAD_PARTICIPANT_GET_LIST_PARTIAL, THREAD_GET_LIST_PARTIAL, CHAT_STOP_TYPING, CHAT_IS_TYPING
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -61,6 +61,19 @@ export const threadCreateReducer = (state = {
       return state;
     case THREAD_CREATE("CACHE"):
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
+    case CHAT_STOP_TYPING:
+    case CHAT_IS_TYPING: {
+      const {threadId, user} = action.payload;
+      let updatedThread = updateStore(state.thread, {
+        id: threadId,
+        isTyping: {isTyping: action.type === CHAT_IS_TYPING, user}
+      }, {
+        mix: true,
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, updatedThread, "thread")};
+    }
     case THREADS_LIST_CHANGE:
       return {
         ...state, ...stateGenerator(SUCCESS, updateStore(state.thread, action.payload[0], {
@@ -212,9 +225,28 @@ export const threadsReducer = (state = {
       const {threads, hasNext, nextOffset} = action.payload;
       return {...state, ...stateGenerator(SUCCESS, {threads: sortThreads(threads), hasNext, nextOffset})};
     }
+    case CHAT_STOP_TYPING:
+    case CHAT_IS_TYPING: {
+      const {threadId, user} = action.payload;
+      let updatedThreads = updateStore(state.threads, {
+        id: threadId,
+        isTyping: {isTyping: action.type === CHAT_IS_TYPING, user}
+      }, {
+        mix: true,
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, sortThreads(updatedThreads), "threads")};
+    }
     case THREAD_GET_LIST_PARTIAL(SUCCESS): {
       const {threads, hasNext, nextOffset} = action.payload;
-      return {...state, ...stateGenerator(SUCCESS, {threads: sortThreads(state.threads.concat(threads)), hasNext, nextOffset})};
+      return {
+        ...state, ...stateGenerator(SUCCESS, {
+          threads: sortThreads(state.threads.concat(threads)),
+          hasNext,
+          nextOffset
+        })
+      };
     }
     case THREAD_NEW:
     case THREAD_CHANGED: {
@@ -539,7 +571,7 @@ export const threadParticipantListReducer = (state = {
     case THREAD_PARTICIPANT_GET_LIST(CANCELED):
       return {...state, ...{participants: [], hasNext: false, nextOffset: 0}};
     case THREAD_PARTICIPANTS_LIST_CHANGE:
-    case THREAD_PARTICIPANT_GET_LIST(SUCCESS):{
+    case THREAD_PARTICIPANT_GET_LIST(SUCCESS): {
 
       if (action.type === THREAD_PARTICIPANTS_LIST_CHANGE) {
         if (state.threadId !== action.payload.threadId) {
@@ -555,7 +587,13 @@ export const threadParticipantListReducer = (state = {
     }
     case THREAD_PARTICIPANT_GET_LIST_PARTIAL(SUCCESS): {
       const {participants, hasNext, nextOffset} = action.payload;
-      return {...state, ...stateGenerator(SUCCESS, {hasNext, nextOffset, participants: state.participants.concat(participants)})};
+      return {
+        ...state, ...stateGenerator(SUCCESS, {
+          hasNext,
+          nextOffset,
+          participants: state.participants.concat(participants)
+        })
+      };
     }
     case THREAD_PARTICIPANTS_REMOVED:
     case THREAD_LEAVE_PARTICIPANT:
@@ -575,9 +613,9 @@ export const threadParticipantListReducer = (state = {
 };
 
 export const threadParticipantListPartialReducer = (state = {
-   fetching: false,
-   fetched: false,
-   error: false
+  fetching: false,
+  fetched: false,
+  error: false
 }, action) => {
   switch (action.type) {
     case THREAD_PARTICIPANT_GET_LIST_PARTIAL(CANCELED):

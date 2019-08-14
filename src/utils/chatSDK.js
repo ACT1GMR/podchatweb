@@ -39,6 +39,7 @@ export default class ChatSDK {
     this.onMessageEvents = props.onMessageEvents;
     this.onContactsEvents = props.onContactsEvents;
     this.onFileUploadEvents = props.onFileUploadEvents;
+    this.onSystemEvents = props.onSystemEvents;
     this.onChatReady = props.onChatReady;
     this.onChatState = props.onChatState;
     this.onChatError = props.onChatError;
@@ -46,6 +47,7 @@ export default class ChatSDK {
     this._onThreadEvents();
     this._onContactsEvents();
     this._onFileUploadEvents();
+    this._onSystemEvents();
     this._onChatReady();
     this._onChatState();
     this._onChatError();
@@ -88,6 +90,12 @@ export default class ChatSDK {
   _onFileUploadEvents() {
     this.chatAgent.on("fileUploadEvents", (msg) => {
       this.onFileUploadEvents(msg);
+    });
+  }
+
+  _onSystemEvents() {
+    this.chatAgent.on("systemEvents", (msg) => {
+      this.onSystemEvents(msg);
     });
   }
 
@@ -424,12 +432,14 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadInfo(resolve, reject, threadId) {
-    this.getThreads(0, 50, null, [threadId]).then(result => {
-      if (!this._onError(result, reject)) {
-        return resolve(result.threads[0]);
-      }
-    })
+  startTyping(resolve, reject, threadId) {
+    const startTypingParams = { threadId };
+    this.chatAgent.startTyping(startTypingParams);
+  }
+
+  @promiseDecorator
+  stopTyping(resolve, reject, threadId) {
+    this.chatAgent.stopTyping();
   }
 
   @promiseDecorator

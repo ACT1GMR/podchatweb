@@ -18,6 +18,7 @@ import {MdAttachFile, MdChevronRight} from "react-icons/lib/md";
 //styling
 import style from "../../../styles/pages/box/MainFooterAttachment.scss";
 import styleVar from "./../../../styles/variables.scss";
+import {stopTyping} from "../../actions/chatActions";
 
 @connect(store => {
   return {
@@ -58,9 +59,10 @@ export default class MainFooterAttachment extends Component {
   }
 
   onClick() {
-    const {isSendingText, sendMessage} = this.props;
+    const {isSendingText, sendMessage, dispatch} = this.props;
     if (isSendingText) {
       sendMessage();
+      dispatch(stopTyping());
     }
   }
 

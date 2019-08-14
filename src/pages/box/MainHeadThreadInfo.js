@@ -51,6 +51,7 @@ class BoxHeadThreadInfo extends Component {
         [style.MainHeadThreadInfo]: true,
         [style["MainHeadThreadInfo--smallVersion"]]: smallVersion
       });
+      const typingText = thread.isTyping && thread.isTyping.isTyping ? `${strings.typing(thread.title)}...` : "";
       return (
         <Container className={classNames} onClick={this.onShowInfoClick} relative>
           <Avatar>
@@ -61,10 +62,12 @@ class BoxHeadThreadInfo extends Component {
               {thread.group ?
                 <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
                 :
-                <Text size="xs" invert overflow="ellipsis">{strings.you}, {thread.title}</Text>
+                <Text color={typingText ? "yellow" : null} size="xs" invert
+                      overflow="ellipsis">{typingText ? typingText : `${strings.you}, ${thread.title}`}</Text>
               }
             </AvatarName>
           </Avatar>
+
         </Container>
       )
     }

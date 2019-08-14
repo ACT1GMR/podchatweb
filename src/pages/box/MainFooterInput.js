@@ -28,6 +28,7 @@ import {InputTextArea} from "../../../../uikit/src/input";
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";
 import {codeEmoji} from "./MainFooterEmojiIcons";
+import {startTyping, stopTyping} from "../../actions/chatActions";
 
 const constants = {
   replying: "REPLYING",
@@ -110,6 +111,8 @@ export default class MainFooterInput extends Component {
     this.onTextChange = this.onTextChange.bind(this);
     this.setInputText = this.setInputText.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
+    this.typingTimeOut = null;
+    this.typingSet = false;
     this.inputNode = React.createRef();
     this.state = {
       messageText: ""
@@ -117,7 +120,7 @@ export default class MainFooterInput extends Component {
   }
 
   setInputText(text, append) {
-    const {dispatch, messageEditing} = this.props;
+    const {dispatch, messageEditing, threadId} = this.props;
     const {messageText} = this.state;
     let newText = text;
     if (append) {
@@ -141,7 +144,7 @@ export default class MainFooterInput extends Component {
     dispatch(threadIsSendingMessage(false));
   }
 
-  focus(){
+  focus() {
     const current = this.inputNode.current;
     if (current) {
       current.focus();
@@ -224,13 +227,26 @@ export default class MainFooterInput extends Component {
     this.setInputText("");
   }
 
-  onTextChange(event) {
-    this.setInputText(event);
+  onTextChange(event, isOnBlur) {
+    const {threadId, dispatch} = this.props;
+    clearTimeout(this.typingTimeOut);
+    if (!isOnBlur) {
+      if (!this.typingSet) {
+        this.typingSet = true;
+        dispatch(startTyping(threadId));
+      }
+      this.typingTimeOut = setTimeout(e => {
+        this.typingSet = false;
+        dispatch(stopTyping());
+      }, 1500);
+      this.setInputText(event);
+    }
   }
 
   onInputKeyPress(evt) {
     if (!mobileCheck()) {
       if (evt.which === 13 && !evt.shiftKey) {
+        this.props.dispatch(stopTyping());
         this.sendMessage();
         evt.preventDefault();
       }
