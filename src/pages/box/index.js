@@ -58,7 +58,8 @@ export function BoxModalMediaFragment({link, caption, linkClassName, children}) 
     userFetching: store.user.fetching,
     threadShowing: store.threadShowing,
     leftAsideShowing: store.threadLeftAsideShowing.isShowing,
-    thread: store.thread.thread
+    thread: store.thread.thread,
+    messageNew: store.messageNew
   };
 }, null, null, {withRef: true})
 class Box extends Component {
@@ -74,8 +75,18 @@ class Box extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, thread} = this.props;
-    const {token: oldToken, thread: oldThread} = oldProps;
+    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, thread, messageNew, onNewMessage} = this.props;
+    const {token: oldToken, thread: oldThread, messageNew: oldMessageNew} = oldProps;
+
+    if (onNewMessage) {
+      if (!oldMessageNew && messageNew) {
+        onNewMessage(messageNew);
+      } else if (oldMessageNew) {
+        if (oldMessageNew.id !== messageNew.id) {
+          onNewMessage(messageNew);
+        }
+      }
+    }
 
     if ((oldThread.id !== thread.id) || (!oldThread.id && thread.id)) {
       if (thread.type === 8) {

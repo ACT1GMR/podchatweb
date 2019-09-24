@@ -399,7 +399,7 @@ export default class MainMessagesMessage extends Component {
   }
 
   onDelete() {
-    const {dispatch, message, user, isMessageByMe, thread} = this.props;
+    const {dispatch, message, user, thread} = this.props;
 
     dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
       dispatch(messageDelete(message.id, deleteForAllCondition(message, user, thread)));

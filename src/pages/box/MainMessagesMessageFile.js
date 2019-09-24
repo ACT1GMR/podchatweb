@@ -164,8 +164,9 @@ class MainMessagesMessageFile extends Component {
     } = this.props;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
-    let isImage = metaData.mimeType.indexOf("image") > -1;
-    const isVideo = metaData.mimeType.indexOf("video") > -1;
+    const mimeType = metaData.mimeType;
+    let isImage = mimeType.indexOf("image") > -1;
+    const isVideo = mimeType.match(/mp4|ogg|3gp|ogv/);
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing, message.fileObject) : false;
     if(!imageSizeLink) {
       isImage = false;
@@ -219,9 +220,7 @@ class MainMessagesMessageFile extends Component {
               :
               <Container className={style.MainMessagesFile__FileName}>
                 {isVideo ?
-                  <video controls id={`video-${message.id}`} style={{display: "none"}}>
-                    <source src={metaData.link} type={metaData.mimeType}/>
-                  </video> : ""
+                  <video controls id={`video-${message.id}`} style={{display: "none"}} src={metaData.link}/> : ""
                 }
                 <Text wordWrap="breakWord" bold>
                   {metaData.originalName}

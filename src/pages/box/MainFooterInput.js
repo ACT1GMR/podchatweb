@@ -111,6 +111,7 @@ export default class MainFooterInput extends Component {
     this.onTextChange = this.onTextChange.bind(this);
     this.setInputText = this.setInputText.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
+    this.onPaste = this.onPaste.bind(this);
     this.typingTimeOut = null;
     this.typingSet = false;
     this.inputNode = React.createRef();
@@ -229,8 +230,8 @@ export default class MainFooterInput extends Component {
 
   onTextChange(event, isOnBlur) {
     const {threadId, dispatch} = this.props;
-    clearTimeout(this.typingTimeOut);
     if (!isOnBlur) {
+      clearTimeout(this.typingTimeOut);
       if (!this.typingSet) {
         this.typingSet = true;
         dispatch(startTyping(threadId));
@@ -253,6 +254,11 @@ export default class MainFooterInput extends Component {
     }
   }
 
+  onPaste(e) {
+    e.stopPropagation();
+    console.log(e);
+  }
+
   render() {
     const {messageEditing} = this.props;
     const {messageText} = this.state;
@@ -266,7 +272,7 @@ export default class MainFooterInput extends Component {
           <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
         </Container>
         <Container relative className={editBotClassNames}>
-          <Container className={style.MainFooterInput__EditBoxInputContainer}>
+          <Container className={style.MainFooterInput__EditBoxInputContainer} onPaste={this.onPaste}>
             <InputTextArea
               className={style.MainFooterInput__InputContainer}
               inputClassName={style.MainFooterInput__Input}

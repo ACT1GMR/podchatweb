@@ -19,6 +19,21 @@ import Container from "../../../../uikit/src/container";
 import style from "../../../styles/pages/box/MainHeadThreadInfo.scss";
 import classnames from "classnames";
 import {avatarNameGenerator} from "../../utils/helpers";
+import Loading from "../../../../uikit/src/loading";
+import LoadingBlinkDots from "../../../../uikit/src/loading/LoadingBlinkDots";
+
+export function TypingFragment({isGroup, typing, textProps}) {
+  return (
+    <Container style={{display: "flex", alignItems: "center"}}>
+      <Container inline>
+        <Text inline bold {...textProps}>{strings.typing(isGroup ? typing.user.user : null)}</Text>
+      </Container>
+      <Container inline>
+        <Loading><LoadingBlinkDots size="sm" invert/></Loading>
+      </Container>
+    </Container>
+  )
+}
 
 @connect(store => {
   return {
@@ -51,20 +66,27 @@ class BoxHeadThreadInfo extends Component {
         [style.MainHeadThreadInfo]: true,
         [style["MainHeadThreadInfo--smallVersion"]]: smallVersion
       });
-      const typingText = thread.isTyping && thread.isTyping.isTyping ? `${strings.typing(thread.title)}...` : "";
+      const typing = thread.isTyping;
+      const typingText = typing && typing.isTyping;
       return (
         <Container className={classNames} onClick={this.onShowInfoClick} relative>
           <Avatar>
             <AvatarImage src={thread.image} text={avatarNameGenerator(thread.title).letter}
                          textBg={avatarNameGenerator(thread.title).color}/>
             <AvatarName>
-              <Text size="lg" invert overflow="ellipsis">{thread.title}</Text>
-              {thread.group ?
-                <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
-                :
-                <Text color={typingText ? "yellow" : null} size="xs" invert
-                      overflow="ellipsis">{typingText ? typingText : `${strings.you}, ${thread.title}`}</Text>
+              <Container>
+               <Text size="lg" invert overflow="ellipsis">{thread.title}</Text>
+              </Container>
+              {
+                typingText ?
+                  <TypingFragment isGroup={thread.group} typing={thread.isTyping} textProps={{size: "xs", color: "yellow"}}/> :
+                  thread.group ?
+                    <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
+                    :
+                    <Text color={typingText ? "yellow" : null} size="xs" invert
+                          overflow="ellipsis">{strings.you}, {thread.title}</Text>
               }
+
             </AvatarName>
           </Avatar>
 

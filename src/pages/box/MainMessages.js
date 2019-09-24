@@ -16,7 +16,7 @@ import {
   threadMessageGetList,
   threadCheckedMessageList,
   threadNewMessage,
-  threadCreate
+  threadCreate, threadFilesToUpload
 } from "../../actions/threadActions";
 
 //components
@@ -172,6 +172,11 @@ export default class MainMessages extends Component {
     this.onGotoBottomClicked = this.onGotoBottomClicked.bind(this);
     this.onAvatarClick = this.onAvatarClick.bind(this);
     this.onRepliedMessageClicked = this.onRepliedMessageClicked.bind(this);
+    this.onDragEnter = this.onDragEnter.bind(this);
+    this.onDragOver = this.onDragOver.bind(this);
+    this.onFileDrop = this.onFileDrop.bind(this);
+    this.onPaste = this.onPaste.bind(this);
+    document.body.addEventListener("paste", this.onPaste);
 
     //Controller fields
     this.gotoBottom = false;
@@ -418,7 +423,7 @@ export default class MainMessages extends Component {
 
   onAddToCheckedMessage(message, isAdd, e) {
     e.stopPropagation();
-    if(!message.id) {
+    if (!message.id) {
       return;
     }
     this.props.dispatch(threadCheckedMessageList(isAdd, message));
@@ -426,6 +431,35 @@ export default class MainMessages extends Component {
 
   onAvatarClick(participant) {
     this.props.dispatch(threadCreate(participant.id, null, null, "TO_BE_USER_ID"));
+  }
+
+  onDragOver(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  onDragEnter(e) {
+    e.stopPropagation();
+  }
+
+  onFileDrop(e, notPrevent) {
+    e.stopPropagation();
+    if (!notPrevent) {
+      e.preventDefault();
+    }
+    const dt = e.dataTransfer;
+    if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') !== -1 : dt.types.contains('Files'))) {
+      this.props.dispatch(threadFilesToUpload(dt.files));
+    }
+    return false;
+  }
+
+
+  onPaste(e) {
+    if (e.clipboardData) {
+      e.dataTransfer = e.clipboardData;
+      this.onFileDrop(e, true);
+    }
   }
 
   render() {
@@ -465,7 +499,10 @@ export default class MainMessages extends Component {
     };
 
     return (
-      <Container className={style.MainMessages}>
+      <Container className={style.MainMessages}
+                 onDragEnter={this.onDragEnter}
+                 onDragOver={this.onDragOver}
+                 onDrop={this.onFileDrop}>
         {threadMessagesPartialFetching && <PartialLoadingFragment/>}
         <Scroller ref={this.scroller}
                   checkForSnapping

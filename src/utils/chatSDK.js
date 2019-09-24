@@ -192,6 +192,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getThreadInfo(resolve, reject, threadId) {
+    this.getThreads(null, null, null, [threadId]).then(result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.threads[0]);
+      }
+    })
+  }
+
+  @promiseDecorator
   getThreads(resolve, reject, offset, count, name, threadIds) {
     let getThreadsParams = {
       count,
@@ -433,7 +442,7 @@ export default class ChatSDK {
 
   @promiseDecorator
   startTyping(resolve, reject, threadId) {
-    const startTypingParams = { threadId };
+    const startTypingParams = {threadId};
     this.chatAgent.startTyping(startTypingParams);
   }
 

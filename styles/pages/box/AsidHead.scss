@@ -16,6 +16,11 @@
   cursor: pointer;
 }
 
+.AsideHead__UserProfileContainer {
+  height: 140px;
+  background-color: $color-accent;
+}
+
 @include grid("md") {
   .AsideHead:not(.AsideHead--smallVersion) {
     .AsideHead__SearchContainer {

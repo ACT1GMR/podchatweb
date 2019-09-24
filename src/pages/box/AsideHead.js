@@ -16,9 +16,10 @@ import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_CHANNEL, ROUTE_CREATE_GR
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
 
 //UI components
-import {MdMenu, MdClose, MdSearch} from "react-icons/lib/md";
+import {MdMenu, MdClose, MdSearch, MdEdit, MdArrowBack} from "react-icons/lib/md";
 import Notification from "./Notification";
 import {Dropdown, DropdownItem} from "../../../../uikit/src/menu";
+import {ButtonFloating} from "../../../../uikit/src/button"
 import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
 
@@ -29,6 +30,9 @@ import utilsStlye from "../../../styles/utils/utils.scss";
 import classnames from "classnames";
 import {chatSearchShow} from "../../actions/chatActions";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Avatar, {AvatarImage, AvatarName} from "../../../../uikit/src/avatar";
+import {avatarNameGenerator} from "../../utils/helpers";
+import Gap from "../../../../uikit/src/gap";
 
 const statics = {
   headMenuSize: 59
@@ -176,7 +180,7 @@ class AsideHead extends Component {
   }
 
   render() {
-    const {menuItems, chatState, chatInstance, smallVersion, chatSearchShowing} = this.props;
+    const {menuItems, chatState, chatInstance, smallVersion, chatSearchShowing, user} = this.props;
     const {isOpen, reConnecting} = this.state;
     const {isReconnecting, isConnected, isDisconnected} = this.socketStatus();
     const iconSize = styleVar.iconSizeLg.replace("px", "");
@@ -189,15 +193,9 @@ class AsideHead extends Component {
     return (
       <Container className={classNames} ref={this.container} relative>
         <Notification/>
-        {isOpen ? (
-          <MdClose size={iconSize} onClick={this.onCloseMenu}
-                   className={utilsStlye["u-clickable"]}
-                   style={{color: styleVar.colorWhite, margin: iconMargin}}/>
-        ) : (
-          <MdMenu size={iconSize}
-                  className={utilsStlye["u-clickable"]}
-                  onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
-        )}
+        <MdMenu size={iconSize}
+                             className={utilsStlye["u-clickable"]}
+                             onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         <Container centerRight className={style.AsideHead__ConnectionHandlerContainer}>
           <Container inline>
             <Text size="lg" color="gray" light
@@ -217,6 +215,41 @@ class AsideHead extends Component {
         </Container>
 
         <Dropdown isOpen={isOpen} container={this.container} onClose={this.onCloseMenu}>
+          <Container className={style.AsideHead__UserProfileContainer} relative>
+            <Gap block x={20} y={20}>
+              <Container topLeft>
+                <Gap x={10} y={15} block>
+                  <MdArrowBack size={style.iconSizeMd} color={styleVar.colorBackgroundLight} style={{margin: "0 5px"}}
+                               onClick={this.onCloseMenu}/>
+                </Gap>
+              </Container>
+              <Avatar>
+                <AvatarImage src={user.image} text={avatarNameGenerator(user.name).letter}
+                             textBg={avatarNameGenerator(user.name).color}
+                             customSize="50px"/>
+                <Container>
+                  <AvatarName>
+                    <Container>
+                      <Text invert overflow="ellipsis">{user.name}</Text>
+                    </Container>
+                    <Container>
+                      <Text size="xs" invert overflow="ellipsis">{user.cellphoneNumber}</Text>
+                    </Container>
+                  </AvatarName>
+                </Container>
+              </Avatar>
+              <Text target="_blank" link="https://panel.pod.land/Users/Info">
+                <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" style={{
+                  backgroundColor: styleVar.colorAccentLight,
+                  boxShadow: "none",
+                  left: 5,
+                  bottom: 5
+                }}>
+                  <MdEdit size={style.iconSizeMd} style={{margin: "0 5px"}}/>
+                </ButtonFloating>
+              </Text>
+            </Gap>
+          </Container>
           {menuItems.map(el => (
             <DropdownItem key={el.type} onSelect={this.onMenuSelect.bind(this, el.type)} invert>{el.name}</DropdownItem>
           ))}

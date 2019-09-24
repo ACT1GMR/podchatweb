@@ -17,6 +17,7 @@ import {threadCreate, threadGetList} from "../../actions/threadActions";
 
 //UI components
 import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
+import {TypingFragment} from "./MainHeadThreadInfo";
 import {MdGroup, MdRecordVoiceOver, MdDoneAll, MdDone} from "react-icons/lib/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
@@ -66,13 +67,6 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   const isTypingUserName = isTyping && isTyping.user.user;
 
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
-  const typingFragment =
-    <Container inline>
-      <Container inline> <Text size="sm" color="yellow" inline dark bold>{strings.typing()}</Text></Container>
-      <Container inline>
-        <Loading><LoadingBlinkDots size="sm" invert/></Loading>
-      </Container>
-    </Container>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}
                                     dark>{sliceMessage(lastMessage, 30)}</Text>;
@@ -81,19 +75,20 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
 
   return (
     <Container> {
-      isGroup && !isChannel ?
-        hasLastMessage || isTypingReal ?
-          <Container>
-            <Container inline>
-              <Text size="sm" inline
-                    color="accent">{isTypingReal ? isTypingUserName : lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}:</Text>
+      isTypingReal ? <TypingFragment isGroup={isGroup || isChannel} typing={isTyping} textProps={{size: "sm", color: "yellow", dark: true}}/> :
+        isGroup && !isChannel ?
+          hasLastMessage ?
+            <Container>
+              <Container inline>
+                <Text size="sm" inline
+                      color="accent">{isTypingReal ? isTypingUserName : lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}:</Text>
+              </Container>
+              {isFileReal ? sentAFileFragment : lastMessageFragment}
             </Container>
-            {isTypingReal ? typingFragment : isFileReal ? sentAFileFragment : lastMessageFragment }
-          </Container>
+            :
+            createdAThreadFragment
           :
-          createdAThreadFragment
-        :
-        isTypingReal ? typingFragment : hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
+          hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
     }
     </Container>
   )
