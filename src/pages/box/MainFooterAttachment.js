@@ -32,6 +32,7 @@ export default class MainFooterAttachment extends Component {
   constructor() {
     super();
     this.onAttachmentChange = this.onAttachmentChange.bind(this);
+    this.onAttachmentClick = this.onAttachmentClick.bind(this);
     this.onClick = this.onClick.bind(this);
     this.fileInput = React.createRef();
   }
@@ -47,6 +48,10 @@ export default class MainFooterAttachment extends Component {
 
   onAttachmentChange(evt) {
     this.props.dispatch(threadFilesToUpload(evt.target.files, false, this.fileInput.current));
+  }
+
+  onAttachmentClick(evt) {
+    evt.target.value = null
   }
 
   sendFiles(filesObject) {
@@ -77,7 +82,7 @@ export default class MainFooterAttachment extends Component {
             </Container>
             :
             <Container>
-              <input className={style.MainFooterAttachment__Button} type="file" onChange={this.onAttachmentChange}
+              <input className={style.MainFooterAttachment__Button} type="file" onChange={this.onAttachmentChange} onClick={this.onAttachmentClick}
                      multiple ref={this.fileInput}/>
               <MdAttachFile size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "5px 6px"}}/>
             </Container>

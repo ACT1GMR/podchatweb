@@ -55,6 +55,9 @@ const sanitizeRule = {
 };
 
 function clearHtml(html) {
+  if (!html) {
+    return html;
+  }
   const document = window.document.createElement("div");
   document.innerHTML = html;
   const children = Array.from(document.childNodes);
@@ -196,8 +199,16 @@ export default class MainFooterInput extends Component {
     if (!clearMessageText) {
       isEmptyMessage = true;
     }
-    if (!clearMessageText.trim()) {
-      isEmptyMessage = true;
+    if (!isEmptyMessage) {
+      if (!clearMessageText.trim()) {
+        isEmptyMessage = true;
+      }
+    }
+
+    if (!isEmptyMessage) {
+      if (clearMessageText.length > 4096) {
+        return
+      }
     }
     if (msgEditing) {
       const msgEditingId = msgEditing.message instanceof Array ? msgEditing.message.map(e => e.id) : msgEditing.message.id;
@@ -256,7 +267,6 @@ export default class MainFooterInput extends Component {
 
   onPaste(e) {
     e.stopPropagation();
-    console.log(e);
   }
 
   render() {

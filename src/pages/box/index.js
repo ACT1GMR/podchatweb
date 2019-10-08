@@ -65,7 +65,7 @@ export function BoxModalMediaFragment({link, caption, linkClassName, children}) 
 class Box extends Component {
   constructor(props) {
     super(props);
-    this.createThread = this.createThread.bind(this);
+    this.openThread = this.openThread.bind(this);
     this.modalDeleteMessagePromptRef = React.createRef(this.modalDeleteMessagePromptRef);
     this.modalThreadListRef = React.createRef(this.modalThreadListRef);
     this.modalMediaRef = React.createRef(this.modalMediaRef);
@@ -83,7 +83,7 @@ class Box extends Component {
         onNewMessage(messageNew);
       } else if (oldMessageNew) {
         if (oldMessageNew.id !== messageNew.id) {
-          onNewMessage(messageNew);
+          onNewMessage(messageNew, thread.id, thread);
         }
       }
     }
@@ -152,9 +152,25 @@ class Box extends Component {
     }
   }
 
-  createThread(userId, idType) {
-    this.props.dispatch(threadCreate(userId, null, null, idType));
+  /*----outside api---*/
+  openThread(thread) {
+    const {dispatch} = this.props;
+    if (thread instanceof Object) {
+      dispatch(threadCreate(null, thread, null, null));
+      return;
+    }
+    dispatch(threadCreate(thread, null, null, "TO_BE_USER_ID"));
   }
+
+  getUser() {
+    return this.props.user;
+  }
+
+  getSDK() {
+    return this.props.chatInstance;
+  }
+
+  /*----outside api---*/
 
   render() {
     const {threadShowing, customClassName, leftAsideShowing, small, chatRouterLess} = this.props;
