@@ -24,6 +24,7 @@ export default class ChatSDK {
       messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
       enableCache: false,
+      httpUploadRequestTimeout: 0,
       fullResponseObject: true,
       dynamicHistoryCount: true,
       asyncLogging: {

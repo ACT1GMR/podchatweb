@@ -117,6 +117,7 @@ export default class MainFooterInput extends Component {
     this.onPaste = this.onPaste.bind(this);
     this.typingTimeOut = null;
     this.typingSet = false;
+    this.forwardMessageSent = false;
     this.inputNode = React.createRef();
     this.state = {
       messageText: ""
@@ -140,10 +141,13 @@ export default class MainFooterInput extends Component {
         return dispatch(threadIsSendingMessage(true));
       }
     }
-    if (messageEditing) {
+    if (!this.forwardMessageSent && messageEditing) {
       if (messageEditing.type === constants.forwarding) {
         return;
       }
+    }
+    if(this.forwardMessageSent) {
+      this.forwardMessageSent = false;
     }
     dispatch(threadIsSendingMessage(false));
   }
@@ -222,7 +226,12 @@ export default class MainFooterInput extends Component {
           dispatch(messageSend(clearMessageText, threadId));
         }
         dispatch(messageForward(threadId, msgEditingId));
+        this.forwardMessageSent = true;
       } else {
+
+
+
+
         if (isEmptyMessage) {
           return;
         }

@@ -40,7 +40,7 @@ let strings = new LocalizedStrings({
     groupNameNotEntered: isChannel => `نام ${isChannel ? "کانال" : "گروه"} وارد نشده است`,
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
-    isNotPodUser: "کاربر پاد نیست",
+    sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
     createGroup: isChannel => `ایجاد ${isChannel ? "کانال" : "گروه"}`,
@@ -69,6 +69,7 @@ let strings = new LocalizedStrings({
     sendingImages: "ارسال عکس ( ها )",
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
     mobilePhoneIsRequired: "شماره موبایل اجباری است",
+    youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";

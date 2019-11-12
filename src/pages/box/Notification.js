@@ -37,6 +37,8 @@ function isFile(message) {
 
 @connect(store => {
   return {
+    chatNotification: store.chatNotification,
+    chatNotificationClickHook: store.chatNotificationClickHook,
     messageNew: store.messageNew,
     user: store.user.user,
     chatInstance: store.chatInstance.chatSDK,
@@ -81,8 +83,8 @@ export default class Notification extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    if (Push.Permission.request()) {
-      const {messageNew, chatInstance, dispatch, user} = this.props;
+    if (Push.Permission.request() && this.props.chatNotification) {
+      const {messageNew, chatInstance, dispatch, user, chatNotificationClickHook} = this.props;
       const {messageNew: oldMessageNew} = oldProps;
       if (messageNew && oldMessageNew) {
         if (messageNew.time < oldMessageNew.time) {
@@ -125,6 +127,9 @@ export default class Notification extends Component {
                 icon: thread.image || defaultAvatar,
                 timeout: 60000,
                 onClick: function () {
+                  if (chatNotificationClickHook) {
+                    chatNotificationClickHook(thread);
+                  }
                   dispatch(threadCreate(null, thread));
                   window.focus();
                   this.close();
@@ -138,6 +143,9 @@ export default class Notification extends Component {
   }
 
   render() {
+    if (!this.props.chatNotificationEnabled) {
+      return null;
+    }
     const {count, showLastThread, thread, defaultTitle} = this.state;
     let newTitle = defaultTitle;
     if (count > 0) {

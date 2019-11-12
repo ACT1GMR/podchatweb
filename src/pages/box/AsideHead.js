@@ -58,6 +58,8 @@ export function reconnect(chatInstance) {
     chatInstance: store.chatInstance.chatSDK,
     chatRouterLess: store.chatRouterLess,
     chatSearchShowing: store.chatSearchShow,
+    chatRetryHook: store.chatRetryHook,
+    chatSignOutHook: store.chatSignOutHook,
     smallVersion: store.chatSmallVersion,
     user: store.user.user
   };
@@ -133,8 +135,16 @@ class AsideHead extends Component {
         dispatch(contactModalCreateGroupShowing(true, true));
         routeChange(history, ROUTE_CREATE_CHANNEL, chatRouterLess);
         break;
-      default:
+      default: {
+        const {chatSignOutHook} = this.props;
+        if (chatSignOutHook) {
+          if (!chatSignOutHook()) {
+            return;
+          }
+        }
         signOut();
+      }
+
     }
   }
 
@@ -163,7 +173,13 @@ class AsideHead extends Component {
         });
       }
     }, 5000);
-    reconnect(this.props.chatInstance);
+    const {chatRetryHook, chatInstance} = this.props;
+    if (chatRetryHook) {
+      if (!chatRetryHook()) {
+        return;
+      }
+    }
+    reconnect(chatInstance);
   }
 
   onChatSearchToggle() {
@@ -194,8 +210,8 @@ class AsideHead extends Component {
       <Container className={classNames} ref={this.container} relative>
         <Notification/>
         <MdMenu size={iconSize}
-                             className={utilsStlye["u-clickable"]}
-                             onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
+                className={utilsStlye["u-clickable"]}
+                onClick={this.onOpenMenu} style={{color: styleVar.colorWhite, margin: iconMargin}}/>
         <Container centerRight className={style.AsideHead__ConnectionHandlerContainer}>
           <Container inline>
             <Text size="lg" color="gray" light

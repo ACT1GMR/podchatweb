@@ -18,7 +18,13 @@ import {
   THREAD_PARTICIPANTS_LIST_CHANGE,
   THREADS_LIST_CHANGE,
   THREAD_LEAVE_PARTICIPANT,
-  THREAD_GET_LIST, CHAT_STOP_TYPING, CHAT_IS_TYPING
+  THREAD_GET_LIST,
+  CHAT_STOP_TYPING,
+  CHAT_IS_TYPING,
+  CHAT_NOTIFICATION,
+  CHAT_NOTIFICATION_CLICK_HOOK,
+  CHAT_RETRY_HOOK,
+  CHAT_SIGN_OUT_HOOK
 } from "../constants/actionTypes";
 
 
@@ -132,8 +138,14 @@ export const chatSetInstance = config => {
         });
       },
       onChatError(e) {
-        if (e && e.message && e.message.toLowerCase().indexOf("client not") > -1) {
-          reconnect(state().chatInstance.chatSDK);
+        if (e && e.code && e.code === 21) {
+          const {chatRetryHook, chatInstance} = state();
+          if (chatRetryHook) {
+            if (!chatRetryHook()) {
+              return;
+            }
+          }
+          reconnect(chatInstance.chatSDK);
         }
         console.log(e)
       },
@@ -180,6 +192,36 @@ export const chatRouterLess = isRouterLess => {
       type: CHAT_ROUTER_LESS,
       payload: isRouterLess
     });
+  }
+};
+
+export const chatNotification = isNotification => {
+  return dispatch => {
+    return dispatch({
+      type: CHAT_NOTIFICATION,
+      payload: isNotification
+    });
+  }
+};
+
+export const chatNotificationClickHook = chatNotificationClickHook => {
+  return {
+    type: CHAT_NOTIFICATION_CLICK_HOOK,
+    payload: thread => chatNotificationClickHook.bind(null, thread)
+  }
+};
+
+export const chatRetryHook = chatRetryHookHook => {
+  return {
+    type: CHAT_RETRY_HOOK,
+    payload: () => chatRetryHookHook
+  }
+};
+
+export const chatSignOutHook = chatSignOutHookHook => {
+  return {
+    type: CHAT_SIGN_OUT_HOOK,
+    payload: () => chatSignOutHookHook
   }
 };
 

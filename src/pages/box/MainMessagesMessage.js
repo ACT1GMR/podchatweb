@@ -303,7 +303,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
                    className={style.MainMessagesMessage__ControlIcon}
                    onClick={onForward}/>
 
-        {!isChannel && !isParticipantBlocked &&
+        {( (!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe)) &&
         <MdReply size={styleVar.iconSizeMd}
                  className={style.MainMessagesMessage__ControlIcon}
                  onClick={onReply}/>

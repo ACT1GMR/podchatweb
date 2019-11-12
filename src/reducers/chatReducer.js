@@ -3,7 +3,11 @@ import {
   CHAT_MODAL_PROMPT_SHOWING,
   CHAT_SMALL_VERSION,
   CHAT_STATE,
-  CHAT_ROUTER_LESS, CHAT_SEARCH_RESULT, CHAT_SEARCH_SHOW
+  CHAT_ROUTER_LESS,
+  CHAT_SEARCH_RESULT,
+  CHAT_SEARCH_SHOW,
+  CHAT_NOTIFICATION,
+  CHAT_NOTIFICATION_CLICK_HOOK, CHAT_RETRY_HOOK, CHAT_SIGN_OUT_HOOK
 } from "../constants/actionTypes";
 import {stateGenerator} from "../utils/storeHelper";
 
@@ -43,6 +47,42 @@ export const chatRouterLessReducer = (state = false, action) => {
   }
 };
 
+export const chatNotificationReducer = (state = true, action) => {
+  switch (action.type) {
+    case CHAT_NOTIFICATION:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const chatNotificationClickHookReducer = (state = null, action) => {
+  switch (action.type) {
+    case CHAT_NOTIFICATION_CLICK_HOOK:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const chatRetryHookReducer = (state = null, action) => {
+  switch (action.type) {
+    case CHAT_RETRY_HOOK:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
+export const chatSignOutHookReducer = (state = null, action) => {
+  switch (action.type) {
+    case CHAT_SIGN_OUT_HOOK:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
 export const chatStateReducer = (state = false, action) => {
   switch (action.type) {
     case CHAT_STATE:
@@ -64,7 +104,7 @@ export const chatSearchShowReducer = (state = false, action) => {
 export const chatSearchResultReducer = (state = false, action) => {
   switch (action.type) {
     case CHAT_SEARCH_RESULT:
-      if(action.payload.isShowing) {
+      if (action.payload.isShowing) {
         return action.payload;
       } else {
         return false;

@@ -65,6 +65,9 @@ export function decodeEmoji(string) {
   return string.replace(/:emoji#.+?:/g, match => {
     const realMatch = match.substring(1, match.length - 1);
     const split = realMatch.split("#");
+    if(!split[2]) {
+      return string;
+    }
     const size = split[2].split("*");
     return buildEmojiIcon(size[0], size[1], split[1]);
   });

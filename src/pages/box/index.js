@@ -15,7 +15,14 @@ import {
 } from "../../constants/routes";
 
 //actions
-import {chatClearCache, chatRouterLess, chatSetInstance, chatSmallVersion} from "../../actions/chatActions";
+import {
+  chatClearCache,
+  chatNotification,
+  chatNotificationClickHook, chatRetryHook,
+  chatRouterLess,
+  chatSetInstance, chatSignOutHook,
+  chatSmallVersion
+} from "../../actions/chatActions";
 import {threadCreate, threadParticipantList, threadShowing} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
@@ -75,8 +82,8 @@ class Box extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, thread, messageNew, onNewMessage} = this.props;
-    const {token: oldToken, thread: oldThread, messageNew: oldMessageNew} = oldProps;
+    const {token, location, user, userFetching, chatInstance, dispatch, clearCache, thread, messageNew, onNewMessage, onReady} = this.props;
+    const {token: oldToken, thread: oldThread, messageNew: oldMessageNew, user: oldUser} = oldProps;
 
     if (onNewMessage) {
       if (!oldMessageNew && messageNew) {
@@ -85,6 +92,12 @@ class Box extends Component {
         if (oldMessageNew.id !== messageNew.id) {
           onNewMessage(messageNew, thread.id, thread);
         }
+      }
+    }
+
+    if (onReady) {
+      if (user.id !== oldUser.id) {
+        onReady(user, chatInstance);
       }
     }
 
@@ -108,11 +121,11 @@ class Box extends Component {
         this.setToken(token);
       }
     }
-    if (this.firstContactFetching) {
-      dispatch(contactGetList(contactListStatics.offset, contactListStatics.count));
-      this.firstContactFetching = false;
-    }
     if (chatInstance) {
+      if (this.firstContactFetching) {
+        dispatch(contactGetList(contactListStatics.offset, contactListStatics.count));
+        this.firstContactFetching = false;
+      }
       if (clearCache && !this.deletingDatabases) {
         this.deletingDatabases = true;
         dispatch(chatClearCache());
@@ -136,13 +149,25 @@ class Box extends Component {
   }
 
   componentDidMount() {
-    const {small, routerLess, dispatch} = this.props;
+    const {small, routerLess, dispatch, disableNotification, onNotificationClickHook, onRetryHook, onSignOutHook} = this.props;
     dispatch(chatSetInstance(this.props));
     if (small) {
       dispatch(chatSmallVersion(small))
     }
     if (routerLess) {
       dispatch(chatRouterLess(routerLess))
+    }
+    if (disableNotification) {
+      dispatch(chatNotification(false));
+    }
+    if (onNotificationClickHook) {
+      dispatch(chatNotificationClickHook(onNotificationClickHook));
+    }
+    if (onRetryHook) {
+      dispatch(chatRetryHook(onRetryHook));
+    }
+    if (onSignOutHook) {
+      dispatch(chatSignOutHook(onSignOutHook));
     }
   }
 
@@ -160,14 +185,6 @@ class Box extends Component {
       return;
     }
     dispatch(threadCreate(thread, null, null, "TO_BE_USER_ID"));
-  }
-
-  getUser() {
-    return this.props.user;
-  }
-
-  getSDK() {
-    return this.props.chatInstance;
   }
 
   /*----outside api---*/
