@@ -384,6 +384,12 @@ export default class MainMessages extends Component {
 
   goToSpecificMessage(messageTime) {
     const {thread} = this.props;
+    if (!this.scroller) {
+      return;
+    }
+    if (!this.scroller.current) {
+      return;
+    }
     const result = this.scroller.current.gotoElement(`message-${messageTime}`);
     clearTimeout(this.highLighterTimeOut);
     const setHighlighter = () => {

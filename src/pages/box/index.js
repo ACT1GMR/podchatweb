@@ -23,7 +23,7 @@ import {
   chatSetInstance, chatSignOutHook,
   chatSmallVersion
 } from "../../actions/chatActions";
-import {threadCreate, threadParticipantList, threadShowing} from "../../actions/threadActions";
+import {threadCreate, threadGetList, threadParticipantList, threadShowing} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
 //components
@@ -185,6 +185,11 @@ class Box extends Component {
       return;
     }
     dispatch(threadCreate(thread, null, null, "TO_BE_USER_ID"));
+  }
+
+  refreshThreads() {
+    const {dispatch} = this.props;
+    dispatch(threadGetList(0, 50));
   }
 
   /*----outside api---*/
