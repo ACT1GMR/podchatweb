@@ -35,8 +35,15 @@ import {
   THREAD_PARTICIPANTS_REMOVED,
   THREAD_NOTIFICATION,
   THREAD_PARTICIPANTS_LIST_CHANGE,
-  THREADS_LIST_CHANGE, THREAD_LEAVE_PARTICIPANT, MESSAGE_CANCEL, THREAD_NEW_MESSAGE,
-  THREAD_PARTICIPANT_GET_LIST_PARTIAL, THREAD_GET_LIST_PARTIAL, CHAT_STOP_TYPING, CHAT_IS_TYPING
+  THREADS_LIST_CHANGE,
+  THREAD_LEAVE_PARTICIPANT,
+  MESSAGE_CANCEL,
+  THREAD_NEW_MESSAGE,
+  THREAD_PARTICIPANT_GET_LIST_PARTIAL,
+  THREAD_GET_LIST_PARTIAL,
+  CHAT_STOP_TYPING,
+  CHAT_IS_TYPING,
+  THREAD_CREATE_ON_THE_FLY
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -60,6 +67,7 @@ export const threadCreateReducer = (state = {
       }
       return state;
     case THREAD_CREATE("CACHE"):
+    case THREAD_CREATE_ON_THE_FLY:
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
     case CHAT_STOP_TYPING:
     case CHAT_IS_TYPING: {
@@ -442,6 +450,13 @@ export const threadMessageListReducer = (state = {
         })
       };
     }
+    case THREAD_CREATE_ON_THE_FLY:
+      return {
+        ...state, ...stateGenerator(SUCCESS, {
+          threadId: "ON_THE_FLY",
+          messages: []
+        })
+      };
     case THREAD_GET_MESSAGE_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(PENDING):

@@ -66,6 +66,7 @@ export const THREAD_GET_MESSAGE_LIST = buildPromiseMessage.bind(null, "THREAD_GE
 export const THREAD_GET_MESSAGE_LIST_PARTIAL = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_PARTIAL");
 export const THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID = buildPromiseMessage.bind(null, "THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID");
 export const THREAD_CREATE = buildPromiseMessage.bind(null, "THREAD_CREATE");
+export const THREAD_CREATE_ON_THE_FLY = "THREAD_CREATE_ON_THE_FLY";
 export const THREAD_CREATE_INIT = "THREAD_CREATE_INIT";
 export const THREAD_GET_LIST = buildPromiseMessage.bind(null, "THREAD_GET_LIST");
 export const THREAD_GET_LIST_PARTIAL = buildPromiseMessage.bind(null, "THREAD_GET_LIST_PARTIAL");

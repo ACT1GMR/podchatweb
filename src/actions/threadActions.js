@@ -1,4 +1,5 @@
 import {
+
   getThreadHistory,
   getThreadHistoryByQuery,
   getThreadHistoryInMiddle
@@ -33,31 +34,66 @@ import {
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
   THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO, THREAD_PARTICIPANT_GET_LIST_PARTIAL,
-  THREAD_GET_LIST_PARTIAL
+  THREAD_GET_LIST_PARTIAL, THREAD_CREATE_ON_THE_FLY
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
 const {CANCELED, SUCCESS} = stateGeneratorState;
 
+function createThreadCommon(dispatch) {
+  dispatch(threadShowing(true));
+  dispatch(threadSelectMessageShowing(false));
+  dispatch(threadCheckedMessageList(null, null, true));
+  dispatch(threadEmojiShowing(false));
+}
 
-export const threadCreate = (contactId, thread, threadName, idType, isChannel) => {
+
+export const threadCreateWithUser = (userId, idType, isChannel) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return dispatch({
+      type: THREAD_CREATE(),
+      payload: chatSDK.createThread(userId, threadName, idType, isChannel)
+    });
+  }
+};
+
+export const threadCreateWithExistThread = thread => {
+  return dispatch => {
+    createThreadCommon(dispatch);
+    return dispatch({
+      type: THREAD_CREATE("CACHE"),
+      payload: thread
+    });
+  };
+};
+
+export const threadCreateOnTheFly = (userId, user) => {
   return (dispatch, getState) => {
     dispatch(threadShowing(true));
     dispatch(threadSelectMessageShowing(false));
     dispatch(threadCheckedMessageList(null, null, true));
     dispatch(threadEmojiShowing(false));
-    if (thread) {
-      return dispatch({
-        type: THREAD_CREATE("CACHE"),
-        payload: thread
-      });
-    }
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    return dispatch({
-      type: THREAD_CREATE(),
-      payload: chatSDK.createThread(contactId, threadName, idType, isChannel)
-    });
+    chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
+      const mockThread = {
+        group: false,
+        id: "ON_THE_FLY",
+        image: user.image,
+        participantCount: 2,
+        partner: userId,
+        title: user.name,
+        type: 0,
+        unreadCount: 0,
+        participant: user
+      };
+      return dispatch({
+        type: thread ? THREAD_CREATE("CACHE") : THREAD_CREATE_ON_THE_FLY,
+        payload: thread ? thread : mockThread
+      });
+    })
   }
 };
 
@@ -213,7 +249,7 @@ export const threadNewMessage = message => {
   }
 };
 
-export const threadParticipantList = (threadId, offset = 0, count, name, reset) => {
+export const threadParticipantList = (threadId, offset = 0, count, name) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;

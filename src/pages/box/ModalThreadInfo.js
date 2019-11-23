@@ -36,15 +36,15 @@ function GapFragment() {
 
 function AvatarModalMediaFragment({participant, thread}) {
   let image, caption;
-  if(participant) {
-    image =  participant.image;
+  if (participant) {
+    image = participant.image;
     caption = getName(participant);
   } else {
-    image =  thread.image;
+    image = thread.image;
     caption = thread.title;
   }
   return image ? <BoxModalMediaFragment link={image} caption={caption}
-                                linkClassName={style.ModalThreadInfo__ModalMediaLink}/> : null;
+                                        linkClassName={style.ModalThreadInfo__ModalMediaLink}/> : null;
 }
 
 @connect(store => {
@@ -80,7 +80,9 @@ class ModalThreadInfo extends Component {
     const {thread, dispatch} = this.props;
     if (thread.id) {
       if (oldProps.thread.id !== thread.id) {
-        dispatch(threadParticipantList(thread.id));
+        if (thread.id !== "ON_THE_FLY") {
+          dispatch(threadParticipantList(thread.id));
+        }
       }
     }
   }

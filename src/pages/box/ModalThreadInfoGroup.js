@@ -11,7 +11,12 @@ import {avatarNameGenerator} from "../../utils/helpers";
 //actions
 import {
   threadAddParticipant,
-  threadCreate, threadLeave, threadModalThreadInfoShowing, threadNotification, threadParticipantList,
+  threadCreate,
+  threadCreateOnTheFly,
+  threadLeave,
+  threadModalThreadInfoShowing,
+  threadNotification,
+  threadParticipantList,
   threadRemoveParticipant
 } from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
@@ -178,11 +183,8 @@ class ModalThreadInfoGroup extends Component {
     if (participant.id === user.id) {
       return;
     }
-    const participantContactId = participant.contactId;
-    const id = participantContactId || participantId;
-    const isParticipant = !participantContactId;
     this.onClose();
-    dispatch(threadCreate(id, null, null, isParticipant ? "TO_BE_USER_ID" : null));
+    dispatch(threadCreateOnTheFly(participant.coreUserId, participant));
   }
 
   onClose(dontGoBack) {

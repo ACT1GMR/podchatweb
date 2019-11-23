@@ -273,6 +273,10 @@ export default class MainMessages extends Component {
       return;
     }
 
+    if (threadId === "ON_THE_FLY") {
+      return;
+    }
+
     //fetch message if thread change
     if (!oldThread || oldThread.id !== threadId) {
       return this._fetchInitHistory();

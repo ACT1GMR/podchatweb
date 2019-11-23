@@ -97,7 +97,7 @@ export default class Notification extends Component {
             if (messageNew === oldMessageNew) {
               return;
             }
-            chatInstance.getThreadInfo(messageNew.threadId).then(thread => {
+            chatInstance.getThreadInfo({threadIds: messageNew.threadId}).then(thread => {
               if (thread.mute) {
                 return;
               }

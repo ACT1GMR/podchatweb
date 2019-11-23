@@ -140,21 +140,21 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  createThread(resolve, reject, params, threadName, idType, isChannel) {
-    let invitees = [{"id": params, "idType": idType || "TO_BE_USER_CONTACT_ID"}];
-    const isGroup = params instanceof Array;
+  createThread(resolve, reject, id, idType, type, other) {
+    let invitees = [{"id": id, "idType": idType || "TO_BE_USER_CONTACT_ID"}];
+    const isGroup = id instanceof Array;
     if (isGroup) {
       invitees = [];
-      for (const param of params) {
-        invitees.push({"id": param, "idType": idType || "TO_BE_USER_CONTACT_ID"})
+      for (const singleId of id) {
+        invitees.push({"id": singleId, "idType": "TO_BE_USER_CONTACT_ID"})
       }
     }
-    const createThreadParams = {
-      type: isChannel ? "CHANNEL" : isGroup ? "OWNER_GROUP" : "NORMAL",
+    let createThreadParams = {
+      type,//: isChannel ? "CHANNEL" : isGroup ? "OWNER_GROUP" : "NORMAL",
       invitees
     };
-    if (threadName) {
-      createThreadParams.title = threadName;
+    if (other) {
+      createThreadParams = {...createThreadParams, ...other};
     }
     this.chatAgent.createThread(createThreadParams);
   }
@@ -193,8 +193,8 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreadInfo(resolve, reject, threadId) {
-    this.getThreads(null, null, null, [threadId]).then(result => {
+  getThreadInfo(resolve, reject, params) {
+    this.getThreads(null, null, null, params).then(result => {
       if (!this._onError(result, reject)) {
         return resolve(result.threads[0]);
       }
@@ -202,18 +202,18 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreads(resolve, reject, offset, count, name, threadIds) {
+  getThreads(resolve, reject, offset, count, name, params) {
     let getThreadsParams = {
       count,
       offset
     };
-    if (threadIds) {
-      getThreadsParams = {...getThreadsParams, threadIds};
-    }
     if (typeof name === "string") {
       if (name.trim()) {
         getThreadsParams.name = name;
       }
+    }
+    if (params) {
+      getThreadsParams = {...getThreadsParams, ...params};
     }
     this.chatAgent.getThreads(getThreadsParams, (result) => {
       if (!this._onError(result, reject)) {
@@ -632,6 +632,4 @@ export default class ChatSDK {
       }
     });
   }
-
-
 };
