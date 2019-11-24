@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 
@@ -180,112 +180,113 @@ export default class ModalThreadInfo extends Component {
               </Container>
 
             </Container>
+            {!isOnTheFly &&
+            <Fragment>
+              <GapFragment/>
+              {isMyContact ?
+                <List>
 
-            <GapFragment/>
-            {isMyContact ?
-              <List>
-
-                <ListItem invert>
-                  {contact.cellphoneNumber &&
-                  <Container>
-                    <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                    <Gap x={20}>
-                      <Text inline>{contact.cellphoneNumber}</Text>
-                    </Gap>
-                  </Container>
-                  }
-                </ListItem>
-
-                <ListItem invert>
-                  {contact.linkedUser && contact.linkedUser.username &&
-                  <Container>
-                    <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                    <Gap x={20}>
-                      <Text inline>{contact.linkedUser.username}</Text>
-                    </Gap>
-                  </Container>
-                  }
-                </ListItem>
-              </List> : ""}
-
-
-            <Container>
-              {
-                isMyContact &&
-                <GapFragment/>
-              }
-              <List>
-
-                {
-                  isMyContact &&
-                  <ListItem selection invert onSelect={this.onEdit.bind(this, participant, contact)}>
-                    <Container relative>
-                      <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                  <ListItem invert>
+                    {contact.cellphoneNumber &&
+                    <Container>
+                      <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                       <Gap x={20}>
-                        <Text>{strings.edit}</Text>
+                        <Text inline>{contact.cellphoneNumber}</Text>
                       </Gap>
                     </Container>
+                    }
                   </ListItem>
-                }
 
-                {
-                  isMyContact &&
-                  <ListItem selection invert onSelect={this.onRemove.bind(this, participant)}>
-                    <Container relative>
-                      <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                  <ListItem invert>
+                    {contact.linkedUser && contact.linkedUser.username &&
+                    <Container>
+                      <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                       <Gap x={20}>
-                        <Text>{strings.remove}</Text>
+                        <Text inline>{contact.linkedUser.username}</Text>
                       </Gap>
                     </Container>
+                    }
                   </ListItem>
+                </List> : ""}
+              <Container>
+                {
+                  isMyContact &&
+                  <GapFragment/>
                 }
+                <List>
 
-                <ListItem selection invert onSelect={this.onBlockSelect.bind(this, thread.id, participant.blocked)}>
-                  <Container relative>
-                    <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                    <Gap x={20}>
-                      <Text>{strings.block}</Text>
-                    </Gap>
-                    <Container centerLeft>
-                      {contactBlocking ?
-                        <Container centerTextAlign>
-                          <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
-                        </Container>
-                        :
-                        <Gap x={5}>
-                          <Text size="sm"
-                                color={participant.blocked ? "red" : "green"}>{participant.blocked ? strings.blocked : ""}</Text>
+                  {
+                    isMyContact &&
+                    <ListItem selection invert onSelect={this.onEdit.bind(this, participant, contact)}>
+                      <Container relative>
+                        <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text>{strings.edit}</Text>
                         </Gap>
-                      }
-                    </Container>
-                  </Container>
-                </ListItem>
+                      </Container>
+                    </ListItem>
+                  }
 
-                <ListItem selection invert onSelect={this.onNotificationSelect.bind(this, thread)}>
-
-                  <Container relative>
-                    <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                    <Gap x={20}>
-                      <Text>{strings.notification}</Text>
-                    </Gap>
-                    <Container centerLeft>
-                      {notificationPending ?
-                        <Container centerTextAlign>
-                          <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
-                        </Container>
-                        :
-                        <Gap x={5}>
-                          <Text size="sm"
-                                color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
+                  {
+                    isMyContact &&
+                    <ListItem selection invert onSelect={this.onRemove.bind(this, participant)}>
+                      <Container relative>
+                        <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text>{strings.remove}</Text>
                         </Gap>
-                      }
+                      </Container>
+                    </ListItem>
+                  }
 
+                  <ListItem selection invert onSelect={this.onBlockSelect.bind(this, thread.id, participant.blocked)}>
+                    <Container relative>
+                      <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.block}</Text>
+                      </Gap>
+                      <Container centerLeft>
+                        {contactBlocking ?
+                          <Container centerTextAlign>
+                            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                          </Container>
+                          :
+                          <Gap x={5}>
+                            <Text size="sm"
+                                  color={participant.blocked ? "red" : "green"}>{participant.blocked ? strings.blocked : ""}</Text>
+                          </Gap>
+                        }
+                      </Container>
                     </Container>
-                  </Container>
-                </ListItem>
-              </List>
+                  </ListItem>
 
-            </Container>
+                  <ListItem selection invert onSelect={this.onNotificationSelect.bind(this, thread)}>
+
+                    <Container relative>
+                      <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.notification}</Text>
+                      </Gap>
+                      <Container centerLeft>
+                        {notificationPending ?
+                          <Container centerTextAlign>
+                            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                          </Container>
+                          :
+                          <Gap x={5}>
+                            <Text size="sm"
+                                  color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
+                          </Gap>
+                        }
+
+                      </Container>
+                    </Container>
+                  </ListItem>
+                </List>
+
+              </Container>
+            </Fragment>
+            }
 
           </Container>
 

@@ -437,7 +437,7 @@ export default class MainMessagesMessage extends Component {
     const isGroup = thread.group && thread.type !== 8;
     const isMessageByMeReal = isMessageByMe(message, user, thread);
     const args = {
-      //new paradaigm
+      //new paradigm
       onMessageControlShow: this.onMessageControlShow,
       onMessageSeenListClick: this.onMessageSeenListClick,
       onMessageControlHide: this.onMessageControlHide,

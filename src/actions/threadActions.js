@@ -70,18 +70,6 @@ export const threadCreateWithUser = (userId, idType) => {
   }
 };
 
-export const threadCreateWithUserWithMessage = (userId, idType) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chatInstance.chatSDK;
-    return chatSDK.createThread(userId, idType).then(thread => {
-      thread.withMessage = true;
-      dispatch(threadCreateWithExistThread(thread));
-      return thread;
-    });
-  }
-};
-
 export const threadCreateWithExistThread = thread => {
   return dispatch => {
     createThreadCommon(dispatch);
@@ -102,16 +90,17 @@ export const threadCreateOnTheFly = (userId, user) => {
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
       const mockThread = {
-        id: "ON_THE_FLY",
+        id: `ON_THE_FLY_${user.id}`,
         group: false,
         onTheFly: true,
         image: user.image,
         participantCount: 2,
-        partner: userId,
+        partner: user.id,
         title: user.name,
         type: 0,
         unreadCount: 0,
-        participant: user
+        participant: user,
+        pendingMessage: []
       };
       return dispatch({
         type: thread ? THREAD_CREATE("CACHE") : THREAD_CREATE_ON_THE_FLY,

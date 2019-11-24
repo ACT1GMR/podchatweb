@@ -438,6 +438,17 @@ export const threadMessageListReducer = (state = {
     case THREAD_CREATE(PENDING):
     case THREAD_CREATE(SUCCESS): {
       if (action.type === THREAD_CREATE("CACHE")) {
+        if (typeof state.threadId === "string") {
+          if (state.threadId.indexOf("ON_THE_FLY") > -1) {
+            if (state.threadId.indexOf(`${action.payload.partner}` > -1)) {
+              return {
+                ...state, ...stateGenerator(SUCCESS, {
+                  threadId: action.payload.id
+                })
+              }
+            }
+          }
+        }
         if (state.threadId === action.payload.id) {
           return state;
         }
@@ -453,7 +464,7 @@ export const threadMessageListReducer = (state = {
     case THREAD_CREATE_ON_THE_FLY:
       return {
         ...state, ...stateGenerator(SUCCESS, {
-          threadId: "ON_THE_FLY",
+          threadId: action.payload.id,
           messages: []
         })
       };

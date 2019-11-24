@@ -7,42 +7,57 @@ import {
   MESSAGE_FORWARD,
   MESSAGE_SENDING_ERROR,
   MESSAGE_FILE_UPLOAD_CANCEL,
-  MESSAGE_DELETING, MESSAGE_CANCEL
+  MESSAGE_DELETING, MESSAGE_CANCEL, THREAD_CREATE
 } from "../constants/actionTypes";
-import {threadCreateWithUserWithMessage} from "./threadActions";
+import {threadCreateWithExistThread, threadCreateWithUser, threadCreateWithUserWithMessage} from "./threadActions";
+import {getNow} from "../utils/helpers";
+import {stateGeneratorState} from "../utils/storeHelper";
 
-export const messageSend = (text, threadId) => {
+const {SUCCESS} = stateGeneratorState;
+
+export const messageSend = (text, threadId, other) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.sendMessage(text, threadId)
+      payload: chatSDK.sendMessage(text, threadId, other)
     });
   }
 };
 
-export const messageSendOnTheFly = (text, threadId) => {
+export const messageSendOnTheFly = text => {
   return (dispatch, getState) => {
     const state = getState();
     const thread = state.thread.thread;
-    if (thread.pendingMessage.length) {
-      thread.pendingMessage.push(text);
-    } else {
-      dispatch(threadCreateWithUserWithMessage(thread.userId, text, "TO_BE_USER_ID")).then(thread => {
+    const chatSDK = state.chatInstance.chatSDK;
+    const messageMock = {
+      threadId: thread.id,
+      time: getNow() * Math.pow(10, 6),
+      uniqueId: `${Math.random()}`,
+      participant: state.user.user,
+      message: text
+    };
+    if (thread.pendingMessage.push(messageMock) <= 1) {
+      chatSDK.createThread(thread.partner, "TO_BE_USER_ID").then(thread => {
+        dispatch({
+          type: THREAD_CREATE("CACHE"),
+          payload: thread
+        });
         const currentThread = state.thread.thread;
         const {pendingMessage} = currentThread;
         if (pendingMessage.length) {
           for (const message of pendingMessage) {
-            dispatch(messageSend(message, thread.id));
+            dispatch(messageSend(message.message, thread.id, {uniqueId: `${message.uniqueId}`}));
           }
         }
       });
     }
     dispatch({
-      type: MESSAGE_SEND(),
-      payload: {}
+      type: MESSAGE_SEND(SUCCESS),
+      payload: messageMock
     });
+    dispatch(threadCreateWithExistThread(thread));
   }
 };
 
@@ -158,14 +173,6 @@ export const messageSeen = (message) => {
       type: MESSAGE_SEEN(),
       payload: chatSDK.seenMessage(message.id, message.ownerId, message.threadId)
     });
-  }
-};
-
-export const messageGet = (threadId, messageId) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chatInstance.chatSDK;
-    return chatSDK.getMessageById(threadId, messageId);
   }
 };
 

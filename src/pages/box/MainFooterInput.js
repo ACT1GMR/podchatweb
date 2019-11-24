@@ -14,7 +14,7 @@ import {
   messageSend,
   messageEdit,
   messageReply,
-  messageForward, messageSendMock
+  messageForward, messageSendMock, messageSendOnTheFly
 } from "../../actions/messageActions";
 import {threadCreateWithUserWithMessage, threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 
@@ -118,8 +118,6 @@ export default class MainFooterInput extends Component {
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
-    this.lastOnTheFlyThreadId = null;
-    this.pendingMessageToSend = [];
     this.inputNode = React.createRef();
     this.state = {
       messageText: ""
@@ -127,8 +125,9 @@ export default class MainFooterInput extends Component {
   }
 
   setInputText(text, append) {
-    const {dispatch, messageEditing, threadId} = this.props;
+    const {dispatch, messageEditing, thread} = this.props;
     const {messageText} = this.state;
+    const threadId = thread.id;
     let newText = text;
     if (append) {
       if (messageText) {
@@ -162,21 +161,23 @@ export default class MainFooterInput extends Component {
   }
 
   componentDidMount() {
-    const {dispatch, threadId} = this.props;
+    const {dispatch} = this.props;
     dispatch(messageEditing());
     this.setInputText();
     dispatch(threadIsSendingMessage(false));
   }
 
   componentDidUpdate(prevProps) {
-    const {dispatch, threadId, messageEditing: msgEditing} = this.props;
+    const {dispatch, thread, messageEditing: msgEditing} = this.props;
+    const threadId = thread.id;
+    const {id: oldThreadId} = prevProps.thread;
     if (msgEditing !== prevProps.messageEditing) {
       const current = this.inputNode.current;
       if (current) {
         current.focus();
       }
     }
-    if (prevProps.threadId !== threadId) {
+    if (oldThreadId !== threadId) {
       if (msgEditing) {
         let emptyEditingCondition = msgEditing.type !== constants.forwarding || msgEditing.threadId ? msgEditing.threadId !== threadId : false;
         if (emptyEditingCondition) {
@@ -200,7 +201,7 @@ export default class MainFooterInput extends Component {
   sendMessage() {
     const {thread, dispatch, messageEditing: msgEditing} = this.props;
     const {messageText} = this.state;
-    const {id: threadId} = {thread};
+    const {id: threadId} = thread;
     const clearMessageText = codeEmoji(clearHtml(messageText));
     let isEmptyMessage = false;
     if (!clearMessageText) {
@@ -241,7 +242,7 @@ export default class MainFooterInput extends Component {
         return;
       }
       if (thread.onTheFly) {
-        this._sendToOnTheFlyThread(clearMessageText, thread);
+        dispatch(messageSendOnTheFly(clearMessageText, threadId));
       } else {
         dispatch(messageSend(clearMessageText, threadId));
       }
@@ -251,36 +252,21 @@ export default class MainFooterInput extends Component {
     this.setInputText("");
   }
 
-  _sendToOnTheFlyThread(clearMessageText, thread) {
-    const {id: threadId} = thread;
-    messageSendMock(clearMessageText, thread.id);
-    if (this.lastOnTheFlyThreadId === threadId) {
-      this.pendingMessageToSend.push(clearMessageText);
-    }
-    this.lastOnTheFlyThreadId = threadId;
-    dispatch(threadCreateWithUserWithMessage(thread.userId, clearMessageText, "TO_BE_USER_ID")).then(thread => {
-      if (this.pendingMessageToSend.length) {
-        for (const message of this.pendingMessageToSend) {
-          dispatch(messageSend(message, thread.id));
-        }
-        this.pendingMessageToSend = [];
-      }
-      this.lastOnTheFlyThreadId = null;
-    });
-  }
-
   onTextChange(event, isOnBlur) {
-    const {threadId, dispatch} = this.props;
-    if (!isOnBlur) {
-      clearTimeout(this.typingTimeOut);
-      if (!this.typingSet) {
-        this.typingSet = true;
-        dispatch(startTyping(threadId));
+    const {thread, dispatch} = this.props;
+    const threadId = thread.id;
+    if (!thread.onTheFly) {
+      if (!isOnBlur) {
+        clearTimeout(this.typingTimeOut);
+        if (!this.typingSet) {
+          this.typingSet = true;
+          dispatch(startTyping(threadId));
+        }
+        this.typingTimeOut = setTimeout(e => {
+          this.typingSet = false;
+          dispatch(stopTyping());
+        }, 1500);
       }
-      this.typingTimeOut = setTimeout(e => {
-        this.typingSet = false;
-        dispatch(stopTyping());
-      }, 1500);
       this.setInputText(event);
     }
   }

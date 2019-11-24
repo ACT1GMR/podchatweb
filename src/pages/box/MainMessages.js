@@ -17,7 +17,7 @@ import {
   threadCheckedMessageList,
   threadNewMessage,
   threadFilesToUpload,
-  threadCreateWithUser
+  threadCreateWithUser, threadCreateOnTheFly
 } from "../../actions/threadActions";
 
 //components
@@ -274,8 +274,16 @@ export default class MainMessages extends Component {
       return;
     }
 
-    if (threadId.onTheFly) {
+    //If this thread is on the fly no need for history fetching
+    if (thread.onTheFly) {
       return;
+    }
+
+    //If old thread was on the fly and we created an actual thread for that there is no need for history fetching or something else
+    if (oldThread.onTheFly) {
+      if (thread.partner === oldThread.partner) {
+        return ;
+      }
     }
 
     //fetch message if thread change
@@ -441,7 +449,7 @@ export default class MainMessages extends Component {
   }
 
   onAvatarClick(participant) {
-    this.props.dispatch(threadCreateWithUser(participant.id, "TO_BE_USER_ID"));
+    this.props.dispatch(threadCreateOnTheFly(participant.coreUserId, participant));
   }
 
   onDragOver(e) {

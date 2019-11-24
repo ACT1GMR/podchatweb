@@ -156,7 +156,11 @@ export default class ChatSDK {
     if (other) {
       createThreadParams = {...createThreadParams, ...other};
     }
-    this.chatAgent.createThread(createThreadParams);
+    this.chatAgent.createThread(createThreadParams, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.thread);
+      }
+    });
   }
 
   @promiseDecorator
@@ -224,17 +228,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  sendMessage(resolve, reject, content, threadId) {
-    const sendChatParams = {
+  sendMessage(resolve, reject, content, threadId, other) {
+    let sendChatParams = {
       content,
       threadId
     };
-
-    const obj = this.chatAgent.sendTextMessage(sendChatParams, {
-      onSent: (result) => {
-        this._onError(result, reject);
-      }
-    });
+    if (other) {
+      sendChatParams = {...sendChatParams, ...other};
+    }
+    const obj = this.chatAgent.sendTextMessage(sendChatParams);
     resolve({
       ...obj, ...{
         participant: this.user,

@@ -107,13 +107,15 @@ class Box extends Component {
       }
     }
 
-    if ((oldThread.id !== thread.id) || (!oldThread.id && thread.id)) {
-      if (thread.type === 8) {
-        if (thread.inviter.id === user.id) {
+    if (!thread.onTheFly) {
+      if ((oldThread.id !== thread.id) || (!oldThread.id && thread.id)) {
+        if (thread.type === 8) {
+          if (thread.inviter.id === user.id) {
+            dispatch(threadParticipantList(thread.id));
+          }
+        } else {
           dispatch(threadParticipantList(thread.id));
         }
-      } else {
-        dispatch(threadParticipantList(thread.id));
       }
     }
 
@@ -190,7 +192,7 @@ class Box extends Component {
       dispatch(threadCreateWithExistThread(thread));
       return;
     }
-    dispatch(threadCreateWithUser(thread,"TO_BE_USER_ID"));
+    dispatch(threadCreateWithUser(thread, "TO_BE_USER_ID"));
   }
 
   refreshThreads() {
