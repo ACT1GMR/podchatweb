@@ -47,14 +47,37 @@ function createThreadCommon(dispatch) {
   dispatch(threadEmojiShowing(false));
 }
 
+export const threadCreateGroupOrChannelWithUsers = (userIds, threadName, isChannel) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    const type = isChannel ? "CHANNEL" : "OWNER_GROUP";
+    return dispatch({
+      type: THREAD_CREATE(),
+      payload: chatSDK.createThread(userIds, threadName, type)
+    });
+  }
+};
 
-export const threadCreateWithUser = (userId, idType, isChannel) => {
+export const threadCreateWithUser = (userId, idType) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     return dispatch({
       type: THREAD_CREATE(),
-      payload: chatSDK.createThread(userId, threadName, idType, isChannel)
+      payload: chatSDK.createThread(userId, idType)
+    });
+  }
+};
+
+export const threadCreateWithUserWithMessage = (userId, idType) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.createThread(userId, idType).then(thread => {
+      thread.withMessage = true;
+      dispatch(threadCreateWithExistThread(thread));
+      return thread;
     });
   }
 };
@@ -79,8 +102,9 @@ export const threadCreateOnTheFly = (userId, user) => {
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
       const mockThread = {
-        group: false,
         id: "ON_THE_FLY",
+        group: false,
+        onTheFly: true,
         image: user.image,
         participantCount: 2,
         partner: userId,
@@ -239,9 +263,7 @@ export const threadLeave = (threadId, kickedOut) => {
 };
 
 export const threadNewMessage = message => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const chatSDK = state.chatInstance.chatSDK;
+  return dispatch => {
     dispatch({
       type: THREAD_NEW_MESSAGE,
       payload: message

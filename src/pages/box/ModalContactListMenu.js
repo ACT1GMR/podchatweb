@@ -14,7 +14,7 @@ import {
   contactChatting,
   contactRemove
 } from "../../actions/contactActions";
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreateWithUser} from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 
@@ -86,7 +86,7 @@ class ModalContactListMenu extends Component {
       return;
     }
     dispatch(contactChatting(contact));
-    dispatch(threadCreate(contactId));
+    dispatch(threadCreateWithUser(contactId));
     this.onClose(true);
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);

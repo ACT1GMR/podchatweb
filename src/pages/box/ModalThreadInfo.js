@@ -80,7 +80,7 @@ class ModalThreadInfo extends Component {
     const {thread, dispatch} = this.props;
     if (thread.id) {
       if (oldProps.thread.id !== thread.id) {
-        if (thread.id !== "ON_THE_FLY") {
+        if (thread.onTheFly) {
           dispatch(threadParticipantList(thread.id));
         }
       }

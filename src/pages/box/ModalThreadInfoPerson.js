@@ -145,7 +145,7 @@ export default class ModalThreadInfo extends Component {
 
   render() {
     const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, GapFragment, AvatarModalMediaFragment} = this.props;
-    const isOnTheFly = thread.id === "ON_THE_FLY";
+    const isOnTheFly = thread.onTheFly;
     let participant = isOnTheFly ? thread.participant : getParticipant(participants, user);
     const participantImage = isOnTheFly ? thread.image : participant.image;
     const isMyContact = participant.contactId;

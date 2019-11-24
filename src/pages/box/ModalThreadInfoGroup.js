@@ -11,7 +11,6 @@ import {avatarNameGenerator} from "../../utils/helpers";
 //actions
 import {
   threadAddParticipant,
-  threadCreate,
   threadCreateOnTheFly,
   threadLeave,
   threadModalThreadInfoShowing,

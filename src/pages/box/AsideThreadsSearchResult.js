@@ -12,7 +12,7 @@ import {ROUTE_THREAD} from "../../constants/routes";
 //actions
 import {chatSearchResult} from "../../actions/chatActions";
 import {contactChatting} from "../../actions/contactActions";
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreateWithExistThread, threadCreateWithUser} from "../../actions/threadActions";
 
 //UI components
 import {MdGroup, MdRecordVoiceOver} from "react-icons/lib/md";
@@ -42,14 +42,14 @@ class AsideThreadsSearchResult extends Component {
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }
-    dispatch(threadCreate(null, thread));
+    dispatch(threadCreateWithExistThread(thread));
     dispatch(chatSearchResult());
   }
 
   onStartChat(contact) {
     const {history, chatRouterLess, dispatch} = this.props;
     dispatch(contactChatting(contact));
-    dispatch(threadCreate(contact.id));
+    dispatch(threadCreateWithUser(contact.id));
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }

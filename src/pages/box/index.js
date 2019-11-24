@@ -23,7 +23,13 @@ import {
   chatSetInstance, chatSignOutHook,
   chatSmallVersion
 } from "../../actions/chatActions";
-import {threadCreate, threadGetList, threadParticipantList, threadShowing} from "../../actions/threadActions";
+import {
+  threadCreateWithExistThread,
+  threadCreateWithUser,
+  threadGetList,
+  threadParticipantList,
+  threadShowing
+} from "../../actions/threadActions";
 import {userGet} from "../../actions/userActions";
 
 //components
@@ -181,10 +187,10 @@ class Box extends Component {
   openThread(thread) {
     const {dispatch} = this.props;
     if (thread instanceof Object) {
-      dispatch(threadCreate(null, thread, null, null));
+      dispatch(threadCreateWithExistThread(thread));
       return;
     }
-    dispatch(threadCreate(thread, null, null, "TO_BE_USER_ID"));
+    dispatch(threadCreateWithUser(thread,"TO_BE_USER_ID"));
   }
 
   refreshThreads() {

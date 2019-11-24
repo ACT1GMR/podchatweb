@@ -9,7 +9,7 @@ import {
   CONTACT_MODAL_CREATE_GROUP_SHOWING,
   CONTACT_BLOCK
 } from "../constants/actionTypes";
-import {threadCreate, threadParticipantList, threadShowing} from "./threadActions";
+import {threadCreateWithUser, threadParticipantList, threadShowing} from "./threadActions";
 import {messageEditing} from "./messageActions";
 import {stateGeneratorState} from "../utils/storeHelper";
 
@@ -135,7 +135,7 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode, canceled)
         return dispatch(contactAdding());
       }
       if (e.linkedUser) {
-        dispatch(threadCreate(e.id, null, true));
+        dispatch(threadCreateWithUser(e.id));
         dispatch(threadShowing(true));
       }
     }, e => {

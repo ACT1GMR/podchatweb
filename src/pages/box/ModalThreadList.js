@@ -6,8 +6,7 @@ import {avatarNameGenerator} from "../../utils/helpers";
 import strings from "../../constants/localization";
 
 //actions
-import {threadGetList, threadModalListShowing} from "../../actions/threadActions";
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreateWithExistThread, threadGetList, threadModalListShowing} from "../../actions/threadActions";
 import {messageEditing} from "../../actions/messageActions";
 
 //UI components
@@ -65,7 +64,7 @@ export default class ModalThreadList extends Component {
 
   onSend(thread) {
     const {dispatch, message} = this.props;
-    dispatch(threadCreate(null, thread));
+    dispatch(threadCreateWithExistThread(thread));
     dispatch(messageEditing(message, constants.forwarding, thread.id));
     this.onClose();
   }

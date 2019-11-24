@@ -9,7 +9,7 @@ import {ROUTE_CREATE_GROUP, ROUTE_THREAD, ROUTE_ADD_CONTACT} from "../../constan
 
 //actions
 import {contactModalCreateGroupShowing} from "../../actions/contactActions";
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreateGroupOrChannelWithUsers, threadCreateWithUser} from "../../actions/threadActions";
 
 //UI components
 import Modal, {ModalBody, ModalHeader, ModalFooter} from "../../../../uikit/src/modal";
@@ -87,7 +87,7 @@ class ModalCreateGroup extends Component {
       return;
     }
     const {dispatch, chatRouterLess, history} = this.props;
-    dispatch(threadCreate(this.state.threadContacts, null, groupName, null, isChannel));
+    dispatch(threadCreateGroupOrChannelWithUsers(this.state.threadContacts, groupName, isChannel));
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }

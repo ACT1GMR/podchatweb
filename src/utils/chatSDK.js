@@ -150,7 +150,7 @@ export default class ChatSDK {
       }
     }
     let createThreadParams = {
-      type,//: isChannel ? "CHANNEL" : isGroup ? "OWNER_GROUP" : "NORMAL",
+      type: type || "NORMAL",//: isChannel ? "CHANNEL" : isGroup ? "OWNER_GROUP" : "NORMAL",
       invitees
     };
     if (other) {
@@ -226,8 +226,8 @@ export default class ChatSDK {
   @promiseDecorator
   sendMessage(resolve, reject, content, threadId) {
     const sendChatParams = {
-      threadId,
-      content
+      content,
+      threadId
     };
 
     const obj = this.chatAgent.sendTextMessage(sendChatParams, {

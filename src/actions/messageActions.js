@@ -9,6 +9,7 @@ import {
   MESSAGE_FILE_UPLOAD_CANCEL,
   MESSAGE_DELETING, MESSAGE_CANCEL
 } from "../constants/actionTypes";
+import {threadCreateWithUserWithMessage} from "./threadActions";
 
 export const messageSend = (text, threadId) => {
   return (dispatch, getState) => {
@@ -17,6 +18,30 @@ export const messageSend = (text, threadId) => {
     dispatch({
       type: MESSAGE_SEND(),
       payload: chatSDK.sendMessage(text, threadId)
+    });
+  }
+};
+
+export const messageSendOnTheFly = (text, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const thread = state.thread.thread;
+    if (thread.pendingMessage.length) {
+      thread.pendingMessage.push(text);
+    } else {
+      dispatch(threadCreateWithUserWithMessage(thread.userId, text, "TO_BE_USER_ID")).then(thread => {
+        const currentThread = state.thread.thread;
+        const {pendingMessage} = currentThread;
+        if (pendingMessage.length) {
+          for (const message of pendingMessage) {
+            dispatch(messageSend(message, thread.id));
+          }
+        }
+      });
+    }
+    dispatch({
+      type: MESSAGE_SEND(),
+      payload: {}
     });
   }
 };

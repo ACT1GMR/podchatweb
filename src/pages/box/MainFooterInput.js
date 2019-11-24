@@ -14,9 +14,9 @@ import {
   messageSend,
   messageEdit,
   messageReply,
-  messageForward
+  messageForward, messageSendMock
 } from "../../actions/messageActions";
-import {threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
+import {threadCreateWithUserWithMessage, threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 
 //components
 import MainFooterInputEmoji from "./MainFooterInputEmoji";
@@ -104,7 +104,7 @@ function clearHtml(html) {
 @connect(store => {
   return {
     messageEditing: store.messageEditing,
-    threadId: store.thread.thread.id
+    thread: store.thread.thread
   };
 }, null, null, {withRef: true})
 export default class MainFooterInput extends Component {
@@ -118,6 +118,8 @@ export default class MainFooterInput extends Component {
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
+    this.lastOnTheFlyThreadId = null;
+    this.pendingMessageToSend = [];
     this.inputNode = React.createRef();
     this.state = {
       messageText: ""
@@ -146,7 +148,7 @@ export default class MainFooterInput extends Component {
         return;
       }
     }
-    if(this.forwardMessageSent) {
+    if (this.forwardMessageSent) {
       this.forwardMessageSent = false;
     }
     dispatch(threadIsSendingMessage(false));
@@ -160,7 +162,7 @@ export default class MainFooterInput extends Component {
   }
 
   componentDidMount() {
-    const {dispatch, threadId, messageEditing: msgEditing} = this.props;
+    const {dispatch, threadId} = this.props;
     dispatch(messageEditing());
     this.setInputText();
     dispatch(threadIsSendingMessage(false));
@@ -196,8 +198,9 @@ export default class MainFooterInput extends Component {
   }
 
   sendMessage() {
-    const {threadId, dispatch, messageEditing: msgEditing} = this.props;
+    const {thread, dispatch, messageEditing: msgEditing} = this.props;
     const {messageText} = this.state;
+    const {id: threadId} = {thread};
     const clearMessageText = codeEmoji(clearHtml(messageText));
     let isEmptyMessage = false;
     if (!clearMessageText) {
@@ -228,10 +231,6 @@ export default class MainFooterInput extends Component {
         dispatch(messageForward(threadId, msgEditingId));
         this.forwardMessageSent = true;
       } else {
-
-
-
-
         if (isEmptyMessage) {
           return;
         }
@@ -241,11 +240,33 @@ export default class MainFooterInput extends Component {
       if (isEmptyMessage) {
         return;
       }
-      dispatch(messageSend(clearMessageText, threadId));
+      if (thread.onTheFly) {
+        this._sendToOnTheFlyThread(clearMessageText, thread);
+      } else {
+        dispatch(messageSend(clearMessageText, threadId));
+      }
     }
     dispatch(messageEditing());
     dispatch(threadEmojiShowing(false));
     this.setInputText("");
+  }
+
+  _sendToOnTheFlyThread(clearMessageText, thread) {
+    const {id: threadId} = thread;
+    messageSendMock(clearMessageText, thread.id);
+    if (this.lastOnTheFlyThreadId === threadId) {
+      this.pendingMessageToSend.push(clearMessageText);
+    }
+    this.lastOnTheFlyThreadId = threadId;
+    dispatch(threadCreateWithUserWithMessage(thread.userId, clearMessageText, "TO_BE_USER_ID")).then(thread => {
+      if (this.pendingMessageToSend.length) {
+        for (const message of this.pendingMessageToSend) {
+          dispatch(messageSend(message, thread.id));
+        }
+        this.pendingMessageToSend = [];
+      }
+      this.lastOnTheFlyThreadId = null;
+    });
   }
 
   onTextChange(event, isOnBlur) {

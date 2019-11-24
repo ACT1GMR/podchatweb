@@ -7,7 +7,7 @@ import {getName, ContactList} from "./_component/contactList";
 
 //actions
 import {messageGetSeenList} from "../../actions/messageActions";
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreateWithUser} from "../../actions/threadActions";
 
 //UI components
 import Container from "../../../../uikit/src/container";
@@ -54,7 +54,7 @@ export default class LeftAsideMain extends Component {
   }
 
   onStartChat(id) {
-    this.props.dispatch(threadCreate(id, null, null, "TO_BE_USER_ID"));
+    this.props.dispatch(threadCreateWithUser(id, "TO_BE_USER_ID"));
   }
 
   getMessageSeenList(messageId) {

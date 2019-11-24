@@ -13,7 +13,7 @@ import strings from "../../constants/localization";
 import {ROUTE_THREAD} from "../../constants/routes";
 
 //actions
-import {threadCreate, threadGetList} from "../../actions/threadActions";
+import {threadCreateWithExistThread, threadGetList} from "../../actions/threadActions";
 
 //UI components
 import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
@@ -189,7 +189,7 @@ class AsideThreads extends Component {
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
     }
-    dispatch(threadCreate(null, thread));
+    dispatch(threadCreateWithExistThread(thread));
   }
 
   componentDidUpdate(oldProps) {

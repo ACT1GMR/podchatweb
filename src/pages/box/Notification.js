@@ -8,7 +8,7 @@ import MetaTags from "react-meta-tags";
 //strings
 
 //actions
-import {threadCreate} from "../../actions/threadActions";
+import {threadCreateWithExistThread} from "../../actions/threadActions";
 import strings from "../../constants/localization";
 
 //components
@@ -130,7 +130,7 @@ export default class Notification extends Component {
                   if (chatNotificationClickHook) {
                     chatNotificationClickHook(thread);
                   }
-                  dispatch(threadCreate(null, thread));
+                  dispatch(threadCreateWithExistThread( thread));
                   window.focus();
                   this.close();
                 }

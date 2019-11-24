@@ -16,7 +16,8 @@ import {
   threadMessageGetList,
   threadCheckedMessageList,
   threadNewMessage,
-  threadCreate, threadFilesToUpload
+  threadFilesToUpload,
+  threadCreateWithUser
 } from "../../actions/threadActions";
 
 //components
@@ -273,7 +274,7 @@ export default class MainMessages extends Component {
       return;
     }
 
-    if (threadId === "ON_THE_FLY") {
+    if (threadId.onTheFly) {
       return;
     }
 
@@ -440,7 +441,7 @@ export default class MainMessages extends Component {
   }
 
   onAvatarClick(participant) {
-    this.props.dispatch(threadCreate(participant.id, null, null, "TO_BE_USER_ID"));
+    this.props.dispatch(threadCreateWithUser(participant.id, "TO_BE_USER_ID"));
   }
 
   onDragOver(e) {
