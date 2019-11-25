@@ -184,7 +184,7 @@ let strings = new LocalizedStrings({
     messageDeleted: "پیام پاک شده است",
     forMeOnly: "فقط برای من",
     forMeAndOthers: "برای من و دیگران",
-    removeMessageThatYouCanDeleteForAll: "اونایی که برای دیگران هم میشه",
+    removeMessageThatYouCanDeleteForAll: "برای من و اونایی که برای دیگران هم میشه",
     howWeShouldDeleteThisMessageForYou: count =>{
       if(count) {
         return `این ${count} تا پیام رو چطوری دوست داری برات حذف کنیم`

@@ -13,15 +13,22 @@ export function MessageDeletePrompt(props) {
 
   const isBatchMessage = message instanceof Array;
   let isAbleToRemoveForAll = !isBatchMessage ? deleteForAllCondition(message, user, thread) : true;
+  let isThereAnyThatYouCanRemoveForOther = false;
   if (isBatchMessage) {
     for (const msg of message) {
-      if (!isAbleToRemoveForAll) {
-        break;
+      const result = deleteForAllCondition(msg, user, thread);
+      if (isAbleToRemoveForAll) {
+        if (!result) {
+          isAbleToRemoveForAll = result;
+        }
       }
-      isAbleToRemoveForAll = deleteForAllCondition(msg, user, thread);
+      if (result) {
+        if (!isThereAnyThatYouCanRemoveForOther) {
+          isThereAnyThatYouCanRemoveForOther = true;
+        }
+      }
     }
   }
-
   function deleteMessage(forMeOnly, abort, removeIfYouCanForBothSide) {
     dispatch(chatModalPrompt());
     if (abort) {
@@ -44,7 +51,8 @@ export function MessageDeletePrompt(props) {
 
   return (
     <Fragment>
-      <Text size="lg">{isBatchMessage && message.length > 1 ? strings.howWeShouldDeleteThisMessageForYou(message.length) : strings.howWeShouldDeleteThisMessageForYou()}؟</Text>
+      <Text
+        size="lg">{isBatchMessage && message.length > 1 ? strings.howWeShouldDeleteThisMessageForYou(message.length) : strings.howWeShouldDeleteThisMessageForYou()}؟</Text>
       <Gap y={5}/>
       <List>
 
@@ -56,15 +64,17 @@ export function MessageDeletePrompt(props) {
 
         </ListItem>
 
+        {(isThereAnyThatYouCanRemoveForOther || isAbleToRemoveForAll) &&
         <ListItem key="for-others-also"
                   color="accent"
                   selection={true}
                   invert={true}
-                  onSelect={!isAbleToRemoveForAll && isBatchMessage ? deleteMessage.bind(null, false, true) : deleteMessage.bind(null)}>
+                  onSelect={isThereAnyThatYouCanRemoveForOther && !isAbleToRemoveForAll ? deleteMessage.bind(null, false, false, true) : deleteMessage.bind(null)}>
           <Text bold
-                color="accent">{!isAbleToRemoveForAll && isBatchMessage ? strings.removeMessageThatYouCanDeleteForAll : strings.forMeAndOthers}</Text>
+                color="accent">{isThereAnyThatYouCanRemoveForOther && !isAbleToRemoveForAll ? strings.removeMessageThatYouCanDeleteForAll : strings.forMeAndOthers}</Text>
 
         </ListItem>
+        }
 
         <ListItem key="i-canceled"
                   color="accent"
