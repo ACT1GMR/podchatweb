@@ -7,6 +7,7 @@ import List, {ListItem} from "../../../../../uikit/src/list"
 import Avatar, {AvatarImage, AvatarName} from "../../../../../uikit/src/avatar";
 import Container from "../../../../../uikit/src/container";
 import AvatarText from "../../../../../uikit/src/avatar/AvatarText";
+import Scroller from "../../../../../uikit/src/scroller";
 
 //styling
 

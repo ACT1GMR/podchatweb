@@ -172,10 +172,7 @@ export default class MainFooterInput extends Component {
     const threadId = thread.id;
     const {id: oldThreadId} = prevProps.thread;
     if (msgEditing !== prevProps.messageEditing) {
-      const current = this.inputNode.current;
-      if (current) {
-        current.focus();
-      }
+      this.focus();
     }
     if (oldThreadId !== threadId) {
       if (msgEditing) {
@@ -190,10 +187,7 @@ export default class MainFooterInput extends Component {
         dispatch(threadIsSendingMessage(false));
       }
       if (!mobileCheck()) {
-        const current = this.inputNode.current;
-        if (current) {
-          current.focus();
-        }
+        this.focus();
       }
     }
   }
@@ -255,8 +249,8 @@ export default class MainFooterInput extends Component {
   onTextChange(event, isOnBlur) {
     const {thread, dispatch} = this.props;
     const threadId = thread.id;
-    if (!thread.onTheFly) {
-      if (!isOnBlur) {
+    if (!isOnBlur) {
+      if (!thread.onTheFly) {
         clearTimeout(this.typingTimeOut);
         if (!this.typingSet) {
           this.typingSet = true;

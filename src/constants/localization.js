@@ -181,7 +181,17 @@ let strings = new LocalizedStrings({
     unreaded: "خوانده نشده",
     mute: "قطع اعلانات",
     unmute: "برقراری اعلانات",
-    messageDeleted: "پیام پاک شده است"
+    messageDeleted: "پیام پاک شده است",
+    forMeOnly: "فقط برای من",
+    forMeAndOthers: "برای من و دیگران",
+    removeMessageThatYouCanDeleteForAll: "اونایی که برای دیگران هم میشه",
+    howWeShouldDeleteThisMessageForYou: count =>{
+      if(count) {
+        return `این ${count} تا پیام رو چطوری دوست داری برات حذف کنیم`
+      }
+      return "این پیام رو چطوری دوست داری برات حذف کنیم";
+    } ,
+    iCanceled: "منصرف شدم"
   },
   it: {}
 });

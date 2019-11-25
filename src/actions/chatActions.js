@@ -225,7 +225,7 @@ export const chatSignOutHook = chatSignOutHookHook => {
   }
 };
 
-export const chatModalPrompt = (isShowing, message, onApply, onCancel, confirmText) => {
+export const chatModalPrompt = (isShowing, message, onApply, onCancel, confirmText, customBody) => {
   return dispatch => {
     return dispatch({
       type: CHAT_MODAL_PROMPT_SHOWING,
@@ -234,7 +234,8 @@ export const chatModalPrompt = (isShowing, message, onApply, onCancel, confirmTe
         message,
         onApply,
         onCancel,
-        confirmText
+        confirmText,
+        customBody
       }
     });
   }

@@ -79,6 +79,7 @@ $color-text: #555;
 $color-text-dark: #272727;
 
 $color-dark: #000;
+$color-green-tick: #72cc66;
 
 :export {
   fontFamily: $font-family;
@@ -133,4 +134,5 @@ $color-dark: #000;
   colorTextLight: $color-text-light;
   colorText: $color-text;
   colorTextDark: $color-text-invert;
+  colorGreenTick: $color-green-tick;
 }

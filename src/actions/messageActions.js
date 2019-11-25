@@ -39,7 +39,7 @@ export const messageSendOnTheFly = text => {
       message: text
     };
     if (thread.pendingMessage.push(messageMock) <= 1) {
-      chatSDK.createThread(thread.partner, "TO_BE_USER_ID").then(thread => {
+      chatSDK.createThread(thread.partner, thread.participant.contactId ? null : "TO_BE_USER_ID").then(thread => {
         dispatch({
           type: THREAD_CREATE("CACHE"),
           payload: thread

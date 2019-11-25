@@ -19,7 +19,6 @@ import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 
 //styling
 
-
 @connect(store => {
   return {
     smallVersion: store.chatSmallVersion,
@@ -92,8 +91,7 @@ export default class LeftAsideMain extends Component {
           seenList && seenList.length > 1 ?
             <ContactList contacts={seenList}
                          selection
-                         invert
-                         onSelect={this.onStartChat}/>
+                         invert/>
             :
             <Container relative>
               <Container topCenter>

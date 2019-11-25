@@ -26,6 +26,7 @@ import {MdForward, MdDelete} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
 import {deleteForAllCondition} from "./MainMessagesMessage";
+import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
 
 @connect(store => {
   return {
@@ -50,21 +51,9 @@ export default class MainHeadBatchActions extends Component {
   onDelete(e) {
     e.stopPropagation();
     const {dispatch, threadCheckedMessageList: message, user, thread} = this.props;
-    const isBatchMessage = message instanceof Array;
-    const text = strings.areYouSureAboutDeletingMessage(isBatchMessage ? message.length : null);
-    dispatch(chatModalPrompt(true, `${text}؟`, () => {
-      const {threadCheckedMessageList: message, dispatch} = this.props;
-      if (message instanceof Array) {
-        for (const msg of message) {
-          dispatch(messageDelete(msg.id, deleteForAllCondition(msg, user, thread)));
-        }
-      } else {
-        dispatch(messageDelete(message.id, deleteForAllCondition(message, user, thread)));
-      }
-      dispatch(chatModalPrompt());
-      dispatch(threadSelectMessageShowing(false));
-      dispatch(threadCheckedMessageList(null, null, true));
-    }));
+    dispatch(chatModalPrompt(true,
+      null, null, null, null,
+      <MessageDeletePrompt user={user} thread={thread} message={message} dispatch={dispatch}/>));
   }
 
   render() {

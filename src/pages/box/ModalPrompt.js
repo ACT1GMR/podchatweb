@@ -17,11 +17,7 @@ import Container from "../../../../uikit/src/container";
 
 @connect(store => {
   return {
-    isShowing: store.chatModalPrompt.isShowing,
-    confirmText: store.chatModalPrompt.confirmText,
-    message: store.chatModalPrompt.message,
-    onApply: store.chatModalPrompt.onApply,
-    onCancel: store.chatModalPrompt.onCancel
+    chatModalPrompt: store.chatModalPrompt
   };
 }, null, null, {withRef: true})
 export default class ModalPrompt extends Component {
@@ -39,21 +35,27 @@ export default class ModalPrompt extends Component {
   }
 
   render() {
-    const {isShowing, smallVersion, message, onApply, confirmText} = this.props;
+    const {isShowing, smallVersion, message, onApply, confirmText, customBody, NoConfirmButton} = this.props.chatModalPrompt;
     return (
-      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none" wrapContent>
+      <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none" wrapContent>
 
         <ModalBody>
+          {!customBody &&
           <Container centerTextAlign>
             <Text bold
                   size="lg">{message}</Text>
           </Container>
-        </ModalBody>
+          }
 
-        <ModalFooter>
-          <Button text onClick={onApply}>{confirmText || strings.remove}</Button>
-          <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
-        </ModalFooter>
+          {customBody && customBody}
+        </ModalBody>
+        {!customBody &&
+          <ModalFooter>
+            <Button text onClick={onApply}>{confirmText || strings.remove}</Button>
+            <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
+          </ModalFooter>
+        }
 
       </Modal>
     )

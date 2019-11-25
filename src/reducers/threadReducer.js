@@ -226,12 +226,33 @@ export const threadsReducer = (state = {
   error: false
 }, action) => {
   const sortThreads = threads => threads.sort((a, b) => b.time - a.time);
+
+  function removeDuplicateThreads(threads) {
+    const checkedIds = [];
+    const removeIndexes = [];
+    for (const thread of threads) {
+      const index = checkedIds.findIndex(id => id === thread.id);
+      if (~index) {
+        removeIndexes.push(index);
+      }
+      checkedIds.push(thread.id);
+    }
+    removeIndexes.forEach(index => threads.splice(index, 1));
+    return threads;
+  }
+
   switch (action.type) {
     case THREAD_GET_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING, [], "threads")};
     case THREAD_GET_LIST(SUCCESS): {
       const {threads, hasNext, nextOffset} = action.payload;
-      return {...state, ...stateGenerator(SUCCESS, {threads: sortThreads(threads), hasNext, nextOffset})};
+      return {
+        ...state, ...stateGenerator(SUCCESS, {
+          threads: removeDuplicateThreads(sortThreads(threads)),
+          hasNext,
+          nextOffset
+        })
+      };
     }
     case CHAT_STOP_TYPING:
     case CHAT_IS_TYPING: {
@@ -250,7 +271,7 @@ export const threadsReducer = (state = {
       const {threads, hasNext, nextOffset} = action.payload;
       return {
         ...state, ...stateGenerator(SUCCESS, {
-          threads: sortThreads(state.threads.concat(threads)),
+          threads: removeDuplicateThreads(sortThreads(state.threads.concat(threads))),
           hasNext,
           nextOffset
         })
@@ -282,7 +303,8 @@ export const threadsReducer = (state = {
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
     }
-    case MESSAGE_EDIT(): {
+    case MESSAGE_EDIT():
+    case MESSAGE_SEEN(): {
       const filteredThread = state.threads.filter(thread => thread.lastMessageVO && thread.lastMessageVO.id === action.payload.id);
       if (!filteredThread.length) {
         return state;

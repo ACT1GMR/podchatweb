@@ -10,6 +10,7 @@ import date from "../../utils/date";
 import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
+import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
 
 
 //strings
@@ -196,15 +197,22 @@ export function SeenFragment({isMessageByMe, message, thread, onMessageSeenListC
     )
   }
   const isGroup = thread.group;
+  const messageStatusIconSpecs = {
+    color: styleVar.colorGreenTick,
+    size: 18,
+    style: {margin: "0 5px"}
+  };
   if (!message.id) {
-    return <MdSchedule size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+    return <MdSchedule size={messageStatusIconSpecs.size} style={messageStatusIconSpecs.style}  color={messageStatusIconSpecs.color}/>
   }
   if (!isGroup) {
     if (message.seen || forceSeen) {
-      return <MdDoneAll size={style.iconSizeXs} style={{margin: "0 5px"}}/>
+      return <MdDoneAll size={messageStatusIconSpecs.size} style={messageStatusIconSpecs.style}  color={messageStatusIconSpecs.color}/>
     }
   }
-  return <MdDone className={isGroup ? style.MainMessagesMessage__SentIcon : ""} size={style.iconSizeXs}
+  return <MdDone className={isGroup ? style.MainMessagesMessage__SentIcon : ""}
+                 size={messageStatusIconSpecs.size}
+                 color={messageStatusIconSpecs.color}
                  style={{margin: "0 5px", cursor: isGroup ? "pointer" : "default"}}
                  onClick={isGroup ? onMessageSeenListClick : null}/>
 }
@@ -400,11 +408,9 @@ export default class MainMessagesMessage extends Component {
 
   onDelete() {
     const {dispatch, message, user, thread} = this.props;
-
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutDeletingMessage()}؟`, () => {
-      dispatch(messageDelete(message.id, deleteForAllCondition(message, user, thread)));
-      dispatch(chatModalPrompt());
-    }));
+    dispatch(chatModalPrompt(true,
+      null, null, null, null,
+      <MessageDeletePrompt thread={thread} message={message} dispatch={dispatch} user={user}/>));
     this.onMessageControlHide();
   }
 

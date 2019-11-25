@@ -17,7 +17,7 @@ import {
   threadCheckedMessageList,
   threadNewMessage,
   threadFilesToUpload,
-  threadCreateWithUser, threadCreateOnTheFly
+  threadCreateOnTheFly
 } from "../../actions/threadActions";
 
 //components
@@ -199,6 +199,9 @@ export default class MainMessages extends Component {
   componentDidMount() {
     const {thread} = this.props;
     if (thread) {
+      if (thread.onTheFly) {
+        return
+      }
       if (thread.id) {
         this._fetchInitHistory();
       }
@@ -282,7 +285,7 @@ export default class MainMessages extends Component {
     //If old thread was on the fly and we created an actual thread for that there is no need for history fetching or something else
     if (oldThread.onTheFly) {
       if (thread.partner === oldThread.partner) {
-        return ;
+        return;
       }
     }
 

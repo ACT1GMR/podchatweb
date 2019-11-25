@@ -16,6 +16,7 @@ import LeftAsideMainSeenList from "./LeftAsideMainSeenList";
 import style from "../../../styles/pages/box/LeftAsideMain.scss";
 import classnames from "classnames";
 import Container from "../../../../uikit/src/container";
+import Scroller from "../../../../uikit/src/scroller";
 
 @connect(store => {
   return {
@@ -33,6 +34,7 @@ export default class LeftAsideMain extends Component {
   componentDidUpdate(oldProps) {
     const {thread: oldThread} = oldProps;
     const {thread, dispatch} = this.props;
+    this.scroller = React.createRef();
     if (oldThread.id !== thread.id) {
       return dispatch(threadLeftAsideShowing(false));
     }
@@ -48,7 +50,7 @@ export default class LeftAsideMain extends Component {
       [style["LeftAsideMain--smallVersion"]]: smallVersion
     });
     return (
-      <Container className={classNames}>
+      <Scroller className={classNames} ref={this.scroller}>
         {
           leftAsideShowing ?
             type === THREAD_LEFT_ASIDE_SEARCH ?
@@ -57,7 +59,7 @@ export default class LeftAsideMain extends Component {
               <LeftAsideMainSeenList {...commonProps}/>
             : ""
         }
-      </Container>
+      </Scroller>
     )
   }
 }

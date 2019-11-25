@@ -103,7 +103,7 @@ class Box extends Component {
 
     if (onReady) {
       if (user.id !== oldUser.id) {
-        onReady(user, chatInstance);
+        onReady(user, chatInstance, this);
       }
     }
 
