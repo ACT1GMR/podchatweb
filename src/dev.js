@@ -3,6 +3,7 @@ import {BrowserRouter} from "react-router-dom";
 import {render} from "react-dom";
 import {Provider} from "react-redux";
 import {setApplicationTime} from "./utils/helpers";
+import {serverConfig} from "./constants/connection";
 import store from "./store/index";
 import "../styles/main.scss";
 import "../styles/layout/defualt.scss";
@@ -12,12 +13,8 @@ import {auth} from "podauth";
 auth({
   clientId: "2051121e4348af52664cf7de0bda",
   scope: "social:write",
+  ssoBaseUrl: "https://accounts.pod.ir/oauth2",
   onNewToken: token => {
-    const serverConfig = {
-      socketAddress: "wss://msg.pod.land/ws",
-      platformHost: "https://api.pod.land/srv/core",
-      fileServer: "https://core.pod.land"
-    };
     render(
       <Provider store={store}>
         <BrowserRouter>
