@@ -417,13 +417,13 @@ export default class MainMessagesMessage extends Component {
   onForward() {
     const {dispatch, message} = this.props;
     dispatch(threadModalListShowing(true, message));
-    this.onMessageControlHide();
+    this.onMessageControlHide && this.onMessageControlHide();
   }
 
   onReply() {
     const {dispatch, message} = this.props;
     dispatch(messageEditing(message, "REPLYING"));
-    this.onMessageControlHide();
+    this.onMessageControlHide && this.onMessageControlHide();
   }
 
   render() {

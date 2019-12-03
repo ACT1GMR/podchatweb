@@ -37,7 +37,8 @@ function urlify(text) {
   var urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, function (url) {
     const urlReal = url.replace(/&amp;/g, "&");
-    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord" title={urlReal}>{urlReal}</Text>)
+    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord"
+                                                     title={urlReal}>{urlReal}</Text>)
   })
 }
 
@@ -59,8 +60,9 @@ export default class MainMessagesMessageText extends Component {
   }
 
   onEdit(message) {
+    const {onMessageControlHide, dispatch} = this.props;
     this.props.dispatch(messageEditing(message));
-    this.onMessageControlHide();
+    onMessageControlHide();
   }
 
   render() {

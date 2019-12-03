@@ -198,7 +198,7 @@ export default class ChatSDK {
 
   @promiseDecorator
   getThreadInfo(resolve, reject, params) {
-    this.getThreads(null, null, null, params).then(result => {
+    this.getThreads(null, null, null, {...params, cache: false}).then(result => {
       if (!this._onError(result, reject)) {
         return resolve(result.threads[0]);
       }
