@@ -69,14 +69,10 @@ export const chatSetInstance = config => {
               payload:
                 type === THREAD_NEW ? {redirectToThread: thread.redirectToThread, thread: thread.result.thread}
                   :
-                  type === THREADS_LIST_CHANGE ? thread.result.threads
+                  type === THREADS_LIST_CHANGE || THREAD_PARTICIPANTS_LIST_CHANGE ? thread.result.threads
                     :
                     type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
-                      :
-                      type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
-                        threadId: thread.threadId,
-                        participants: thread.result.participants
-                      } : thread
+                      : thread
             });
           case THREAD_REMOVED_FROM:
             return dispatch(threadLeave(thread.result.thread, true));

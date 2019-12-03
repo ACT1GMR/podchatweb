@@ -11,8 +11,8 @@ export default class ChatSDK {
 
   constructor(props) {
     this.params = {
-      socketAddress: props.config.local ? "ws://172.16.106.26:8003/ws" : "wss://chat-sandbox.pod.land/ws", // {**REQUIRED**} Socket Address
-      ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.land", // {**REQUIRED**} Socket Address
+      socketAddress: props.config.local ? "ws://172.16.106.26:8003/ws" : "wss://chat-sandbox.pod.ir/ws", // {**REQUIRED**} Socket Address
+      ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.ir", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       platformHost: props.config.local ? "http://172.16.106.26:8080/hamsam" : "https://sandbox.pod.land:8043/srv/basic-platform", // {**REQUIRED**} Platform Core Address
       fileServer: "https://sandbox.pod.land:8443", // {**REQUIRED**} File Server Address
@@ -23,7 +23,7 @@ export default class ChatSDK {
       connectionCheckTimeout: 10000, // Socket connection live time on server
       messageTtl: 10000, // Message time to live
       reconnectOnClose: true, // auto connect to socket after socket close
-      enableCache: false,
+      enableCache: true,
       httpUploadRequestTimeout: 0,
       fullResponseObject: true,
       dynamicHistoryCount: true,
