@@ -2,7 +2,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {signOut, retry} from "podauth";
 
 //strings
 import strings from "../../constants/localization";
@@ -42,13 +41,6 @@ function routeChange(history, route, chatRouterLess) {
   if (!chatRouterLess) {
     history.push(route);
   }
-}
-
-export function reconnect(chatInstance) {
-  retry(true, true).then(e => {
-    chatInstance.setToken(e.access_token);
-    chatInstance.reconnect();
-  });
 }
 
 @connect(store => {
@@ -138,13 +130,9 @@ class AsideHead extends Component {
       default: {
         const {chatSignOutHook} = this.props;
         if (chatSignOutHook) {
-          if (!chatSignOutHook()) {
-            return;
-          }
+          chatSignOutHook();
         }
-        signOut();
       }
-
     }
   }
 
@@ -175,11 +163,11 @@ class AsideHead extends Component {
     }, 5000);
     const {chatRetryHook, chatInstance} = this.props;
     if (chatRetryHook) {
-      if (!chatRetryHook()) {
-        return;
-      }
+      chatRetryHook().then(token => {
+        chatInstance.setToken(token);
+        chatInstance.reconnect();
+      });
     }
-    reconnect(chatInstance);
   }
 
   onChatSearchToggle() {
@@ -254,7 +242,7 @@ class AsideHead extends Component {
                   </AvatarName>
                 </Container>
               </Avatar>
-              <Text target="_blank" link="https://panel.pod.land/Users/Info">
+              <Text target="_blank" link="https://panel.pod.ir/Users/Info">
                 <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" style={{
                   backgroundColor: styleVar.colorAccentLight,
                   boxShadow: "none",

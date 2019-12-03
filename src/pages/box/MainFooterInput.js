@@ -104,7 +104,8 @@ function clearHtml(html) {
 @connect(store => {
   return {
     messageEditing: store.messageEditing,
-    thread: store.thread.thread
+    thread: store.thread.thread,
+    threadMessages: store.threadMessages,
   };
 }, null, null, {withRef: true})
 export default class MainFooterInput extends Component {
@@ -168,7 +169,8 @@ export default class MainFooterInput extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {dispatch, thread, messageEditing: msgEditing} = this.props;
+    const {dispatch, thread, messageEditing: msgEditing, threadMessages} = this.props;
+    const {threadMessages: oldThreadMessages} = prevProps;
     const threadId = thread.id;
     const {id: oldThreadId} = prevProps.thread;
     if (msgEditing !== prevProps.messageEditing) {
@@ -188,6 +190,17 @@ export default class MainFooterInput extends Component {
       }
       if (!mobileCheck()) {
         this.focus();
+      }
+    } else {
+      if (!mobileCheck()) {
+        const {fetching, threadId: threadMessagesThreadId} = threadMessages;
+        if (threadMessagesThreadId === threadId) {
+          if (oldThreadMessages.fetching) {
+            if (!fetching) {
+              this.focus();
+            }
+          }
+        }
       }
     }
   }

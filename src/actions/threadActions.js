@@ -49,18 +49,20 @@ function createThreadCommon(dispatch) {
 
 export const threadCreateGroupOrChannelWithUsers = (userIds, threadName, isChannel) => {
   return (dispatch, getState) => {
+    createThreadCommon(dispatch);
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     const type = isChannel ? "CHANNEL" : "OWNER_GROUP";
     return dispatch({
       type: THREAD_CREATE(),
-      payload: chatSDK.createThread(userIds, threadName, type)
+      payload: chatSDK.createThread(userIds, null, type, {title: threadName})
     });
   }
 };
 
 export const threadCreateWithUser = (userId, idType) => {
   return (dispatch, getState) => {
+    createThreadCommon(dispatch);
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     return dispatch({
@@ -82,10 +84,7 @@ export const threadCreateWithExistThread = thread => {
 
 export const threadCreateOnTheFly = (userId, user) => {
   return (dispatch, getState) => {
-    dispatch(threadShowing(true));
-    dispatch(threadSelectMessageShowing(false));
-    dispatch(threadCheckedMessageList(null, null, true));
-    dispatch(threadEmojiShowing(false));
+    createThreadCommon(dispatch);
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {

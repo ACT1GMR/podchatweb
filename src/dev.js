@@ -8,7 +8,7 @@ import store from "./store/index";
 import "../styles/main.scss";
 import "../styles/layout/defualt.scss";
 import Box from "./pages/box";
-import {auth} from "podauth";
+import {auth, retry} from "podauth/src/auth";
 
 auth({
   clientId: "2051121e4348af52664cf7de0bda",
@@ -18,7 +18,9 @@ auth({
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <Box token={token} {...serverConfig}/>
+          <Box token={token} {...serverConfig} onRetryHook={e => {
+            return retry();
+          }}/>
         </BrowserRouter>
       </Provider>,
       document.getElementById("app")

@@ -14,7 +14,7 @@ import {
   contactChatting,
   contactRemove
 } from "../../actions/contactActions";
-import {threadCreateWithUser} from "../../actions/threadActions";
+import {threadCreateOnTheFly, threadCreateWithUser} from "../../actions/threadActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 
 
@@ -85,8 +85,14 @@ class ModalContactListMenu extends Component {
     if (!contact || !contact.linkedUser) {
       return;
     }
-    dispatch(contactChatting(contact));
-    dispatch(threadCreateWithUser(contactId));
+    const user = {
+      id: contact.id,
+      isMyContact: true,
+      coreUserId: contact.linkedUser.coreUserId,
+      image: contact.linkedUser.image,
+      name: `${contact.firstName}${contact.lastName ? ` ${contact.lastName}` : ''}`
+    };
+    dispatch(threadCreateOnTheFly(contact.linkedUser.coreUserId, user));
     this.onClose(true);
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);

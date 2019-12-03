@@ -137,7 +137,7 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode, canceled)
       if (e.linkedUser) {
         const user = {
           id: e.id,
-          contactId: true,
+          isMyContact: true,
           coreUserId: e.linkedUser.coreUserId,
           image: e.linkedUser.image,
           name: `${e.firstName}${e.lastName ? ` ${e.lastName}` : ''}`
