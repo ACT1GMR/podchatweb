@@ -101,6 +101,7 @@ class MainMessagesMessageFile extends Component {
     this.onImageClick = this.onImageClick.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onRetry = this.onRetry.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   onImageClick(e) {
@@ -126,7 +127,7 @@ class MainMessagesMessageFile extends Component {
       return;
     }
     window.location.href = `${metaData.link}&downloadable=true`;
-    this.onMessageControlHide();
+    this.props.onMessageControlHide();
   }
 
   onRetry() {
@@ -138,6 +139,9 @@ class MainMessagesMessageFile extends Component {
   onCancel() {
     const {dispatch, message} = this.props;
     dispatch(messageCancelFile(message.uniqueId, message.threadId));
+  }
+  onClick(){
+    console.log(arguments)
   }
 
   render() {
@@ -234,7 +238,7 @@ class MainMessagesMessageFile extends Component {
               {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
                 <Gap x={10}>
                   <Shape color="accent" size="lg"
-                         onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, isVideo) : this.onCancel.bind(this, message)}>
+                         onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
                     <ShapeCircle>
                       {isUploading(message) || hasError(message) ?
                         <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>

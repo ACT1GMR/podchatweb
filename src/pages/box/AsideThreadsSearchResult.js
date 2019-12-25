@@ -66,7 +66,7 @@ class AsideThreadsSearchResult extends Component {
     return (
       <Container>
         <Gap y={8} x={5}>
-          <Text size="lg" color="gray">{strings.conversations}</Text>
+          <Text bold color="accent">{strings.conversations}</Text>
         </Gap>
         {filteredThreads && filteredThreads.length ?
           <Container>
@@ -115,7 +115,7 @@ class AsideThreadsSearchResult extends Component {
           </Container>
         }
         <Gap y="8" x="5">
-          <Text size="lg" color="gray">{strings.contacts}</Text>
+          <Text bold color="accent">{strings.contacts}</Text>
         </Gap>
         {contactsFilter && contactsFilter.length ?
           <Container>

@@ -1,11 +1,14 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import {connect} from "react-redux";
+import {constants as messageEditingTypes} from "./MainFooterInput";
 
 //strings
 
 //actions
 import {
+  messageEditing,
+  messageFileReply,
   messageSendFile
 } from "../../actions/messageActions";
 import {threadFilesToUpload} from "../../actions/threadActions";
@@ -22,6 +25,7 @@ import {stopTyping} from "../../actions/chatActions";
 
 @connect(store => {
   return {
+    messageEditing: store.messageEditing,
     threadFilesToUpload: store.threadFilesToUpload,
     threadId: store.thread.thread.id,
     isSendingText: store.threadIsSendingMessage
@@ -55,10 +59,21 @@ export default class MainFooterAttachment extends Component {
   }
 
   sendFiles(filesObject) {
-    const {threadId, dispatch} = this.props;
+    const {threadId, dispatch, messageEditing: msgEditing} = this.props;
     const files = filesObject.files;
     const caption = filesObject.caption;
+    let isReply = false;
+    if (msgEditing) {
+      if (msgEditing.type === messageEditingTypes.replying) {
+        isReply = msgEditing.message;
+        dispatch(messageEditing());
+      }
+    }
     for (const file of files) {
+      if (isReply) {
+        dispatch(messageFileReply(file, threadId, isReply.id, caption, isReply));
+        continue;
+      }
       dispatch(messageSendFile(file, threadId, caption));
     }
   }
@@ -82,7 +97,8 @@ export default class MainFooterAttachment extends Component {
             </Container>
             :
             <Container>
-              <input className={style.MainFooterAttachment__Button} type="file" onChange={this.onAttachmentChange} onClick={this.onAttachmentClick}
+              <input className={style.MainFooterAttachment__Button} type="file" onChange={this.onAttachmentChange}
+                     onClick={this.onAttachmentClick}
                      multiple ref={this.fileInput}/>
               <MdAttachFile size={styleVar.iconSizeMd} color={styleVar.colorAccentDark} style={{margin: "5px 6px"}}/>
             </Container>

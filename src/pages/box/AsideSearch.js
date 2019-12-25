@@ -21,12 +21,15 @@ import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";
 import {chatSearchResult} from "../../actions/chatActions";
 import classnames from "classnames";
+import {threadGetList} from "../../actions/threadActions";
+import {contactGetList} from "../../actions/contactActions";
 
 @connect(store => {
   return {
     threads: store.threads.threads,
     contacts: store.contactGetList.contacts,
-    chatSearchShow: store.chatSearchShow
+    chatSearchShow: store.chatSearchShow,
+    chatSearchResult: store.chatSearchResult
   };
 })
 class AsideSearch extends Component {
@@ -42,7 +45,13 @@ class AsideSearch extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    const {chatSearchShow} = this.props;
+    const {chatSearchShow, chatSearchResult} = this.props;
+    const {chatSearchShow: oldChatSearchShow, chatSearchResult: oldChatSearchResult} = oldProps;
+    if (oldChatSearchResult !== chatSearchResult) {
+      if (!chatSearchResult) {
+        this.onClearSearchClick();
+      }
+    }
     if (chatSearchShow) {
       if (!oldProps.chatSearchShow) {
         if (this.inputRef.current) {
@@ -77,24 +86,11 @@ class AsideSearch extends Component {
   search(query) {
     const {threads, contacts, dispatch} = this.props;
     if (query) {
-      let filteredThreads = [];
-      let filteredContacts;
-      if (threads) {
-        if (threads.length) {
-          for (const thread of threads) {
-            if (!thread.title) {
-              continue;
-            }
-            if (thread.title.indexOf(query) > -1) {
-              filteredThreads.push(thread);
-            }
-          }
-        }
-        if (contacts && contacts.length) {
-          filteredContacts = isContains("firstName|lastName|cellphoneNumber", query, contacts);
-        }
-        dispatch(chatSearchResult(true, filteredThreads, filteredContacts));
-      }
+      const threadPromise = dispatch(threadGetList(0, 50, query, true));
+      const contactPromise = dispatch(contactGetList(0, 50, query, false, true));
+      Promise.all([threadPromise, contactPromise]).then(result => {
+        dispatch(chatSearchResult(true, result[0].threads, result[1].contacts));
+      });
     } else {
       dispatch(chatSearchResult());
     }

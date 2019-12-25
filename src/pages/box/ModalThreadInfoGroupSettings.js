@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator} from "../../utils/helpers";
 
@@ -17,9 +17,23 @@ import Container from "../../../../uikit/src/container";
 import {InputText} from "../../../../uikit/src/input";
 
 //styling
-import {MdCameraAlt} from "react-icons/lib/md";
+import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/lib/md";
 import styleVar from "./../../../styles/variables.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
+import List, {ListItem} from "../../../../uikit/src/list";
+import Gap from "../../../../uikit/src/gap";
+import {Text} from "../../../../uikit/src/typography";
+import {ContactList} from "./_component/contactList";
+import ModalThreadInfoGroupSettingsAdminList from "./ModalThreadInfoGroupSettingsAdminList";
+import {ContactSearchFragment} from "./ModalContactList";
+import {Button} from "../../../../uikit/src/button";
+import ModalFooter from "../../../../uikit/src/modal/ModalFooter";
+import {isChannel} from "./Main";
+
+const statics = {
+  ADMIN_MANAGE: "ADMIN_MANGE",
+  MAIN: "MAIN"
+};
 
 @connect(null, null, null, {withRef: true})
 export default class ModalThreadInfoGroupSettings extends Component {
@@ -27,21 +41,47 @@ export default class ModalThreadInfoGroupSettings extends Component {
   constructor(props) {
     super(props);
     this.onGroupImageChange = this.onGroupImageChange.bind(this);
+    this.onSelectAdminList = this.onSelectAdminList.bind(this);
     this.groupNameChange = this.groupNameChange.bind(this);
+    this.onSaveSettings = this.onSaveSettings.bind(this);
+    this.onPrevious = this.onPrevious.bind(this);
     this.state = {
+      state: statics.MAIN,
       groupName: ""
     };
   }
 
   componentDidMount() {
-    const {thread} = this.props;
-    const {metadata} = thread;
-    const metaObject = metadata ? JSON.parse(metadata) : {};
+    const {thread, setHeaderFooterComponent, onClose} = this.props;
+    const isChannel = thread.type === 8;
+    const FooterComponent = () => {
+      return (
+        <Fragment>
+          <Button text onClick={this.onSaveSettings}>
+            {strings.saveSettings}
+          </Button>
+          <Button text onClick={onClose}>{strings.close}</Button>
+          <Button text onClick={this.onPrevious}>
+            <MdArrowBack/>
+          </Button>
+        </Fragment>
+      )
+    };
+    const HeaderComponent = () => {
+      return strings.groupSettings(isChannel);
+    };
+
+    setHeaderFooterComponent(HeaderComponent, FooterComponent);
     this.setState({
       groupName: thread.title,
       groupDesc: thread.description,
       image: thread.image
     });
+  }
+
+  onPrevious() {
+    const {setStep, steps} = this.props;
+    setStep(steps.ON_GROUP_INFO);
   }
 
   onGroupImageChange(evt) {
@@ -64,22 +104,27 @@ export default class ModalThreadInfoGroupSettings extends Component {
     });
   }
 
-  saveSettings() {
+  onSaveSettings() {
     const {groupDesc, image, groupName} = this.state;
-    const {thread} = this.props;
+    const {setStep, steps, thread, dispatch, } = this.props;
     const baseObject = {
       description: groupDesc, image, title: groupName
     };
     if (image) {
       baseObject.image = image;
     }
-    this.props.dispatch(threadMetaUpdate(baseObject, thread.id));
+    dispatch(threadMetaUpdate(baseObject, thread.id));
+    setStep(steps.ON_GROUP_INFO);
+  }
+
+  onSelectAdminList() {
+    const {setStep, steps} = this.props;
+    setStep(steps.ON_ADMIN_LIST);
   }
 
   render() {
-    const {groupName, groupDesc, image} = this.state;
-    const {thread} = this.props;
-    const isChannel = thread.type === 8;
+    const {groupName, groupDesc, image, mainThreadInfoGroup} = this.state;
+    const {thread, GapFragment} = this.props;
     return (
       <Container>
         <Container relative>
@@ -97,7 +142,8 @@ export default class ModalThreadInfoGroupSettings extends Component {
                                  className={style.ModalThreadInfoGroupSettings__ImageIcon}/>
                   </Container>
                 </Container>
-                <AvatarImage src={image} size="xlg" text={avatarNameGenerator(thread.title).letter} textBg={avatarNameGenerator(thread.title).color}/>
+                <AvatarImage src={image} size="xlg" text={avatarNameGenerator(thread.title).letter}
+                             textBg={avatarNameGenerator(thread.title).color}/>
               </Container>
               <AvatarName>
                 <InputText onChange={this.groupNameChange.bind(this)}
@@ -110,7 +156,17 @@ export default class ModalThreadInfoGroupSettings extends Component {
                      value={groupDesc}
                      placeholder={strings.groupDescription(isChannel)}/>
         </Container>
-
+        <GapFragment/>
+        <List>
+          <ListItem selection invert onSelect={this.onSelectAdminList}>
+            <Container relative>
+              <MdVerifiedUser size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+              <Gap x={20}>
+                <Text>مدیران</Text>
+              </Gap>
+            </Container>
+          </ListItem>
+        </List>
       </Container>
     )
   }

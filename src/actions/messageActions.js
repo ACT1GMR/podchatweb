@@ -61,13 +61,24 @@ export const messageSendOnTheFly = text => {
   }
 };
 
-export const messageSendFile = (file, threadId, caption) => {
+export const messageSendFile = (file, threadId, message) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.sendFileMessage(file, threadId, caption)
+      payload: chatSDK.sendFileMessage(file, threadId, message)
+    });
+  }
+};
+
+export const messageFileReply = (file, threadId, repliedTo, message, repliedMessage) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: MESSAGE_SEND(),
+      payload: chatSDK.replyFileMessage(file, threadId, repliedTo, message, repliedMessage)
     });
   }
 };
