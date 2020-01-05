@@ -15,6 +15,60 @@ import {stateGeneratorState} from "../utils/storeHelper";
 
 const {SUCCESS} = stateGeneratorState;
 
+function commonOnTheFlySendMessage(text, file, dispatch, getState) {
+  const state = getState();
+  const thread = state.thread.thread;
+  const chatSDK = state.chatInstance.chatSDK;
+  let messageMock = {
+    threadId: thread.id,
+    time: getNow() * Math.pow(10, 6),
+    uniqueId: `${Math.random()}`,
+    participant: state.user.user,
+    message: text
+  };
+  if (file) {
+    messageMock = {
+      ...messageMock,
+      fileObject: file,
+      metadata: {
+        file: {
+          mimeType: file.type,
+          originalName: file.name,
+          link: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+          size: file.size
+        }
+      }
+    }
+  }
+  if (thread.pendingMessage.push(messageMock) <= 1) {
+    chatSDK.createThread(thread.partner.userId, thread.participant.isMyContact ? null : "TO_BE_USER_ID").then(thread => {
+      const threadId = thread.id;
+      dispatch({
+        type: THREAD_CREATE("CACHE"),
+        payload: thread
+      });
+      const currentThread = state.thread.thread;
+      const {pendingMessage} = currentThread;
+      if (pendingMessage.length) {
+        for (const message of pendingMessage) {
+          const other = {uniqueId: `${message.uniqueId}`};
+          const messageText = message.message;
+          if (message.fileObject) {
+            dispatch(messageSendFile(message.fileObject, threadId, messageText, other));
+          } else {
+            dispatch(messageSend(messageText, thread.id, other));
+          }
+        }
+      }
+    });
+  }
+  dispatch({
+    type: MESSAGE_SEND(SUCCESS),
+    payload: messageMock
+  });
+  dispatch(threadCreateWithExistThread(thread));
+}
+
 export const messageSend = (text, threadId, other) => {
   return (dispatch, getState) => {
     const state = getState();
@@ -26,48 +80,21 @@ export const messageSend = (text, threadId, other) => {
   }
 };
 
-export const messageSendOnTheFly = text => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const thread = state.thread.thread;
-    const chatSDK = state.chatInstance.chatSDK;
-    const messageMock = {
-      threadId: thread.id,
-      time: getNow() * Math.pow(10, 6),
-      uniqueId: `${Math.random()}`,
-      participant: state.user.user,
-      message: text
-    };
-    if (thread.pendingMessage.push(messageMock) <= 1) {
-      chatSDK.createThread(thread.partner, thread.participant.isMyContact ? null : "TO_BE_USER_ID").then(thread => {
-        dispatch({
-          type: THREAD_CREATE("CACHE"),
-          payload: thread
-        });
-        const currentThread = state.thread.thread;
-        const {pendingMessage} = currentThread;
-        if (pendingMessage.length) {
-          for (const message of pendingMessage) {
-            dispatch(messageSend(message.message, thread.id, {uniqueId: `${message.uniqueId}`}));
-          }
-        }
-      });
-    }
-    dispatch({
-      type: MESSAGE_SEND(SUCCESS),
-      payload: messageMock
-    });
-    dispatch(threadCreateWithExistThread(thread));
-  }
+export const messageSendOnTheFly = message => {
+  return commonOnTheFlySendMessage.bind(null, message, null);
 };
 
-export const messageSendFile = (file, threadId, message) => {
+export const messageSendFileOnTheFly = (file, message) => {
+  return commonOnTheFlySendMessage.bind(null, message, file);
+};
+
+export const messageSendFile = (file, threadId, message, other) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.sendFileMessage(file, threadId, message)
+      payload: chatSDK.sendFileMessage(file, threadId, message, other)
     });
   }
 };

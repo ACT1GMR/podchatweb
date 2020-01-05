@@ -9,7 +9,7 @@ import {constants as messageEditingTypes} from "./MainFooterInput";
 import {
   messageEditing,
   messageFileReply,
-  messageSendFile
+  messageSendFile, messageSendFileOnTheFly
 } from "../../actions/messageActions";
 import {threadFilesToUpload} from "../../actions/threadActions";
 
@@ -28,6 +28,7 @@ import {stopTyping} from "../../actions/chatActions";
     messageEditing: store.messageEditing,
     threadFilesToUpload: store.threadFilesToUpload,
     threadId: store.thread.thread.id,
+    thread: store.thread.thread,
     isSendingText: store.threadIsSendingMessage
   };
 })
@@ -59,7 +60,7 @@ export default class MainFooterAttachment extends Component {
   }
 
   sendFiles(filesObject) {
-    const {threadId, dispatch, messageEditing: msgEditing} = this.props;
+    const {threadId, dispatch, messageEditing: msgEditing, thread} = this.props;
     const files = filesObject.files;
     const caption = filesObject.caption;
     let isReply = false;
@@ -74,7 +75,11 @@ export default class MainFooterAttachment extends Component {
         dispatch(messageFileReply(file, threadId, isReply.id, caption, isReply));
         continue;
       }
-      dispatch(messageSendFile(file, threadId, caption));
+      if (thread.onTheFly) {
+        dispatch(messageSendFileOnTheFly(file, caption));
+      } else {
+        dispatch(messageSendFile(file, threadId, caption));
+      }
     }
   }
 

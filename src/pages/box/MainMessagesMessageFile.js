@@ -184,9 +184,13 @@ class MainMessagesMessageFile extends Component {
       <Container className={style.MainMessagesFile} key={message.uuid}>
 
         {isUploading(message) ?
-          <Container className={style.MainMessagesFile__Progress}
-                     style={{width: `${message.progress ? message.progress : 0}%`}}
-                     title={`${message.progress && message.progress}`}/>
+          <Container className={style.MainMessagesFile__ProgressContainer}>
+            <Container className={style.MainMessagesFile__Progress}
+                       absolute
+                       bottomLeft
+                       style={{width: `${message.progress ? message.progress : 0}%`}}
+                       title={`${message.progress && message.progress}`}/>
+          </Container>
           : ""}
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
                        isChannel={isChannel} isGroup={isGroup}

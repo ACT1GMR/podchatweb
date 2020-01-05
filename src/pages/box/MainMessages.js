@@ -284,8 +284,10 @@ export default class MainMessages extends Component {
 
     //If old thread was on the fly and we created an actual thread for that there is no need for history fetching or something else
     if (oldThread.onTheFly) {
-      if (thread.partner === oldThread.partner) {
-        return;
+      if (!thread.group) {
+        if (thread.participants.filter(e => e.id === thread.partner)[0].coreUserId === oldThread.partner.coreUserId) {
+          return;
+        }
       }
     }
 

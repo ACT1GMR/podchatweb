@@ -94,7 +94,7 @@ export const threadCreateOnTheFly = (userId, user) => {
         onTheFly: true,
         image: user.image,
         participantCount: 2,
-        partner: user.id,
+        partner: {coreUserId: user.coreUserId, userId: user.id},
         title: user.name,
         type: 0,
         unreadCount: 0,

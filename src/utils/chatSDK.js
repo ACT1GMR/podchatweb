@@ -309,13 +309,16 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  sendFileMessage(resolve, reject, file, threadId, caption) {
-    const sendChatParams = {
+  sendFileMessage(resolve, reject, file, threadId, caption, other) {
+    let sendChatParams = {
       threadId,
       file
     };
     if (caption) {
       sendChatParams.content = caption;
+    }
+    if (other) {
+      sendChatParams = {...sendChatParams, ...other};
     }
     const obj = this.chatAgent.sendFileMessage(sendChatParams, {
       onSent: result => {

@@ -14,7 +14,7 @@ import {
   messageSend,
   messageEdit,
   messageReply,
-  messageForward, messageSendMock, messageSendOnTheFly
+  messageForward, messageSendOnTheFly
 } from "../../actions/messageActions";
 import {threadCreateWithUserWithMessage, threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 
