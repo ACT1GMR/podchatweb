@@ -186,6 +186,7 @@ let strings = new LocalizedStrings({
     forMeAndOthers: "برای من و دیگران",
     removeMessageThatYouCanDeleteForAll: "برای من و اونایی که برای دیگران هم میشه",
     adminList: "لیست مدیران",
+    admins: "مدیران",
     addAdmin: "اضافه کردن مدیر",
     doAdd: "اضافه کن",
     areYouSureAboutAddThisPersonToAdminList: "آیا مطمئنید میخوهید این کاربر را به لیست مدیران اضافه کنید",

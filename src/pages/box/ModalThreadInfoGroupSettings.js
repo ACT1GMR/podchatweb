@@ -156,17 +156,17 @@ export default class ModalThreadInfoGroupSettings extends Component {
                      value={groupDesc}
                      placeholder={strings.groupDescription(isChannel)}/>
         </Container>
-        <GapFragment/>
+{/*        <GapFragment/>
         <List>
           <ListItem selection invert onSelect={this.onSelectAdminList}>
             <Container relative>
               <MdVerifiedUser size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
               <Gap x={20}>
-                <Text>مدیران</Text>
+                <Text>{strings.admins}</Text>
               </Gap>
             </Container>
           </ListItem>
-        </List>
+        </List>*/}
       </Container>
     )
   }
