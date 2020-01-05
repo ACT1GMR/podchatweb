@@ -16,10 +16,13 @@ import {stateGeneratorState} from "../utils/storeHelper";
 
 const {CANCELED} = stateGeneratorState;
 
-export const contactGetList = (offset = 0, count, name, reset) => {
+export const contactGetList = (offset = 0, count, name, reset, direct) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if (direct) {
+      return chatSDK.getContactList(offset, count, name);
+    }
     if (reset) {
       dispatch({
         type: CONTACT_GET_LIST(CANCELED),
@@ -123,7 +126,7 @@ export const contactAdd = (mobilePhone, firstName, lastName, editMode, canceled)
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    if(canceled) {
+    if (canceled) {
       return dispatch({type: CONTACT_ADD(CANCELED)});
     }
     chatSDK.addContact(mobilePhone, firstName, lastName).then(e => {

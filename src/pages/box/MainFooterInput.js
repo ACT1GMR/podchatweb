@@ -14,7 +14,7 @@ import {
   messageSend,
   messageEdit,
   messageReply,
-  messageForward, messageSendMock, messageSendOnTheFly
+  messageForward, messageSendOnTheFly
 } from "../../actions/messageActions";
 import {threadCreateWithUserWithMessage, threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 
@@ -30,7 +30,7 @@ import style from "../../../styles/pages/box/MainFooterInput.scss";
 import {codeEmoji} from "./MainFooterEmojiIcons";
 import {startTyping, stopTyping} from "../../actions/chatActions";
 
-const constants = {
+export const constants = {
   replying: "REPLYING",
   forwarding: "FORWARDING"
 };
@@ -119,7 +119,7 @@ export default class MainFooterInput extends Component {
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
-    this.inputNode = React.createRef();
+    window.foo = this.inputNode = React.createRef();
     this.state = {
       messageText: ""
     };
@@ -132,7 +132,31 @@ export default class MainFooterInput extends Component {
     let newText = text;
     if (append) {
       if (messageText) {
-        newText = messageText + newText;
+        const carretPosition = this.inputNode.current.getLastCaretPosition();
+        const div = document.createElement("div");
+        div.innerHTML = messageText;
+        const childNode = div.childNodes;
+/*        let newHtml = "";
+        let count = 0;
+        let htmlPosition = 0;
+        for (const child of childNode) {
+          if (child.nodeType === 1) {
+            count++;
+            htmlPosition += child.outerHTML.length;
+            if (count === carretPosition) {
+              break;
+            }
+          } else if (child.nodeType === 3) {
+            const nextPosition = child.length + count;
+            if (nextPosition >= carretPosition) {
+              htmlPosition += carretPosition;
+              break;
+            } else {
+              htmlPosition += count += child.length;
+            }
+          }
+        }*/
+        newText = div.innerHTML.slice(0, carretPosition) + newText + div.innerHTML.slice(carretPosition);
       }
     }
     this.setState({

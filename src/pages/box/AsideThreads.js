@@ -235,8 +235,10 @@ class AsideThreads extends Component {
         )
       }
       if (chatSearchResult) {
-        return <Container className={classNames}><AsideThreadsSearchResult
-          chatSearchResult={chatSearchResult}/></Container>
+        return <Scroller className={classNames}
+                  threshold={5}>
+          <AsideThreadsSearchResult chatSearchResult={chatSearchResult}/>
+        </Scroller>
       }
       return (
         <Scroller className={classNames}

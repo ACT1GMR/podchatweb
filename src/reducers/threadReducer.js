@@ -43,7 +43,7 @@ import {
   THREAD_GET_LIST_PARTIAL,
   CHAT_STOP_TYPING,
   CHAT_IS_TYPING,
-  THREAD_CREATE_ON_THE_FLY
+  THREAD_CREATE_ON_THE_FLY, THREAD_ADMIN_LIST, THREAD_ADMIN_LIST_REMOVE, THREAD_ADMIN_LIST_ADD
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -342,6 +342,35 @@ export const threadsPartialReducer = (state = {
       return {...state, ...stateGenerator(PENDING)};
     case THREAD_GET_LIST_PARTIAL(SUCCESS):
       return {...state, ...stateGenerator(SUCCESS)};
+    default:
+      return state;
+  }
+};
+
+export const threadAdminListReducer = (state = {
+  admins: [],
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_ADMIN_LIST(PENDING):
+      return {...state, ...stateGenerator(PENDING)};
+    case THREAD_ADMIN_LIST_REMOVE:
+      return {...state, ...stateGenerator(SUCCESS,  updateStore(state.admins, action.payload, {
+          method: listUpdateStrategyMethods.REMOVE,
+          by: "id"
+        }), "admins")};
+    case THREAD_ADMIN_LIST_ADD:
+      return {...state, ...stateGenerator(SUCCESS,  updateStore(state.admins, action.payload, {
+          method: listUpdateStrategyMethods.UPDATE,
+          upsert: true,
+          by: "id"
+        }), "admins")};
+    case THREAD_ADMIN_LIST(SUCCESS):
+      return {...state, ...stateGenerator(SUCCESS, action.payload, "admins")};
+    case THREAD_ADMIN_LIST(ERROR):
+      return {...state, ...stateGenerator(ERROR, action.payload)};
     default:
       return state;
   }

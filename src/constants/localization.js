@@ -185,6 +185,11 @@ let strings = new LocalizedStrings({
     forMeOnly: "فقط برای من",
     forMeAndOthers: "برای من و دیگران",
     removeMessageThatYouCanDeleteForAll: "برای من و اونایی که برای دیگران هم میشه",
+    adminList: "لیست مدیران",
+    admins: "مدیران",
+    addAdmin: "اضافه کردن مدیر",
+    doAdd: "اضافه کن",
+    areYouSureAboutAddThisPersonToAdminList: "آیا مطمئنید میخوهید این کاربر را به لیست مدیران اضافه کنید",
     howWeShouldDeleteThisMessageForYou: count =>{
       if(count) {
         return `این ${count} تا پیام رو چطوری دوست داری برات حذف کنیم`

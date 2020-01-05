@@ -31,7 +31,8 @@ import {
   threadGetMessageListByMessageIdReducer,
   threadSelectMessageShowingReducer,
   threadCheckedMessageListReducer,
-  threadEmojiShowingReducer
+  threadEmojiShowingReducer,
+  threadAdminListReducer
 } from "./threadReducer";
 import {
   messageNewReducer,
@@ -96,6 +97,7 @@ const rootReducer = {
   threadGoToMessageId: threadGoToMessageIdReducer,
   threadGetMessageListByMessageId: threadGetMessageListByMessageIdReducer,
   threadCheckedMessageList: threadCheckedMessageListReducer,
+  threadAdminList: threadAdminListReducer,
   messageNew: messageNewReducer,
   messageEditing: messageEditingReducer,
   user: userReducer,

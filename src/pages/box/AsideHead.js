@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-
+import {OnWindowFocusInOut} from "../../utils/helpers";
 //strings
 import strings from "../../constants/localization";
 import {
@@ -94,6 +94,14 @@ class AsideHead extends Component {
     this.onOpenMenu = this.onOpenMenu.bind(this);
     this.onRetryClick = this.onRetryClick.bind(this);
     this.onChatSearchToggle = this.onChatSearchToggle.bind(this);
+    OnWindowFocusInOut(null, e => {
+      const {isDisconnected} = this.socketStatus();
+      if(isDisconnected) {
+        if(!this.state.reConnecting) {
+          this.onRetryClick();
+        }
+      }
+    })
   }
 
   componentDidUpdate(prevProps) {

@@ -34,7 +34,7 @@ import {
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
   THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO, THREAD_PARTICIPANT_GET_LIST_PARTIAL,
-  THREAD_GET_LIST_PARTIAL, THREAD_CREATE_ON_THE_FLY
+  THREAD_GET_LIST_PARTIAL, THREAD_CREATE_ON_THE_FLY, THREAD_ADMIN_LIST, THREAD_ADMIN_LIST_REMOVE, THREAD_ADMIN_LIST_ADD
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
@@ -94,7 +94,7 @@ export const threadCreateOnTheFly = (userId, user) => {
         onTheFly: true,
         image: user.image,
         participantCount: 2,
-        partner: user.id,
+        partner: {coreUserId: user.coreUserId, userId: user.id},
         title: user.name,
         type: 0,
         unreadCount: 0,
@@ -122,12 +122,12 @@ export const threadInit = () => {
   }
 };
 
-export const threadGetList = (offset = 0, count, name, direct) => {
+export const threadGetList = (offset = 0, count, name, direct, params) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     if (direct) {
-      return chatSDK.getThreads(offset, count, name);
+      return chatSDK.getThreads(offset, count, name, params);
     }
     dispatch({
       type: offset > 0 ? THREAD_GET_LIST_PARTIAL() : THREAD_GET_LIST(),
@@ -275,6 +275,45 @@ export const threadParticipantList = (threadId, offset = 0, count, name) => {
   }
 };
 
+
+export const threadAdminList = (threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return dispatch({
+      type: THREAD_ADMIN_LIST(),
+      payload: chatSDK.getThreadAdmins(threadId)
+    });
+  }
+};
+
+export const threadAdminRemove = (userId, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.removeAdmin(userId, threadId).then(() => {
+      return dispatch({
+        type: THREAD_ADMIN_LIST_REMOVE,
+        payload: userId
+      });
+    });
+  }
+};
+
+export const threadAdminAdd = (participant, threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    const userId = participant.id;
+    chatSDK.setAdmin(userId, threadId).then(() => {
+      return dispatch({
+        type: THREAD_ADMIN_LIST_ADD,
+        payload: participant
+      });
+    });
+  }
+};
+
 export const threadModalListShowing = (isShowing, message) => {
   return dispatch => {
     return dispatch({
@@ -318,9 +357,12 @@ export const threadAddParticipant = (threadId, contactIds) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    return dispatch({
-      type: THREAD_PARTICIPANT_ADD(),
-      payload: chatSDK.addParticipants(threadId, contactIds)
+    chatSDK.addParticipants(threadId, contactIds).then(e => {
+      dispatch(threadParticipantList(threadId, 0, 50));
+      return dispatch({
+        type: THREAD_PARTICIPANT_ADD(SUCCESS),
+        payload: e
+      });
     });
   }
 };

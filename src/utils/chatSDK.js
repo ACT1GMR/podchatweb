@@ -11,8 +11,8 @@ export default class ChatSDK {
 
   constructor(props) {
     this.params = {
-      socketAddress: props.config.local ? "ws://172.16.106.26:8003/ws" : "wss://chat-sandbox.pod.land/ws", // {**REQUIRED**} Socket Address
-      ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.land", // {**REQUIRED**} Socket Address
+      socketAddress: props.config.local ? "ws://172.16.106.26:8003/ws" : "wss://chat-sandbox.pod.ir/ws", // {**REQUIRED**} Socket Address
+      ssoHost: props.config.local ? "http://172.16.110.76" : "https://accounts.pod.ir", // {**REQUIRED**} Socket Address
       ssoGrantDevicesAddress: "/oauth2/grants/devices", // {**REQUIRED**} Socket Address
       platformHost: props.config.local ? "http://172.16.106.26:8080/hamsam" : "https://sandbox.pod.land:8043/srv/basic-platform", // {**REQUIRED**} Platform Core Address
       fileServer: "https://sandbox.pod.land:8443", // {**REQUIRED**} File Server Address
@@ -198,7 +198,7 @@ export default class ChatSDK {
 
   @promiseDecorator
   getThreadInfo(resolve, reject, params) {
-    this.getThreads(null, null, null, params).then(result => {
+    this.getThreads(null, null, null, {...params, cache: false}).then(result => {
       if (!this._onError(result, reject)) {
         return resolve(result.threads[0]);
       }
@@ -228,6 +228,68 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getThreadAdmins(resolve, reject, threadId) {
+    let getThreadAdmins = {
+      threadId
+    };
+    this.chatAgent.getThreadAdmins(getThreadAdmins, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result.participants);
+      }
+    });
+  }
+
+  @promiseDecorator
+  setAdmin(resolve, reject, userId, threadId, params) {
+    let setAdminParams = {
+      admins: [{
+        userId, roles: [
+          'post_channel_message',
+          'edit_message_of_others',
+          'delete_message_of_others',
+          'add_new_user',
+          'remove_user',
+          'thread_admin',
+          'add_rule_to_user',
+          'remove_role_from_user',
+          'read_thread',
+          'edit_thread'
+        ]
+      }, ...{params: params || {}}],
+      threadId
+    };
+    this.chatAgent.setAdmin(setAdminParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
+
+  @promiseDecorator
+  removeAdmin(resolve, reject, userId, threadId, params) {
+    let setAdminParams = {
+      threadId,
+      admins: [{userId, roles: [
+          'post_channel_message',
+          'edit_message_of_others',
+          'delete_message_of_others',
+          'add_new_user',
+          'remove_user',
+          'thread_admin',
+          'add_rule_to_user',
+          'remove_role_from_user',
+          'edit_thread'
+        ]}, ...{params: params || {}}],
+
+    };
+    this.chatAgent.removeAdmin(setAdminParams, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result);
+      }
+    });
+  }
+
+  @promiseDecorator
   sendMessage(resolve, reject, content, threadId, other) {
     let sendChatParams = {
       content,
@@ -247,13 +309,16 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  sendFileMessage(resolve, reject, file, threadId, caption) {
-    const sendChatParams = {
+  sendFileMessage(resolve, reject, file, threadId, caption, other) {
+    let sendChatParams = {
       threadId,
       file
     };
     if (caption) {
       sendChatParams.content = caption;
+    }
+    if (other) {
+      sendChatParams = {...sendChatParams, ...other};
     }
     const obj = this.chatAgent.sendFileMessage(sendChatParams, {
       onSent: result => {
@@ -421,6 +486,49 @@ export default class ChatSDK {
         },
         time: getNow() * Math.pow(10, 6),
         message: content,
+      }
+    });
+  }
+
+  @promiseDecorator
+  replyFileMessage(resolve, reject, file, threadId, repliedTo, content, repliedMessage) {
+    const sendChatParams = {
+      threadId,
+      repliedTo,
+      file,
+      content
+    };
+    const obj = this.chatAgent.replyFileMessage(sendChatParams, result => {
+      if (!this._onError(result, reject)) {
+        return resolve({
+          result, ...{
+            message, participant: {}
+          }
+        });
+      }
+    });
+    const {metadata, participant, time, message} = repliedMessage;
+    resolve({
+      ...obj, ...{
+        replyInfo: {
+          message: message,
+          metadata: metadata,
+          participant: participant,
+          repliedToMessageId: repliedTo,
+          repliedToMessageTime: time,
+          messageType: 0,
+        },
+        time: getNow() * Math.pow(10, 6),
+        message: content,
+        fileObject: file,
+        metadata: {
+          file: {
+            mimeType: file.type,
+            originalName: file.name,
+            link: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+            size: file.size
+          }
+        }
       }
     });
   }

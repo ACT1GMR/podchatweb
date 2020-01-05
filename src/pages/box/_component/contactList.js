@@ -28,7 +28,7 @@ export function getName(contact) {
 
 }
 
-function getImage(contact) {
+export function getImage(contact) {
   if (contact.linkedUser) {
     return contact.linkedUser.image;
   }

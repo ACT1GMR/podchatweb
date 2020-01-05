@@ -71,17 +71,20 @@ export const chatSetInstance = config => {
                   :
                   type === THREADS_LIST_CHANGE ? thread.result.threads
                     :
-                    type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
+                    type === THREAD_PARTICIPANTS_LIST_CHANGE ? {...thread.result, threadId: thread.threadId}
                       :
-                      type === THREAD_PARTICIPANTS_LIST_CHANGE ? {
-                        threadId: thread.threadId,
-                        participants: thread.result.participants
-                      } : thread
+                      type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
+                        : thread
             });
           case THREAD_REMOVED_FROM:
             return dispatch(threadLeave(thread.result.thread, true));
           default:
             thread.changeType = type;
+            if (thread.result) {
+              if (!thread.result.thread) {
+                return;
+              }
+            }
             dispatch({
               type: THREAD_CHANGED,
               payload: thread.result ? thread.result.thread : thread

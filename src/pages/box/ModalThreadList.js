@@ -82,7 +82,7 @@ export default class ModalThreadList extends Component {
 
   _directThreadListRequest(contactsNextOffset, onSearch, query) {
     const {dispatch, threads: oldThreads} = this.props;
-    dispatch(threadGetList(contactsNextOffset || 0, constants.count, query, true))
+    dispatch(threadGetList(contactsNextOffset || 0, constants.count, query, true, {cache: false}))
       .then(({threads, nextOffset, hasNext}) => {
         const {remainingThreads} = this.state;
         let realThreads = remainingThreads.concat(threads);

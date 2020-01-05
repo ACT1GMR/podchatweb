@@ -89,7 +89,7 @@ export default class MainFooterEmojiIcons extends Component {
     const {setInputText, focusInputNode} = this.props;
     setInputText(buildEmojiIcon(el.x, el.y, emoji.name), true);
     if (!mobileCheck()) {
-      setTimeout(focusInputNode, 100);
+      setTimeout(focusInputNode, 20);
     }
   }
 

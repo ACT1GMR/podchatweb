@@ -32,31 +32,19 @@
   border-radius: 5px;
 }
 
-.MainMessagesFile__Progress {
-  position: absolute;
-  height: 4px;
-  background-color: $color-accent;
-  bottom: 0;
-  left: 0;
-  border-radius: 5px;
-  transition: width 0.5s ease-in-out;
-  margin-left: 7px;
-  z-index: 1;
+.MainMessagesFile__ProgressContainer {
+   position: absolute;
+   bottom: 2px;
+   left: 5px;
+   z-index: 1;
+   width: calc(100% - 10px);
 }
 
-.MainMessagesFile__Progress:after {
-  position: absolute;
-  color: $color-white;
-  line-height: 20px;
-  content: attr(title);
-  width: 20px;
-  height: 20px;
-  right: -10px;
-  top: -10px;
-  background-color: #f58220;
-  border-radius: 50%;
-  font-size: $font-size-xsm;
-  text-align: center;
+.MainMessagesFile__Progress {
+  height: 4px;
+  background-color: $color-accent;
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
 }
 
 @include grid("md") {
