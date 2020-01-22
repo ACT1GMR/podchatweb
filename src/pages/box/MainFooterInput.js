@@ -114,48 +114,29 @@ export default class MainFooterInput extends Component {
     super();
     this.onTextChange = this.onTextChange.bind(this);
     this.setInputText = this.setInputText.bind(this);
+    this.onInputFocus = this.onInputFocus.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
+    this.onInputKeyDown = this.onInputKeyDown.bind(this);
     this.onPaste = this.onPaste.bind(this);
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
     window.foo = this.inputNode = React.createRef();
     this.state = {
+      mentioning: false,
       messageText: ""
     };
   }
 
   setInputText(text, append) {
-    const {dispatch, messageEditing, thread} = this.props;
+    const {dispatch, messageEditing} = this.props;
     const {messageText} = this.state;
-    const threadId = thread.id;
     let newText = text;
     if (append) {
       if (messageText) {
         const carretPosition = this.inputNode.current.getLastCaretPosition();
         const div = document.createElement("div");
         div.innerHTML = messageText;
-        const childNode = div.childNodes;
-/*        let newHtml = "";
-        let count = 0;
-        let htmlPosition = 0;
-        for (const child of childNode) {
-          if (child.nodeType === 1) {
-            count++;
-            htmlPosition += child.outerHTML.length;
-            if (count === carretPosition) {
-              break;
-            }
-          } else if (child.nodeType === 3) {
-            const nextPosition = child.length + count;
-            if (nextPosition >= carretPosition) {
-              htmlPosition += carretPosition;
-              break;
-            } else {
-              htmlPosition += count += child.length;
-            }
-          }
-        }*/
         newText = div.innerHTML.slice(0, carretPosition) + newText + div.innerHTML.slice(carretPosition);
       }
     }
@@ -302,7 +283,47 @@ export default class MainFooterInput extends Component {
     }
   }
 
+  showParticipant() {
+    const {showParticipant, messageText} = this.state;
+    const cursorPosition = this.inputNode.current.getCaretPosition();
+    const sliceMessage = messageText.slice(0, cursorPosition);
+    const mentionMatches = sliceMessage.match(/@[0-9a-z](\.?[0-9a-z])*/gm);
+    if (!mentionMatches) {
+      if (showParticipant) {
+        console.log("MENTIONED", false, "NO MATCHES");
+        return this.setState({
+          showParticipant: false
+        });
+      }
+    }
+    const lastMentionIndex = sliceMessage.lastIndexOf("@");
+    const lastMentionedSliceMessage = sliceMessage.slice(lastMentionIndex, sliceMessage.length);
+    const matches = lastMentionedSliceMessage.match(/\s+/g);
+    if (matches) {
+      console.log("MENTIONED", false, "SPACE WITHIN");
+      if (showParticipant) {
+        return this.setState({
+          showParticipant: false
+        });
+      }
+    }
+    const lastMentionedMan = mentionMatches[mentionMatches.length - 1];
+    this.setState({
+      showParticipant: lastMentionedMan
+    });
+    console.log("MENTIONED", true, "FIND MATCHES", lastMentionedMan);
+  }
+
+  removeBluish() {
+
+  }
+
   onInputKeyPress(evt) {
+
+    const {thread} = this.props;
+    if (thread.type === 8) {
+      this.showParticipant();
+    }
     if (!mobileCheck()) {
       if (evt.which === 13 && !evt.shiftKey) {
         this.props.dispatch(stopTyping());
@@ -312,13 +333,26 @@ export default class MainFooterInput extends Component {
     }
   }
 
+  onInputKeyDown(evt) {
+    if (this.props.thread.type === 8) {
+      if (evt.keyCode === 8) {
+        this.showParticipant();
+        this.removeBluish();
+      }
+    }
+  }
+
   onPaste(e) {
     e.stopPropagation();
   }
 
+  onInputFocus(e) {
+    console.log(e);
+  }
+
   render() {
     const {messageEditing} = this.props;
-    const {messageText} = this.state;
+    const {messageText, showParticipant} = this.state;
     const editBotClassNames = classnames({
       [style.MainFooterInput__EditBox]: true,
       [style["MainFooterInput__EditBox--halfBorder"]]: messageEditingCondition(messageEditing)
@@ -326,6 +360,9 @@ export default class MainFooterInput extends Component {
     return (
       <Container className={style.MainFooterInput}>
         <Container className={style.MainFooterInput__EditingBox}>
+          {showParticipant &&
+            <MainFooterInputParticipants filterString={showParticipant}/>
+          }
           <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
         </Container>
         <Container relative className={editBotClassNames}>
@@ -338,6 +375,8 @@ export default class MainFooterInput extends Component {
               placeholder={strings.pleaseWriteHere}
               onChange={this.onTextChange}
               onKeyPress={this.onInputKeyPress}
+              onKeyDown={this.onInputKeyDown}
+              onFocus={this.onInputFocus}
               value={messageText}/>
           </Container>
           <Container centerLeft>
