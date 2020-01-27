@@ -4,31 +4,28 @@ import {connect} from "react-redux";
 import classnames from "classnames";
 import sanitizeHTML from "sanitize-html";
 import {mobileCheck} from "../../utils/helpers";
-
 //strings
 import strings from "../../constants/localization";
-
 //actions
 import {
-  messageEditing,
-  messageSend,
   messageEdit,
+  messageEditing,
+  messageForward,
   messageReply,
-  messageForward, messageSendOnTheFly
+  messageSend,
+  messageSendOnTheFly
 } from "../../actions/messageActions";
-import {threadCreateWithUserWithMessage, threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
-
+import {threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 //components
 import MainFooterInputEmoji from "./MainFooterInputEmoji";
 import MainFooterInputEditing, {messageEditingCondition} from "./MainFooterInputEditing";
 import Container from "../../../../uikit/src/container";
 import {InputTextArea} from "../../../../uikit/src/input";
-
-
 //styling
 import style from "../../../styles/pages/box/MainFooterInput.scss";
 import {codeEmoji} from "./MainFooterEmojiIcons";
 import {startTyping, stopTyping} from "../../actions/chatActions";
+import MainFooterInputParticipants from "./MainFooterInputParticipants";
 
 export const constants = {
   replying: "REPLYING",
@@ -101,6 +98,39 @@ function clearHtml(html) {
 }
 
 
+function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
+  if (!messageText) {
+    return false;
+  }
+  const cursorPosition = inputNode.getCaretPosition();
+  const sliceMessage = messageText.slice(0, cursorPosition);
+  if (!isSetMode) {
+    if (sliceMessage[sliceMessage.length - 1] === "@") {
+      return true;
+    }
+  }
+  const mentionMatches = sliceMessage.match(/@[0-9a-z\u0600-\u06FF](\.?[0-9a-z\u0600-\u06FF])*/gm);
+  if (!isSetMode) {
+    if (!mentionMatches) {
+      return false;
+    }
+  }
+  const lastMentionIndex = sliceMessage.lastIndexOf("@");
+  if (isSetMode) {
+    let modifiedReplaceText = `@${replaceText}`;
+    if (!messageText[cursorPosition + 1] || messageText[cursorPosition] !== " ") {
+      modifiedReplaceText += " ";
+    }
+    return `${sliceMessage.substr(0, lastMentionIndex)}${modifiedReplaceText}${messageText.substr(cursorPosition)}`;
+  }
+  const lastMentionedSliceMessage = sliceMessage.slice(lastMentionIndex, sliceMessage.length);
+  const matches = lastMentionedSliceMessage.match(/\s+/g);
+  if (matches) {
+    return false;
+  }
+  return mentionMatches[mentionMatches.length - 1].replace("@", "");
+}
+
 @connect(store => {
   return {
     messageEditing: store.messageEditing,
@@ -118,6 +148,7 @@ export default class MainFooterInput extends Component {
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
     this.onPaste = this.onPaste.bind(this);
+    this.onParticipantSelect = this.onParticipantSelect.bind(this);
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
@@ -129,7 +160,7 @@ export default class MainFooterInput extends Component {
   }
 
   setInputText(text, append) {
-    const {dispatch, messageEditing} = this.props;
+    const {dispatch, messageEditing, thread} = this.props;
     const {messageText} = this.state;
     let newText = text;
     if (append) {
@@ -279,51 +310,51 @@ export default class MainFooterInput extends Component {
           dispatch(stopTyping());
         }, 1500);
       }
+      if (thread.group) {
+        this.showParticipant(event);
+      }
       this.setInputText(event);
     }
   }
 
-  showParticipant() {
-    const {showParticipant, messageText} = this.state;
-    const cursorPosition = this.inputNode.current.getCaretPosition();
-    const sliceMessage = messageText.slice(0, cursorPosition);
-    const mentionMatches = sliceMessage.match(/@[0-9a-z](\.?[0-9a-z])*/gm);
-    if (!mentionMatches) {
+  showParticipant(messageText) {
+    const {showParticipant} = this.state;
+    const lastMentionedMan = getCursorMentionMatch(messageText, this.inputNode.current);
+    if (!lastMentionedMan) {
       if (showParticipant) {
         console.log("MENTIONED", false, "NO MATCHES");
         return this.setState({
           showParticipant: false
         });
       }
+      return;
     }
-    const lastMentionIndex = sliceMessage.lastIndexOf("@");
-    const lastMentionedSliceMessage = sliceMessage.slice(lastMentionIndex, sliceMessage.length);
-    const matches = lastMentionedSliceMessage.match(/\s+/g);
-    if (matches) {
-      console.log("MENTIONED", false, "SPACE WITHIN");
-      if (showParticipant) {
-        return this.setState({
-          showParticipant: false
-        });
-      }
-    }
-    const lastMentionedMan = mentionMatches[mentionMatches.length - 1];
     this.setState({
-      showParticipant: lastMentionedMan
+      showParticipant: true,
+      filterString: lastMentionedMan === true ? null : lastMentionedMan
     });
     console.log("MENTIONED", true, "FIND MATCHES", lastMentionedMan);
   }
 
-  removeBluish() {
+  onParticipantSelect(contact) {
+    const {messageText} = this.state;
+    const newMessageText = getCursorMentionMatch(messageText, this.inputNode.current, true, contact.username);
+    this.setInputText(newMessageText);
+    setTimeout(() => this.focus(), 100);
+    this.setState({
+      showParticipant: false,
+      filterString: null
+    });
+  }
 
+  removeBluish() {
+    const {messageText} = this.state;
+    const lastMentionedMan = getCursorMentionMatch(messageText, this.inputNode.current);
+    console.log(contact);
   }
 
   onInputKeyPress(evt) {
-
     const {thread} = this.props;
-    if (thread.type === 8) {
-      this.showParticipant();
-    }
     if (!mobileCheck()) {
       if (evt.which === 13 && !evt.shiftKey) {
         this.props.dispatch(stopTyping());
@@ -334,9 +365,8 @@ export default class MainFooterInput extends Component {
   }
 
   onInputKeyDown(evt) {
-    if (this.props.thread.type === 8) {
+    if (this.props.thread.group) {
       if (evt.keyCode === 8) {
-        this.showParticipant();
         this.removeBluish();
       }
     }
@@ -351,8 +381,8 @@ export default class MainFooterInput extends Component {
   }
 
   render() {
-    const {messageEditing} = this.props;
-    const {messageText, showParticipant} = this.state;
+    const {messageEditing, thread} = this.props;
+    const {messageText, showParticipant, filterString} = this.state;
     const editBotClassNames = classnames({
       [style.MainFooterInput__EditBox]: true,
       [style["MainFooterInput__EditBox--halfBorder"]]: messageEditingCondition(messageEditing)
@@ -361,7 +391,7 @@ export default class MainFooterInput extends Component {
       <Container className={style.MainFooterInput}>
         <Container className={style.MainFooterInput__EditingBox}>
           {showParticipant &&
-            <MainFooterInputParticipants filterString={showParticipant}/>
+          <MainFooterInputParticipants filterString={filterString} onSelect={this.onParticipantSelect} thread={thread}/>
           }
           <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
         </Container>

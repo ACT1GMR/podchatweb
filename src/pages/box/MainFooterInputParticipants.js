@@ -10,25 +10,19 @@ import strings from "../../constants/localization";
 
 //actions
 import {
-  messageEditing,
-  messageSend,
-  messageEdit,
-  messageReply,
-  messageForward, messageSendOnTheFly
-} from "../../actions/messageActions";
-import {
-  threadCreateWithUserWithMessage,
-  threadEmojiShowing,
-  threadIsSendingMessage,
   threadParticipantList
 } from "../../actions/threadActions";
 
 //components
 import Container from "../../../../uikit/src/container";
-
+import Scroller from "../../../../uikit/src/scroller";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterInputParticipants.scss";
+import {ContactList} from "./_component/contactList";
+import ModalBody from "../../../../uikit/src/modal/ModalBody";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Gap from "../../../../uikit/src/gap";
 
 export const constants = {
   count: 20
@@ -38,40 +32,95 @@ export const constants = {
 @connect()
 export default class extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.hasNextParticipants = false;
+    this.requesting = false;
+    this.nextParticipantOffset = 0;
+    this.searchParticipantTimeout = null;
+    this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onContactSelect = this.onContactSelect.bind(this);
+    this.state = {
+      participants: []
+    };
   }
 
+  _reset() {
+    this.hasNextParticipants = false;
+    this.nextParticipantOffset = 0;
+    this.setState({
+      participants: []
+    });
+  }
 
   componentDidMount() {
-
+    this._reset();
+    this.getParticipantList();
   }
 
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    const {filterString: newFilterString} = nextProps;
+  shouldComponentUpdate(nextProps) {
+    const {filterString: newFilterString, thread} = nextProps;
     const {filterString} = this.props;
-    dispatch(threadParticipantList(thread.id, participantsNextOffset, constants.count, query));
+    if (newFilterString !== filterString) {
+      this._reset();
+      this.requesting = true;
+      clearTimeout(this.searchParticipantTimeout);
+      this.searchParticipantTimeout = setTimeout(e => {
+        this.requesting = false;
+        clearTimeout(this.searchParticipantTimeout);
+        this.getParticipantList(newFilterString);
+      }, 750);
+    }
+    return true;
   }
 
   componentDidUpdate(prevProps) {
 
   }
 
-  getParticipantList(participantsNextOffset, query) {
-    const {thread} = this.props;
-    dispatch(threadParticipantList(thread.id, participantsNextOffset, constants.count, query)).then(list => {
+  onScrollBottomThreshold() {
+    if (this.hasNextParticipants) {
+      this.getParticipantList();
+    }
+  }
+
+  onContactSelect(contactId, contact) {
+    const {onSelect} = this.props;
+    if (onSelect) {
+      onSelect(contact);
+    }
+  }
+
+  getParticipantList(query) {
+    if (this.requesting) {
+      return;
+    }
+    const {thread, filterString, dispatch} = this.props;
+    dispatch(threadParticipantList(thread.id, this.nextParticipantOffset, constants.count, query || filterString, true)).then(result => {
+      this.requesting = false;
+      const {participants} = this.state;
+      const {participants: nextParticipants, hasNext, nextOffset} = result;
+      this.nextParticipantOffset = nextOffset;
+      this.hasNextParticipants = hasNext;
       this.setState({
-        list
-      })
-    })
+        participants: participants.concat(nextParticipants)
+      });
+    });
+    this.requesting = true;
   }
 
   render() {
-    const {filterString} = this.props;
+    const {participants} = this.state;
     return (
-      <Container className={style.MainFooterInputParticipants}>
-
-      </Container>
+      <Scroller className={style.MainFooterInputParticipants}
+                threshold={5}
+                onScrollBottomThresholdCondition={this.hasNextParticipants}
+                onScrollBottomThreshold={this.onScrollBottomThreshold}>
+        {this.requesting && <Container>
+          <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+        </Container>}
+        <ContactList contacts={participants} onSelect={this.onContactSelect} selection invert/>
+      </Scroller>
     );
   }
 }

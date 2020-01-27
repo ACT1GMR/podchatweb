@@ -259,10 +259,13 @@ export const threadNewMessage = message => {
   }
 };
 
-export const threadParticipantList = (threadId, offset = 0, count, name) => {
+export const threadParticipantList = (threadId, offset = 0, count, name, direct) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    if (direct) {
+      return chatSDK.getThreadParticipantList(threadId, offset, count, name);
+    }
     if (!threadId) {
       return dispatch({
         type: THREAD_PARTICIPANT_GET_LIST(CANCELED)

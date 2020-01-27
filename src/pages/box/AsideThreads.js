@@ -1,5 +1,5 @@
 // src/list/Avatar.scss.js
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator, getNow} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
@@ -75,7 +75,8 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
 
   return (
     <Container> {
-      isTypingReal ? <TypingFragment isGroup={isGroup || isChannel} typing={isTyping} textProps={{size: "sm", color: "yellow", dark: true}}/> :
+      isTypingReal ? <TypingFragment isGroup={isGroup || isChannel} typing={isTyping}
+                                     textProps={{size: "sm", color: "yellow", dark: true}}/> :
         isGroup && !isChannel ?
           hasLastMessage ?
             <Container>
@@ -236,7 +237,7 @@ class AsideThreads extends Component {
       }
       if (chatSearchResult) {
         return <Scroller className={classNames}
-                  threshold={5}>
+                         threshold={5}>
           <AsideThreadsSearchResult chatSearchResult={chatSearchResult}/>
         </Scroller>
       }
@@ -274,9 +275,18 @@ class AsideThreads extends Component {
                   {el.unreadCount ?
                     <Container absolute centerLeft>
                       <Gap y={10} block/>
+                      {el.mentioned &&
+                      <Fragment>
+                        <Shape color="accent">
+                          <ShapeCircle>@</ShapeCircle>
+                        </Shape>
+                        <Gap x={1}/>
+                      </Fragment>
+                      }
                       <Shape color="accent">
                         <ShapeCircle>{el.unreadCount}</ShapeCircle>
                       </Shape>
+
                     </Container> : ""}
                 </Container>
               </ListItem>
