@@ -197,6 +197,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getThreadUnreadMentionedMessageList(resolve, reject, threadId, params) {
+    this.chatAgent.getUnreadMentionedMessages({threadId, ...params}, result => {
+      if (!this._onError(result, reject)) {
+        return resolve({threadId, messages: result.result.history});
+      }
+    });
+  }
+
+  @promiseDecorator
   getThreadInfo(resolve, reject, params) {
     this.getThreads(null, null, null, {...params, cache: false}).then(result => {
       if (!this._onError(result, reject)) {

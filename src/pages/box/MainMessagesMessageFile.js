@@ -140,6 +140,7 @@ class MainMessagesMessageFile extends Component {
     const {dispatch, message} = this.props;
     dispatch(messageCancelFile(message.uniqueId, message.threadId));
   }
+
   onClick(){
     console.log(arguments)
   }

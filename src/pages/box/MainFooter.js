@@ -16,6 +16,7 @@ import Container from "../../../../uikit/src/container";
 
 //styling
 import style from "../../../styles/pages/box/MainFooter.scss";
+import MainFooterInputParticipants from "./MainFooterInputParticipants";
 
 @connect(store => {
   return {

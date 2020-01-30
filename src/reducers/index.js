@@ -9,6 +9,7 @@ import {
 } from "./contactReducer";
 import {
   threadNotificationReducer,
+  threadUnreadMentionedMessageListReducer,
   threadMessageListReducer,
   threadMessageListPartialReducer,
   threadParticipantListReducer,
@@ -76,6 +77,7 @@ const rootReducer = {
   thread: threadCreateReducer,
   threadNotification: threadNotificationReducer,
   threadMessages: threadMessageListReducer,
+  threadUnreadMentionedMessages: threadUnreadMentionedMessageListReducer,
   threadEmojiShowing: threadEmojiShowingReducer,
   threadMessagesPartial: threadMessageListPartialReducer,
   threadModalListShowing: threadModalListShowingReducer,

@@ -39,7 +39,7 @@ export function getImage(contact) {
 }
 
 export function ContactList(props) {
-  const {contacts, activeList, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment} = props;
+  const {contacts, activeList, activeRef, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment} = props;
   let filterContacts = [...contacts];
   return (
     <List>
@@ -51,6 +51,7 @@ export function ContactList(props) {
                   onSelect={onSelect ? () => onSelect(el.id, el) : null}
                   onDeselect={onDeselect ? () => onDeselect(el.id, el) : null}
                   invert={invert}
+                  ref={activeList && activeList.indexOf(el.id) > -1 ? activeRef: null}
                   active={activeList && activeList.indexOf(el.id) > -1}>
           <Container relative>
             <Avatar>

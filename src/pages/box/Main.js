@@ -8,7 +8,7 @@ import {mobileCheck} from "../../utils/helpers";
 import {
   ROUTE_THREAD,
   ROUTE_ADD_CONTACT,
-  ROUTE_CONTACTS,
+  ROUTE_CONTACTS, ROUTE_USERNAME,
 } from "../../constants/routes";
 import strings from "../../constants/localization";
 
@@ -75,7 +75,6 @@ class Main extends Component {
 
   componentDidUpdate(oldProps) {
     const {history, dispatch} = this.props;
-
     if (mobileCheck()) {
       if (history.location.pathname === "/") {
         dispatch(threadInit());

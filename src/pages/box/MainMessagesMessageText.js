@@ -37,8 +37,21 @@ function urlify(text) {
   var urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, function (url) {
     const urlReal = url.replace(/&amp;/g, "&");
-    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord"
+    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord" linkClearStyle
                                                      title={urlReal}>{urlReal}</Text>)
+  })
+}
+
+function mentionify(text, onClick) {
+  if (!text) {
+    return "";
+  }
+  text = text.replace(/<br\s*[\/]?>/gi, "\n");
+  var mentionRegex = /@[0-9a-z\u0600-\u06FF](\.?[0-9a-z\u0600-\u06FF])*/gm;
+  return text.replace(mentionRegex, function (username) {
+    const realUserName = username.replace(/&amp;/g, "&");
+    return `<span style="cursor: pointer" onClick='window.onUserNameClick(this)'>${ReactDOMServer.renderToStaticMarkup(
+      <Text color="accent" dark bold wordWrap="breakWord" inline title={realUserName}>{realUserName}</Text>)}</span>`;
   })
 }
 
@@ -47,6 +60,7 @@ export default class MainMessagesMessageText extends Component {
 
   constructor(props) {
     super(props);
+    window.onUserNameClick = this.onUserNameClick = this.onUserNameClick.bind(this);
   }
 
   onRetry(message) {
@@ -63,6 +77,11 @@ export default class MainMessagesMessageText extends Component {
     const {onMessageControlHide, dispatch} = this.props;
     this.props.dispatch(messageEditing(message));
     onMessageControlHide();
+  }
+
+  onUserNameClick(e) {
+    const userName = e.textContent.replace("@", "");
+
   }
 
   render() {
@@ -105,7 +124,7 @@ export default class MainMessagesMessageText extends Component {
           </ControlFragment>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
-              {urlify(decodeEmoji(message.message))}
+              {mentionify(urlify(decodeEmoji(message.message)), this.onUserNameClick)}
             </Text>
           </Container>
           <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}

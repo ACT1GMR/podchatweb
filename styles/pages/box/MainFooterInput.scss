@@ -52,3 +52,21 @@
   flex-grow: 1;
   max-width: calc(100% - 40px);
 }
+
+.MainFooterInput__ParticipantContainer {
+  position: relative;
+  width: calc(100% + 75px);
+  margin-right: -64px;
+  z-index: $z-index-2;
+}
+
+.MainFooterInput__ParticipantPositionContainer {
+  position: absolute;
+  bottom: 11px;
+  right:0;
+  width: 100%;
+}
+
+.MainFooterInput__ParticipantPositionContainer--mobile {
+  bottom: 7px;
+}

@@ -1,13 +1,8 @@
 .MainFooterInputParticipants {
   min-width: 100%;
-  bottom: 56px;
-  width: calc(100% + 20px);
-  left: -10px;
   background-color: #fff;
   border-top: 1px solid #e3e3e3;
-  position: absolute;
   overflow: hidden;
   overflow-y: auto;
   max-height: 200px;
-  z-index: $z-index-2;
 }

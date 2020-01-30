@@ -26,6 +26,7 @@ import style from "../../../styles/pages/box/MainFooterInput.scss";
 import {codeEmoji} from "./MainFooterEmojiIcons";
 import {startTyping, stopTyping} from "../../actions/chatActions";
 import MainFooterInputParticipants from "./MainFooterInputParticipants";
+import OutsideClickHandler from "react-outside-click-handler";
 
 export const constants = {
   replying: "REPLYING",
@@ -149,12 +150,14 @@ export default class MainFooterInput extends Component {
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
     this.onPaste = this.onPaste.bind(this);
     this.onParticipantSelect = this.onParticipantSelect.bind(this);
+    this.resetParticipantSuggestion = this.resetParticipantSuggestion.bind(this);
+    this.mainFooterInputParticipantsRef = React.createRef();
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
     window.foo = this.inputNode = React.createRef();
     this.state = {
-      mentioning: false,
+      showParticipant: false,
       messageText: ""
     };
   }
@@ -292,6 +295,7 @@ export default class MainFooterInput extends Component {
     }
     dispatch(messageEditing());
     dispatch(threadEmojiShowing(false));
+    this.resetParticipantSuggestion();
     this.setInputText("");
   }
 
@@ -341,16 +345,12 @@ export default class MainFooterInput extends Component {
     const newMessageText = getCursorMentionMatch(messageText, this.inputNode.current, true, contact.username);
     this.setInputText(newMessageText);
     setTimeout(() => this.focus(), 100);
-    this.setState({
-      showParticipant: false,
-      filterString: null
-    });
+    this.resetParticipantSuggestion();
   }
 
   removeBluish() {
-    const {messageText} = this.state;
-    const lastMentionedMan = getCursorMentionMatch(messageText, this.inputNode.current);
-    console.log(contact);
+    /*    const {messageText} = this.state;
+        const lastMentionedMan = getCursorMentionMatch(messageText, this.inputNode.current);*/
   }
 
   onInputKeyPress(evt) {
@@ -366,8 +366,13 @@ export default class MainFooterInput extends Component {
 
   onInputKeyDown(evt) {
     if (this.props.thread.group) {
-      if (evt.keyCode === 8) {
-        this.removeBluish();
+      const {messageText, showParticipant, filterString} = this.state;
+      const {keyCode} = evt;
+      if (showParticipant) {
+        if (keyCode === 27) {
+          this.resetParticipantSuggestion();
+        }
+        this.mainFooterInputParticipantsRef.current.getWrappedInstance().keyDownSignal(evt);
       }
     }
   }
@@ -380,6 +385,17 @@ export default class MainFooterInput extends Component {
     console.log(e);
   }
 
+  hideParticipantSuggestion() {
+    this.resetParticipantSuggestion();
+  }
+
+  resetParticipantSuggestion() {
+    this.setState({
+      showParticipant: false,
+      filterString: null
+    });
+  }
+
   render() {
     const {messageEditing, thread} = this.props;
     const {messageText, showParticipant, filterString} = this.state;
@@ -387,32 +403,47 @@ export default class MainFooterInput extends Component {
       [style.MainFooterInput__EditBox]: true,
       [style["MainFooterInput__EditBox--halfBorder"]]: messageEditingCondition(messageEditing)
     });
+    const participantsPositionContainerClassNames =
+      classnames({
+        [style.MainFooterInput__ParticipantPositionContainer]: true,
+        [style["MainFooterInput__ParticipantPositionContainer--mobile"]]: mobileCheck()
+      });
     return (
       <Container className={style.MainFooterInput}>
-        <Container className={style.MainFooterInput__EditingBox}>
+        <OutsideClickHandler onOutsideClick={this.resetParticipantSuggestion}>
           {showParticipant &&
-          <MainFooterInputParticipants filterString={filterString} onSelect={this.onParticipantSelect} thread={thread}/>
+
+          <Container className={style.MainFooterInput__ParticipantContainer}>
+            <Container className={participantsPositionContainerClassNames}>
+              <MainFooterInputParticipants filterString={filterString} onSelect={this.onParticipantSelect}
+                                           ref={this.mainFooterInputParticipantsRef}
+                                           thread={thread}/>
+            </Container>
+          </Container>
+
           }
-          <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
-        </Container>
-        <Container relative className={editBotClassNames}>
-          <Container className={style.MainFooterInput__EditBoxInputContainer} onPaste={this.onPaste}>
-            <InputTextArea
-              className={style.MainFooterInput__InputContainer}
-              inputClassName={style.MainFooterInput__Input}
-              sanitizeRule={sanitizeRule}
-              ref={this.inputNode}
-              placeholder={strings.pleaseWriteHere}
-              onChange={this.onTextChange}
-              onKeyPress={this.onInputKeyPress}
-              onKeyDown={this.onInputKeyDown}
-              onFocus={this.onInputFocus}
-              value={messageText}/>
+          <Container className={style.MainFooterInput__EditingBox}>
+            <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
           </Container>
-          <Container centerLeft>
-            <MainFooterInputEmoji inputNode={this.inputNode}/>
+          <Container relative className={editBotClassNames}>
+            <Container className={style.MainFooterInput__EditBoxInputContainer} onPaste={this.onPaste}>
+              <InputTextArea
+                className={style.MainFooterInput__InputContainer}
+                inputClassName={style.MainFooterInput__Input}
+                sanitizeRule={sanitizeRule}
+                ref={this.inputNode}
+                placeholder={strings.pleaseWriteHere}
+                onChange={this.onTextChange}
+                onKeyPress={this.onInputKeyPress}
+                onKeyDown={this.onInputKeyDown}
+                onFocus={this.onInputFocus}
+                value={messageText}/>
+            </Container>
+            <Container centerLeft>
+              <MainFooterInputEmoji inputNode={this.inputNode}/>
+            </Container>
           </Container>
-        </Container>
+        </OutsideClickHandler>
       </Container>
     );
   }

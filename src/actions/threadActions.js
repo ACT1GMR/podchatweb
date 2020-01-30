@@ -33,8 +33,16 @@ import {
   THREAD_NOTIFICATION,
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
-  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO, THREAD_PARTICIPANT_GET_LIST_PARTIAL,
-  THREAD_GET_LIST_PARTIAL, THREAD_CREATE_ON_THE_FLY, THREAD_ADMIN_LIST, THREAD_ADMIN_LIST_REMOVE, THREAD_ADMIN_LIST_ADD
+  THREAD_PARTICIPANTS_REMOVED,
+  THREAD_NEW_MESSAGE,
+  THREAD_CREATION_SCENARIO,
+  THREAD_PARTICIPANT_GET_LIST_PARTIAL,
+  THREAD_GET_LIST_PARTIAL,
+  THREAD_CREATE_ON_THE_FLY,
+  THREAD_ADMIN_LIST,
+  THREAD_ADMIN_LIST_REMOVE,
+  THREAD_ADMIN_LIST_ADD,
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
@@ -147,6 +155,32 @@ export const threadMessageGetList = (threadId, count) => {
     dispatch({
       type: THREAD_GET_MESSAGE_LIST(),
       payload: getThreadHistory(chatSDK, threadId, count)
+    });
+  }
+};
+
+export const threadUnreadMentionedMessageGetList = (threadId, count) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    if(!threadId) {
+      return dispatch({
+        type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED),
+        payload: null
+      });
+    }
+    dispatch({
+      type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(),
+      payload: chatSDK.getThreadUnreadMentionedMessageList(threadId, count)
+    });
+  }
+};
+
+export const threadUnreadMentionedMessageRemove = messageId => {
+  return dispatch => {
+    dispatch({
+      type: THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
+      payload: messageId
     });
   }
 };

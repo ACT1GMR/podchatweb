@@ -43,7 +43,11 @@ import {
   THREAD_GET_LIST_PARTIAL,
   CHAT_STOP_TYPING,
   CHAT_IS_TYPING,
-  THREAD_CREATE_ON_THE_FLY, THREAD_ADMIN_LIST, THREAD_ADMIN_LIST_REMOVE, THREAD_ADMIN_LIST_ADD
+  THREAD_CREATE_ON_THE_FLY,
+  THREAD_ADMIN_LIST,
+  THREAD_ADMIN_LIST_REMOVE,
+  THREAD_ADMIN_LIST_ADD,
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -429,6 +433,32 @@ export const threadGetMessageListByMessageIdReducer = (state = {
       return {...state, ...stateGenerator(SUCCESS)};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadUnreadMentionedMessageListReducer = (state = {
+  messages: [],
+  threadId: null,
+  count: 0,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(PENDING):
+    case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED):
+      return {...state, ...stateGenerator(action.type === THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED) ? CANCELED : PENDING, {messages: [], threadId: null, count: 0})};
+    case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(SUCCESS):
+      return {...state, ...stateGenerator(SUCCESS, action.payload)};
+    case THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE:
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload, {
+          method: listUpdateStrategyMethods.REMOVE,
+          by: "id"
+        }), "messages")
+      };
     default:
       return state;
   }
