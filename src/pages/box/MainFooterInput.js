@@ -148,6 +148,7 @@ export default class MainFooterInput extends Component {
     this.onInputFocus = this.onInputFocus.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
+    this.onInputKeyUp = this.onInputKeyUp.bind(this);
     this.onPaste = this.onPaste.bind(this);
     this.onParticipantSelect = this.onParticipantSelect.bind(this);
     this.resetParticipantSuggestion = this.resetParticipantSuggestion.bind(this);
@@ -155,7 +156,7 @@ export default class MainFooterInput extends Component {
     this.typingTimeOut = null;
     this.typingSet = false;
     this.forwardMessageSent = false;
-    window.foo = this.inputNode = React.createRef();
+    this.inputNode = React.createRef();
     this.state = {
       showParticipant: false,
       messageText: ""
@@ -163,7 +164,7 @@ export default class MainFooterInput extends Component {
   }
 
   setInputText(text, append) {
-    const {dispatch, messageEditing, thread} = this.props;
+    const {dispatch, messageEditing} = this.props;
     const {messageText} = this.state;
     let newText = text;
     if (append) {
@@ -326,7 +327,6 @@ export default class MainFooterInput extends Component {
     const lastMentionedMan = getCursorMentionMatch(messageText, this.inputNode.current);
     if (!lastMentionedMan) {
       if (showParticipant) {
-        console.log("MENTIONED", false, "NO MATCHES");
         return this.setState({
           showParticipant: false
         });
@@ -337,7 +337,6 @@ export default class MainFooterInput extends Component {
       showParticipant: true,
       filterString: lastMentionedMan === true ? null : lastMentionedMan
     });
-    console.log("MENTIONED", true, "FIND MATCHES", lastMentionedMan);
   }
 
   onParticipantSelect(contact) {
@@ -354,7 +353,6 @@ export default class MainFooterInput extends Component {
   }
 
   onInputKeyPress(evt) {
-    const {thread} = this.props;
     if (!mobileCheck()) {
       if (evt.which === 13 && !evt.shiftKey) {
         this.props.dispatch(stopTyping());
@@ -366,7 +364,8 @@ export default class MainFooterInput extends Component {
 
   onInputKeyDown(evt) {
     if (this.props.thread.group) {
-      const {messageText, showParticipant, filterString} = this.state;
+      this.showParticipant(`${evt.target.innerText}${evt.key}`);
+      const {showParticipant} = this.state;
       const {keyCode} = evt;
       if (showParticipant) {
         if (keyCode === 27) {
@@ -377,16 +376,15 @@ export default class MainFooterInput extends Component {
     }
   }
 
+  onInputKeyUp(evt) {
+    this.onTextChange(evt.target.innerHTML);
+  }
+
   onPaste(e) {
     e.stopPropagation();
   }
 
   onInputFocus(e) {
-    console.log(e);
-  }
-
-  hideParticipantSuggestion() {
-    this.resetParticipantSuggestion();
   }
 
   resetParticipantSuggestion() {
@@ -433,9 +431,9 @@ export default class MainFooterInput extends Component {
                 sanitizeRule={sanitizeRule}
                 ref={this.inputNode}
                 placeholder={strings.pleaseWriteHere}
-                onChange={this.onTextChange}
                 onKeyPress={this.onInputKeyPress}
                 onKeyDown={this.onInputKeyDown}
+                onKeyUp={this.onInputKeyUp}
                 onFocus={this.onInputFocus}
                 value={messageText}/>
             </Container>

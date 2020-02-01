@@ -50,7 +50,7 @@ function mentionify(text, onClick) {
   var mentionRegex = /@[0-9a-z\u0600-\u06FF](\.?[0-9a-z\u0600-\u06FF])*/gm;
   return text.replace(mentionRegex, function (username) {
     const realUserName = username.replace(/&amp;/g, "&");
-    return `<span style="cursor: pointer" onClick='window.onUserNameClick(this)'>${ReactDOMServer.renderToStaticMarkup(
+    return `<span onClick='window.onUserNameClick(this)'>${ReactDOMServer.renderToStaticMarkup(
       <Text color="accent" dark bold wordWrap="breakWord" inline title={realUserName}>{realUserName}</Text>)}</span>`;
   })
 }
@@ -80,8 +80,6 @@ export default class MainMessagesMessageText extends Component {
   }
 
   onUserNameClick(e) {
-    const userName = e.textContent.replace("@", "");
-
   }
 
   render() {

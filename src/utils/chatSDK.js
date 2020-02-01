@@ -302,7 +302,8 @@ export default class ChatSDK {
   sendMessage(resolve, reject, content, threadId, other) {
     let sendChatParams = {
       content,
-      threadId
+      threadId,
+      messageType: "TEXT"
     };
     if (other) {
       sendChatParams = {...sendChatParams, ...other};

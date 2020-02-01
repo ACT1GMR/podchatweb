@@ -53,7 +53,6 @@ export const constants = {
   count: 20
 };
 
-
 @connect(null, null, null, {withRef: true})
 export default class extends Component {
 
@@ -177,6 +176,11 @@ export default class extends Component {
         39: () => {
         },
         40: () => setActiveList(true),
+        13: () => {
+          if (participantsActiveIndex !== null) {
+            this.onContactSelect(null, participants[participantsActiveIndex]);
+          }
+        },
         9: () => {
           if (participantsActiveIndex !== null) {
             this.onContactSelect(null, participants[participantsActiveIndex]);
