@@ -364,7 +364,6 @@ export default class MainFooterInput extends Component {
 
   onInputKeyDown(evt) {
     if (this.props.thread.group) {
-      this.showParticipant(`${evt.target.innerText}${evt.key}`);
       const {showParticipant} = this.state;
       const {keyCode} = evt;
       if (showParticipant) {

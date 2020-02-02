@@ -37,7 +37,7 @@ function urlify(text) {
   var urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, function (url) {
     const urlReal = url.replace(/&amp;/g, "&");
-    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord" linkClearStyle
+    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord"
                                                      title={urlReal}>{urlReal}</Text>)
   })
 }

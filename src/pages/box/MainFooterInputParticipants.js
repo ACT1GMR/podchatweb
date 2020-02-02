@@ -101,15 +101,16 @@ export default class extends Component {
     return true;
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.activeRef.current) {
-      const node = ReactDOM.findDOMNode(this.activeRef.current);
-      if (!isElementVisible(node)) {
-        node.scrollIntoView();
+  componentDidUpdate(prevProps,{ participantsActiveIndex:oldParticipantsActiveIndex}) {
+    const {participantsActiveIndex} = this.state;
+    if(oldParticipantsActiveIndex !== participantsActiveIndex){
+      if (this.activeRef.current) {
+        const node = ReactDOM.findDOMNode(this.activeRef.current);
+        if (!isElementVisible(node)) {
+          node.scrollIntoView();
+        }
       }
     }
-
-
   }
 
   onScrollBottomThreshold() {
