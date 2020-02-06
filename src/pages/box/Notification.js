@@ -118,10 +118,9 @@ export default class Notification extends Component {
               const tag = document.createElement("div");
               const text = messageNew.message;
               tag.innerHTML = messageNew.message;
-              const isEmoji = text && text.indexOf(':emoji') > -1;
               const newMessageText = messageNew.message;
               const personName = `${thread.group ? `${messageNew.participant && (messageNew.participant.contactName || messageNew.participant.name)}: ` : ""}`;
-              const notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : isEmoji ? strings.sentAMessage : tag.innerText}`;
+              const notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : tag.innerText}`;
               Push.create(thread.title, {
                 body: notificationMessage,
                 icon: thread.image || defaultAvatar,

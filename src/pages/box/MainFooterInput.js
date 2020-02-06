@@ -37,7 +37,7 @@ const sanitizeRule = {
   allowedTags: ["img", "br", "div"],
 
   allowedAttributes: {
-    img: ["src", "style", "class", "name"]
+    img: ["src", "style", "class", "alt"]
   },
   allowedSchemes: ["data"],
   exclusiveFilter: function (frame) {
@@ -381,6 +381,7 @@ export default class MainFooterInput extends Component {
 
   onPaste(e) {
     e.stopPropagation();
+    e.preventDefault();
   }
 
   onInputFocus(e) {
