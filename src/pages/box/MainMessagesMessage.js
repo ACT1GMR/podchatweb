@@ -11,17 +11,18 @@ import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
 import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
-
+import {isOwner} from "./ModalThreadInfoGroupMain"
 
 //strings
 import strings from "../../constants/localization";
 
 //actions
 import {
-  threadLeftAsideShowing, threadModalListShowing
+  threadLeftAsideShowing, threadMessagePinToTop, threadModalListShowing
 } from "../../actions/threadActions";
 
 //components
+import Context, {ContextItem, ContextTrigger} from "../../../../uikit/src/menu/Context";
 import Paper, {PaperFooter} from "../../../../uikit/src/paper";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
@@ -203,11 +204,13 @@ export function SeenFragment({isMessageByMe, message, thread, onMessageSeenListC
     style: {margin: "0 5px"}
   };
   if (!message.id) {
-    return <MdSchedule size={messageStatusIconSpecs.size} style={messageStatusIconSpecs.style}  color={messageStatusIconSpecs.color}/>
+    return <MdSchedule size={messageStatusIconSpecs.size} style={messageStatusIconSpecs.style}
+                       color={messageStatusIconSpecs.color}/>
   }
   if (!isGroup) {
     if (message.seen || forceSeen) {
-      return <MdDoneAll size={messageStatusIconSpecs.size} style={messageStatusIconSpecs.style}  color={messageStatusIconSpecs.color}/>
+      return <MdDoneAll size={messageStatusIconSpecs.size} style={messageStatusIconSpecs.style}
+                        color={messageStatusIconSpecs.color}/>
     }
   }
   return <MdDone className={isGroup ? style.MainMessagesMessage__SentIcon : ""}
@@ -240,7 +243,7 @@ export function HighLighterFragment({message, highLightMessage}) {
   );
 }
 
-export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, isChannel, children}) {
+export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, children}) {
   const style = {
     borderRadius: "5px"
   };
@@ -257,7 +260,7 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
   )
 }
 
-export function PaperFooterFragment({message, onMessageControlShow, messageControlShow, messageTriggerShow, isMessageByMe, children}) {
+export function PaperFooterFragment({message, onMessageControlHide, onMessageControlShow, messageControlShow, messageTriggerShow, isMessageByMe, children}) {
   const classNames = classnames({
     [style.MainMessagesMessage__OpenTriggerIconContainer]: true,
     [style["MainMessagesMessage__OpenTriggerIconContainer--show"]]: message.id && !messageControlShow && messageTriggerShow,
@@ -271,9 +274,15 @@ export function PaperFooterFragment({message, onMessageControlShow, messageContr
       {children}
       {datePetrification(message.time)}
       <Container inline left inSpace className={classNames}>
-        <MdExpandLess size={styleVar.iconSizeMd}
-                      className={style.MainMessagesMessage__TriggerIcon}
-                      onClick={onMessageControlShow}/>
+        <ContextTrigger id={message.id} holdToDisplay={1000} mouseButton={0}>
+        <OutsideClickHandler onOutsideClick={onMessageControlHide}>
+
+            <MdExpandLess size={styleVar.iconSizeMd}
+                          id={message.id}
+                          className={style.MainMessagesMessage__TriggerIcon}/>
+
+        </OutsideClickHandler>
+        </ContextTrigger>
       </Container>
     </PaperFooter>
   );
@@ -282,49 +291,48 @@ export function PaperFooterFragment({message, onMessageControlShow, messageContr
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onMessageControlHide, onDelete, onForward, onReply, isText, messageControlShow, children, isChannel}) {
+export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, isText, children, isChannel, onPin, isOwner}) {
   const classNames = classnames({
     [style.MainMessagesMessage__Control]: true,
     [style["MainMessagesMessage__Control--mine"]]: isMessageByMe,
   });
-  return messageControlShow ? (
-    <Container className={classNames}>
-      <Container topLeft>
-        <MdExpandMore size={styleVar.iconSizeMd}
-                      className={style.MainMessagesMessage__TriggerIcon}
-                      style={{margin: "3px"}}
-                      onClick={onMessageControlHide}/>
-      </Container>
-      <Container className={style.MainMessagesMessage__ControlIconContainer}>
-        {isMessageByMe &&
-        <Container inline>
-          {isText && message.editable && children}
-        </Container>
-        }
-        {
-          (!isChannel || (isChannel && isMessageByMe)) &&
-          <MdDelete size={styleVar.iconSizeMd}
-                    className={style.MainMessagesMessage__ControlIcon}
-                    onClick={onDelete}/>
-        }
-        <MdForward size={styleVar.iconSizeMd}
-                   className={style.MainMessagesMessage__ControlIcon}
-                   onClick={onForward}/>
+  return <Context id={message.id} preventHideOnScroll={false} rtl>
+    {
+      (!isChannel || (isChannel && isMessageByMe)) &&
+      <ContextItem onClick={onDelete}>
+        {strings.remove}
+      </ContextItem>
+    }
 
-        {( (!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe)) &&
-        <MdReply size={styleVar.iconSizeMd}
-                 className={style.MainMessagesMessage__ControlIcon}
-                 onClick={onReply}/>
-        }
+    {
+      <ContextItem onClick={onForward}>
+        {strings.forward}
+      </ContextItem>
+    }
 
-        {!isText && children}
-      </Container>
-    </Container>
-  ) : "";
+    {
+      ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe)) &&
+      <ContextItem onClick={onReply}>
+        {strings.reply}
+      </ContextItem>
+    }
+
+    {
+      isOwner &&
+      <ContextItem onClick={onPin}>
+        {strings.pintToTop(true)}
+      </ContextItem>
+    }
+
+    {
+      children
+    }
+
+  </Context>
 }
 
 export function deleteForAllCondition(message, user, thread) {
-  return (isMessageByMe(message, user)  && message.deletable ) || (thread.group && thread.inviter.id === user.id);
+  return (isMessageByMe(message, user) && message.deletable) || (thread.group && thread.inviter.id === user.id);
 }
 
 @connect(store => {
@@ -342,16 +350,18 @@ export default class MainMessagesMessage extends Component {
     this.onDelete = this.onDelete.bind(this);
     this.onForward = this.onForward.bind(this);
     this.onReply = this.onReply.bind(this);
+    this.onPin = this.onPin.bind(this);
     this.onMessageControlHide = this.onMessageControlHide.bind(this);
     this.onMessageControlShow = this.onMessageControlShow.bind(this);
     this.onMessageSeenListClick = this.onMessageSeenListClick.bind(this);
     this.containerRef = React.createRef();
+    this.contextTriggerRef = React.createRef();
+    this.contextRef = React.createRef();
     this.state = {
       messageControlShow: false,
       messageTriggerShow: false
     };
   }
-
 
   onMessageSeenListClick(e) {
     const {message, dispatch} = this.props;
@@ -394,19 +404,21 @@ export default class MainMessagesMessage extends Component {
     });
   }
 
-  onMessageControlShow(isClick, e) {
-    if (this.state.messageControlShow) {
-      return;
+  onMessageControlShow(e) {
+    if (!this.state.messageControlShow) {
+      this.setState({
+        messageControlShow: true
+      });
+      return true;
     }
-    if (isClick === true && !mobileCheck()) {
-      return;
-    }
-    this.setState({
-      messageControlShow: true
-    });
   }
 
-  onDelete() {
+  onPin(e) {
+    const {dispatch, message, thread} = this.props;
+    dispatch(threadMessagePinToTop(message.id, thread.id))
+  }
+
+  onDelete(e) {
     const {dispatch, message, user, thread} = this.props;
     dispatch(chatModalPrompt(true,
       null, null, null, null,
@@ -451,14 +463,17 @@ export default class MainMessagesMessage extends Component {
       onDelete: this.onDelete,
       onForward: this.onForward,
       onReply: this.onReply,
+      onPin: this.onPin,
       isFirstMessage: showNameOrAvatar(message, messages),
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
+      contextRef: this.contextRef,
       forceSeen: messages && messages.length && messages[messages.length - 1].seen,
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
       isParticipantBlocked: showBlock({user, thread, participantsFetching, participants}),
+      isOwner: isOwner(thread, user),
       user,
       thread,
       message,
@@ -480,13 +495,14 @@ export default class MainMessagesMessage extends Component {
                  onClick={this.onMessageControlShow.bind(this, true)}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
-        <OutsideClickHandler onOutsideClick={this.onMessageControlHide}>
+
+        <ContextTrigger id={message.id} holdToDisplay={1000} contextTriggerRef={this.contextTriggerRef}>
           {isFile(message) ?
             <MainMessagesMessageFile {...args}/>
             :
             <MainMessagesMessageText {...args}/>
           }
-        </OutsideClickHandler>
+        </ContextTrigger>
       </Container>
     )
   }

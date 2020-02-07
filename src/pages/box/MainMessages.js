@@ -22,8 +22,8 @@ import {
 } from "../../actions/threadActions";
 
 //components
-import {ButtonFloating} from "../../../../uikit/src/button"
-import List, {ListItem} from "../../../../uikit/src/list"
+import {ButtonFloating} from "../../../../uikit/src/button";
+import List, {ListItem} from "../../../../uikit/src/list";
 import Avatar, {AvatarImage} from "../../../../uikit/src/avatar";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Container from "../../../../uikit/src/container";
@@ -38,8 +38,8 @@ import {
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
 import MainMessagesMessage from "./MainMessagesMessage";
+import MainMessagesPinMessage from "./MainMessagesPinMessage";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
-import Gap from "../../../../uikit/src/gap";
 
 const statics = {
   historyFetchCount: 20,
@@ -545,6 +545,7 @@ export default class MainMessages extends Component {
     const {messages, fetching} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
     const {highLightMessage, bottomButtonShowing, threadUnreadMentionedMessagesCount} = this.state;
+    const threadPinedMessageVo = thread.pinMessageVO;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
       [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user, thread)
@@ -574,6 +575,7 @@ export default class MainMessages extends Component {
                  onDragOver={this.onDragOver}
                  onDrop={this.onFileDrop}>
         {threadMessagesPartialFetching && <PartialLoadingFragment/>}
+        {threadPinedMessageVo && <MainMessagesPinMessage messageVo={threadPinedMessageVo}/>}
         <Scroller ref={this.scroller}
                   checkForSnapping
                   className={style.MainMessages__Messages}

@@ -60,7 +60,7 @@ function ModalContactListFooterFragment(addMembers, onPrevious, onClose) {
   )
 }
 
-function isOwner(thread, user) {
+export function isOwner(thread, user) {
   return thread.inviter && user.id === thread.inviter.id
 }
 

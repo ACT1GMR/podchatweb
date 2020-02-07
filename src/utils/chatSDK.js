@@ -713,6 +713,22 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  pinMessage(resolve, reject, messageId) {
+    const params = {
+      messageId
+    };
+    this.chatAgent.pinMessage(params);
+  }
+
+  @promiseDecorator
+  unPinMessage(resolve, reject, messageId) {
+    const params = {
+      messageId
+    };
+    this.chatAgent.unPinMessage(params);
+  }
+
+  @promiseDecorator
   getMessageSeenList(resolve, reject, messageId) {
     const params = {
       messageId

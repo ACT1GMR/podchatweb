@@ -17,7 +17,7 @@ import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from 
 //UI components
 import {MdMenu, MdClose, MdSearch, MdEdit, MdArrowBack} from "react-icons/lib/md";
 import Notification from "./Notification";
-import {Dropdown, DropdownItem} from "../../../../uikit/src/menu";
+import Dropdown, {DropdownItem} from "../../../../uikit/src/menu/Dropdown";
 import {ButtonFloating} from "../../../../uikit/src/button"
 import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";

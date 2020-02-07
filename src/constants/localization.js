@@ -31,6 +31,7 @@ let strings = new LocalizedStrings({
     thereIsNoChat: "گفتگویی وجود ندارد",
     select: "انتخاب",
     forwardTo: "انتخاب گفتگو برای فرستادن",
+    forward: "ارسال",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     unknown: "نامشخص",
@@ -40,7 +41,13 @@ let strings = new LocalizedStrings({
     groupNameNotEntered: isChannel => `نام ${isChannel ? "کانال" : "گروه"} وارد نشده است`,
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
+    reply: "پاسخ",
     sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
+    pintToTop(isMessage){
+      if(isMessage) {
+        return "چسبانده به بالا";
+      }
+    },
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
     createGroup: isChannel => `ایجاد ${isChannel ? "کانال" : "گروه"}`,

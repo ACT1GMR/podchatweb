@@ -165,6 +165,7 @@ class MainMessagesMessageFile extends Component {
       smallVersion,
       forceSeen,
       isChannel,
+      isOwner,
       isGroup
     } = this.props;
     let metaData = message.metadata;
@@ -199,6 +200,7 @@ class MainMessagesMessageFile extends Component {
           <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
           <ControlFragment
             isParticipantBlocked={isParticipantBlocked}
+            isOwner={isOwner}
             isMessageByMe={isMessageByMe}
             isChannel={isChannel}
             messageControlShow={messageControlShow}
@@ -263,6 +265,7 @@ class MainMessagesMessageFile extends Component {
           </Container>
           <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}
                                isMessageByMe={isMessageByMe}
+                               onMessageControlHide={onMessageControlHide}
                                messageControlShow={messageControlShow} messageTriggerShow={messageTriggerShow}>
             <SeenFragment isMessageByMe={isMessageByMe} message={message} thread={thread} forceSeen={forceSeen}
                           onMessageSeenListClick={onMessageSeenListClick} onRetry={this.onRetry}

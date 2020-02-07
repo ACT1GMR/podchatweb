@@ -12,8 +12,8 @@ import {messageCancel, messageEditing, messageSend} from "../../actions/messageA
 
 //components
 import Container from "../../../../uikit/src/container";
+import {ContextItem} from "../../../../uikit/src/menu/Context";
 import {Text} from "../../../../uikit/src/typography";
-import {MdEdit} from "react-icons/lib/md";
 import {
   PaperFragment,
   PaperFooterFragment,
@@ -25,9 +25,8 @@ import {
 
 //styling
 import style from "../../../styles/pages/box/MainMessagesText.scss";
-import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
-import styleVar from "./../../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
+import strings from "../../constants/localization";
 
 function urlify(text) {
   if (!text) {
@@ -97,9 +96,12 @@ export default class MainMessagesMessageText extends Component {
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
+      onPin,
       isParticipantBlocked,
+      contextRef,
       forceSeen,
       isChannel,
+      isOwner,
       isGroup
     } = this.props;
     return (
@@ -109,23 +111,33 @@ export default class MainMessagesMessageText extends Component {
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
           <ControlFragment isMessageByMe={isMessageByMe}
+                           isOwner={isOwner}
+                           contextRef={contextRef}
+                           onPin={onPin}
                            isParticipantBlocked={isParticipantBlocked}
                            messageControlShow={messageControlShow}
                            isChannel={isChannel}
+                           isGroup={isGroup}
                            message={message}
                            onMessageControlHide={onMessageControlHide}
                            onDelete={onDelete} onForward={onForward} onReply={onReply}
                            isText={true}>
-            <MdEdit className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
-                    size={styleVar.iconSizeMd}
-                    onClick={this.onEdit.bind(this, message)}/>
+            {
+              message.editable &&
+              <ContextItem onClick={this.onEdit.bind(this, message)}>
+                {strings.edit}
+              </ContextItem>
+            }
+
           </ControlFragment>
           <Container userSelect="text">
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
               {mentionify(urlify(decodeEmoji(message.message)), this.onUserNameClick)}
             </Text>
           </Container>
-          <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}
+          <PaperFooterFragment message={message}
+                               onMessageControlShow={onMessageControlShow}
+                               onMessageControlHide={onMessageControlHide}
                                isMessageByMe={isMessageByMe}
                                messageControlShow={messageControlShow} messageTriggerShow={messageTriggerShow}>
             <SeenFragment isMessageByMe={isMessageByMe} message={message} thread={thread} forceSeen={forceSeen}
