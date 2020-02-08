@@ -29,6 +29,7 @@ import Container from "../../../../uikit/src/container";
 //styling
 import style from "../../../styles/pages/box/Main.scss";
 import styleVar from "../../../styles/variables.scss";
+import MainMessagesPinMessage from "./MainMessagesPinMessage";
 
 export function isMyThread(thread, user) {
   if (!thread || !user) {
@@ -60,7 +61,7 @@ export function isGroup(thread) {
 
 @connect(store => {
   return {
-    threadId: store.thread.thread.id,
+    thread: store.thread.thread,
     threadFetching: store.thread.fetching,
     threadShowing: store.threadShowing,
     chatRouterLess: store.chatRouterLess
@@ -71,6 +72,7 @@ class Main extends Component {
     super(props);
     this.onContactListShow = this.onContactListShow.bind(this);
     this.onAddMember = this.onAddMember.bind(this);
+    this.mainMessagesRef= React.createRef();
   }
 
   componentDidUpdate(oldProps) {
@@ -99,9 +101,10 @@ class Main extends Component {
   }
 
   render() {
-    const {threadId, threadFetching} = this.props;
+    const {thread, threadFetching} = this.props;
+    const {id, pinMessageVO} = thread;
 
-    if (!threadId && !threadFetching) {
+    if (!id && !threadFetching) {
       return (
         <Container className={style.Main}>
           <Container className={style.Main__Cover}/>
@@ -124,7 +127,8 @@ class Main extends Component {
                  <Container className={style.Main}>
                    <Container className={style.Main__Cover}/>
                    <MainHead/>
-                   <MainMessages/>
+                   {pinMessageVO && <MainMessagesPinMessage messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
+                   <MainMessages ref={this.mainMessagesRef}/>
                    <MainFooter/>
                  </Container>
                )

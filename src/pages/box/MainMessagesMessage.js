@@ -37,16 +37,15 @@ import {
   MdSchedule,
   MdCameraAlt,
   MdInsertDriveFile,
-  MdExpandLess, MdExpandMore, MdDelete, MdForward, MdReply
+  MdExpandLess
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
 import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../../constants/actionTypes";
 import {avatarNameGenerator, mobileCheck} from "../../utils/helpers";
-import {messageDelete, messageEditing} from "../../actions/messageActions";
+import {messageEditing} from "../../actions/messageActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
-
 
 export function isFile(message) {
   if (message) {
@@ -260,10 +259,10 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
   )
 }
 
-export function PaperFooterFragment({message, onMessageControlHide, onMessageControlShow, messageControlShow, messageTriggerShow, isMessageByMe, children}) {
+export function PaperFooterFragment({message,  messageTriggerShow, isMessageByMe, children}) {
   const classNames = classnames({
     [style.MainMessagesMessage__OpenTriggerIconContainer]: true,
-    [style["MainMessagesMessage__OpenTriggerIconContainer--show"]]: message.id && !messageControlShow && messageTriggerShow,
+    [style["MainMessagesMessage__OpenTriggerIconContainer--show"]]: message.id && messageTriggerShow,
   });
   const inlineStyle = {};
   if (isMessageByMe) {
@@ -274,14 +273,12 @@ export function PaperFooterFragment({message, onMessageControlHide, onMessageCon
       {children}
       {datePetrification(message.time)}
       <Container inline left inSpace className={classNames}>
-        <ContextTrigger id={message.id} holdToDisplay={1000} mouseButton={0}>
-        <OutsideClickHandler onOutsideClick={onMessageControlHide}>
+        <ContextTrigger id={message.id} holdToDisplay={-1} mouseButton={0}>
 
             <MdExpandLess size={styleVar.iconSizeMd}
                           id={message.id}
                           className={style.MainMessagesMessage__TriggerIcon}/>
 
-        </OutsideClickHandler>
         </ContextTrigger>
       </Container>
     </PaperFooter>
@@ -291,7 +288,7 @@ export function PaperFooterFragment({message, onMessageControlHide, onMessageCon
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, isText, children, isChannel, onPin, isOwner}) {
+export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, isText, children, isChannel, isGroup, onPin, isOwner}) {
   const classNames = classnames({
     [style.MainMessagesMessage__Control]: true,
     [style["MainMessagesMessage__Control--mine"]]: isMessageByMe,
@@ -318,7 +315,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
     }
 
     {
-      isOwner &&
+      isOwner && (isGroup || isChannel) &&
       <ContextItem onClick={onPin}>
         {strings.pintToTop(true)}
       </ContextItem>
@@ -413,9 +410,9 @@ export default class MainMessagesMessage extends Component {
     }
   }
 
-  onPin(e) {
-    const {dispatch, message, thread} = this.props;
-    dispatch(threadMessagePinToTop(message.id, thread.id))
+  onPin() {
+    const {dispatch, message} = this.props;
+    dispatch(threadMessagePinToTop(message.id))
   }
 
   onDelete(e) {
@@ -496,7 +493,7 @@ export default class MainMessagesMessage extends Component {
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
 
-        <ContextTrigger id={message.id} holdToDisplay={1000} contextTriggerRef={this.contextTriggerRef}>
+        <ContextTrigger id={message.id} holdToDisplay={-1} contextTriggerRef={this.contextTriggerRef}>
           {isFile(message) ?
             <MainMessagesMessageFile {...args}/>
             :

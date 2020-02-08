@@ -1,14 +1,14 @@
 .MainMessagesPinMessage {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   display: inline-flex;
-  background-color: #fff;
-  border-bottom: 1px solid #eee;
-  height: 50px;
+  background-color: $color-white;
+  border-bottom: 1px solid $color-gray;
   width: 100%;
   overflow: hidden;
   z-index: 1;
+  padding: 25px;
+  order: 1;
+  cursor: pointer;
 }
 
 .MainMessagesPinMessage__Message {
@@ -16,7 +16,6 @@
   overflow: hidden;
   margin-right: 10px;
   text-overflow: ellipsis;
-  height: 30px;
   display: inline-flex;
 }
 
@@ -24,8 +23,9 @@
   margin-left: 10px;
 }
 
-
 .MainMessagesPinMessage__CloseIcon {
-  margin-left: 10px;
+  height: 100%;
+  width: 50px;
+  text-align: center;
+  padding-top: 13px;
 }
-

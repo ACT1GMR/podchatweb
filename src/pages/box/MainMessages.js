@@ -1,5 +1,5 @@
 // src/list/BoxSceneMessages
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
@@ -160,7 +160,7 @@ function getAvatar(message, messages, onAvatarClick, thread, user) {
     messageNew: store.messageNew,
     user: store.user.user,
   };
-})
+}, null, null, {withRef: true})
 export default class MainMessages extends Component {
 
   constructor(props) {
@@ -184,6 +184,7 @@ export default class MainMessages extends Component {
     this.onDragOver = this.onDragOver.bind(this);
     this.onFileDrop = this.onFileDrop.bind(this);
     this.onPaste = this.onPaste.bind(this);
+    this.goToSpecificMessage = this.goToSpecificMessage.bind(this);
     document.body.addEventListener("paste", this.onPaste);
 
     //Controller fields
@@ -575,7 +576,6 @@ export default class MainMessages extends Component {
                  onDragOver={this.onDragOver}
                  onDrop={this.onFileDrop}>
         {threadMessagesPartialFetching && <PartialLoadingFragment/>}
-        {threadPinedMessageVo && <MainMessagesPinMessage messageVo={threadPinedMessageVo}/>}
         <Scroller ref={this.scroller}
                   checkForSnapping
                   className={style.MainMessages__Messages}
@@ -604,6 +604,7 @@ export default class MainMessages extends Component {
             )}
 
           </List>
+
         </Scroller>
         {bottomButtonShowing && !this.gotoBottom &&
         <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>

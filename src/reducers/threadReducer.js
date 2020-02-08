@@ -47,7 +47,7 @@ import {
   THREAD_ADMIN_LIST,
   THREAD_ADMIN_LIST_REMOVE,
   THREAD_ADMIN_LIST_ADD,
-  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_MESSAGE_PIN
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -73,6 +73,14 @@ export const threadCreateReducer = (state = {
     case THREAD_CREATE("CACHE"):
     case THREAD_CREATE_ON_THE_FLY:
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
+    case THREAD_MESSAGE_PIN: {
+      let updatedThread = updateStore(state.thread, action.payload, {
+        mix: true,
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, updatedThread, "thread")};
+    }
     case CHAT_STOP_TYPING:
     case CHAT_IS_TYPING: {
       const {threadId, user} = action.payload;
@@ -265,6 +273,14 @@ export const threadsReducer = (state = {
         id: threadId,
         isTyping: {isTyping: action.type === CHAT_IS_TYPING, user}
       }, {
+        mix: true,
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, sortThreads(updatedThreads), "threads")};
+    }
+    case THREAD_MESSAGE_PIN: {
+      let updatedThreads = updateStore(state.threads, action.payload, {
         mix: true,
         by: "id",
         method: listUpdateStrategyMethods.UPDATE

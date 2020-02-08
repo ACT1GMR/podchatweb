@@ -24,7 +24,7 @@ import {
   CHAT_NOTIFICATION,
   CHAT_NOTIFICATION_CLICK_HOOK,
   CHAT_RETRY_HOOK,
-  CHAT_SIGN_OUT_HOOK
+  CHAT_SIGN_OUT_HOOK, THREAD_MESSAGE_PIN
 } from "../constants/actionTypes";
 
 
@@ -76,6 +76,13 @@ export const chatSetInstance = config => {
                       type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
                         : thread
             });
+          case "MESSAGE_PIN": {
+            const {thread: id, pinMessage} = thread.result;
+            return dispatch({
+              type: THREAD_MESSAGE_PIN,
+              payload: {id, pinMessageVO: pinMessage}
+            });
+          }
           case THREAD_REMOVED_FROM:
             return dispatch(threadLeave(thread.result.thread, true));
           default:

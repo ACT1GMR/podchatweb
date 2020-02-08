@@ -6,6 +6,7 @@
   display: flex;
   overflow: hidden;
   flex-direction: column-reverse;
+  overflow-y: auto;
 }
 
 .MainMessages__Messages {
