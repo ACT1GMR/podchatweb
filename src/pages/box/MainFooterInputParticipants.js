@@ -130,7 +130,7 @@ export default class extends Component {
     if (this.requesting) {
       return;
     }
-    const {thread, filterString, dispatch} = this.props;
+    const {thread, filterString, user, dispatch} = this.props;
     dispatch(threadParticipantList(thread.id, this.nextParticipantOffset, constants.count, query || filterString, true)).then(result => {
       this.requesting = false;
       const {participants} = this.state;
@@ -138,7 +138,7 @@ export default class extends Component {
       this.nextParticipantOffset = nextOffset;
       this.hasNextParticipants = hasNext;
       this.setState({
-        participants: participants.concat(nextParticipants)
+        participants: participants.concat(nextParticipants).filter(e=>e.id !== user.id)
       });
     });
     this.requesting = true;

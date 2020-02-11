@@ -12,11 +12,13 @@ import {Text} from "../../../../uikit/src/typography";
 import {
   MdClose,
   MdBookmarkOutline,
+  MdVideocam
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessagesPinMessage.scss";
 import styleVar from "../../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {messageInfo} from "../../actions/messageActions";
+import {getMessageEditingText} from "./MainFooterInputEditing";
 
 
 @connect(store => {
@@ -28,20 +30,39 @@ export default class MainMessagesPinMessage extends Component {
     super(props);
     this.onMessageClick = this.onMessageClick.bind(this);
     this.onUnpinClick = this.onUnpinClick.bind(this);
+    this.state = {
+      message: null
+    };
   }
+
   componentDidMount() {
-    this.message = null;
+    this.requestForMessage();
+  }
+
+  componentDidUpdate({messageVo: oldMessageVo}) {
+    if(oldMessageVo.messageId !== this.props.messageVo.messageId) {
+      this.requestForMessage();
+    } else {
+      if(oldMessageVo.text !== this.props.messageVo.text) {
+        this.requestForMessage();
+      }
+    }
+  }
+
+  requestForMessage(){
+    this.setState({
+      message: null
+    });
     const {messageVo, thread, dispatch} = this.props;
-    dispatch(messageInfo(thread.id, messageVo.messageId)).then(message=>{
-      this.message = message;
-    })
+    dispatch(messageInfo(thread.id, messageVo.messageId)).then(message => this.setState({message}));
   }
 
   onMessageClick() {
     const {messageVo, mainMessageRef} = this.props;
+    const {message} = this.state;
     const {current} = mainMessageRef;
-    if(current) {
-      current.getWrappedInstance().goToSpecificMessage(this.message.time);
+    if (current) {
+      current.getWrappedInstance().goToSpecificMessage(message.time);
     }
   }
 
@@ -53,20 +74,33 @@ export default class MainMessagesPinMessage extends Component {
 
   render() {
     const {messageVo} = this.props;
+    const {message} = this.state;
+    const messageDetails = message ? getMessageEditingText(message) : {};
     return <Container className={style.MainMessagesPinMessage} onClick={this.onMessageClick}>
 
-      <Container centerRight className={style.MainMessagesPinMessage__Message}>
+      <Container className={style.MainMessagesPinMessage__Message}>
         <Container className={style.MainMessagesPinMessage__MessageIcon}>
           <MdBookmarkOutline size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
         </Container>
-        <Container>
+
+        <Container className={style.MainMessagesPinMessage__MessageDetails}>
+          {messageDetails.image &&
+            <Container className={style.MainMessagesPinMessage__ImageContainer} inline>
+              <Container className={style.MainMessagesPinMessage__Image}
+                         style={{backgroundImage: `url(${messageDetails.image})`}}/>
+            </Container>
+          }
+          {
+            messageDetails.isVideo &&
+            <MdVideocam size={styleVar.iconSizeMd} color={styleVar.colorAccent} style={{marginLeft: "5px"}}/>
+          }
           <Text isHTML>
-            {decodeEmoji(messageVo.text)}
+            {decodeEmoji(messageDetails.text)}
           </Text>
         </Container>
       </Container>
 
-      <Container centerLeft className={style.MainMessagesPinMessage__CloseIcon} onClick={this.onUnpinClick}>
+      <Container className={style.MainMessagesPinMessage__CloseIcon} onClick={this.onUnpinClick}>
         <MdClose size={styleVar.iconSizeMd} color={styleVar.colorTextLight}/>
       </Container>
     </Container>

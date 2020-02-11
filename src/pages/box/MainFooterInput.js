@@ -137,6 +137,7 @@ function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
     messageEditing: store.messageEditing,
     thread: store.thread.thread,
     threadMessages: store.threadMessages,
+    user: store.user.user
   };
 }, null, null, {withRef: true})
 export default class MainFooterInput extends Component {
@@ -395,7 +396,7 @@ export default class MainFooterInput extends Component {
   }
 
   render() {
-    const {messageEditing, thread} = this.props;
+    const {messageEditing, thread, user} = this.props;
     const {messageText, showParticipant, filterString} = this.state;
     const editBotClassNames = classnames({
       [style.MainFooterInput__EditBox]: true,
@@ -413,7 +414,7 @@ export default class MainFooterInput extends Component {
 
           <Container className={style.MainFooterInput__ParticipantContainer}>
             <Container className={participantsPositionContainerClassNames}>
-              <MainFooterInputParticipants filterString={filterString} onSelect={this.onParticipantSelect}
+              <MainFooterInputParticipants filterString={filterString} onSelect={this.onParticipantSelect} user={user}
                                            ref={this.mainFooterInputParticipantsRef}
                                            thread={thread}/>
             </Container>

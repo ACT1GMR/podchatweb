@@ -43,7 +43,7 @@ let strings = new LocalizedStrings({
     replyTo: "پاسخ به",
     reply: "پاسخ",
     sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
-    pinToTop: "چساباندن به بالا",
+    pinToTop: "چسباندن به بالا",
     unpinFromTop: "برداشت از بالا",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
@@ -103,6 +103,7 @@ let strings = new LocalizedStrings({
     areYouSureAboutLeavingGroup(threadName, isChannel) {
       return `میخواهید ${isChannel ? "کانال" : "گروه"} "${threadName}" را ترک کنید`;
     },
+    areYouSureRemovingThread: "از پاک کردن این گفتگو مطمئنید",
     areYouSureAboutRemovingMember(participantName, isChannel) {
       return `میخواهید "${participantName}" از ${isChannel ? "کانال" : "گروه"} حذف کنید`;
     },
@@ -168,6 +169,7 @@ let strings = new LocalizedStrings({
     reportSpam: "اعلام گفتگو هجو",
     areYouSureToDoIt: "از انجام این کار مطمئنید",
     leaveGroup: isChannel => `ترک ${isChannel ? "کانال" : "گروه"}`,
+    removeThread: isChannel => ``,
     chatState: {
       networkDisconnected: "در انتظار شبکه",
       reconnecting: "اتصال به شبکه",

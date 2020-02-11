@@ -49,28 +49,27 @@ function getImage(metaData) {
   return `${imageLink}&width=${maxWidth}&height=${height}`;
 }
 
-function getMessageEditingText(messageEditing) {
+export function getMessageEditingText(message) {
   const editObject = {text: null};
-  if (messageEditing) {
-    const message = messageEditing.message;
-    if (message) {
-      if(message instanceof Array) {
-        editObject.text = strings.messagesCount(message.length);
-      } else {
-        if (message.metadata) {
-          const file = JSON.parse(message.metadata).file;
-          if (file) {
-            let width = file.width;
-            editObject.text = file.originalName;
-            if (width) {
-              editObject.image = getImage(file);
-            }
-          } else {
-            editObject.text = message.message;
+  if (message) {
+    if (message instanceof Array) {
+      editObject.text = strings.messagesCount(message.length);
+    } else {
+      if (message.metadata) {
+        const file = JSON.parse(message.metadata).file;
+        if (file) {
+          const isVideo = file.mimeType.match(/mp4|ogg|3gp|ogv/);
+          let width = file.width;
+          editObject.text = file.originalName;
+          editObject.isVideo = isVideo;
+          if (width) {
+            editObject.image = getImage(file);
           }
         } else {
           editObject.text = message.message;
         }
+      } else {
+        editObject.text = message.message;
       }
     }
     return editObject;
@@ -117,7 +116,7 @@ export default class MainFooterInputEditing extends Component {
     const isEditing = messageEditingCondition(messageEditing);
     let editObject;
     if (isEditing) {
-      editObject = getMessageEditingText(messageEditing);
+      editObject = getMessageEditingText(messageEditing.message);
       return (
 
         <Paper colorBackgroundLight style={{borderRadius: "20px 20px 0 0"}}>

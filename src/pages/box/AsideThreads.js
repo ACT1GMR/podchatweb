@@ -18,7 +18,7 @@ import {ROUTE_THREAD} from "../../constants/routes";
 
 //actions
 import {
-  threadCreateWithExistThread,
+  threadCreateWithExistThread, threadCreateWithUser,
   threadGetList,
   threadLeave,
   threadModalThreadInfoShowing, threadNotification, threadPinToTop, threadUnpinFromTop
@@ -45,7 +45,8 @@ import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
 import styleVar from "../../../styles/variables.scss";
 import Context, {ContextItem, ContextTrigger} from "../../../../uikit/src/menu/Context";
-import {chatModalPrompt} from "../../actions/chatActions";
+import {chatModalPrompt, chatSearchResult} from "../../actions/chatActions";
+import {contactChatting} from "../../actions/contactActions";
 
 function sliceMessage(message, to) {
   return decodeEmoji(message);
@@ -189,6 +190,7 @@ class AsideThreads extends Component {
   constructor(props) {
     super(props);
     this.onThreadClick = this.onThreadClick.bind(this);
+    this.onStartChat = this.onStartChat.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.onLeaveClick = this.onLeaveClick.bind(this);
     this.onPinClick = this.onPinClick.bind(this);
@@ -211,6 +213,16 @@ class AsideThreads extends Component {
     dispatch(threadCreateWithExistThread(thread));
   }
 
+  onStartChat(contact) {
+    const {history, chatRouterLess, dispatch} = this.props;
+    dispatch(contactChatting(contact));
+    dispatch(threadCreateWithUser(contact.id));
+    if (!chatRouterLess) {
+      history.push(ROUTE_THREAD);
+    }
+    dispatch(chatSearchResult());
+  }
+
   componentDidUpdate(oldProps) {
     const {chatInstance, dispatch} = this.props;
     if (oldProps.chatInstance !== chatInstance) {
@@ -225,7 +237,7 @@ class AsideThreads extends Component {
 
   onLeaveClick(thread) {
     const {dispatch} = this.props;
-    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutLeavingGroup(thread.title, thread.type === 8)}؟`, () => {
+    dispatch(chatModalPrompt(true, `${isChannel(thread) || isGroup(thread) ? strings.areYouSureAboutLeavingGroup(isChannel(thread)) : strings.areYouSureRemovingThread}؟`, () => {
       dispatch(threadLeave(thread.id));
       dispatch(threadModalThreadInfoShowing());
       dispatch(chatModalPrompt());
@@ -255,7 +267,17 @@ class AsideThreads extends Component {
       [style["AsideThreads--isThreadShow"]]: threadShowing
     });
     let filteredThreads = threads;
-    let pinedThread = threads.filter(e=>e.pin);
+    let filteredContacts;
+    let isSearchResult;
+    if (chatSearchResult) {
+      isSearchResult = true;
+      filteredThreads = chatSearchResult.filteredThreads;
+      filteredContacts = chatSearchResult.filteredContacts;
+      if (filteredContacts) {
+        filteredContacts = filteredContacts.filter(e => e.linkedUser);
+      }
+    }
+    let pinedThread = threads.filter(e => e.pin);
     if (threadsFetching || !chatInstance || !user.id) {
       return (
         <section className={classNames}>
@@ -263,8 +285,8 @@ class AsideThreads extends Component {
         </section>
       )
     } else {
-      filteredThreads = filteredThreads.filter(thread => thread.participantCount > 1 || thread.group);
-      
+      //filteredThreads = filteredThreads.filter(thread => thread.participantCount > 1 || thread.group);
+
       if (!filteredThreads.length) {
         return (
           <section className={classNames}>
@@ -274,101 +296,159 @@ class AsideThreads extends Component {
           </section>
         )
       }
-      if (chatSearchResult) {
-        return <Scroller className={classNames}
-                         threshold={5}>
-          <AsideThreadsSearchResult chatSearchResult={chatSearchResult}/>
-        </Scroller>
-      }
+      const threadsContainerClassNames = classnames({
+        [style.AsideThreads__Threads]: true,
+        [style["AsideThreads__ThreadsFullHeight"]]: !isSearchResult
+      });
       return (
-        <Scroller className={classNames}
-                  threshold={5}
-                  onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching}
-                  onScrollBottomThreshold={this.onScrollBottomThreshold}>
-          <List>
-            {filteredThreads.map(el => (
-              <Fragment>
-                <Context id={el.id} rtl>
+        <Scroller className={classNames}>
+          <Fragment>
+            <Fragment>
+              {isSearchResult &&
+              <Gap y="8" x="5">
+                <Text bold color="accent">{strings.conversations}</Text>
+              </Gap>
+              }
+              <Scroller className={threadsContainerClassNames}
+                        threshold={5}
+                        onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching}
+                        onScrollBottomThreshold={this.onScrollBottomThreshold}>
+                <List>
+                  {filteredThreads.map(el => (
+                    <Fragment>
+                      <Context id={el.id} rtl>
 
-                  {
-                    <ContextItem onClick={this.onThreadClick.bind(null, el)}>
-                      {strings.openThread}
-                    </ContextItem>
-                  }
+                        {
+                          <ContextItem onClick={this.onThreadClick.bind(null, el)}>
+                            {strings.openThread}
+                          </ContextItem>
+                        }
 
-                  {
-                    (isGroup(el) || isChannel(el)) &&
-                    <ContextItem onClick={this.onLeaveClick.bind(null, el)}>
-                      {strings.leave}
-                    </ContextItem>
-                  }
+                        {
+                          <ContextItem onClick={this.onLeaveClick.bind(null, el)}>
+                            {(isGroup(el) || isChannel(el)) ? strings.leave : strings.remove}
+                          </ContextItem>
+                        }
 
-                  {
-                    <ContextItem onClick={this.onMuteClick.bind(null, el)}>
-                      {el.mute ? strings.unmute : strings.mute}
-                    </ContextItem>
-                  }
+                        {
+                          <ContextItem onClick={this.onMuteClick.bind(null, el)}>
+                            {el.mute ? strings.unmute : strings.mute}
+                          </ContextItem>
+                        }
 
-                  {
-                    ((el.pin && pinedThread.length >= 5 ) || pinedThread.length <5) &&
-                    <ContextItem onClick={this.onPinClick.bind(null, el)}>
-                      {el.pin || pinedThread.length >= 5  ? strings.unpinFromTop : strings.pinToTop}
-                    </ContextItem>
-                  }
+                        {
+                          ((el.pin && pinedThread.length >= 5) || pinedThread.length < 5) &&
+                          <ContextItem onClick={this.onPinClick.bind(null, el)}>
+                            {el.pin || pinedThread.length >= 5 ? strings.unpinFromTop : strings.pinToTop}
+                          </ContextItem>
+                        }
 
-                </Context>
-                <ContextTrigger id={el.id} holdToDisplay={-1}>
+                      </Context>
+                      <ContextTrigger id={el.id} holdToDisplay={-1}>
 
-                  <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
-                            active={activeThread === el.id}>
-                    <Container relative>
-                      <Avatar className={style.AsideThreads__AvatarContainer}>
-                        <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                     textBg={avatarNameGenerator(el.title).color}/>
-                        <AvatarName invert>
-                          {el.group &&
-                          <Container inline>
-                            {el.type === 8 ?
-                              <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                              :
-                              <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                            }
-                            <Gap x={2}/>
+                        <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+                                  active={activeThread === el.id}>
+                          <Container relative>
+                            <Avatar className={style.AsideThreads__AvatarContainer}>
+                              <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                           textBg={avatarNameGenerator(el.title).color}/>
+                              <AvatarName invert>
+                                {el.group &&
+                                <Container inline>
+                                  {el.type === 8 ?
+                                    <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                                    :
+                                    <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                                  }
+                                  <Gap x={2}/>
+                                </Container>
+                                }
+                                {getTitle(el.title)}
+                                <AvatarText>
+                                  <LastMessageFragment thread={el} user={user}/>
+                                </AvatarText>
+                              </AvatarName>
+                            </Avatar>
+                            {el.unreadCount || el.pin ?
+                              <Container absolute centerLeft>
+                                <Gap y={10} block/>
+                                {el.mentioned &&
+                                <Fragment>
+                                  <Shape color="accent">
+                                    <ShapeCircle>@</ShapeCircle>
+                                  </Shape>
+                                  <Gap x={1}/>
+                                </Fragment>
+                                }
+                                {el.unreadCount ?
+                                  <Shape color="accent">
+                                    <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                                  </Shape> :
+                                  el.pin ?
+                                    <MdBookmarkOutline size={styleVar.iconSizeXs} color={styleVar.colorAccent}/> : ""
+                                }
+                              </Container> : ""}
                           </Container>
-                          }
-                          {getTitle(el.title)}
-                          <AvatarText>
-                            <LastMessageFragment thread={el} user={user}/>
-                          </AvatarText>
-                        </AvatarName>
-                      </Avatar>
-                      {el.unreadCount || el.pin ?
-                        <Container absolute centerLeft>
-                          <Gap y={10} block/>
-                          {el.mentioned &&
-                          <Fragment>
-                            <Shape color="accent">
-                              <ShapeCircle>@</ShapeCircle>
-                            </Shape>
-                            <Gap x={1}/>
-                          </Fragment>
-                          }
-                          {el.unreadCount ?
-                            <Shape color="accent">
-                              <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                            </Shape> :
-                            el.pin ?
-                              <MdBookmarkOutline size={styleVar.iconSizeXs} color={styleVar.colorAccent}/> : ""
-                          }
-                        </Container> : ""}
-                    </Container>
-                  </ListItem>
-                </ContextTrigger>
-              </Fragment>
-            ))}
-          </List>
-          {threadsPartialFetching && <PartialLoadingFragment/>}
-        </Scroller>);
+                        </ListItem>
+                      </ContextTrigger>
+                    </Fragment>
+                  ))}
+                </List>
+                {threadsPartialFetching && <PartialLoadingFragment/>}
+
+              </Scroller>
+            </Fragment>
+            {isSearchResult &&
+            <Fragment>
+              <Gap y="8" x="5">
+                <Text bold color="accent">{strings.contacts}</Text>
+              </Gap>
+              <Scroller>
+
+                {filteredContacts && filteredContacts.length ?
+                  <Container>
+
+                    <List>
+                      {filteredContacts.map(el => (
+                        <ListItem key={el.id} selection>
+                          <Container relative onClick={this.onStartChat.bind(this, el)}>
+
+                            <Container maxWidth="calc(100% - 75px)">
+                              <Avatar>
+                                <AvatarImage src={el.linkedUser.image}
+                                             text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
+                                             textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
+                                <AvatarName invert>
+                                  {el.firstName} {el.lastName}
+                                  {
+                                    el.blocked
+                                    &&
+                                    <AvatarText>
+                                      <Text size="xs" inline
+                                            color="red">{strings.blocked}</Text>
+                                    </AvatarText>
+                                  }
+
+                                </AvatarName>
+                              </Avatar>
+                            </Container>
+                          </Container>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Container> :
+                  <Container relative centerTextAlign>
+                    <Gap y="8" x="5">
+                      <Text size="sm" color="gray">{strings.noResult}</Text>
+                    </Gap>
+                  </Container>
+                }
+              </Scroller>
+            </Fragment>
+            }
+          </Fragment>
+        </Scroller>
+      );
     }
   }
 }

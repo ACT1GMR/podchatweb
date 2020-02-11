@@ -71,7 +71,7 @@ export default class LeftAsideMainSearch extends Component {
 
   search(query) {
     const {thread} = this.props;
-    if(query && query.slice()) {
+    if (query && query.slice()) {
       return this.props.dispatch(threadSearchMessage(thread.id, query));
     } else {
       return this.props.dispatch(threadSearchMessage());
@@ -107,12 +107,17 @@ export default class LeftAsideMainSearch extends Component {
                   <ListItem key={el.id} onSelect={this.onSearchItemClicked.bind(this, el.time, el.id)} selection invert>
                     <Container relative userSelect="none">
                       <Container inline className={style.LeftAsideMainSearch__TextContainer}>
-                        <Text isHTML
-                              size="sm"
-                              sanitizeRule={sanitizeRule}>{decodeEmoji(el.message)}</Text>
-                        <Text wordWrap="breakWord"
-                              color="gray"
-                              size="sm">{datePetrification(el.time)}</Text>
+                        <Container className={style.LeftAsideMainSearch__MessageContainer}>
+                          <Text isHTML
+                                size="sm"
+                                sanitizeRule={sanitizeRule}>{decodeEmoji(el.message)}</Text>
+                        </Container>
+                        <Container className={style.LeftAsideMainSearch__MessageTimeContainer}>
+                          <Text wordWrap="breakWord"
+                                color="gray"
+                                dark
+                                size="sm">{datePetrification(el.time)}</Text>
+                        </Container>
                       </Container>
                       <Container inline centerLeft>
                         <Text wordWrap="breakWord"

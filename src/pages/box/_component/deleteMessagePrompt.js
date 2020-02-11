@@ -30,6 +30,9 @@ export function MessageDeletePrompt(props) {
     }
   }
   function deleteMessage(forMeOnly, abort, removeIfYouCanForBothSide) {
+    forMeOnly = forMeOnly === true;
+    abort = abort === true;
+    removeIfYouCanForBothSide = removeIfYouCanForBothSide === true;
     dispatch(chatModalPrompt());
     if (abort) {
       dispatch(threadSelectMessageShowing(false));
@@ -69,7 +72,7 @@ export function MessageDeletePrompt(props) {
                   color="accent"
                   selection={true}
                   invert={true}
-                  onSelect={isThereAnyThatYouCanRemoveForOther && !isAbleToRemoveForAll ? deleteMessage.bind(null, false, false, true) : deleteMessage.bind(null)}>
+                  onSelect={isThereAnyThatYouCanRemoveForOther && !isAbleToRemoveForAll ? deleteMessage.bind(null, false, false, true) : deleteMessage.bind(null, false)}>
           <Text bold
                 color="accent">{isThereAnyThatYouCanRemoveForOther && !isAbleToRemoveForAll ? strings.removeMessageThatYouCanDeleteForAll : strings.forMeAndOthers}</Text>
 

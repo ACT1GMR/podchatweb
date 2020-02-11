@@ -81,7 +81,7 @@ export const chatSetInstance = config => {
             const {thread: id, pinMessage} = thread.result;
             return dispatch({
               type: THREAD_MESSAGE_PIN,
-              payload: {id, pinMessageVO: type=== "MESSAGE_UNPIN" ? null : pinMessage}
+              payload: {id, pinMessageVO: type === "MESSAGE_UNPIN" ? null : pinMessage}
             });
           }
           case THREAD_REMOVED_FROM:
@@ -100,6 +100,9 @@ export const chatSetInstance = config => {
         }
       },
       onMessageEvents: (message, type) => {
+        if (type === "MESSAGE_DELETE") {
+          message = {id: message.id.id, threadId: message.threadId};
+        }
         dispatch({
           type: type,
           payload: message
@@ -140,6 +143,9 @@ export const chatSetInstance = config => {
             type: CHAT_IS_TYPING,
             payload: {threadId, user}
           });
+        }
+        if (type === "SERVER_TIME") {
+          window._universalTalkTimerDiff = Date.now() - result.time;
         }
       },
       onChatState(e) {
