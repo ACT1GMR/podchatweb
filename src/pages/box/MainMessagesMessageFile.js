@@ -39,6 +39,8 @@ import {
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
+import {ContextItem} from "../../../../uikit/src/menu/Context";
+import strings from "../../constants/localization";
 
 
 function getImage(metaData, isFromServer, smallVersion, fileObject) {
@@ -122,7 +124,7 @@ class MainMessagesMessageFile extends Component {
   }
 
   onDownload(metaData, isVideo, e) {
-    (e || isVideo).stopPropagation();
+    (e || isVideo).stopPropagation && (e || isVideo).stopPropagation();
     if (isVideo === true) {
       return;
     }
@@ -166,7 +168,8 @@ class MainMessagesMessageFile extends Component {
       forceSeen,
       isChannel,
       isOwner,
-      isGroup
+      isGroup,
+      onPin
     } = this.props;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
@@ -202,14 +205,16 @@ class MainMessagesMessageFile extends Component {
             isParticipantBlocked={isParticipantBlocked}
             isOwner={isOwner}
             isMessageByMe={isMessageByMe}
+            onPin={onPin}
             isChannel={isChannel}
+            isGroup={isGroup}
             messageControlShow={messageControlShow}
             message={message}
             onMessageControlHide={onMessageControlHide}
             onDelete={onDelete} onForward={onForward} onReply={onReply}>
-            <MdArrowDownward className={MainMessagesMessageStyle.MainMessagesMessage__ControlIcon}
-                             size={styleVar.iconSizeMd}
-                             onClick={this.onDownload.bind(this, metaData)}/>
+            <ContextItem onClick={this.onDownload.bind(this, metaData)}>
+              {strings.download}
+            </ContextItem>
           </ControlFragment>
           <Container relative
                      className={style.MainMessagesFile__FileContainer}>

@@ -76,11 +76,12 @@ export const chatSetInstance = config => {
                       type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
                         : thread
             });
+          case "MESSAGE_UNPIN":
           case "MESSAGE_PIN": {
             const {thread: id, pinMessage} = thread.result;
             return dispatch({
               type: THREAD_MESSAGE_PIN,
-              payload: {id, pinMessageVO: pinMessage}
+              payload: {id, pinMessageVO: type=== "MESSAGE_UNPIN" ? null : pinMessage}
             });
           }
           case THREAD_REMOVED_FROM:

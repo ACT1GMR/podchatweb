@@ -81,6 +81,24 @@ export const threadCreateReducer = (state = {
       });
       return {...state, ...stateGenerator(SUCCESS, updatedThread, "thread")};
     }
+    case MESSAGE_DELETE:
+    case MESSAGE_EDIT():
+      {
+        const message = action.payload;
+        const pinMessage = state.thread.pinMessageVO;
+        if(!pinMessage) {
+          return state;
+        }
+        if(message.id === pinMessage.messageId) {
+          let updatedThread = updateStore(state.thread, {id: message.threadId, pinMessageVO: action.type === MESSAGE_EDIT() ? {messageId: pinMessage.messageId, text: action.payload.message} :  null}, {
+            mix: true,
+            by: "id",
+            method: listUpdateStrategyMethods.UPDATE
+          });
+          return {...state, ...stateGenerator(SUCCESS, updatedThread, "thread")};
+        }
+        return state;
+      }
     case CHAT_STOP_TYPING:
     case CHAT_IS_TYPING: {
       const {threadId, user} = action.payload;
@@ -237,7 +255,12 @@ export const threadsReducer = (state = {
   fetched: false,
   error: false
 }, action) => {
-  const sortThreads = threads => threads.sort((a, b) => b.time - a.time);
+  const sortThreads = threads => {
+    const pinedThreads = [...threads.filter(e=> e.pin)];
+    const unpinedThreads = [...threads.filter(e=> !e.pin)];
+    const sorted =  unpinedThreads.sort((a, b) => b.time - a.time);
+    return pinedThreads.concat(unpinedThreads);
+  }
 
   function removeDuplicateThreads(threads) {
     const checkedIds = [];
@@ -260,7 +283,7 @@ export const threadsReducer = (state = {
       const {threads, hasNext, nextOffset} = action.payload;
       return {
         ...state, ...stateGenerator(SUCCESS, {
-          threads: removeDuplicateThreads(sortThreads(threads)),
+          threads: sortThreads([...removeDuplicateThreads(threads)]),
           hasNext,
           nextOffset
         })

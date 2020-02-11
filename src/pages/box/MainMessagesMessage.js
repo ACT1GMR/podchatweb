@@ -317,7 +317,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
     {
       isOwner && (isGroup || isChannel) &&
       <ContextItem onClick={onPin}>
-        {strings.pintToTop(true)}
+        {strings.pinToTop}
       </ContextItem>
     }
 

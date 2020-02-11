@@ -278,7 +278,8 @@ export default class ChatSDK {
   removeAdmin(resolve, reject, userId, threadId, params) {
     let setAdminParams = {
       threadId,
-      admins: [{userId, roles: [
+      admins: [{
+        userId, roles: [
           'post_channel_message',
           'edit_message_of_others',
           'delete_message_of_others',
@@ -288,7 +289,8 @@ export default class ChatSDK {
           'add_rule_to_user',
           'remove_role_from_user',
           'edit_thread'
-        ]}, ...{params: params || {}}],
+        ]
+      }, ...{params: params || {}}],
 
     };
     this.chatAgent.removeAdmin(setAdminParams, (result) => {
@@ -713,6 +715,21 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  pinThread(resolve, reject, threadId) {
+    this.chatAgent.pinThread({
+      subjectId: threadId
+    });
+  }
+
+  @promiseDecorator
+  unpinThread(resolve, reject, threadId) {
+    this.chatAgent.unPinThread({
+      subjectId: threadId
+
+    });
+  }
+
+  @promiseDecorator
   pinMessage(resolve, reject, messageId) {
     const params = {
       messageId
@@ -723,7 +740,8 @@ export default class ChatSDK {
   @promiseDecorator
   unPinMessage(resolve, reject, messageId) {
     const params = {
-      messageId
+      messageId,
+      notifyAll: true
     };
     this.chatAgent.unPinMessage(params);
   }

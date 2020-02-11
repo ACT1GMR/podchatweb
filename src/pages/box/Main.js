@@ -127,7 +127,7 @@ class Main extends Component {
                  <Container className={style.Main}>
                    <Container className={style.Main__Cover}/>
                    <MainHead/>
-                   {pinMessageVO && <MainMessagesPinMessage messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
+                   {pinMessageVO && <MainMessagesPinMessage thread={thread} messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
                    <MainMessages ref={this.mainMessagesRef}/>
                    <MainFooter/>
                  </Container>

@@ -293,6 +293,22 @@ export const threadNewMessage = message => {
   }
 };
 
+export const threadPinToTop = (threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.pinThread(threadId);
+  }
+};
+
+export const threadUnpinFromTop = (threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.unpinThread(threadId);
+  }
+};
+
 export const threadMessagePinToTop = (messageId) => {
   return (dispatch, getState) => {
     const state = getState();

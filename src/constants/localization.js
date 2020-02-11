@@ -43,13 +43,12 @@ let strings = new LocalizedStrings({
     replyTo: "پاسخ به",
     reply: "پاسخ",
     sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
-    pintToTop(isMessage){
-      if(isMessage) {
-        return "چسبانده به بالا";
-      }
-    },
+    pinToTop: "چساباندن به بالا",
+    unpinFromTop: "برداشت از بالا",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
+    openThread: "باز کردن گفتگو",
+    download: "دانلود",
     createGroup: isChannel => `ایجاد ${isChannel ? "کانال" : "گروه"}`,
     member: "عضو",
     you: "شما",

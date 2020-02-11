@@ -16,6 +16,7 @@ import {
 import style from "../../../styles/pages/box/MainMessagesPinMessage.scss";
 import styleVar from "../../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {messageInfo} from "../../actions/messageActions";
 
 
 @connect(store => {
@@ -28,12 +29,19 @@ export default class MainMessagesPinMessage extends Component {
     this.onMessageClick = this.onMessageClick.bind(this);
     this.onUnpinClick = this.onUnpinClick.bind(this);
   }
+  componentDidMount() {
+    this.message = null;
+    const {messageVo, thread, dispatch} = this.props;
+    dispatch(messageInfo(thread.id, messageVo.messageId)).then(message=>{
+      this.message = message;
+    })
+  }
 
   onMessageClick() {
     const {messageVo, mainMessageRef} = this.props;
     const {current} = mainMessageRef;
     if(current) {
-      current.getWrappedInstance().goToSpecificMessage(messageVo.time);
+      current.getWrappedInstance().goToSpecificMessage(this.message.time);
     }
   }
 

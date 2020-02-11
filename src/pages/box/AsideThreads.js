@@ -6,14 +6,23 @@ import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {isGroup, isChannel} from "./Main";
 
 
 //strings
+import {
+  MdBookmarkOutline,
+} from "react-icons/lib/md";
 import strings from "../../constants/localization";
 import {ROUTE_THREAD} from "../../constants/routes";
 
 //actions
-import {threadCreateWithExistThread, threadGetList} from "../../actions/threadActions";
+import {
+  threadCreateWithExistThread,
+  threadGetList,
+  threadLeave,
+  threadModalThreadInfoShowing, threadNotification, threadPinToTop, threadUnpinFromTop
+} from "../../actions/threadActions";
 
 //UI components
 import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
@@ -35,6 +44,8 @@ import style from "../../../styles/pages/box/AsideThreads.scss";
 import Message from "../../../../uikit/src/message";
 import classnames from "classnames";
 import styleVar from "../../../styles/variables.scss";
+import Context, {ContextItem, ContextTrigger} from "../../../../uikit/src/menu/Context";
+import {chatModalPrompt} from "../../actions/chatActions";
 
 function sliceMessage(message, to) {
   return decodeEmoji(message);
@@ -177,15 +188,22 @@ class AsideThreads extends Component {
 
   constructor(props) {
     super(props);
-    this.onThreadClick.bind(this);
+    this.onThreadClick = this.onThreadClick.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onLeaveClick = this.onLeaveClick.bind(this);
+    this.onPinClick = this.onPinClick.bind(this);
+    this.onMuteClick = this.onMuteClick.bind(this);
     this.state = {activeThread: null};
   }
 
-  onThreadClick(thread) {
+  onThreadClick(thread, e) {
     const {chatRouterLess, history, threadId, dispatch} = this.props;
+    if (e.nativeEvent.which === 3) {
+      e.preventDefault();
+      return true;
+    }
     if (thread.id === threadId) {
-      return;
+      return true;
     }
     if (!chatRouterLess) {
       history.push(ROUTE_THREAD);
@@ -205,6 +223,25 @@ class AsideThreads extends Component {
     }
   }
 
+  onLeaveClick(thread) {
+    const {dispatch} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureAboutLeavingGroup(thread.title, thread.type === 8)}؟`, () => {
+      dispatch(threadLeave(thread.id));
+      dispatch(threadModalThreadInfoShowing());
+      dispatch(chatModalPrompt());
+    }, null, strings.leave));
+  }
+
+  onMuteClick(thread) {
+    const {dispatch} = this.props;
+    dispatch(threadNotification(thread.id, !thread.mute));
+  }
+
+  onPinClick(thread) {
+    const {dispatch} = this.props;
+    dispatch(thread.pin ? threadUnpinFromTop(thread.id) : threadPinToTop(thread.id));
+  }
+
   onScrollBottomThreshold() {
     const {threadsNextOffset, dispatch} = this.props;
     dispatch(threadGetList(threadsNextOffset, statics.count));
@@ -218,6 +255,7 @@ class AsideThreads extends Component {
       [style["AsideThreads--isThreadShow"]]: threadShowing
     });
     let filteredThreads = threads;
+    let pinedThread = threads.filter(e=>e.pin);
     if (threadsFetching || !chatInstance || !user.id) {
       return (
         <section className={classNames}>
@@ -226,6 +264,7 @@ class AsideThreads extends Component {
       )
     } else {
       filteredThreads = filteredThreads.filter(thread => thread.participantCount > 1 || thread.group);
+      
       if (!filteredThreads.length) {
         return (
           <section className={classNames}>
@@ -248,48 +287,84 @@ class AsideThreads extends Component {
                   onScrollBottomThreshold={this.onScrollBottomThreshold}>
           <List>
             {filteredThreads.map(el => (
+              <Fragment>
+                <Context id={el.id} rtl>
 
-              <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
-                        active={activeThread === el.id}>
-                <Container relative>
-                  <Avatar className={style.AsideThreads__AvatarContainer}>
-                    <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                 textBg={avatarNameGenerator(el.title).color}/>
-                    <AvatarName invert>
-                      {el.group &&
-                      <Container inline>
-                        {el.type === 8 ?
-                          <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                          :
-                          <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                        }
-                        <Gap x={2}/>
-                      </Container>
-                      }
-                      {getTitle(el.title)}
-                      <AvatarText>
-                        <LastMessageFragment thread={el} user={user}/>
-                      </AvatarText>
-                    </AvatarName>
-                  </Avatar>
-                  {el.unreadCount ?
-                    <Container absolute centerLeft>
-                      <Gap y={10} block/>
-                      {el.mentioned &&
-                      <Fragment>
-                        <Shape color="accent">
-                          <ShapeCircle>@</ShapeCircle>
-                        </Shape>
-                        <Gap x={1}/>
-                      </Fragment>
-                      }
-                      <Shape color="accent">
-                        <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                      </Shape>
+                  {
+                    <ContextItem onClick={this.onThreadClick.bind(null, el)}>
+                      {strings.openThread}
+                    </ContextItem>
+                  }
 
-                    </Container> : ""}
-                </Container>
-              </ListItem>
+                  {
+                    (isGroup(el) || isChannel(el)) &&
+                    <ContextItem onClick={this.onLeaveClick.bind(null, el)}>
+                      {strings.leave}
+                    </ContextItem>
+                  }
+
+                  {
+                    <ContextItem onClick={this.onMuteClick.bind(null, el)}>
+                      {el.mute ? strings.unmute : strings.mute}
+                    </ContextItem>
+                  }
+
+                  {
+                    ((el.pin && pinedThread.length >= 5 ) || pinedThread.length <5) &&
+                    <ContextItem onClick={this.onPinClick.bind(null, el)}>
+                      {el.pin || pinedThread.length >= 5  ? strings.unpinFromTop : strings.pinToTop}
+                    </ContextItem>
+                  }
+
+                </Context>
+                <ContextTrigger id={el.id} holdToDisplay={-1}>
+
+                  <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+                            active={activeThread === el.id}>
+                    <Container relative>
+                      <Avatar className={style.AsideThreads__AvatarContainer}>
+                        <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
+                                     textBg={avatarNameGenerator(el.title).color}/>
+                        <AvatarName invert>
+                          {el.group &&
+                          <Container inline>
+                            {el.type === 8 ?
+                              <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                              :
+                              <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                            }
+                            <Gap x={2}/>
+                          </Container>
+                          }
+                          {getTitle(el.title)}
+                          <AvatarText>
+                            <LastMessageFragment thread={el} user={user}/>
+                          </AvatarText>
+                        </AvatarName>
+                      </Avatar>
+                      {el.unreadCount || el.pin ?
+                        <Container absolute centerLeft>
+                          <Gap y={10} block/>
+                          {el.mentioned &&
+                          <Fragment>
+                            <Shape color="accent">
+                              <ShapeCircle>@</ShapeCircle>
+                            </Shape>
+                            <Gap x={1}/>
+                          </Fragment>
+                          }
+                          {el.unreadCount ?
+                            <Shape color="accent">
+                              <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                            </Shape> :
+                            el.pin ?
+                              <MdBookmarkOutline size={styleVar.iconSizeXs} color={styleVar.colorAccent}/> : ""
+                          }
+                        </Container> : ""}
+                    </Container>
+                  </ListItem>
+                </ContextTrigger>
+              </Fragment>
             ))}
           </List>
           {threadsPartialFetching && <PartialLoadingFragment/>}
