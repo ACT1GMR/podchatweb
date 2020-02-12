@@ -27,7 +27,7 @@ import {
 //UI components
 import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
 import {TypingFragment} from "./MainHeadThreadInfo";
-import {MdGroup, MdRecordVoiceOver, MdDoneAll, MdDone} from "react-icons/lib/md";
+import {MdGroup, MdRecordVoiceOver, MdDoneAll, MdDone, MdLocalOffer, MdNotificationsOff} from "react-icons/lib/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Scroller from "../../../../uikit/src/scroller";
@@ -287,7 +287,7 @@ class AsideThreads extends Component {
     } else {
       //filteredThreads = filteredThreads.filter(thread => thread.participantCount > 1 || thread.group);
 
-      if (!filteredThreads.length) {
+      if (!chatSearchResult && !filteredThreads.length) {
         return (
           <section className={classNames}>
             <Container center centerTextAlign>
@@ -314,7 +314,8 @@ class AsideThreads extends Component {
                         onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching}
                         onScrollBottomThreshold={this.onScrollBottomThreshold}>
                 <List>
-                  {filteredThreads.map(el => (
+                  {filteredThreads && filteredThreads.length ?
+                    filteredThreads.map(el => (
                     <Fragment>
                       <Context id={el.id} rtl>
 
@@ -369,30 +370,37 @@ class AsideThreads extends Component {
                                 </AvatarText>
                               </AvatarName>
                             </Avatar>
-                            {el.unreadCount || el.pin ?
+                            {el.unreadCount || el.pin || el.mute ?
                               <Container absolute centerLeft>
                                 <Gap y={10} block/>
-                                {el.mentioned &&
+                                {el.mentioned ?
                                 <Fragment>
                                   <Shape color="accent">
                                     <ShapeCircle>@</ShapeCircle>
                                   </Shape>
                                   <Gap x={1}/>
-                                </Fragment>
+                                </Fragment> :
+                                  el.mute ?
+                                    <MdNotificationsOff size={styleVar.iconSizeXs} color={styleVar.colorAccent}/> : ""
                                 }
                                 {el.unreadCount ?
                                   <Shape color="accent">
                                     <ShapeCircle>{el.unreadCount}</ShapeCircle>
                                   </Shape> :
                                   el.pin ?
-                                    <MdBookmarkOutline size={styleVar.iconSizeXs} color={styleVar.colorAccent}/> : ""
+                                    <MdLocalOffer size={styleVar.iconSizeXs} color={styleVar.colorAccent} style={{marginRight: "3px"}}/> : ""
                                 }
                               </Container> : ""}
                           </Container>
                         </ListItem>
                       </ContextTrigger>
                     </Fragment>
-                  ))}
+                  )) :
+                    <Container relative centerTextAlign>
+                      <Gap y="8" x="5">
+                        <Text size="sm" color="gray">{strings.noResult}</Text>
+                      </Gap>
+                    </Container>}
                 </List>
                 {threadsPartialFetching && <PartialLoadingFragment/>}
 

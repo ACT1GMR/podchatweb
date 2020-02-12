@@ -11,7 +11,7 @@ import {Text} from "../../../../uikit/src/typography";
 //styling
 import {
   MdClose,
-  MdBookmarkOutline,
+  MdLocalOffer,
   MdVideocam
 } from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainMessagesPinMessage.scss";
@@ -80,7 +80,7 @@ export default class MainMessagesPinMessage extends Component {
 
       <Container className={style.MainMessagesPinMessage__Message}>
         <Container className={style.MainMessagesPinMessage__MessageIcon}>
-          <MdBookmarkOutline size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          <MdLocalOffer size={styleVar.iconSizeSm} color={styleVar.colorAccent}/>
         </Container>
 
         <Container className={style.MainMessagesPinMessage__MessageDetails}>
@@ -92,7 +92,7 @@ export default class MainMessagesPinMessage extends Component {
           }
           {
             messageDetails.isVideo &&
-            <MdVideocam size={styleVar.iconSizeMd} color={styleVar.colorAccent} style={{marginLeft: "5px"}}/>
+            <MdVideocam size={styleVar.iconSizeSm} color={styleVar.colorAccent} style={{marginLeft: "5px", marginTop: "3px"}}/>
           }
           <Text isHTML>
             {decodeEmoji(messageDetails.text)}
