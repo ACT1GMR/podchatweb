@@ -19,12 +19,15 @@ import styleVar from "../../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {messageInfo} from "../../actions/messageActions";
 import {getMessageEditingText} from "./MainFooterInputEditing";
+import {isOwner} from "./ModalThreadInfoGroupMain";
 
 
 @connect(store => {
-  return {};
+  return {
+    user: store.user.user
+  };
 })
-export default class MainMessagesPinMessage extends Component {
+export default class MainPinMessage extends Component {
 
   constructor(props) {
     super(props);
@@ -40,16 +43,16 @@ export default class MainMessagesPinMessage extends Component {
   }
 
   componentDidUpdate({messageVo: oldMessageVo}) {
-    if(oldMessageVo.messageId !== this.props.messageVo.messageId) {
+    if (oldMessageVo.messageId !== this.props.messageVo.messageId) {
       this.requestForMessage();
     } else {
-      if(oldMessageVo.text !== this.props.messageVo.text) {
+      if (oldMessageVo.text !== this.props.messageVo.text) {
         this.requestForMessage();
       }
     }
   }
 
-  requestForMessage(){
+  requestForMessage() {
     this.setState({
       message: null
     });
@@ -73,36 +76,37 @@ export default class MainMessagesPinMessage extends Component {
   }
 
   render() {
-    const {messageVo} = this.props;
+    const {user, thread} = this.props;
     const {message} = this.state;
     const messageDetails = message ? getMessageEditingText(message) : {};
-    return <Container className={style.MainMessagesPinMessage} onClick={this.onMessageClick}>
+    return <Container className={style.MainPinMessage} onClick={this.onMessageClick}>
 
-      <Container className={style.MainMessagesPinMessage__Message}>
-        <Container className={style.MainMessagesPinMessage__MessageIcon}>
+      <Container className={style.MainPinMessage__Message}>
+        <Container className={style.MainPinMessage__MessageIcon}>
           <MdLocalOffer size={styleVar.iconSizeSm} color={styleVar.colorAccent}/>
         </Container>
 
-        <Container className={style.MainMessagesPinMessage__MessageDetails}>
+        <Container className={style.MainPinMessage__MessageDetails}>
           {messageDetails.image &&
-            <Container className={style.MainMessagesPinMessage__ImageContainer} inline>
-              <Container className={style.MainMessagesPinMessage__Image}
-                         style={{backgroundImage: `url(${messageDetails.image})`}}/>
-            </Container>
+          <Container className={style.MainPinMessage__ImageContainer} inline>
+            <Container className={style.MainPinMessage__Image}
+                       style={{backgroundImage: `url(${messageDetails.image})`}}/>
+          </Container>
           }
           {
             messageDetails.isVideo &&
-            <MdVideocam size={styleVar.iconSizeSm} color={styleVar.colorAccent} style={{marginLeft: "5px", marginTop: "3px"}}/>
+            <MdVideocam size={styleVar.iconSizeSm} color={styleVar.colorAccent}
+                        style={{marginLeft: "5px", marginTop: "3px"}}/>
           }
           <Text isHTML>
             {decodeEmoji(messageDetails.text)}
           </Text>
         </Container>
       </Container>
-
-      <Container className={style.MainMessagesPinMessage__CloseIcon} onClick={this.onUnpinClick}>
+      {isOwner(thread, user) && <Container className={style.MainPinMessage__CloseIcon} onClick={this.onUnpinClick}>
         <MdClose size={styleVar.iconSizeMd} color={styleVar.colorTextLight}/>
-      </Container>
+      </Container>}
+
     </Container>
   }
 }

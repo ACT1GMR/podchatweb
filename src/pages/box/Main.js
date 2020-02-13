@@ -25,11 +25,12 @@ import Gap from "../../../../uikit/src/gap";
 import {MdChat} from "react-icons/lib/md";
 import {Button} from "../../../../uikit/src/button";
 import Container from "../../../../uikit/src/container";
+import MainPinMessage from "./MainPinMessage";
 
 //styling
 import style from "../../../styles/pages/box/Main.scss";
 import styleVar from "../../../styles/variables.scss";
-import MainMessagesPinMessage from "./MainMessagesPinMessage";
+
 
 export function isMyThread(thread, user) {
   if (!thread || !user) {
@@ -75,11 +76,13 @@ class Main extends Component {
     this.mainMessagesRef= React.createRef();
   }
 
-  componentDidUpdate(oldProps) {
+  componentDidUpdate({history: oldHistory}) {
     const {history, dispatch} = this.props;
     if (mobileCheck()) {
+      if(oldHistory.location.pathname !== "/") {
       if (history.location.pathname === "/") {
-        dispatch(threadInit());
+          dispatch(threadInit());
+        }
       }
     }
   }
@@ -127,7 +130,7 @@ class Main extends Component {
                  <Container className={style.Main}>
                    <Container className={style.Main__Cover}/>
                    <MainHead/>
-                   {pinMessageVO && <MainMessagesPinMessage thread={thread} messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
+                   {pinMessageVO && <MainPinMessage thread={thread} messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
                    <MainMessages ref={this.mainMessagesRef}/>
                    <MainFooter/>
                  </Container>

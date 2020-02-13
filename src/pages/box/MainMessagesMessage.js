@@ -11,7 +11,7 @@ import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
 import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
-import {isOwner} from "./ModalThreadInfoGroupMain"
+import {isOwner} from "./ModalThreadInfoGroupMain";
 
 //strings
 import strings from "../../constants/localization";
@@ -273,7 +273,7 @@ export function PaperFooterFragment({message,  messageTriggerShow, isMessageByMe
       {children}
       {datePetrification(message.time)}
       <Container inline left inSpace className={classNames}>
-        <ContextTrigger id={message.id} holdToDisplay={-1} mouseButton={0}>
+        <ContextTrigger id={message.id} holdToDisplay={mobileCheck() ? 1000 : -1} mouseButton={0}>
 
             <MdExpandLess size={styleVar.iconSizeMd}
                           id={message.id}
@@ -493,7 +493,7 @@ export default class MainMessagesMessage extends Component {
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
 
-        <ContextTrigger id={message.id} holdToDisplay={-1} contextTriggerRef={this.contextTriggerRef}>
+        <ContextTrigger id={message.id || Math.random()} holdToDisplay={mobileCheck() ? 1000 : -1} contextTriggerRef={this.contextTriggerRef}>
           {isFile(message) ?
             <MainMessagesMessageFile {...args}/>
             :

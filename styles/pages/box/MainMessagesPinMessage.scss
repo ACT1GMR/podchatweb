@@ -1,4 +1,4 @@
-.MainMessagesPinMessage {
+.MainPinMessage {
   display: inline-flex;
   position: relative;
   background-color: $color-white;
@@ -12,7 +12,7 @@
   z-index: 1;
 }
 
-.MainMessagesPinMessage__Message {
+.MainPinMessage__Message {
   overflow: hidden;
   margin-right: 10px;
   text-overflow: ellipsis;
@@ -20,27 +20,27 @@
   display: inline-flex;
 }
 
-.MainMessagesPinMessage__MessageIcon {
+.MainPinMessage__MessageIcon {
   margin-left: 10px;
   margin-top: 4px;
 }
 
-.MainMessagesPinMessage__CloseIcon {
+.MainPinMessage__CloseIcon {
   height: 100%;
   width: 50px;
   text-align: center;
 }
 
-.MainMessagesPinMessage__MessageDetails {
+.MainPinMessage__MessageDetails {
   display: inline-flex;
 }
 
-.MainMessagesPinMessage__ImageContainer {
+.MainPinMessage__ImageContainer {
   overflow: hidden;
   margin-left: 5px;
 }
 
-.MainMessagesPinMessage__Image {
+.MainPinMessage__Image {
   background-size: cover;
   width: 24px;
   height: 24px;

@@ -38,7 +38,7 @@ import {
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
 import MainMessagesMessage from "./MainMessagesMessage";
-import MainMessagesPinMessage from "./MainMessagesPinMessage";
+import MainPinMessage from "./MainPinMessage";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
 
 const statics = {
