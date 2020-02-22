@@ -4,6 +4,8 @@ import ReactDOM from "react-dom";
 import ReactDOMServer from "react-dom/server";
 import "moment/locale/fa";
 import {connect} from "react-redux";
+import {mobileCheck} from "../../utils/helpers";
+import copyToClipBoard from "copy-to-clipboard";
 
 //strings
 
@@ -22,11 +24,14 @@ import {
   HighLighterFragment,
   SeenFragment
 } from "./MainMessagesMessage";
+import {MdEdit, MdContentCopy} from "react-icons/md";
 
 //styling
 import style from "../../../styles/pages/box/MainMessagesText.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import strings from "../../constants/localization";
+import styleVar from "../../../styles/variables.scss";
+
 
 function urlify(text) {
   if (!text) {
@@ -78,6 +83,10 @@ export default class MainMessagesMessageText extends Component {
     onMessageControlHide();
   }
 
+  onCopy(message) {
+    copyToClipBoard(message.message)
+  }
+
   onUserNameClick(e) {
   }
 
@@ -125,12 +134,17 @@ export default class MainMessagesMessageText extends Component {
             {
               message.editable &&
               <ContextItem onClick={this.onEdit.bind(this, message)}>
-                {strings.edit}
+                {mobileCheck() ? <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorAccent}/> : strings.edit}
+              </ContextItem>
+            }
+            {
+              <ContextItem onClick={this.onCopy.bind(this, message)}>
+                {mobileCheck() ? <MdContentCopy size={styleVar.iconSizeMd} color={styleVar.colorAccent}/> : strings.copyText}
               </ContextItem>
             }
 
           </ControlFragment>
-          <Container userSelect="text">
+          <Container userSelect={mobileCheck() ? "none" : "text"}>
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
               {mentionify(urlify(decodeEmoji(message.message)), this.onUserNameClick)}
             </Text>

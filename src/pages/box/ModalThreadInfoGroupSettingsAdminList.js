@@ -19,7 +19,7 @@ import {PartialLoadingFragment} from "./ModalContactList";
 
 
 //styling
-import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/lib/md";
+import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/md";
 import styleVar from "./../../../styles/variables.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
 import List, {ListItem} from "../../../../uikit/src/list";

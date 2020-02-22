@@ -13,7 +13,7 @@ import {
   MdClose,
   MdLocalOffer,
   MdVideocam
-} from "react-icons/lib/md";
+} from "react-icons/md";
 import style from "../../../styles/pages/box/MainMessagesPinMessage.scss";
 import styleVar from "../../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";

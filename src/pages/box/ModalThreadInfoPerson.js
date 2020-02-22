@@ -27,7 +27,7 @@ import Container from "../../../../uikit/src/container";
 import List, {ListItem} from "../../../../uikit/src/list";
 import date from "../../utils/date";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
-import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete} from "react-icons/lib/md";
+import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete} from "react-icons/md";
 
 //styling
 import styleVar from "./../../../styles/variables.scss";

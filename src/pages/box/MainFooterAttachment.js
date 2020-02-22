@@ -16,7 +16,7 @@ import {threadFilesToUpload} from "../../actions/threadActions";
 
 //components
 import Container from "../../../../uikit/src/container";
-import {MdAttachFile, MdChevronRight} from "react-icons/lib/md";
+import {MdAttachFile, MdChevronRight} from "react-icons/md";
 
 //styling
 import style from "../../../styles/pages/box/MainFooterAttachment.scss";

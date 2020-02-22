@@ -44,7 +44,7 @@ let strings = new LocalizedStrings({
     reply: "پاسخ",
     sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
     pinToTop: "چسباندن به بالا",
-    unpinFromTop: "برداشت از بالا",
+    unpinFromTop: "برداشتن از بالا",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
     openThread: "باز کردن گفتگو",
@@ -76,6 +76,7 @@ let strings = new LocalizedStrings({
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
     mobilePhoneIsRequired: "شماره موبایل اجباری است",
     youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
+    copyText: "کپی",
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";

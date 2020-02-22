@@ -34,12 +34,13 @@ import Scroller from "../../../../uikit/src/scroller";
 import {
   MdChatBubbleOutline,
   MdExpandMore,
-} from "react-icons/lib/md";
+} from "react-icons/md";
 import style from "../../../styles/pages/box/MainMessages.scss";
 import styleVar from "./../../../styles/variables.scss";
 import MainMessagesMessage from "./MainMessagesMessage";
 import MainPinMessage from "./MainPinMessage";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";
+import {ContextTrigger} from "../../../../uikit/src/menu/Context";
 
 const statics = {
   historyFetchCount: 20,
@@ -593,13 +594,13 @@ export default class MainMessages extends Component {
                         active={threadSelectMessageShowing && messageSelectedCondition(message, threadCheckedMessageList)}
                         activeColor="gray"
                         noPadding>
-                <Container className={MainMessagesMessageContainerClassNames(message)}
-                           id={`message-${message.time}`}
-                           relative>
-                  {thread.group && thread.type !== 8 && !isMessageByMe(message, user, thread) && getAvatar(message, messages, this.onAvatarClick, thread, user)}
-                  <MainMessagesMessage {...args} message={message}/>
-                  {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
-                </Container>
+                  <Container className={MainMessagesMessageContainerClassNames(message)}
+                             id={`message-${message.time}`}
+                             relative>
+                    {thread.group && thread.type !== 8 && !isMessageByMe(message, user, thread) && getAvatar(message, messages, this.onAvatarClick, thread, user)}
+                    <MainMessagesMessage {...args} message={message}/>
+                    {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
+                  </Container>
               </ListItem>
             )}
 
@@ -608,7 +609,7 @@ export default class MainMessages extends Component {
         </Scroller>
         {bottomButtonShowing && !this.gotoBottom &&
         <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>
-          <MdExpandMore size={style.iconSizeMd} style={{margin: "0 5px"}}/>
+          <MdExpandMore size={style.iconSizeMd} style={{marginTop: "3px"}}/>
         </ButtonFloating>}
         {threadUnreadMentionedMessagesCount > 0 &&
         <ButtonFloating onClick={this.onMentionedClicked} size="sm"

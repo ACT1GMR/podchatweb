@@ -8,8 +8,21 @@
   z-index: $z-index-1;
 }
 
+.AsideThreads--hiddenOverflow {
+  overflow: hidden;
+}
+
 .AsideThreads__Threads {
   overflow-y: auto;
+}
+
+.AsideThreads__Overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .AsideThreads__Threads--fullHeight {
@@ -19,4 +32,29 @@
 .AsideThreads__AvatarContainer {
   width: calc(100% - 30px);
   overflow: hidden;
+}
+
+.AsideThreads__MenuActionContainer {
+  display: inline-flex;
+  flex: 1 1 0;
+}
+
+.AsideThreads__MobileMenuBack {
+  flex: none;
+  margin-left: 15px;
+}
+
+.AsideThreads__UnpinLine {
+  position: absolute;
+  content: "";
+  width: 24px;
+  border-top: 1px solid $color-white;
+  border-bottom: 2px solid $color-accent;
+  transform: rotate(45deg);
+  top: 9px;
+  left: 2px;
+}
+
+.AsideThreads__ThreadCheck {
+  transition: opacity 0.1s ease 0s;
 }

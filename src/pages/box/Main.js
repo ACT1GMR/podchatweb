@@ -22,7 +22,7 @@ import MainMessages from "./MainMessages";
 import MainFooter from "./MainFooter";
 import Message from "../../../../uikit/src/message";
 import Gap from "../../../../uikit/src/gap";
-import {MdChat} from "react-icons/lib/md";
+import {MdChat} from "react-icons/md";
 import {Button} from "../../../../uikit/src/button";
 import Container from "../../../../uikit/src/container";
 import MainPinMessage from "./MainPinMessage";

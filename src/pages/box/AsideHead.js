@@ -15,7 +15,7 @@ import {ROUTE_ADD_CONTACT, ROUTE_CONTACTS, ROUTE_CREATE_CHANNEL, ROUTE_CREATE_GR
 import {contactAdding, contactListShowing, contactModalCreateGroupShowing} from "../../actions/contactActions";
 
 //UI components
-import {MdMenu, MdClose, MdSearch, MdEdit, MdArrowBack} from "react-icons/lib/md";
+import {MdMenu, MdClose, MdSearch, MdEdit, MdArrowBack} from "react-icons/md";
 import Notification from "./Notification";
 import Dropdown, {DropdownItem} from "../../../../uikit/src/menu/Dropdown";
 import {ButtonFloating} from "../../../../uikit/src/button"
@@ -231,7 +231,7 @@ class AsideHead extends Component {
             <Gap block x={20} y={20}>
               <Container topLeft>
                 <Gap x={10} y={15} block>
-                  <MdArrowBack size={style.iconSizeMd} color={styleVar.colorBackgroundLight} style={{margin: "0 5px"}}
+                  <MdArrowBack size={style.iconSizeMd} color={styleVar.colorBackgroundLight} style={{margin: "7px 0"}}
                                onClick={this.onCloseMenu}/>
                 </Gap>
               </Container>

@@ -19,7 +19,7 @@ import {InputText} from "../../../../uikit/src/input";
 import Container from "../../../../uikit/src/container";
 
 //styling
-import {MdArrowForward} from "react-icons/lib/md";
+import {MdArrowForward} from "react-icons/md";
 import Message from "../../../../uikit/src/message";
 
 const constants = {

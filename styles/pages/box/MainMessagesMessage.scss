@@ -88,3 +88,13 @@
 .MainMessagesMessage__SentIcon:hover {
   transform: scale(1.2);
 }
+
+.MainMessagesMessage__MenuActionContainer {
+  display: inline-flex;
+  flex: 1 1 0;
+}
+
+.MainMessagesMessage__MobileMenuBack {
+  flex: none;
+  margin-left: 15px;
+}

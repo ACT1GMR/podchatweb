@@ -15,7 +15,7 @@ import {contactChatting} from "../../actions/contactActions";
 import {threadCreateWithExistThread, threadCreateWithUser} from "../../actions/threadActions";
 
 //UI components
-import {MdGroup, MdRecordVoiceOver} from "react-icons/lib/md";
+import {MdGroup, MdRecordVoiceOver} from "react-icons/md";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Shape, {ShapeCircle} from "../../../../uikit/src/shape";

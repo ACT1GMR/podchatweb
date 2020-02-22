@@ -10,9 +10,6 @@ import {isGroup, isChannel} from "./Main";
 
 
 //strings
-import {
-  MdBookmarkOutline,
-} from "react-icons/lib/md";
 import strings from "../../constants/localization";
 import {ROUTE_THREAD} from "../../constants/routes";
 
@@ -25,9 +22,22 @@ import {
 } from "../../actions/threadActions";
 
 //UI components
-import AsideThreadsSearchResult from "./AsideThreadsSearchResult";
 import {TypingFragment} from "./MainHeadThreadInfo";
-import {MdGroup, MdRecordVoiceOver, MdDoneAll, MdDone, MdLocalOffer, MdNotificationsOff} from "react-icons/lib/md";
+import {
+  MdGroup,
+  MdRecordVoiceOver,
+  MdDoneAll,
+  MdDone,
+  MdLocalOffer,
+  MdNotificationsOff,
+  MdDelete,
+  MdNotificationsActive,
+  MdArrowBack,
+  MdCheck
+} from "react-icons/md";
+import {
+  AiFillPushpin
+} from "react-icons/ai";
 import Avatar, {AvatarImage, AvatarName, AvatarText} from "../../../../uikit/src/avatar";
 import List, {ListItem} from "../../../../uikit/src/list";
 import Scroller from "../../../../uikit/src/scroller";
@@ -192,10 +202,99 @@ class AsideThreads extends Component {
     this.onThreadClick = this.onThreadClick.bind(this);
     this.onStartChat = this.onStartChat.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
+    this.onScroll = this.onScroll.bind(this);
     this.onLeaveClick = this.onLeaveClick.bind(this);
     this.onPinClick = this.onPinClick.bind(this);
     this.onMuteClick = this.onMuteClick.bind(this);
+    this.onMenuShow = this.onMenuShow.bind(this);
+    this.onMenuHide = this.onMenuHide.bind(this);
+    this.refso = {};
+    window.refoos = this.contextRef = React.createRef();
+    window.refoos2 = this.contextTriggerRef = React.createRef();
     this.state = {activeThread: null};
+  }
+
+  componentDidUpdate(oldProps) {
+    const {chatInstance, dispatch} = this.props;
+    if (oldProps.chatInstance !== chatInstance) {
+      dispatch(threadGetList(0, statics.count));
+    }
+    if (oldProps.threadId !== this.props.threadId) {
+      this.setState({
+        activeThread: this.props.threadId
+      });
+    }
+  }
+
+  onLeaveClick(thread) {
+    const {dispatch} = this.props;
+    dispatch(chatModalPrompt(true, `${isChannel(thread) || isGroup(thread) ? strings.areYouSureAboutLeavingGroup(thread.title, isChannel(thread)) : strings.areYouSureRemovingThread}؟`, () => {
+      dispatch(threadLeave(thread.id));
+      dispatch(threadModalThreadInfoShowing());
+      dispatch(chatModalPrompt());
+    }, null, strings.leave));
+  }
+
+  onMuteClick(thread) {
+    const {dispatch} = this.props;
+    dispatch(threadNotification(thread.id, !thread.mute));
+  }
+
+  onPinClick(thread) {
+    const {dispatch} = this.props;
+    dispatch(thread.pin ? threadUnpinFromTop(thread.id) : threadPinToTop(thread.id));
+  }
+
+  onScrollBottomThreshold() {
+    const {threadsNextOffset, dispatch} = this.props;
+    dispatch(threadGetList(threadsNextOffset, statics.count));
+  }
+
+  onScroll(e) {
+    this.currentScroll = e.currentTarget.scrollTop;
+  }
+
+  onThreadTouchStart(thread, e) {
+    e.stopPropagation();
+    const touchPosition = this.touchPosition;
+    clearTimeout(this.showMenuTimeOutId);
+    this.showMenuTimeOutId = setTimeout(() => {
+      clearTimeout(this.showMenuTimeOutId);
+      this.showMenuTimeOutId = null;
+      if (this.touchPosition === touchPosition) {
+        this.setState({
+          isMenuShow: thread.id
+        });
+        const trigger = this.refso[thread.id];
+        trigger.handleContextClick(e);
+      }
+    }, 700);
+  }
+
+  onThreadTouchEnd(thread, e) {
+    if (this.showMenuTimeOutId) {
+      clearTimeout(this.showMenuTimeOutId);
+    } else {
+      e.preventDefault();
+    }
+  }
+
+  onThreadTouchMove(thread, e) {
+    this.touchPosition = `${e.touches[0].pageX}${e.touches[0].pageY}`;
+  }
+
+  onMenuShow(e) {
+    this.setState({
+      isMenuShow: e.detail.id
+    });
+  }
+
+  onMenuHide() {
+    setTimeout(() => {
+      this.setState({
+        isMenuShow: false
+      });
+    }, 200)
   }
 
   onThreadClick(thread, e) {
@@ -223,52 +322,19 @@ class AsideThreads extends Component {
     dispatch(chatSearchResult());
   }
 
-  componentDidUpdate(oldProps) {
-    const {chatInstance, dispatch} = this.props;
-    if (oldProps.chatInstance !== chatInstance) {
-      dispatch(threadGetList(0, statics.count));
-    }
-    if (oldProps.threadId !== this.props.threadId) {
-      this.setState({
-        activeThread: this.props.threadId
-      });
-    }
-  }
-
-  onLeaveClick(thread) {
-    const {dispatch} = this.props;
-    dispatch(chatModalPrompt(true, `${isChannel(thread) || isGroup(thread) ? strings.areYouSureAboutLeavingGroup(isChannel(thread)) : strings.areYouSureRemovingThread}؟`, () => {
-      dispatch(threadLeave(thread.id));
-      dispatch(threadModalThreadInfoShowing());
-      dispatch(chatModalPrompt());
-    }, null, strings.leave));
-  }
-
-  onMuteClick(thread) {
-    const {dispatch} = this.props;
-    dispatch(threadNotification(thread.id, !thread.mute));
-  }
-
-  onPinClick(thread) {
-    const {dispatch} = this.props;
-    dispatch(thread.pin ? threadUnpinFromTop(thread.id) : threadPinToTop(thread.id));
-  }
-
-  onScrollBottomThreshold() {
-    const {threadsNextOffset, dispatch} = this.props;
-    dispatch(threadGetList(threadsNextOffset, statics.count));
-  }
-
   render() {
     const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult, user, threadsHasNext, threadsPartialFetching} = this.props;
-    const {activeThread} = this.state;
+    const {activeThread, isMenuShow} = this.state;
+    const isMobile = mobileCheck();
     const classNames = classnames({
       [style.AsideThreads]: true,
+      [style["AsideThreads--hiddenOverflow"]]: !isMobile ? isMenuShow && true : false,
       [style["AsideThreads--isThreadShow"]]: threadShowing
     });
     let filteredThreads = threads;
     let filteredContacts;
     let isSearchResult;
+
     if (chatSearchResult) {
       isSearchResult = true;
       filteredThreads = chatSearchResult.filteredThreads;
@@ -285,8 +351,6 @@ class AsideThreads extends Component {
         </section>
       )
     } else {
-      //filteredThreads = filteredThreads.filter(thread => thread.participantCount > 1 || thread.group);
-
       if (!chatSearchResult && !filteredThreads.length) {
         return (
           <section className={classNames}>
@@ -296,12 +360,49 @@ class AsideThreads extends Component {
           </section>
         )
       }
+
+
       const threadsContainerClassNames = classnames({
         [style.AsideThreads__Threads]: true,
         [style["AsideThreads__ThreadsFullHeight"]]: !isSearchResult
       });
+
+      const MobileContextMenu = ({thread}) => {
+        return <Fragment>
+          <Container className={style.AsideThreads__MenuActionContainer}>
+            <ContextItem onClick={this.onLeaveClick.bind(null, thread)}>
+              <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+            </ContextItem>
+
+            <ContextItem onClick={this.onMuteClick.bind(null, thread)}>
+              {
+                thread.mute ? <MdNotificationsActive size={styleVar.iconSizeMd} color={styleVar.colorAccent}/> :
+                  <MdNotificationsOff size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+              }
+            </ContextItem>
+            {
+              ((thread.pin && pinedThread.length >= 5) || pinedThread.length < 5) &&
+              <ContextItem onClick={this.onPinClick.bind(null, thread)}>
+                {
+                  thread.pin || pinedThread.length >= 5 ?
+                    <Container relative><Container className={style.AsideThreads__UnpinLine}/><AiFillPushpin
+                      size={styleVar.iconSizeMd} color={styleVar.colorAccent}/></Container> :
+                    <AiFillPushpin size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+                }
+              </ContextItem>
+
+            }
+          </Container>
+
+          <ContextItem className={style.AsideThreads__MobileMenuBack}>
+            <MdArrowBack size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          </ContextItem>
+
+        </Fragment>
+      };
       return (
-        <Scroller className={classNames}>
+        <Scroller className={classNames} onScroll={this.onScroll}>
+          {isMenuShow && <Container className={style.AsideThreads__Overlay}/>}
           <Fragment>
             <Fragment>
               {isSearchResult &&
@@ -311,91 +412,114 @@ class AsideThreads extends Component {
               }
               <Scroller className={threadsContainerClassNames}
                         threshold={5}
+                        onScroll={this.onScroll}
                         onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching}
                         onScrollBottomThreshold={this.onScrollBottomThreshold}>
                 <List>
                   {filteredThreads && filteredThreads.length ?
                     filteredThreads.map(el => (
-                    <Fragment>
-                      <Context id={el.id} rtl>
+                      <Fragment>
+                        <Context id={el.id} rtl stickyHeader={isMobile} style={isMobile ? {height: "59px"} : null}
+                                 ref={this.contextRef}
+                                 onShow={this.onMenuShow} onHide={this.onMenuHide}>
+                          {isMobile ?
+                            <MobileContextMenu thread={el}/> :
 
-                        {
-                          <ContextItem onClick={this.onThreadClick.bind(null, el)}>
-                            {strings.openThread}
-                          </ContextItem>
-                        }
+                            <Fragment>
 
-                        {
-                          <ContextItem onClick={this.onLeaveClick.bind(null, el)}>
-                            {(isGroup(el) || isChannel(el)) ? strings.leave : strings.remove}
-                          </ContextItem>
-                        }
+                              <ContextItem onClick={this.onThreadClick.bind(null, el)}>
+                                {strings.openThread}
+                              </ContextItem>
 
-                        {
-                          <ContextItem onClick={this.onMuteClick.bind(null, el)}>
-                            {el.mute ? strings.unmute : strings.mute}
-                          </ContextItem>
-                        }
+                              <ContextItem onClick={this.onLeaveClick.bind(null, el)}>
+                                {
+                                  (isGroup(el) || isChannel(el)) ? strings.leave : strings.remove
+                                }
+                              </ContextItem>
 
-                        {
-                          ((el.pin && pinedThread.length >= 5) || pinedThread.length < 5) &&
-                          <ContextItem onClick={this.onPinClick.bind(null, el)}>
-                            {el.pin || pinedThread.length >= 5 ? strings.unpinFromTop : strings.pinToTop}
-                          </ContextItem>
-                        }
+                              <ContextItem onClick={this.onMuteClick.bind(null, el)}>
+                                {el.mute ? strings.unmute : strings.mute}
+                              </ContextItem>
 
-                      </Context>
-                      <ContextTrigger id={el.id} holdToDisplay={mobileCheck() ? 1000 : -1}>
-
-                        <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
-                                  active={activeThread === el.id}>
-                          <Container relative>
-                            <Avatar className={style.AsideThreads__AvatarContainer}>
-                              <AvatarImage src={el.image} customSize="50px" text={avatarNameGenerator(el.title).letter}
-                                           textBg={avatarNameGenerator(el.title).color}/>
-                              <AvatarName invert>
-                                {el.group &&
-                                <Container inline>
-                                  {el.type === 8 ?
-                                    <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                                    :
-                                    <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                              {
+                                ((el.pin && pinedThread.length >= 5) || pinedThread.length < 5) &&
+                                <ContextItem onClick={this.onPinClick.bind(null, el)}>
+                                  {
+                                    (el.pin || pinedThread.length >= 5 ? strings.unpinFromTop : strings.pinToTop)
                                   }
-                                  <Gap x={2}/>
+                                </ContextItem>
+
+                              }
+                            </Fragment>
+                          }
+                        </Context>
+                        <ContextTrigger id={el.id} holdToDisplay={-1} contextTriggerRef={e => this.refso[el.id] = e}>
+
+                          <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+                                    active={activeThread === el.id}>
+                            <Container relative
+                                       onTouchStart={this.onThreadTouchStart.bind(this, el)}
+                                       onTouchMove={this.onThreadTouchMove.bind(this, el)}
+                                       onTouchEnd={this.onThreadTouchEnd.bind(this, el)}>
+                              <Avatar className={style.AsideThreads__AvatarContainer}>
+                                <AvatarImage src={el.image} customSize="50px"
+                                             text={avatarNameGenerator(el.title).letter}
+                                             textBg={avatarNameGenerator(el.title).color}/>
+                                <Container className={style.AsideThreads__ThreadCheck} bottomRight
+                                           style={{zIndex: 1, opacity: isMenuShow === el.id ? 1 : 0}}>
+                                  <Shape color="accent">
+                                    <ShapeCircle>
+                                      <MdCheck size={styleVar.iconSizeSm} color={styleVar.colorWhite}
+                                               style={{marginTop: "3px"}}/>
+                                    </ShapeCircle>
+                                  </Shape>
                                 </Container>
                                 }
-                                {getTitle(el.title)}
-                                <AvatarText>
-                                  <LastMessageFragment thread={el} user={user}/>
-                                </AvatarText>
-                              </AvatarName>
-                            </Avatar>
-                            {el.unreadCount || el.pin || el.mute ?
-                              <Container absolute centerLeft>
-                                <Gap y={10} block/>
-                                {el.mentioned ?
-                                <Fragment>
-                                  <Shape color="accent">
-                                    <ShapeCircle>@</ShapeCircle>
-                                  </Shape>
-                                  <Gap x={1}/>
-                                </Fragment> :
-                                  el.mute ?
-                                    <MdNotificationsOff size={styleVar.iconSizeXs} color={styleVar.colorAccent}/> : ""
-                                }
-                                {el.unreadCount ?
-                                  <Shape color="accent">
-                                    <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                                  </Shape> :
-                                  el.pin ?
-                                    <MdLocalOffer size={styleVar.iconSizeXs} color={styleVar.colorAccent} style={{marginRight: "3px"}}/> : ""
-                                }
-                              </Container> : ""}
-                          </Container>
-                        </ListItem>
-                      </ContextTrigger>
-                    </Fragment>
-                  )) :
+                                <AvatarName invert>
+                                  {el.group &&
+                                  <Container inline>
+                                    {el.type === 8 ?
+                                      <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                                      :
+                                      <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                                    }
+                                    <Gap x={2}/>
+                                  </Container>
+                                  }
+                                  {getTitle(el.title)}
+                                  <AvatarText>
+                                    <LastMessageFragment thread={el} user={user}/>
+                                  </AvatarText>
+                                </AvatarName>
+                              </Avatar>
+                              {el.unreadCount || el.pin || el.mute ?
+                                <Container absolute centerLeft>
+                                  <Gap y={10} block/>
+                                  {el.mentioned ?
+                                    <Fragment>
+                                      <Shape color="accent">
+                                        <ShapeCircle>@</ShapeCircle>
+                                      </Shape>
+                                      <Gap x={1}/>
+                                    </Fragment> :
+                                    el.mute ?
+                                      <MdNotificationsOff size={styleVar.iconSizeSm} color={styleVar.colorAccent}
+                                                          style={{verticalAlign: "middle"}}/> : ""
+                                  }
+                                  {el.unreadCount ?
+                                    <Shape color="accent">
+                                      <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                                    </Shape> :
+                                    el.pin ?
+                                      <AiFillPushpin size={styleVar.iconSizeSm} color={styleVar.colorAccent}
+                                                     style={{marginRight: "3px", verticalAlign: "middle"}}/> : ""
+                                  }
+                                </Container> : ""}
+                            </Container>
+                          </ListItem>
+                        </ContextTrigger>
+                      </Fragment>
+                    )) :
                     <Container relative centerTextAlign>
                       <Gap y="8" x="5">
                         <Text size="sm" color="gray">{strings.noResult}</Text>
@@ -403,7 +527,6 @@ class AsideThreads extends Component {
                     </Container>}
                 </List>
                 {threadsPartialFetching && <PartialLoadingFragment/>}
-
               </Scroller>
             </Fragment>
             {isSearchResult &&

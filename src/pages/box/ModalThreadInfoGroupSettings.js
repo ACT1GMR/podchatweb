@@ -17,7 +17,7 @@ import Container from "../../../../uikit/src/container";
 import {InputText} from "../../../../uikit/src/input";
 
 //styling
-import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/lib/md";
+import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/md";
 import styleVar from "./../../../styles/variables.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
 import List, {ListItem} from "../../../../uikit/src/list";

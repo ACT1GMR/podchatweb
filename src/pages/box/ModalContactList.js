@@ -20,7 +20,7 @@ import Container from "../../../../uikit/src/container";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Gap from "../../../../uikit/src/gap";
 import {InputText} from "../../../../uikit/src/input";
-import {MdSearch, MdClose} from "react-icons/lib/md";
+import {MdSearch, MdClose} from "react-icons/md";
 
 //styling
 import style from "../../../styles/pages/box/ModalContactList.scss";

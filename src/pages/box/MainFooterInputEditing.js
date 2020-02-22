@@ -15,7 +15,7 @@ import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
 
 //styling
-import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/lib/md";
+import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/md";
 import style from "../../../styles/pages/box/MainFooterInputEditing.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStlye from "../../../styles/utils/utils.scss";

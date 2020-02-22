@@ -11,7 +11,7 @@ import {THREAD_LEFT_ASIDE_SEARCH} from "../../constants/actionTypes";
 import {threadLeftAsideShowing} from "../../actions/threadActions";
 
 //UI components
-import {MdClose} from "react-icons/lib/md";
+import {MdClose} from "react-icons/md";
 import {Text} from "../../../../uikit/src/typography";
 import Container from "../../../../uikit/src/container";
 

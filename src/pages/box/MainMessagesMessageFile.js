@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
-import {humanFileSize} from "../../utils/helpers";
+import {humanFileSize, mobileCheck} from "../../utils/helpers";
 import classnames from "classnames";
 
 //strings
@@ -35,7 +35,7 @@ import {
   MdArrowDownward,
   MdPlayArrow,
   MdClose
-} from "react-icons/lib/md";
+} from "react-icons/md";
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
 import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
@@ -213,7 +213,7 @@ class MainMessagesMessageFile extends Component {
             onMessageControlHide={onMessageControlHide}
             onDelete={onDelete} onForward={onForward} onReply={onReply}>
             <ContextItem onClick={this.onDownload.bind(this, metaData)}>
-              {strings.download}
+              {mobileCheck() ? <MdArrowDownward color={styleVar.colorAccent} size={styleVar.iconSizeMd}/> : strings.download}
             </ContextItem>
           </ControlFragment>
           <Container relative
@@ -253,14 +253,14 @@ class MainMessagesMessageFile extends Component {
                          onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
                     <ShapeCircle>
                       {isUploading(message) || hasError(message) ?
-                        <MdClose style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                        <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
                         : isDownloadable(message) ?
                           isVideo ?
                             <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
-                              <MdPlayArrow style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/>
+                              <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
                             </Text>
                             :
-                            <MdArrowDownward style={{margin: "0 5px"}} size={styleVar.iconSizeSm}/> : ""
+                            <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
                       }
                     </ShapeCircle>
                   </Shape>

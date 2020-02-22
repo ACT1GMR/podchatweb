@@ -20,12 +20,12 @@ import {chatModalPrompt} from "../../actions/chatActions";
 import Gap from "../../../../uikit/src/gap";
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
+import {MdDelete} from "react-icons/md";
+import {TiArrowForward} from "react-icons/ti";
 
 //styling
-import {MdForward, MdDelete} from "react-icons/lib/md";
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {deleteForAllCondition} from "./MainMessagesMessage";
 import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
 
 @connect(store => {
@@ -67,14 +67,15 @@ export default class MainHeadBatchActions extends Component {
 
         {threadCheckedMessageList && threadCheckedMessageList.length ?
           <Container>
-            <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
-              <MdForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-            </Container>
+
             {(!isChannel(thread) || isMyThread(thread, user)) &&
-              <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
-                <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
-              </Container>
+            <Container className={style.MainHeadBatchActions__DeleteContainer} inline onClick={this.onDelete}>
+              <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+            </Container>
             }
+            <Container className={style.MainHeadBatchActions__ForwardContainer} inline onClick={this.onForward}>
+              <TiArrowForward size={styleVar.iconSizeMd} color={styleVar.colorWhite}/>
+            </Container>
 
           </Container> :
           <Container>

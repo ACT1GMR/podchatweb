@@ -11,7 +11,7 @@ import strings from "../../constants/localization";
 //actions
 
 //UI components
-import {MdClose} from "react-icons/lib/md";
+import {MdClose} from "react-icons/md";
 import Container from "../../../../uikit/src/container";
 import {InputText} from "../../../../uikit/src/input";
 

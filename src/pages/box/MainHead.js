@@ -17,7 +17,7 @@ import {
 import {threadModalThreadInfoShowing, threadCheckedMessageList} from "../../actions/threadActions";
 
 //UI components
-import {MdChevronLeft, MdSearch, MdCheck, MdClose} from "react-icons/lib/md";
+import {MdChevronLeft, MdSearch, MdCheck, MdClose} from "react-icons/md";
 import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
 import Container from "../../../../uikit/src/container";
 import MainHeadThreadInfo from "./MainHeadThreadInfo";

@@ -1,5 +1,5 @@
 // src/list/BoxSceneMessages
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import OutsideClickHandler from 'react-outside-click-handler';
 import {connect} from "react-redux";
 import classnames from "classnames";
@@ -37,8 +37,17 @@ import {
   MdSchedule,
   MdCameraAlt,
   MdInsertDriveFile,
-  MdExpandLess
-} from "react-icons/lib/md";
+  MdExpandLess,
+  MdReply,
+  MdArrowBack,
+  MdDelete
+} from "react-icons/md";
+import {
+  TiArrowForward
+} from "react-icons/ti";
+import {
+  AiFillPushpin
+} from "react-icons/ai";
 import style from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
 import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../../constants/actionTypes";
@@ -46,6 +55,11 @@ import {avatarNameGenerator, mobileCheck} from "../../utils/helpers";
 import {messageEditing} from "../../actions/messageActions";
 import {chatModalPrompt} from "../../actions/chatActions";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
+
+function datePetrification(time) {
+  const correctTime = time / Math.pow(10, 6);
+  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
+}
 
 export function isFile(message) {
   if (message) {
@@ -56,11 +70,6 @@ export function isFile(message) {
       return JSON.parse(message.metadata).file;
     }
   }
-}
-
-function datePetrification(time) {
-  const correctTime = time / Math.pow(10, 6);
-  return date.isToday(correctTime) ? date.format(correctTime, "HH:mm") : date.isWithinAWeek(correctTime) ? date.format(correctTime, "dddd HH:mm") : date.format(correctTime, "YYYY-MM-DD  HH:mm");
 }
 
 export function ForwardFragment(message, isMessageByMe) {
@@ -259,7 +268,7 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
   )
 }
 
-export function PaperFooterFragment({message,  messageTriggerShow, isMessageByMe, children}) {
+export function PaperFooterFragment({message, messageTriggerShow, isMessageByMe, children}) {
   const classNames = classnames({
     [style.MainMessagesMessage__OpenTriggerIconContainer]: true,
     [style["MainMessagesMessage__OpenTriggerIconContainer--show"]]: message.id && messageTriggerShow,
@@ -272,12 +281,13 @@ export function PaperFooterFragment({message,  messageTriggerShow, isMessageByMe
     <PaperFooter style={inlineStyle}>
       {children}
       {datePetrification(message.time)}
-      <Container inline left inSpace className={classNames}>
+      <Container bottomLeft className={classNames}>
         <ContextTrigger id={message.id} holdToDisplay={mobileCheck() ? 1000 : -1} mouseButton={0}>
 
-            <MdExpandLess size={styleVar.iconSizeMd}
-                          id={message.id}
-                          className={style.MainMessagesMessage__TriggerIcon}/>
+          <MdExpandLess size={styleVar.iconSizeMd}
+                        style={{marginLeft: "10px"}}
+                        id={message.id}
+                        className={style.MainMessagesMessage__TriggerIcon}/>
 
         </ContextTrigger>
       </Container>
@@ -288,43 +298,83 @@ export function PaperFooterFragment({message,  messageTriggerShow, isMessageByMe
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, isText, children, isChannel, isGroup, onPin, isOwner}) {
-  const classNames = classnames({
-    [style.MainMessagesMessage__Control]: true,
-    [style["MainMessagesMessage__Control--mine"]]: isMessageByMe,
-  });
-  return <Context id={message.id} preventHideOnScroll={false} rtl>
-    {
-      (!isChannel || (isChannel && isMessageByMe)) &&
-      <ContextItem onClick={onDelete}>
-        {strings.remove}
+export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, onBackClick, children, isChannel, isGroup, onPin, isOwner}) {
+  const isMobile = mobileCheck();
+  const deleteCondition = (!isChannel || (isChannel && isMessageByMe));
+  const replyCondition = ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe));
+  const pinToTopCondition = isOwner && (isGroup || isChannel);
+  const MobileContextMenu = () => {
+    return <Fragment>
+      <Container className={style.MainMessagesMessage__MenuActionContainer}>
+        {
+          deleteCondition &&
+          <ContextItem onClick={onDelete}>
+            <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          </ContextItem>
+        }
+
+        <ContextItem onClick={onForward}>
+          <TiArrowForward size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+        </ContextItem>
+
+        {
+          replyCondition &&
+          <ContextItem onClick={onReply}>
+            <MdReply size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          </ContextItem>
+        }
+
+        {
+          pinToTopCondition &&
+          <ContextItem onClick={onPin}>
+            <AiFillPushpin size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          </ContextItem>
+        }
+
+        {
+          children
+        }
+      </Container>
+
+      <ContextItem className={style.MainMessagesMessage__MobileMenuBack}>
+        <MdArrowBack size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
       </ContextItem>
-    }
+    </Fragment>
+  };
+  return <Context id={message.id} preventHideOnScroll={false} rtl stickyHeader={mobileCheck()}
+                  style={mobileCheck() ? {height: "59px"} : null}>
+    {isMobile ? <MobileContextMenu/> :
+      <Fragment>
+        {
+          deleteCondition &&
+          <ContextItem onClick={onDelete}>
+            {strings.remove}
+          </ContextItem>
+        }
 
-    {
-      <ContextItem onClick={onForward}>
-        {strings.forward}
-      </ContextItem>
-    }
+        <ContextItem onClick={onForward}>
+          {strings.forward}
+        </ContextItem>
 
-    {
-      ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe)) &&
-      <ContextItem onClick={onReply}>
-        {strings.reply}
-      </ContextItem>
-    }
+        {
+          replyCondition &&
+          <ContextItem onClick={onReply}>
+            {strings.reply}
+          </ContextItem>
+        }
 
-    {
-      isOwner && (isGroup || isChannel) &&
-      <ContextItem onClick={onPin}>
-        {strings.pinToTop}
-      </ContextItem>
-    }
+        {
+          pinToTopCondition &&
+          <ContextItem onClick={onPin}>
+            {strings.pinToTop}
+          </ContextItem>
+        }
 
-    {
-      children
+        {
+          children
+        }
+      </Fragment>
     }
-
   </Context>
 }
 
@@ -353,7 +403,6 @@ export default class MainMessagesMessage extends Component {
     this.onMessageSeenListClick = this.onMessageSeenListClick.bind(this);
     this.containerRef = React.createRef();
     this.contextTriggerRef = React.createRef();
-    this.contextRef = React.createRef();
     this.state = {
       messageControlShow: false,
       messageTriggerShow: false
@@ -435,6 +484,34 @@ export default class MainMessagesMessage extends Component {
     this.onMessageControlHide && this.onMessageControlHide();
   }
 
+  onThreadTouchStart(message, e) {
+    e.stopPropagation();
+    const touchPosition = this.touchPosition;
+    clearTimeout(this.showMenuTimeOutId);
+    this.showMenuTimeOutId = setTimeout(() => {
+      clearTimeout(this.showMenuTimeOutId);
+      this.showMenuTimeOutId = null;
+      if (this.touchPosition === touchPosition) {
+        this.setState({
+          isMenuShow: message.id
+        });
+          this.contextTriggerRef.current.handleContextClick(e);
+      }
+    }, 700);
+  }
+
+  onThreadTouchMove(message, e) {
+    this.touchPosition = `${e.touches[0].pageX}${e.touches[0].pageY}`;
+  }
+
+  onThreadTouchEnd(message, e) {
+    if (this.showMenuTimeOutId) {
+      clearTimeout(this.showMenuTimeOutId);
+    } else {
+      e.preventDefault();
+    }
+  }
+
   render() {
     const {
       message,
@@ -465,7 +542,6 @@ export default class MainMessagesMessage extends Component {
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
-      contextRef: this.contextRef,
       forceSeen: messages && messages.length && messages[messages.length - 1].seen,
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
@@ -480,6 +556,7 @@ export default class MainMessagesMessage extends Component {
     };
     return (
       <Container id={message.uuid}
+                 userSelect="none"
                  inline relative
                  style={{
                    padding: "2px 5px",
@@ -490,10 +567,13 @@ export default class MainMessagesMessage extends Component {
                  }}
                  ref={this.containerRef}
                  onClick={this.onMessageControlShow.bind(this, true)}
+                 onTouchStart={this.onThreadTouchStart.bind(this, message)}
+                 onTouchMove={this.onThreadTouchMove.bind(this, message)}
+                 onTouchEnd={this.onThreadTouchEnd.bind(this, message)}
                  onMouseOver={this.onMouseOver}
                  onMouseLeave={this.onMouseLeave}>
 
-        <ContextTrigger id={message.id || Math.random()} holdToDisplay={mobileCheck() ? 1000 : -1} contextTriggerRef={this.contextTriggerRef}>
+        <ContextTrigger id={message.id || Math.random()} holdToDisplay={-1} contextTriggerRef={this.contextTriggerRef}>
           {isFile(message) ?
             <MainMessagesMessageFile {...args}/>
             :

@@ -28,7 +28,7 @@ import {Button} from "../../../../uikit/src/button";
 import AvatarText from "../../../../uikit/src/avatar/AvatarText";
 
 //styling
-import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/lib/md";
+import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/md";
 import styleVar from "./../../../styles/variables.scss";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupSettingsAdminAdd.scss";
 import {LastMessageFragment} from "./AsideThreads";

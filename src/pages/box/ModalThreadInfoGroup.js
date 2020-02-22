@@ -37,7 +37,7 @@ import ModalFooter from "../../../../uikit/src/modal/ModalFooter";
 import List, {ListItem} from "../../../../uikit/src/list";
 
 //styling
-import {MdGroupAdd, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/lib/md";
+import {MdGroupAdd, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonAdd} from "react-icons/md";
 import style from "../../../styles/pages/box/ModalThreadInfoGroupMain.scss";
 import styleVar from "./../../../styles/variables.scss";
 import utilsStyle from "../../../styles/utils/utils.scss";

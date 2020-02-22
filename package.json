@@ -55,6 +55,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
     "classnames": "^2.2.6",
+    "copy-to-clipboard": "^3.2.1",
     "emoji-regex": "^8.0.0",
     "ifvisible.js": "^2.0.10",
     "moment": "^2.22.2",
@@ -63,7 +64,7 @@
     "podchat-browser": "^5.4.2",
     "push.js": "^1.0.7",
     "raduikit": "^0.6.8",
-    "react-icons": "^2.2.7",
+    "react-icons": "^3.9.0",
     "react-localization": "^1.0.10",
     "react-meta-tags": "^0.4.2",
     "react-outside-click-handler": "^1.2.3",

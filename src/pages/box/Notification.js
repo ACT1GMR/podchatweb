@@ -24,17 +24,6 @@ function isMessageByMe(message, user) {
   }
 }
 
-function isFile(message) {
-  if (message) {
-    if (message.metadata) {
-      if (typeof message.metadata === "object") {
-        return message.metadata.file;
-      }
-      return JSON.parse(message.metadata).file;
-    }
-  }
-}
-
 @connect(store => {
   return {
     chatNotification: store.chatNotification,
