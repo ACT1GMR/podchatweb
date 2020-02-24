@@ -118,26 +118,29 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
 }
 
 function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMessageByMe}) {
-  return (
-    <Container>
-      <Container topLeft>
-        {
-          lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
+  try {
+    return (
+      <Container>
+        <Container topLeft>
+          {
+            lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
+            <Container inline>
+              {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
+                <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
+              <Gap x={3}/>
+            </Container>
+          }
           <Container inline>
-            {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
-              <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
-            <Gap x={3}/>
+            <Text size="xs"
+                  color="gray">{prettifyMessageDate(time || lastMessageVO.time)}</Text>
           </Container>
-        }
-        <Container inline>
-          <Text size="xs"
-                color="gray">{prettifyMessageDate(time || lastMessageVO.time)}</Text>
+
         </Container>
 
-      </Container>
-
-    </Container>
-  )
+      </Container>)
+  } catch(e) {
+    console.log(e);
+  }
 }
 
 export function LastMessageFragment({thread, user}) {
@@ -402,7 +405,7 @@ class AsideThreads extends Component {
       };
       return (
         <Scroller className={classNames} onScroll={this.onScroll}>
-          {isMenuShow && <Container className={style.AsideThreads__Overlay}/>}
+          {isMenuShow && <Container className={style.AsideThreads__Overlay} onContextMenu={e=> {e.stopPropagation();e.preventDefault();}}/>}
           <Fragment>
             <Fragment>
               {isSearchResult &&
@@ -474,7 +477,6 @@ class AsideThreads extends Component {
                                     </ShapeCircle>
                                   </Shape>
                                 </Container>
-                                }
                                 <AvatarName invert>
                                   {el.group &&
                                   <Container inline>

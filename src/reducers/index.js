@@ -37,6 +37,7 @@ import {
 } from "./threadReducer";
 import {
   messageNewReducer,
+  messagePinnedReducer,
   messageEditingReducer
 } from "./messageReducer";
 import {
@@ -101,6 +102,7 @@ const rootReducer = {
   threadCheckedMessageList: threadCheckedMessageListReducer,
   threadAdminList: threadAdminListReducer,
   messageNew: messageNewReducer,
+  messagePinned: messagePinnedReducer,
   messageEditing: messageEditingReducer,
   user: userReducer,
 };

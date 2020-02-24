@@ -6,7 +6,11 @@ import strings from "../../../constants/localization";
 import {deleteForAllCondition} from "../MainMessagesMessage";
 import {messageDelete} from "../../../actions/messageActions";
 import {chatModalPrompt} from "../../../actions/chatActions";
-import {threadCheckedMessageList, threadSelectMessageShowing} from "../../../actions/threadActions";
+import {
+  threadCheckedMessageList,
+  threadMessagePinToTop,
+  threadSelectMessageShowing
+} from "../../../actions/threadActions";
 
 export function MessageDeletePrompt(props) {
   const {message, dispatch, thread, user} = props;
@@ -29,6 +33,7 @@ export function MessageDeletePrompt(props) {
       }
     }
   }
+
   function deleteMessage(forMeOnly, abort, removeIfYouCanForBothSide) {
     forMeOnly = forMeOnly === true;
     abort = abort === true;
@@ -85,6 +90,45 @@ export function MessageDeletePrompt(props) {
                   invert={true}
                   onSelect={deleteMessage.bind(null, false, true)}>
           <Text bold color="accent">{strings.iCanceled}</Text>
+
+        </ListItem>
+      </List>
+    </Fragment>
+  )
+}
+
+
+export function PinMessagePrompt({message, dispatch}) {
+  function pinMessage(notifyAll) {
+    dispatch(chatModalPrompt());
+    dispatch(threadMessagePinToTop(message.id, notifyAll));
+  }
+
+  return (
+    <Fragment>
+      <Text size="lg">{strings.howDoYouPinThisMessage}؟</Text>
+      <Gap y={5}/>
+      <List>
+
+        <ListItem key="pin-and-notify"
+                  selection={true}
+                  invert={true}
+                  onSelect={pinMessage.bind(null, true)}>
+          <Text bold color="accent">{strings.pinAndNotifyAll}</Text>
+
+        </ListItem>
+        <ListItem key="only-pin"
+                  selection={true}
+                  invert={true}
+                  onSelect={pinMessage}>
+          <Text bold color="accent">{strings.onlyPin}</Text>
+
+        </ListItem>
+        <ListItem key="canceled-dont"
+                  selection={true}
+                  invert={true}
+                  onSelect={() => dispatch(chatModalPrompt())}>
+          <Text bold color="accent">{strings.canceledIDontWant}</Text>
 
         </ListItem>
       </List>

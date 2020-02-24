@@ -730,9 +730,10 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  pinMessage(resolve, reject, messageId) {
+  pinMessage(resolve, reject, messageId, notifyAll) {
     const params = {
-      messageId
+      messageId,
+      notifyAll
     };
     this.chatAgent.pinMessage(params);
   }
@@ -740,8 +741,7 @@ export default class ChatSDK {
   @promiseDecorator
   unPinMessage(resolve, reject, messageId) {
     const params = {
-      messageId,
-      notifyAll: true
+      messageId
     };
     this.chatAgent.unPinMessage(params);
   }

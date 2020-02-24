@@ -10,6 +10,9 @@ import MetaTags from "react-meta-tags";
 //actions
 import {threadCreateWithExistThread} from "../../actions/threadActions";
 import strings from "../../constants/localization";
+import {isFile} from "./MainMessagesMessage";
+import {isOwner} from "./ModalThreadInfoGroupMain";
+import {isChannel} from "./Main";
 
 //components
 
@@ -29,6 +32,7 @@ function isMessageByMe(message, user) {
     chatNotification: store.chatNotification,
     chatNotificationClickHook: store.chatNotificationClickHook,
     messageNew: store.messageNew,
+    messagePinned: store.messagePinned,
     user: store.user.user,
     chatInstance: store.chatInstance.chatSDK,
   };
@@ -58,35 +62,55 @@ export default class Notification extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {messageNew} = nextProps;
-    const {messageNew: oldMessageNew} = this.props;
-    if (messageNew && messageNew.cache) {
-      return;
-    }
-    if (messageNew && oldMessageNew) {
-      if (messageNew.time < oldMessageNew.time) {
-        return false;
+    const {messageNew, messagePinned} = nextProps;
+    const {messageNew: oldMessageNew, messagePinned: oldMessagePinned} = this.props;
+    let newPinMessage = true;
+    let newMessage = true;
+    if (messagePinned) {
+      if (oldMessagePinned) {
+        if (messagePinned.id === oldMessagePinned.id) {
+          newPinMessage = false;
+        }
       }
+    } else {
+      newPinMessage = false;
     }
-    return true;
+    /*    if (messageNew && messageNew.cache) {
+          return;
+        }*/
+    if (messageNew) {
+      if (oldMessageNew) {
+        if (messageNew.time <= oldMessageNew.time) {
+          newMessage = false;
+        }
+      }
+    } else {
+      newMessage = false;
+    }
+
+    if (newPinMessage || newMessage) {
+      this.pinNotify = newPinMessage;
+      return true;
+    }
   }
 
   componentDidUpdate(oldProps) {
     if (Push.Permission.request() && this.props.chatNotification) {
-      const {messageNew, chatInstance, dispatch, user, chatNotificationClickHook} = this.props;
-      const {messageNew: oldMessageNew} = oldProps;
-      if (messageNew && oldMessageNew) {
-        if (messageNew.time < oldMessageNew.time) {
-          return;
-        }
+      const {messageNew, chatInstance, dispatch, user, chatNotificationClickHook, messagePinned} = this.props;
+      const {messagePinned: oldMessagePinned, messageNew: oldMessageNew} = oldProps;
+      if (!messageNew && !messagePinned) {
+        return;
       }
-      if (!isMessageByMe(messageNew, user)) {
+      let messageToNotify = this.pinNotify ? messagePinned : messageNew;
+      if (this.pinNotify || !isMessageByMe(messageToNotify, user)) {
         if (chatInstance) {
-          if (!window.document.hasFocus()) {
-            if (messageNew === oldMessageNew) {
-              return;
-            }
-            chatInstance.getThreadInfo({threadIds: messageNew.threadId}).then(thread => {
+          if (this.pinNotify || !window.document.hasFocus()) {
+            chatInstance.getThreadInfo({threadIds: messageToNotify.threadId}).then(thread => {
+              if (this.pinNotify) {
+                if (isOwner(thread, user)) {
+                  return;
+                }
+              }
               if (thread.mute) {
                 return;
               }
@@ -103,13 +127,15 @@ export default class Notification extends Component {
                   })
                 }, 1500);
               }
-              const isMessageFile = isFile(messageNew);
+              const isMessageFile = isFile(messageToNotify);
               const tag = document.createElement("div");
-              const text = messageNew.message;
-              tag.innerHTML = messageNew.message;
-              const newMessageText = messageNew.message;
-              const personName = `${thread.group ? `${messageNew.participant && (messageNew.participant.contactName || messageNew.participant.name)}: ` : ""}`;
-              const notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : tag.innerText}`;
+              tag.innerHTML = messageToNotify.message;
+              const newMessageText = messageToNotify.message;
+              const personName = `${thread.group ? `${messageToNotify.participant && (messageToNotify.participant.contactName || messageToNotify.participant.name)}: ` : ""}`;
+              let notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : tag.innerText}`;
+              if (this.pinNotify) {
+                notificationMessage = strings.personPinnedMessage(isChannel(thread));
+              }
               Push.create(thread.title, {
                 body: notificationMessage,
                 icon: thread.image || defaultAvatar,
@@ -118,7 +144,7 @@ export default class Notification extends Component {
                   if (chatNotificationClickHook) {
                     chatNotificationClickHook(thread);
                   }
-                  dispatch(threadCreateWithExistThread( thread));
+                  dispatch(threadCreateWithExistThread(thread));
                   window.focus();
                   this.close();
                 }
@@ -131,7 +157,7 @@ export default class Notification extends Component {
   }
 
   render() {
-    if (!this.props.chatNotificationEnabled) {
+    if (!Push.Permission.request() || !this.props.chatNotification) {
       return null;
     }
     const {count, showLastThread, thread, defaultTitle} = this.state;

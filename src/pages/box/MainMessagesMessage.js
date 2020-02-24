@@ -10,7 +10,7 @@ import date from "../../utils/date";
 import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
-import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
+import {MessageDeletePrompt, PinMessagePrompt} from "./_component/prompts";
 import {isOwner} from "./ModalThreadInfoGroupMain";
 
 //strings
@@ -379,7 +379,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
 }
 
 export function deleteForAllCondition(message, user, thread) {
-  return (isMessageByMe(message, user) && message.deletable) || (thread.group && thread.inviter.id === user.id);
+  return message.deletable &&( (isMessageByMe(message, user)) || (thread.group && thread.inviter.id === user.id));
 }
 
 @connect(store => {
@@ -461,7 +461,9 @@ export default class MainMessagesMessage extends Component {
 
   onPin() {
     const {dispatch, message} = this.props;
-    dispatch(threadMessagePinToTop(message.id))
+    dispatch(chatModalPrompt(true,
+      null, null, null, null,
+      <PinMessagePrompt message={message} dispatch={dispatch}/>));
   }
 
   onDelete(e) {

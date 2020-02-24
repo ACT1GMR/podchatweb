@@ -24,8 +24,9 @@ import {
   CHAT_NOTIFICATION,
   CHAT_NOTIFICATION_CLICK_HOOK,
   CHAT_RETRY_HOOK,
-  CHAT_SIGN_OUT_HOOK, THREAD_MESSAGE_PIN
+  CHAT_SIGN_OUT_HOOK, THREAD_MESSAGE_PIN, MESSAGE_PINNED
 } from "../constants/actionTypes";
+import {messageInfo} from "./messageActions";
 
 
 let firstReadyPassed = false;
@@ -79,9 +80,20 @@ export const chatSetInstance = config => {
           case "MESSAGE_UNPIN":
           case "MESSAGE_PIN": {
             const {thread: id, pinMessage} = thread.result;
+            const isUnpin = type === "MESSAGE_UNPIN";
+            if(!isUnpin) {
+              if(pinMessage.notifyAll) {
+                dispatch(messageInfo(id, pinMessage.messageId)).then(message =>{
+                  return dispatch({
+                    type: MESSAGE_PINNED,
+                    payload: message
+                  });
+                });
+              }
+            }
             return dispatch({
               type: THREAD_MESSAGE_PIN,
-              payload: {id, pinMessageVO: type === "MESSAGE_UNPIN" ? null : pinMessage}
+              payload: {id, pinMessageVO: isUnpin ? null : pinMessage}
             });
           }
           case THREAD_REMOVED_FROM:
@@ -90,6 +102,9 @@ export const chatSetInstance = config => {
             thread.changeType = type;
             if (thread.result) {
               if (!thread.result.thread) {
+                return;
+              }
+              if (!thread.result.thread.id) {
                 return;
               }
             }

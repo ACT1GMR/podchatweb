@@ -26,7 +26,7 @@ import {TiArrowForward} from "react-icons/ti";
 //styling
 import style from "../../../styles/pages/box/MainHeadBatchActions.scss";
 import styleVar from "./../../../styles/variables.scss";
-import {MessageDeletePrompt} from "./_component/deleteMessagePrompt";
+import {MessageDeletePrompt} from "./_component/prompts";
 
 @connect(store => {
   return {

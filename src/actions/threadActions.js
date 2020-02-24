@@ -309,11 +309,11 @@ export const threadUnpinFromTop = (threadId) => {
   }
 };
 
-export const threadMessagePinToTop = (messageId) => {
+export const threadMessagePinToTop = (messageId, notifyAll) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    chatSDK.pinMessage(messageId);
+    chatSDK.pinMessage(messageId, notifyAll);
   }
 };
 

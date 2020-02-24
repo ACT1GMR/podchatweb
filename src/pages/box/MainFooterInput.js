@@ -432,6 +432,7 @@ export default class MainFooterInput extends Component {
                 sanitizeRule={sanitizeRule}
                 ref={this.inputNode}
                 placeholder={strings.pleaseWriteHere}
+                onChange={this.onTextChange}
                 onKeyPress={this.onInputKeyPress}
                 onKeyDown={this.onInputKeyDown}
                 onKeyUp={this.onInputKeyUp}

@@ -77,6 +77,9 @@ let strings = new LocalizedStrings({
     mobilePhoneIsRequired: "شماره موبایل اجباری است",
     youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
     copyText: "کپی",
+    howDoYouPinThisMessage: "چطور این پیام رو به بالا میچسبونید",
+    pinAndNotifyAll: "چسباندن و با خبر سازی همه",
+    onlyPin: "فقط بچسبه به بالا",
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";
@@ -172,7 +175,7 @@ let strings = new LocalizedStrings({
     leaveGroup: isChannel => `ترک ${isChannel ? "کانال" : "گروه"}`,
     removeThread: isChannel => ``,
     chatState: {
-      networkDisconnected: "در انتظار شبکه",
+      networkDisconnected: "عدم برقراری ارتباط",
       reconnecting: "اتصال به شبکه",
       connectingToChat: "در حال اتصال"
     },
@@ -198,6 +201,10 @@ let strings = new LocalizedStrings({
     admins: "مدیران",
     addAdmin: "اضافه کردن مدیر",
     doAdd: "اضافه کن",
+    canceledIDontWant: "ولش کن نمیخواد",
+    personPinnedMessage(isChannel){
+      return `پیامی به بالای ${isChannel ? "کانال" : "گروه"} چسبیده شد`
+    },
     areYouSureAboutAddThisPersonToAdminList: "آیا مطمئنید میخوهید این کاربر را به لیست مدیران اضافه کنید",
     howWeShouldDeleteThisMessageForYou: count =>{
       if(count) {
