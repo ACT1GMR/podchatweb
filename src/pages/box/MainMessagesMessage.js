@@ -40,7 +40,8 @@ import {
   MdExpandLess,
   MdReply,
   MdArrowBack,
-  MdDelete
+  MdDelete,
+  MdInfo
 } from "react-icons/md";
 import {
   TiArrowForward
@@ -298,11 +299,12 @@ export function PaperFooterFragment({message, messageTriggerShow, isMessageByMe,
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, onBackClick, children, isChannel, isGroup, onPin, isOwner}) {
+export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, onMessageSeenListClick, children, isChannel, isGroup, onPin, isOwner}) {
   const isMobile = mobileCheck();
   const deleteCondition = (!isChannel || (isChannel && isMessageByMe));
   const replyCondition = ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe));
   const pinToTopCondition = isOwner && (isGroup || isChannel);
+  const messageInfoCondition = isMessageByMe && (isGroup || isChannel );
   const MobileContextMenu = () => {
     return <Fragment>
       <Container className={style.MainMessagesMessage__MenuActionContainer}>
@@ -328,6 +330,13 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
           pinToTopCondition &&
           <ContextItem onClick={onPin}>
             <AiFillPushpin size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          </ContextItem>
+        }
+
+        {
+          messageInfoCondition &&
+          <ContextItem onClick={onMessageSeenListClick}>
+            <MdInfo size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
           </ContextItem>
         }
 
@@ -367,6 +376,13 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
           pinToTopCondition &&
           <ContextItem onClick={onPin}>
             {strings.pinToTop}
+          </ContextItem>
+        }
+
+        {
+          messageInfoCondition &&
+          <ContextItem onClick={onMessageSeenListClick}>
+            {strings.messageInfo}
           </ContextItem>
         }
 
@@ -448,6 +464,10 @@ export default class MainMessagesMessage extends Component {
     this.setState({
       messageControlShow: false
     });
+  }
+
+  onMessageInfo() {
+
   }
 
   onMessageControlShow(e) {

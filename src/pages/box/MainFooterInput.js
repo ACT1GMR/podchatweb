@@ -208,7 +208,9 @@ export default class MainFooterInput extends Component {
   componentDidMount() {
     const {thread, dispatch} = this.props;
     dispatch(messageEditing());
-    this.lastTypingText = Cookies.get(thread.id) || null;
+    if (thread && thread.id) {
+      this.lastTypingText = Cookies.get(thread.id) || null;
+    }
     this.setInputText(this.lastTypingText);
     dispatch(threadIsSendingMessage(false));
   }
@@ -223,7 +225,6 @@ export default class MainFooterInput extends Component {
     }
     if (oldThreadId !== threadId) {
       if (this.lastTypingText) {
-        Cookies.set(oldThreadId, this.lastTypingText);
         dispatch(threadDraft(oldThreadId, this.lastTypingText));
       } else {
         Cookies.remove(oldThreadId);
@@ -307,6 +308,8 @@ export default class MainFooterInput extends Component {
         dispatch(messageSend(clearMessageText, threadId));
       }
     }
+    Cookies.remove(threadId);
+    dispatch(threadDraft(threadId));
     dispatch(messageEditing());
     dispatch(threadEmojiShowing(false));
     this.resetParticipantSuggestion();
@@ -337,8 +340,10 @@ export default class MainFooterInput extends Component {
       } else {
         if (event) {
           if (event.slice()) {
+            Cookies.set(threadId, this.lastTypingText);
             this.lastTypingText = event;
           } else {
+            Cookies.remove(threadId);
             this.lastTypingText = null;
           }
         }

@@ -210,6 +210,7 @@ class MainMessagesMessageFile extends Component {
             isGroup={isGroup}
             messageControlShow={messageControlShow}
             message={message}
+            onMessageSeenListClick={onMessageSeenListClick}
             onMessageControlHide={onMessageControlHide}
             onDelete={onDelete} onForward={onForward} onReply={onReply}>
             <ContextItem onClick={this.onDownload.bind(this, metaData)}>

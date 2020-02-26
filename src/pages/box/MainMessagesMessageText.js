@@ -128,6 +128,7 @@ export default class MainMessagesMessageText extends Component {
                            isChannel={isChannel}
                            isGroup={isGroup}
                            message={message}
+                           onMessageSeenListClick={onMessageSeenListClick}
                            onMessageControlHide={onMessageControlHide}
                            onDelete={onDelete} onForward={onForward} onReply={onReply}
                            isText={true}>

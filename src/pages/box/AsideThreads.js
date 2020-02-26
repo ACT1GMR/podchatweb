@@ -432,7 +432,7 @@ class AsideThreads extends Component {
                   {filteredThreads && filteredThreads.length ?
                     filteredThreads.map(el => (
                       <Fragment>
-                        <Context id={el.id} rtl stickyHeader={isMobile} style={isMobile ? {height: "59px"} : null}
+                        <Context id={el.id} stickyHeader={isMobile} style={isMobile ? {height: "59px"} : null}
                                  ref={this.contextRef}
                                  onShow={this.onMenuShow} onHide={this.onMenuHide}>
                           {isMobile ?

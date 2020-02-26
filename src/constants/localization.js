@@ -9,6 +9,7 @@ let strings = new LocalizedStrings({
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کن!!",
     pleaseWriteHere: "اینجا بنویسید...",
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
+    messageInfo: "اطلاعات پیام",
     add: "اضافه کردن",
     addContact: "اضافه کردن مخاطب",
     editContact: contact => {

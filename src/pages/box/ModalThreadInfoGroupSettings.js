@@ -147,6 +147,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
               </Container>
               <AvatarName>
                 <InputText onChange={this.groupNameChange.bind(this)}
+                           max={40}
                            value={groupName}
                            placeholder={strings.groupName(isChannel)}/>
               </AvatarName>
