@@ -42,7 +42,7 @@ import {
   THREAD_ADMIN_LIST,
   THREAD_ADMIN_LIST_REMOVE,
   THREAD_ADMIN_LIST_ADD,
-  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_DRAFT
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
@@ -163,7 +163,7 @@ export const threadUnreadMentionedMessageGetList = (threadId, count) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    if(!threadId) {
+    if (!threadId) {
       return dispatch({
         type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED),
         payload: null
@@ -280,6 +280,15 @@ export const threadLeave = (threadId, kickedOut) => {
         type: THREAD_REMOVED_FROM,
         payload: threadId
       });
+    });
+  }
+};
+
+export const threadDraft = (id, draftMessage) => {
+  return dispatch => {
+    dispatch({
+      type: THREAD_DRAFT,
+      payload: {id, draftMessage}
     });
   }
 };

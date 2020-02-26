@@ -208,6 +208,7 @@ let strings = new LocalizedStrings({
     addAdmin: "اضافه کردن مدیر",
     doAdd: "اضافه کن",
     canceledIDontWant: "ولش کن نمیخواد",
+    draft: "پیشنویس",
     personPinnedMessage(isChannel){
       return `پیامی به بالای ${isChannel ? "کانال" : "گروه"} چسبیده شد`
     },

@@ -339,10 +339,10 @@ class ModalThreadInfoGroupMain extends Component {
                   <MdGroupAdd size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
                               onClick={this.onAddMemberSelect}/>
                   <Gap x={5}/>
+                  <MdSettings size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
+                              onClick={this.onSettingsSelect}/>
+                  <Gap x={5}/>
                 </Container>
-                <MdSettings size={styleVar.iconSizeMd} color={styleVar.colorGray} className={iconClasses}
-                            onClick={this.onSettingsSelect}/>
-                <Gap x={5}/>
               </Container>
               : ""}
           </Container>

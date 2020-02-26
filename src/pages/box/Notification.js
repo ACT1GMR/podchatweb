@@ -130,7 +130,7 @@ export default class Notification extends Component {
       this._showNotification(foundThread, pendingMessages.length > 1 ? pendingMessages : messageToNotify);
       foundThread.pendingMessages = [];
       foundThread.timeoutId = null;
-    }, 1000);
+    }, 1500);
     console.log(foundThread.timeoutId, `Set - ${messageToNotify.message}`)
   }
 

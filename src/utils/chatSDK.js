@@ -1,7 +1,8 @@
-import "podchat-browser/dist/podchat-5.4.3";
+import PodChat from "podchat-browser";
 import {promiseDecorator} from "./decorators";
 import React from "react";
 import {getNow} from "./helpers";
+import Cookies from "js-cookie";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -231,6 +232,7 @@ export default class ChatSDK {
     this.chatAgent.getThreads(getThreadsParams, (result) => {
       if (!this._onError(result, reject)) {
         const {threads, hasNext, nextOffset} = result.result;
+        threads.forEach(e => e.draftMessage = Cookies.get(e.id));
         return resolve({threads, hasNext, nextOffset});
       }
     });

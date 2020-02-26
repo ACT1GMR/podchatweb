@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 
 //actions
@@ -7,11 +7,14 @@ import {threadMessageUnpin} from "../../actions/threadActions";
 //components
 import Container from "../../../../uikit/src/container";
 import {Text} from "../../../../uikit/src/typography";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import {
+  AiFillPushpin
+} from "react-icons/ai";
 
 //styling
 import {
   MdClose,
-  MdLocalOffer,
   MdVideocam
 } from "react-icons/md";
 import style from "../../../styles/pages/box/MainMessagesPinMessage.scss";
@@ -20,6 +23,7 @@ import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {messageInfo} from "../../actions/messageActions";
 import {getMessageEditingText} from "./MainFooterInputEditing";
 import {isOwner} from "./ModalThreadInfoGroupMain";
+
 
 
 @connect(store => {
@@ -34,7 +38,8 @@ export default class MainPinMessage extends Component {
     this.onMessageClick = this.onMessageClick.bind(this);
     this.onUnpinClick = this.onUnpinClick.bind(this);
     this.state = {
-      message: null
+      message: null,
+      loading: false
     };
   }
 
@@ -57,11 +62,14 @@ export default class MainPinMessage extends Component {
       message: null
     });
     const {messageVo, thread, dispatch} = this.props;
-    dispatch(messageInfo(thread.id, messageVo.messageId)).then(message => this.setState({message}));
+    this.setState({
+      loading: true
+    });
+    dispatch(messageInfo(thread.id, messageVo.messageId)).then(message => {this.setState({message, loading: false})});
   }
 
   onMessageClick() {
-    const {messageVo, mainMessageRef} = this.props;
+    const {mainMessageRef} = this.props;
     const {message} = this.state;
     const {current} = mainMessageRef;
     if (current) {
@@ -77,30 +85,38 @@ export default class MainPinMessage extends Component {
 
   render() {
     const {user, thread} = this.props;
-    const {message} = this.state;
+    const {message, loading} = this.state;
     const messageDetails = message ? getMessageEditingText(message) : {};
     return <Container className={style.MainPinMessage} onClick={this.onMessageClick}>
 
       <Container className={style.MainPinMessage__Message}>
         <Container className={style.MainPinMessage__MessageIcon}>
-          <MdLocalOffer size={styleVar.iconSizeSm} color={styleVar.colorAccent}/>
+          <AiFillPushpin size={styleVar.iconSizeSm} color={styleVar.colorAccent}/>
         </Container>
 
         <Container className={style.MainPinMessage__MessageDetails}>
-          {messageDetails.image &&
-          <Container className={style.MainPinMessage__ImageContainer} inline>
-            <Container className={style.MainPinMessage__Image}
-                       style={{backgroundImage: `url(${messageDetails.image})`}}/>
-          </Container>
-          }
           {
-            messageDetails.isVideo &&
-            <MdVideocam size={styleVar.iconSizeSm} color={styleVar.colorAccent}
-                        style={{marginLeft: "5px", marginTop: "3px"}}/>
+            loading ?
+              <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+              :
+              <Fragment>
+                {messageDetails.image &&
+                <Container className={style.MainPinMessage__ImageContainer} inline>
+                  <Container className={style.MainPinMessage__Image}
+                             style={{backgroundImage: `url(${messageDetails.image})`}}/>
+                </Container>
+                }
+                {
+                  messageDetails.isVideo &&
+                  <MdVideocam size={styleVar.iconSizeSm} color={styleVar.colorAccent}
+                              style={{marginLeft: "5px", marginTop: "3px"}}/>
+                }
+                <Text isHTML>
+                  {decodeEmoji(messageDetails.text)}
+                </Text>
+              </Fragment>
           }
-          <Text isHTML>
-            {decodeEmoji(messageDetails.text)}
-          </Text>
+
         </Container>
       </Container>
       {isOwner(thread, user) && <Container className={style.MainPinMessage__CloseIcon} onClick={this.onUnpinClick}>

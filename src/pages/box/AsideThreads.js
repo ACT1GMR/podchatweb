@@ -8,7 +8,6 @@ import {isMessageByMe} from "./MainMessages";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {isGroup, isChannel} from "./Main";
 
-
 //strings
 import strings from "../../constants/localization";
 import {ROUTE_THREAD} from "../../constants/routes";
@@ -28,7 +27,7 @@ import {
   MdRecordVoiceOver,
   MdDoneAll,
   MdDone,
-  MdLocalOffer,
+  MdSchedule,
   MdNotificationsOff,
   MdDelete,
   MdNotificationsActive,
@@ -82,42 +81,46 @@ function getTitle(title) {
 }
 
 
-function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage, inviter, isTyping}) {
+function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage, draftMessage, inviter, isTyping}) {
   const isFileReal = isFile(lastMessageVO);
   const hasLastMessage = lastMessage || lastMessageVO;
   const isTypingReal = isTyping && isTyping.isTyping;
   const isTypingUserName = isTyping && isTyping.user.user;
 
+  const draftFragment = <Text size="sm" inline color="yellow" dark>{strings.draft}:<Text size="sm" inline color="gray"
+                                                                                         dark>{draftMessage}</Text></Text>;
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}
                                     dark>{sliceMessage(lastMessage, 30)}</Text>;
   const createdAThreadFragment = <Text size="sm" inline
                                        color="accent">{sliceMessage(strings.createdAThread(inviter && (inviter.contactName || inviter.name), isGroup, isChannel), 30)}</Text>;
-
   return (
     <Container> {
       isTypingReal ? <TypingFragment isGroup={isGroup || isChannel} typing={isTyping}
                                      textProps={{size: "sm", color: "yellow", dark: true}}/> :
-        isGroup && !isChannel ?
-          hasLastMessage ?
-            <Container>
-              <Container inline>
-                <Text size="sm" inline
-                      color="accent">{isTypingReal ? isTypingUserName : lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}:</Text>
-              </Container>
-              {isFileReal ? sentAFileFragment : lastMessageFragment}
-            </Container>
-            :
-            createdAThreadFragment
-          :
-          hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
+        draftMessage ? draftFragment :
+          (
+            isGroup && !isChannel ?
+              hasLastMessage ?
+                <Container>
+                  <Container inline>
+                    <Text size="sm" inline
+                          color="accent">{isTypingReal ? isTypingUserName : draftMessage ? "Draft:" : lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}:</Text>
+                  </Container>
+                  {isFileReal ? sentAFileFragment : lastMessageFragment}
+                </Container>
+                :
+                createdAThreadFragment
+              :
+              hasLastMessage ? isFileReal ? sentAFileFragment : lastMessageFragment : createdAThreadFragment
+          )
     }
     </Container>
   )
 }
 
-function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMessageByMe}) {
+function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, draftMessage, isMessageByMe}) {
   try {
     return (
       <Container>
@@ -125,8 +128,11 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMes
           {
             lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
             <Container inline>
-              {lastMessageVO.seen ? <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
-                <MdDone size={style.iconSizeSm} color={style.colorAccent}/>}
+              {draftMessage ? "" : (
+                lastMessageVO.seen ?
+                  <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
+                  <MdDone size={style.iconSizeSm} color={style.colorAccent}/>
+              )}
               <Gap x={3}/>
             </Container>
           }
@@ -138,18 +144,19 @@ function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, isMes
         </Container>
 
       </Container>)
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 }
 
 export function LastMessageFragment({thread, user}) {
-  const {group, type, lastMessageVO, lastMessage, inviter, time, isTyping} = thread;
+  const {group, type, lastMessageVO, lastMessage, inviter, time, isTyping, draftMessage} = thread;
   const args = {
     isGroup: group && type !== 8,
     isChannel: group && type === 8,
     lastMessageVO,
     lastMessage,
+    draftMessage,
     inviter,
     time,
     isTyping,
@@ -405,7 +412,10 @@ class AsideThreads extends Component {
       };
       return (
         <Scroller className={classNames} onScroll={this.onScroll}>
-          {isMenuShow && <Container className={style.AsideThreads__Overlay} onContextMenu={e=> {e.stopPropagation();e.preventDefault();}}/>}
+          {isMenuShow && <Container className={style.AsideThreads__Overlay} onContextMenu={e => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}/>}
           <Fragment>
             <Fragment>
               {isSearchResult &&

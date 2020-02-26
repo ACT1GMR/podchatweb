@@ -4,6 +4,8 @@ import {connect} from "react-redux";
 import classnames from "classnames";
 import sanitizeHTML from "sanitize-html";
 import {mobileCheck} from "../../utils/helpers";
+import Cookies from "js-cookie";
+
 //strings
 import strings from "../../constants/localization";
 //actions
@@ -15,7 +17,7 @@ import {
   messageSend,
   messageSendOnTheFly
 } from "../../actions/messageActions";
-import {threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
+import {threadDraft, threadEmojiShowing, threadIsSendingMessage} from "../../actions/threadActions";
 //components
 import MainFooterInputEmoji from "./MainFooterInputEmoji";
 import MainFooterInputEditing, {messageEditingCondition} from "./MainFooterInputEditing";
@@ -158,6 +160,7 @@ export default class MainFooterInput extends Component {
     this.typingSet = false;
     this.forwardMessageSent = false;
     this.inputNode = React.createRef();
+    this.lastTypingText = null;
     this.state = {
       showParticipant: false,
       messageText: ""
@@ -203,9 +206,10 @@ export default class MainFooterInput extends Component {
   }
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const {thread, dispatch} = this.props;
     dispatch(messageEditing());
-    this.setInputText();
+    this.lastTypingText = Cookies.get(thread.id) || null;
+    this.setInputText(this.lastTypingText);
     dispatch(threadIsSendingMessage(false));
   }
 
@@ -218,15 +222,23 @@ export default class MainFooterInput extends Component {
       this.focus();
     }
     if (oldThreadId !== threadId) {
+      if (this.lastTypingText) {
+        Cookies.set(oldThreadId, this.lastTypingText);
+        dispatch(threadDraft(oldThreadId, this.lastTypingText));
+      } else {
+        Cookies.remove(oldThreadId);
+        dispatch(threadDraft(oldThreadId));
+      }
+      this.lastTypingText = Cookies.get(threadId) || null;
       if (msgEditing) {
         let emptyEditingCondition = msgEditing.type !== constants.forwarding || msgEditing.threadId ? msgEditing.threadId !== threadId : false;
         if (emptyEditingCondition) {
           dispatch(messageEditing());
-          this.setInputText();
+          this.setInputText(this.lastTypingText);
           dispatch(threadIsSendingMessage(false));
         }
       } else {
-        this.setInputText();
+        this.setInputText(this.lastTypingText);
         dispatch(threadIsSendingMessage(false));
       }
       if (!mobileCheck()) {
@@ -320,6 +332,17 @@ export default class MainFooterInput extends Component {
         this.showParticipant(event);
       }
       this.setInputText(event);
+      if (!event) {
+        this.lastTypingText = null;
+      } else {
+        if (event) {
+          if (event.slice()) {
+            this.lastTypingText = event;
+          } else {
+            this.lastTypingText = null;
+          }
+        }
+      }
     }
   }
 
@@ -436,7 +459,6 @@ export default class MainFooterInput extends Component {
                 onKeyPress={this.onInputKeyPress}
                 onKeyDown={this.onInputKeyDown}
                 onKeyUp={this.onInputKeyUp}
-                onFocus={this.onInputFocus}
                 value={messageText}/>
             </Container>
             <Container centerLeft>

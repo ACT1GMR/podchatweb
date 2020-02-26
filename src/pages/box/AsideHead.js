@@ -257,7 +257,7 @@ class AsideHead extends Component {
                   left: 5,
                   bottom: 5
                 }}>
-                  <MdEdit size={style.iconSizeMd} style={{margin: "0 5px"}}/>
+                  <MdEdit size={style.iconSizeMd} style={{margin: "7px 5px"}}/>
                 </ButtonFloating>
               </Text>
             </Gap>

@@ -47,7 +47,11 @@ import {
   THREAD_ADMIN_LIST,
   THREAD_ADMIN_LIST_REMOVE,
   THREAD_ADMIN_LIST_ADD,
-  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_MESSAGE_PIN, MESSAGE_NEW
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST,
+  THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
+  THREAD_MESSAGE_PIN,
+  MESSAGE_NEW,
+  THREAD_DRAFT
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -337,6 +341,14 @@ export const threadsReducer = (state = {
       let threads = updateStore(state.threads, action.payload, {
         method: listUpdateStrategyMethods.UPDATE,
         upsert: true,
+        by: "id"
+      });
+      return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
+    }
+    case THREAD_DRAFT: {
+      let threads = updateStore(state.threads, action.payload, {
+        mix: true,
+        method: listUpdateStrategyMethods.UPDATE,
         by: "id"
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
