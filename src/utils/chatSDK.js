@@ -1,4 +1,4 @@
-import PodChat from "podchat-browser";
+import "podchat-browser/dist/podchat-5.4.3";
 import {promiseDecorator} from "./decorators";
 import React from "react";
 import {getNow} from "./helpers";

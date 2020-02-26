@@ -464,7 +464,7 @@ class AsideThreads extends Component {
                                        onTouchStart={this.onThreadTouchStart.bind(this, el)}
                                        onTouchMove={this.onThreadTouchMove.bind(this, el)}
                                        onTouchEnd={this.onThreadTouchEnd.bind(this, el)}>
-                              <Avatar className={style.AsideThreads__AvatarContainer}>
+                              <Avatar cssClassNames={style.AsideThreads__AvatarContainer}>
                                 <AvatarImage src={el.image} customSize="50px"
                                              text={avatarNameGenerator(el.title).letter}
                                              textBg={avatarNameGenerator(el.title).color}/>

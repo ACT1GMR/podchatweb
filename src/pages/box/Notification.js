@@ -12,7 +12,7 @@ import {threadCreateWithExistThread} from "../../actions/threadActions";
 import strings from "../../constants/localization";
 import {isFile} from "./MainMessagesMessage";
 import {isOwner} from "./ModalThreadInfoGroupMain";
-import {isChannel} from "./Main";
+import {isChannel, isGroup} from "./Main";
 
 //components
 
@@ -26,11 +26,11 @@ function isMessageByMe(message, user) {
     }
   }
 }
-
 @connect(store => {
   return {
     chatNotification: store.chatNotification,
     chatNotificationClickHook: store.chatNotificationClickHook,
+    threads: store.threads.threads,
     messageNew: store.messageNew,
     messagePinned: store.messagePinned,
     user: store.user.user,
@@ -51,6 +51,7 @@ export default class Notification extends Component {
       thread: null,
       count: 0
     };
+    this.threads = {};
     window.addEventListener("focus", () => {
       this.setState({
         thread: null,
@@ -61,97 +62,133 @@ export default class Notification extends Component {
     }, false);
   }
 
-  shouldComponentUpdate(nextProps) {
-    const {messageNew, messagePinned} = nextProps;
-    const {messageNew: oldMessageNew, messagePinned: oldMessagePinned} = this.props;
-    let newPinMessage = true;
-    let newMessage = true;
-    if (messagePinned) {
-      if (oldMessagePinned) {
-        if (messagePinned.id === oldMessagePinned.id) {
-          newPinMessage = false;
-        }
+  _showNotification(foundThread, messageToNotify) {
+    const {user, chatNotificationClickHook, dispatch} = this.props;
+    const thread = foundThread.thread;
+    if (this.pinNotify) {
+      if (isOwner(thread, user)) {
+        return;
       }
-    } else {
-      newPinMessage = false;
     }
-    /*    if (messageNew && messageNew.cache) {
-          return;
-        }*/
-    if (messageNew) {
-      if (oldMessageNew) {
-        if (messageNew.time <= oldMessageNew.time) {
-          newMessage = false;
-        }
-      }
+    if (thread.mute) {
+      return;
+    }
+    const {count} = this.state;
+    this.setState({
+      thread,
+      count: count + (messageToNotify instanceof Array ? messageToNotify.length : 1)
+    });
+    if (!this.intervalId) {
+      this.intervalId = window.setInterval(e => {
+        const {showLastThread} = this.state;
+        this.setState({
+          showLastThread: !showLastThread
+        })
+      }, 1500);
+    }
+    let notificationMessage;
+    if(messageToNotify instanceof Array) {
+      notificationMessage = strings.batchMessageSentToThread(messageToNotify.length, isGroup(thread), isChannel(thread))
     } else {
-      newMessage = false;
+      const isMessageFile = isFile(messageToNotify);
+      const tag = document.createElement("div");
+      tag.innerHTML = messageToNotify.message;
+      const newMessageText = messageToNotify.message;
+      const personName = `${thread.group ? `${messageToNotify.participant && (messageToNotify.participant.contactName || messageToNotify.participant.name)}: ` : ""}`;
+      notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : tag.innerText}`;
+      if (this.pinNotify) {
+        notificationMessage = strings.personPinnedMessage(isChannel(thread));
+      }
     }
 
-    if (newPinMessage || newMessage) {
-      this.pinNotify = newPinMessage;
-      return true;
+    Push.create(thread.title, {
+      body: notificationMessage,
+      icon: thread.image || defaultAvatar,
+      timeout: 60000,
+      onClick: function () {
+        if (chatNotificationClickHook) {
+          chatNotificationClickHook(thread);
+        }
+        dispatch(threadCreateWithExistThread(thread));
+        window.focus();
+        this.close();
+      }
+    });
+  }
+
+  _coreLogic(foundThread, messageToNotify) {
+    if (this.pinNotify) {
+      return this._showNotification(foundThread, messageToNotify);
+    }
+    clearTimeout(foundThread.timeoutId);
+    console.log(foundThread.timeoutId, "Cleared");
+    foundThread.pendingMessages.push(messageToNotify);
+    foundThread.timeoutId = setTimeout(() => {
+      clearTimeout(foundThread.timeoutId);
+      console.log(foundThread.timeoutId, "After Timeout cleared");
+      const pendingMessages = foundThread.pendingMessages;
+      this._showNotification(foundThread, pendingMessages.length > 1 ? pendingMessages : messageToNotify);
+      foundThread.pendingMessages = [];
+      foundThread.timeoutId = null;
+    }, 1000);
+    console.log(foundThread.timeoutId, `Set - ${messageToNotify.message}`)
+  }
+
+  _storeThreadObject(thread) {
+    const oldThread =  this.threads[thread.id];
+    this.threads[thread.id] = {pendingMessages: oldThread ? oldThread.pendingMessages : [], timeoutId: oldThread ? oldThread.timeoutId : null , thread};
+  }
+
+  _showNotificationLogic() {
+    const {messageNew, chatInstance, user, messagePinned, threads} = this.props;
+    if (!messageNew && !messagePinned) {
+      return;
+    }
+    let messageToNotify = this.pinNotify ? messagePinned : messageNew;
+    if (this.pinNotify || !isMessageByMe(messageToNotify, user)) {
+      if (chatInstance) {
+        if (this.pinNotify || !window.document.hasFocus()) {
+          let foundThread = threads.find(e => messageToNotify.threadId === e.id);
+          if (foundThread) {
+            this._storeThreadObject(foundThread);
+            return this._coreLogic(this.threads[messageToNotify.threadId], messageToNotify);
+          }
+          chatInstance.getThreadInfo({threadIds: messageToNotify.threadId}).then(thread => {
+            this._storeThreadObject(thread);
+            this._coreLogic(this.threads[messageToNotify.threadId], messageToNotify);
+          });
+        }
+      }
     }
   }
 
   componentDidUpdate(oldProps) {
     if (Push.Permission.request() && this.props.chatNotification) {
-      const {messageNew, chatInstance, dispatch, user, chatNotificationClickHook, messagePinned} = this.props;
-      const {messagePinned: oldMessagePinned, messageNew: oldMessageNew} = oldProps;
-      if (!messageNew && !messagePinned) {
-        return;
-      }
-      let messageToNotify = this.pinNotify ? messagePinned : messageNew;
-      if (this.pinNotify || !isMessageByMe(messageToNotify, user)) {
-        if (chatInstance) {
-          if (this.pinNotify || !window.document.hasFocus()) {
-            chatInstance.getThreadInfo({threadIds: messageToNotify.threadId}).then(thread => {
-              if (this.pinNotify) {
-                if (isOwner(thread, user)) {
-                  return;
-                }
-              }
-              if (thread.mute) {
-                return;
-              }
-              const {count} = this.state;
-              this.setState({
-                thread,
-                count: count + 1
-              });
-              if (!this.intervalId) {
-                this.intervalId = window.setInterval(e => {
-                  const {showLastThread} = this.state;
-                  this.setState({
-                    showLastThread: !showLastThread
-                  })
-                }, 1500);
-              }
-              const isMessageFile = isFile(messageToNotify);
-              const tag = document.createElement("div");
-              tag.innerHTML = messageToNotify.message;
-              const newMessageText = messageToNotify.message;
-              const personName = `${thread.group ? `${messageToNotify.participant && (messageToNotify.participant.contactName || messageToNotify.participant.name)}: ` : ""}`;
-              let notificationMessage = `${personName}${isMessageFile ? newMessageText ? newMessageText : strings.sentAFile : tag.innerText}`;
-              if (this.pinNotify) {
-                notificationMessage = strings.personPinnedMessage(isChannel(thread));
-              }
-              Push.create(thread.title, {
-                body: notificationMessage,
-                icon: thread.image || defaultAvatar,
-                timeout: 60000,
-                onClick: function () {
-                  if (chatNotificationClickHook) {
-                    chatNotificationClickHook(thread);
-                  }
-                  dispatch(threadCreateWithExistThread(thread));
-                  window.focus();
-                  this.close();
-                }
-              });
-            })
+      const {messageNew, messagePinned} = this.props;
+      const {messageNew: oldMessageNew, messagePinned: oldMessagePinned} = oldProps;
+      let newPinMessage = true;
+      let newMessage = true;
+      if (messagePinned) {
+        if (oldMessagePinned) {
+          if (messagePinned.id === oldMessagePinned.id) {
+            newPinMessage = false;
           }
         }
+      } else {
+        newPinMessage = false;
+      }
+      if (messageNew) {
+        if (oldMessageNew) {
+          if (messageNew.time <= oldMessageNew.time) {
+            newMessage = false;
+          }
+        }
+      } else {
+        newMessage = false;
+      }
+      if (newPinMessage || newMessage) {
+        this.pinNotify = newPinMessage;
+        this._showNotificationLogic();
       }
     }
   }

@@ -162,7 +162,7 @@ class ModalCreateGroup extends Component {
         <ModalBody>
           <form onSubmit={this.onCreate.bind(this, groupName, isChannel)}>
             <InputText onChange={this.groupNameChange.bind(this)}
-                       max={15}
+                       max={30}
                        value={groupName}
                        placeholder={strings.groupName(isChannel)}/>
             <input type="submit" style={{display: "none"}}/>

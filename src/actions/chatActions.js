@@ -115,9 +115,6 @@ export const chatSetInstance = config => {
         }
       },
       onMessageEvents: (message, type) => {
-        if (type === "MESSAGE_DELETE") {
-          message = {id: message.id.id, threadId: message.threadId};
-        }
         dispatch({
           type: type,
           payload: message

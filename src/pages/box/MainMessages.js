@@ -262,6 +262,7 @@ export default class MainMessages extends Component {
     if (isMessageByMe(messageNew, user)) {
       if (hasNext) {
         dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
+        this.gotoBottom = true;
         return false;
       } else {
         dispatch(threadNewMessage(messageNew));
@@ -432,9 +433,14 @@ export default class MainMessages extends Component {
 
   onScrollBottomEnd() {
     const {thread, messageNew} = this.props;
-    if (thread.unreadCount > 0) {
-      this.lastSeenMessage = messageNew;
+    if (messageNew) {
+      if (thread.id === messageNew.threadId) {
+        if (thread.unreadCount > 0) {
+          this.lastSeenMessage = messageNew;
+        }
+      }
     }
+
     this.setState({
       bottomButtonShowing: false
     });
@@ -594,13 +600,13 @@ export default class MainMessages extends Component {
                         active={threadSelectMessageShowing && messageSelectedCondition(message, threadCheckedMessageList)}
                         activeColor="gray"
                         noPadding>
-                  <Container className={MainMessagesMessageContainerClassNames(message)}
-                             id={`message-${message.time}`}
-                             relative>
-                    {thread.group && thread.type !== 8 && !isMessageByMe(message, user, thread) && getAvatar(message, messages, this.onAvatarClick, thread, user)}
-                    <MainMessagesMessage {...args} message={message}/>
-                    {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
-                  </Container>
+                <Container className={MainMessagesMessageContainerClassNames(message)}
+                           id={`message-${message.time}`}
+                           relative>
+                  {thread.group && thread.type !== 8 && !isMessageByMe(message, user, thread) && getAvatar(message, messages, this.onAvatarClick, thread, user)}
+                  <MainMessagesMessage {...args} message={message}/>
+                  {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
+                </Container>
               </ListItem>
             )}
 

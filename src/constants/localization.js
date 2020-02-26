@@ -80,6 +80,12 @@ let strings = new LocalizedStrings({
     howDoYouPinThisMessage: "چطور این پیام رو به بالا میچسبونید",
     pinAndNotifyAll: "چسباندن و با خبر سازی همه",
     onlyPin: "فقط بچسبه به بالا",
+    batchMessageSentToThread(messagesCount, isGroup, isChannel) {
+      if(isChannel || isGroup) {
+        return `${messagesCount} پیام در ${isGroup ?  "گروه" : "کانال"} ارسال شده`;
+      }
+      return `${messagesCount} پیام  ارسال شده`
+    },
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";

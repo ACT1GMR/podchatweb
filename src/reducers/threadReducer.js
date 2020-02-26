@@ -47,7 +47,7 @@ import {
   THREAD_ADMIN_LIST,
   THREAD_ADMIN_LIST_REMOVE,
   THREAD_ADMIN_LIST_ADD,
-  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_MESSAGE_PIN
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_MESSAGE_PIN, MESSAGE_NEW
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -510,7 +510,7 @@ export const threadUnreadMentionedMessageListReducer = (state = {
       };
     case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(SUCCESS):
       return {...state, ...stateGenerator(SUCCESS, action.payload)};
-    case THREAD_NEW_MESSAGE:
+    case MESSAGE_NEW:
       if (!action.payload.mentioned) {
         return state;
       }
