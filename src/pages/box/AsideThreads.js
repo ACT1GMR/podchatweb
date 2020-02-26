@@ -87,8 +87,7 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   const isTypingReal = isTyping && isTyping.isTyping;
   const isTypingUserName = isTyping && isTyping.user.user;
 
-  const draftFragment = <Text size="sm" inline color="yellow" dark>{strings.draft}:<Text size="sm" inline color="gray"
-                                                                                         dark>{draftMessage}</Text></Text>;
+  const draftFragment = <Fragment><Text size="sm" inline color="red" light>{strings.draft}:</Text><Text size="sm" inline color="gray" dark>{draftMessage}</Text></Fragment>;
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}
@@ -238,11 +237,12 @@ class AsideThreads extends Component {
 
   onLeaveClick(thread) {
     const {dispatch} = this.props;
-    dispatch(chatModalPrompt(true, `${isChannel(thread) || isGroup(thread) ? strings.areYouSureAboutLeavingGroup(thread.title, isChannel(thread)) : strings.areYouSureRemovingThread}؟`, () => {
+    const isP2P = !isChannel(thread) && !isGroup(thread);
+    dispatch(chatModalPrompt(true, `${isP2P ? strings.areYouSureRemovingThread : strings.areYouSureAboutLeavingGroup(thread.title, isChannel(thread))}؟`, () => {
       dispatch(threadLeave(thread.id));
       dispatch(threadModalThreadInfoShowing());
       dispatch(chatModalPrompt());
-    }, null, strings.leave));
+    }, null, isP2P ? strings.remove : strings.leave));
   }
 
   onMuteClick(thread) {
