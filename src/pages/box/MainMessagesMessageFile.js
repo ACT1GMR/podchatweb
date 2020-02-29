@@ -37,7 +37,6 @@ import {
   MdClose
 } from "react-icons/md";
 import style from "../../../styles/pages/box/MainMessagesFile.scss";
-import MainMessagesMessageStyle from "../../../styles/pages/box/MainMessagesMessage.scss";
 import styleVar from "./../../../styles/variables.scss";
 import {ContextItem} from "../../../../uikit/src/menu/Context";
 import strings from "../../constants/localization";

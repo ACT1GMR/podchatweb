@@ -45,6 +45,7 @@ export function ContactList(props) {
     <List>
       {filterContacts.map(el => (
         <ListItem key={el.id}
+
                   activeWithTick={activeWithTick}
                   selection={selection}
                   multiple={multiple}

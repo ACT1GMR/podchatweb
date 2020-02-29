@@ -227,7 +227,6 @@ export default class MainFooterInput extends Component {
       if (this.lastTypingText) {
         dispatch(threadDraft(oldThreadId, this.lastTypingText));
       } else {
-        Cookies.remove(oldThreadId);
         dispatch(threadDraft(oldThreadId));
       }
       this.lastTypingText = Cookies.get(threadId) || null;
@@ -236,11 +235,11 @@ export default class MainFooterInput extends Component {
         if (emptyEditingCondition) {
           dispatch(messageEditing());
           this.setInputText(this.lastTypingText);
-          dispatch(threadIsSendingMessage(false));
+          dispatch(threadIsSendingMessage(!!this.lastTypingText));
         }
       } else {
         this.setInputText(this.lastTypingText);
-        dispatch(threadIsSendingMessage(false));
+        dispatch(threadIsSendingMessage(!!this.lastTypingText));
       }
       if (!mobileCheck()) {
         this.focus();
@@ -316,6 +315,11 @@ export default class MainFooterInput extends Component {
     this.setInputText("");
   }
 
+  _clearDraft(threadId){
+    Cookies.remove(threadId);
+    this.lastTypingText = null;
+  }
+
   onTextChange(event, isOnBlur) {
     const {thread, dispatch} = this.props;
     const threadId = thread.id;
@@ -334,17 +338,17 @@ export default class MainFooterInput extends Component {
       if (thread.group) {
         this.showParticipant(event);
       }
-      this.setInputText(event);
+      this.setInputText(codeEmoji(event));
       if (!event) {
         this.lastTypingText = null;
+        this._clearDraft(threadId);
       } else {
         if (event) {
           if (event.slice()) {
             Cookies.set(threadId, this.lastTypingText);
             this.lastTypingText = event;
           } else {
-            Cookies.remove(threadId);
-            this.lastTypingText = null;
+            this._clearDraft(threadId);
           }
         }
       }

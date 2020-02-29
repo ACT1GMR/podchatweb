@@ -34,8 +34,8 @@ import {stopTyping} from "../../actions/chatActions";
 })
 export default class MainFooterAttachment extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onAttachmentChange = this.onAttachmentChange.bind(this);
     this.onAttachmentClick = this.onAttachmentClick.bind(this);
     this.onClick = this.onClick.bind(this);

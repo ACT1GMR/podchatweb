@@ -448,14 +448,18 @@ export default class MainMessages extends Component {
 
   onScrollTop() {
     if (!this.state.bottomButtonShowing && !this.props.threadMessages.fetching) {
-      this.setState({
-        bottomButtonShowing: true
-      });
+      const {scrollPosition, scrollHeight} = this.scroller.current.getInfo();
+      if (scrollHeight - scrollPosition > 70) {
+        this.setState({
+          bottomButtonShowing: true
+        });
+      }
     }
   }
 
   goToSpecificMessage(messageTime) {
-    const {thread} = this.props;
+    const {thread, threadMessages} = this.props;
+    const {bottomButtonShowing} = this.state;
     if (!this.scroller) {
       return;
     }
@@ -482,12 +486,18 @@ export default class MainMessages extends Component {
         return this._fetchInitHistory();
       }
 
-      this.lastFailedResultGotoMessageId = messageTime;
       this.hasPendingMessageToGo = messageTime;
       this._fetchHistoryFromMiddle(thread.id, messageTime);
-      return setHighlighter();
+      return;
     }
     setHighlighter();
+    if (threadMessages.hasNext) {
+      if (!bottomButtonShowing) {
+        this.setState({
+          bottomButtonShowing: true
+        });
+      }
+    }
     this.hasPendingMessageToGo = null;
   }
 
@@ -553,7 +563,6 @@ export default class MainMessages extends Component {
     const {messages, fetching} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
     const {highLightMessage, bottomButtonShowing, threadUnreadMentionedMessagesCount} = this.state;
-    const threadPinedMessageVo = thread.pinMessageVO;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
       [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user, thread)
