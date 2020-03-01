@@ -162,6 +162,7 @@ class ModalAddContact extends Component {
   render() {
     const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
     const {mobilePhone, firstName, lastName, notEnteredFirstOrFamilyName, notEnteredMobilePhone, sameUserMobilePhone} = this.state;
+    const somethingWrong = (contactAdd && !contactAdd.linkedUser) || (notEnteredFirstOrFamilyName || notEnteredMobilePhone || sameUserMobilePhone);
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
@@ -191,7 +192,7 @@ class ModalAddContact extends Component {
           <Button text loading={contactAddPending}
                   onClick={this.onSubmit}>{contactEdit ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
-          {((contactAdd && !contactAdd.linkedUser) || notEnteredFirstOrFamilyName || notEnteredMobilePhone || sameUserMobilePhone) &&
+          {somethingWrong &&
 
           <Container inline>
             <Message warn>

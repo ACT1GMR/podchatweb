@@ -33,6 +33,9 @@
 
 .MainPinMessage__MessageDetails {
   display: inline-flex;
+}
+
+.MainPinMessage__MessageDetails--loading {
   align-items: center;
 }
 

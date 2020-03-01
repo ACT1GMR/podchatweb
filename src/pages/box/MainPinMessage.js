@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
+import classnames from "classnames";
 
 //actions
 import {threadMessageUnpin} from "../../actions/threadActions";
@@ -17,7 +18,7 @@ import {
   MdClose,
   MdVideocam
 } from "react-icons/md";
-import style from "../../../styles/pages/box/MainMessagesPinMessage.scss";
+import style from "../../../styles/pages/box/MainPinMessage.scss";
 import styleVar from "../../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {messageInfo} from "../../actions/messageActions";
@@ -87,6 +88,10 @@ export default class MainPinMessage extends Component {
     const {user, thread} = this.props;
     const {message, loading} = this.state;
     const messageDetails = message ? getMessageEditingText(message) : {};
+    const messageDetailsClassNames = classnames({
+      [style.MainPinMessage__MessageDetails]: true,
+      [style["MainPinMessage__MessageDetails--loading"]]: loading
+    });
     return <Container className={style.MainPinMessage} onClick={this.onMessageClick}>
 
       <Container className={style.MainPinMessage__Message}>
@@ -94,7 +99,7 @@ export default class MainPinMessage extends Component {
           <AiFillPushpin size={styleVar.iconSizeSm} color={styleVar.colorAccent}/>
         </Container>
 
-        <Container className={style.MainPinMessage__MessageDetails}>
+        <Container className={messageDetailsClassNames}>
           {
             loading ?
               <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>

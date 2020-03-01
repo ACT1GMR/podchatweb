@@ -198,9 +198,12 @@ export default class extends Component {
   render() {
     const {participants, participantsActiveIndex} = this.state;
     const leftActionFragment = ({contact}) =>
-      <Text wordWrap="breakWord" whiteSpace="preWrap" color="accent" dark inline size="sm">
-        {contact.username}
-      </Text>;
+      <Container inline>
+        <Gap x={4}/>
+        <Text wordWrap="breakWord" whiteSpace="preWrap" color="accent" dark inline size="sm">
+          {contact.username}
+        </Text>
+      </Container>;
 
     return (
       <Scroller className={style.MainFooterInputParticipants}
@@ -211,7 +214,8 @@ export default class extends Component {
             <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
           </Container>
         }
-        <ContactList contacts={participants} onSelect={this.onContactSelect} AvatarTextFragment={leftActionFragment}
+        <ContactList contacts={participants} onSelect={this.onContactSelect} AvatarNameFragment={leftActionFragment}
+                     maxAvatarNameWidth={"auto"}
                      activeRef={this.activeRef}
                      activeList={[participants[participantsActiveIndex] ? participants[participantsActiveIndex].id : null]}
                      selection invert/>

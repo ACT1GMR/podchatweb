@@ -5,7 +5,7 @@ import {avatarNameGenerator, getNow, mobileCheck} from "../../utils/helpers";
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {codeEmoji, decodeEmoji} from "./MainFooterEmojiIcons";
 import {isGroup, isChannel} from "./Main";
 
 //strings
@@ -56,6 +56,7 @@ import styleVar from "../../../styles/variables.scss";
 import Context, {ContextItem, ContextTrigger} from "../../../../uikit/src/menu/Context";
 import {chatModalPrompt, chatSearchResult} from "../../actions/chatActions";
 import {contactChatting} from "../../actions/contactActions";
+import {clearHtml} from "./MainFooterInput";
 
 function sliceMessage(message, to) {
   return decodeEmoji(message);
@@ -87,7 +88,7 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   const isTypingReal = isTyping && isTyping.isTyping;
   const isTypingUserName = isTyping && isTyping.user.user;
 
-  const draftFragment = <Fragment><Text size="sm" inline color="red" light>{strings.draft}:</Text><Text size="sm" inline color="gray" dark>{draftMessage}</Text></Fragment>;
+  const draftFragment = <Fragment><Text size="sm" inline color="red" light>{strings.draft}:</Text><Text size="sm" inline color="gray" dark isHTML>{clearHtml(draftMessage)}</Text></Fragment>;
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}

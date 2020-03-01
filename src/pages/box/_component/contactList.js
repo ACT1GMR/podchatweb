@@ -39,7 +39,7 @@ export function getImage(contact) {
 }
 
 export function ContactList(props) {
-  const {contacts, activeList, activeRef, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment} = props;
+  const {contacts, activeList, activeRef, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment, AvatarNameFragment, maxAvatarNameWidth} = props;
   let filterContacts = [...contacts];
   return (
     <List>
@@ -58,15 +58,18 @@ export function ContactList(props) {
             <Avatar>
               <AvatarImage src={getImage(el)} text={avatarNameGenerator(getName(el)).letter}
                            textBg={avatarNameGenerator(getName(el)).color}/>
-              <AvatarName maxWidth="150px">
+              <AvatarName maxWidth={maxAvatarNameWidth || "150px"}>
                 {getName(el)}
+                {
+                  AvatarNameFragment &&
+                  <AvatarNameFragment contact={el}/>
+                }
                 {
                   AvatarTextFragment &&
                   <AvatarText>
                     <AvatarTextFragment contact={el}/>
                   </AvatarText>
                 }
-
               </AvatarName>
             </Avatar>
 

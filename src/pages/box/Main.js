@@ -73,14 +73,14 @@ class Main extends Component {
     super(props);
     this.onContactListShow = this.onContactListShow.bind(this);
     this.onAddMember = this.onAddMember.bind(this);
-    this.mainMessagesRef= React.createRef();
+    this.mainMessagesRef = React.createRef();
   }
 
-  componentDidUpdate({history: oldHistory}) {
-    const {history, dispatch} = this.props;
+  componentDidUpdate({location: oldLocation}) {
+    const {location, dispatch} = this.props;
     if (mobileCheck()) {
-      if(oldHistory.location.pathname !== "/") {
-      if (history.location.pathname === "/") {
+      if (oldLocation.pathname !== "/") {
+        if (location.pathname === "/") {
           dispatch(threadInit());
         }
       }
@@ -130,7 +130,8 @@ class Main extends Component {
                  <Container className={style.Main}>
                    <Container className={style.Main__Cover}/>
                    <MainHead/>
-                   {pinMessageVO && <MainPinMessage thread={thread} messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
+                   {pinMessageVO &&
+                   <MainPinMessage thread={thread} messageVo={pinMessageVO} mainMessageRef={this.mainMessagesRef}/>}
                    <MainMessages ref={this.mainMessagesRef}/>
                    <MainFooter/>
                  </Container>

@@ -43,7 +43,7 @@ let strings = new LocalizedStrings({
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
     reply: "پاسخ",
-    sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
+    isNotPodUser: "کاربر پاد نیست",
     pinToTop: "چسباندن به بالا",
     unpinFromTop: "برداشتن از بالا",
     forwardFrom: "ارسال شده از طرف",
