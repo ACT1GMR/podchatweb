@@ -1,7 +1,7 @@
 // src/actions/messageActions.js
 import {threadGetList, threadLeave} from "./threadActions";
 import ChatSDK from "../utils/chatSDK";
-import {reconnect} from "../pages/box/AsideHead";
+import {reconnect} from "../app/AsideHead";
 import {stateGeneratorState} from "../utils/storeHelper";
 import {
   CHAT_GET_INSTANCE,

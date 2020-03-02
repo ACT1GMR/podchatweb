@@ -7,7 +7,7 @@ import {serverConfig} from "./constants/connection";
 import store from "./store/index";
 import "../styles/main.scss";
 import "../styles/layout/defualt.scss";
-import Box from "./pages/box";
+import Box from "./app";
 import {auth, retry} from "podauth/src/auth";
 
 auth({
