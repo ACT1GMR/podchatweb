@@ -220,7 +220,8 @@ let strings = new LocalizedStrings({
       }
       return "این پیام رو چطوری دوست داری برات حذف کنیم";
     } ,
-    iCanceled: "منصرف شدم"
+    iCanceled: "منصرف شدم",
+    unreadMessages: "پیامهای خوانده نشده"
   },
   it: {}
 });

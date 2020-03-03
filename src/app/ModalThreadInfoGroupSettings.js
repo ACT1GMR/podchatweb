@@ -149,13 +149,13 @@ export default class ModalThreadInfoGroupSettings extends Component {
                 <InputText onChange={this.groupNameChange.bind(this)}
                            max={40}
                            value={groupName}
-                           placeholder={strings.groupName(isChannel)}/>
+                           placeholder={strings.groupName(isChannel(thread))}/>
               </AvatarName>
             </Avatar>
           </Container>
           <InputText onChange={this.groupDescChange.bind(this)}
                      value={groupDesc}
-                     placeholder={strings.groupDescription(isChannel)}/>
+                     placeholder={strings.groupDescription(isChannel(thread))}/>
         </Container>
 {/*        <GapFragment/>
         <List>

@@ -41,6 +41,7 @@ import MainMessagesMessage from "./MainMessagesMessage";
 import MainPinMessage from "./MainPinMessage";
 import Shape, {ShapeCircle} from "../../../uikit/src/shape";
 import {ContextTrigger} from "../../../uikit/src/menu/Context";
+import MainMessagesUnreadBar from "./MainMessagesUnreadBar";
 
 const statics = {
   historyFetchCount: 20,
@@ -169,6 +170,7 @@ export default class MainMessages extends Component {
     this.state = {
       bottomButtonShowing: false,
       highLightMessage: null,
+      unreadBar: null,
       newMessageUnreadCount: 0,
       threadUnreadMentionedMessagesCount: 0
     };
@@ -260,6 +262,7 @@ export default class MainMessages extends Component {
     //functionality after allowing newMessage to come for calculation
 
     if (isMessageByMe(messageNew, user)) {
+      this.setState({unreadBar: null});
       if (hasNext) {
         dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
         this.gotoBottom = true;
@@ -270,6 +273,12 @@ export default class MainMessages extends Component {
         return false;
       }
     } else {
+      if (!window.windowFocused) {
+        const {unreadBar} = this.state;
+        if (thread.lastSeenMessageTime !== unreadBar) {
+          this.setState({unreadBar: thread.lastSeenMessageTime});
+        }
+      }
       if (this.scroller.current) {
         const scrollPositionInfo = this.scroller.current.getInfo();
         if (!hasNext) {
@@ -357,17 +366,19 @@ export default class MainMessages extends Component {
     if (thread.unreadCount > statics.historyFetchCount) {
       this.hasPendingMessageToGo = thread.lastSeenMessageTime;
       this._fetchHistoryFromMiddle(thread.id, thread.lastSeenMessageTime);
+      this.setState({unreadBar: thread.lastSeenMessageTime});
       this.lastSeenMessage = thread.lastMessageVO;
     } else {
+      let unreadBar = null;
       if (thread.lastSeenMessageTime && thread.lastMessageVO) {
         if (thread.lastSeenMessageTime >= thread.lastMessageVO.time) {
           this.gotoBottom = true;
         } else if (thread.lastMessageVO.previousId === thread.lastSeenMessageId) {
           this.gotoBottom = true;
-          this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          unreadBar = this.hasPendingMessageToGo = thread.lastSeenMessageTime;
           this.lastSeenMessage = thread.lastMessageVO;
         } else {
-          this.hasPendingMessageToGo = thread.lastSeenMessageTime;
+          unreadBar = this.hasPendingMessageToGo = thread.lastSeenMessageTime;
           this.lastSeenMessage = thread.lastMessageVO;
         }
       } else {
@@ -375,6 +386,7 @@ export default class MainMessages extends Component {
           this.lastSeenMessage = thread.lastMessageVO;
         }
       }
+      this.setState({unreadBar});
       dispatch(threadMessageGetList(thread.id, statics.historyFetchCount));
     }
   }
@@ -459,7 +471,7 @@ export default class MainMessages extends Component {
 
   goToSpecificMessage(messageTime) {
     const {thread, threadMessages} = this.props;
-    const {bottomButtonShowing} = this.state;
+    const {bottomButtonShowing, unreadBar} = this.state;
     if (!this.scroller) {
       return;
     }
@@ -488,9 +500,11 @@ export default class MainMessages extends Component {
 
       this.hasPendingMessageToGo = messageTime;
       this._fetchHistoryFromMiddle(thread.id, messageTime);
-      return;
+      return this.setState({unreadBar: null});
     }
-    setHighlighter();
+    if (unreadBar !== messageTime) {
+      setHighlighter();
+    }
     if (threadMessages.hasNext) {
       if (!bottomButtonShowing) {
         this.setState({
@@ -562,7 +576,7 @@ export default class MainMessages extends Component {
     } = this.props;
     const {messages, fetching} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
-    const {highLightMessage, bottomButtonShowing, threadUnreadMentionedMessagesCount} = this.state;
+    const {highLightMessage, bottomButtonShowing, threadUnreadMentionedMessagesCount, unreadBar} = this.state;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
       [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user, thread)
@@ -616,6 +630,9 @@ export default class MainMessages extends Component {
                   <MainMessagesMessage {...args} message={message}/>
                   {threadSelectMessageShowing && messageTickFragment(message, this.onAddToCheckedMessage.bind(this), threadCheckedMessageList)}
                 </Container>
+                {
+                  unreadBar === message.time && <MainMessagesUnreadBar thread={thread}/>
+                }
               </ListItem>
             )}
 

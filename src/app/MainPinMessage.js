@@ -24,6 +24,7 @@ import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {messageInfo} from "../actions/messageActions";
 import {getMessageEditingText} from "./MainFooterInputEditing";
 import {isOwner} from "./ModalThreadInfoGroupMain";
+import strings from "../constants/localization";
 
 
 
@@ -70,8 +71,11 @@ export default class MainPinMessage extends Component {
   }
 
   onMessageClick() {
-    const {mainMessageRef} = this.props;
     const {message} = this.state;
+    if(!message) {
+      return;
+    }
+    const {mainMessageRef} = this.props;
     const {current} = mainMessageRef;
     if (current) {
       current.getWrappedInstance().goToSpecificMessage(message.time);
@@ -87,6 +91,7 @@ export default class MainPinMessage extends Component {
   render() {
     const {user, thread} = this.props;
     const {message, loading} = this.state;
+    const messageDeleted = !message;
     const messageDetails = message ? getMessageEditingText(message) : {};
     const messageDetailsClassNames = classnames({
       [style.MainPinMessage__MessageDetails]: true,
@@ -116,8 +121,8 @@ export default class MainPinMessage extends Component {
                   <MdVideocam size={styleVar.iconSizeSm} color={styleVar.colorAccent}
                               style={{marginLeft: "5px", marginTop: "3px"}}/>
                 }
-                <Text isHTML>
-                  {decodeEmoji(messageDetails.text)}
+                <Text isHTML color={messageDeleted ? "gray" : null} italic={messageDeleted} dark={messageDeleted}>
+                  {messageDeleted ? strings.messageDeleted : decodeEmoji(messageDetails.text)}
                 </Text>
               </Fragment>
           }
