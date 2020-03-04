@@ -641,7 +641,7 @@ export default class MainMessages extends Component {
         </Scroller>
         {bottomButtonShowing && !this.gotoBottom &&
         <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>
-          <MdExpandMore size={style.iconSizeMd} style={{marginTop: "3px"}}/>
+          <MdExpandMore size={style.iconSizeMd}/>
         </ButtonFloating>}
         {threadUnreadMentionedMessagesCount > 0 &&
         <ButtonFloating onClick={this.onMentionedClicked} size="sm"
