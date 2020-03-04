@@ -273,7 +273,7 @@ export default class MainMessages extends Component {
         return false;
       }
     } else {
-      if (!window.windowFocused) {
+      if (!this.windowFocused) {
         const {unreadBar} = this.state;
         if (thread.lastSeenMessageTime !== unreadBar) {
           this.setState({unreadBar: thread.lastSeenMessageTime});
