@@ -153,7 +153,7 @@ function getAvatar(message, messages, onAvatarClick, thread, user) {
   return {
     thread: store.thread.thread,
     threadMessages: store.threadMessages,
-    threadUnreadMentionedMessages: store.threadUnreadMentionedMessages,
+    threadUnreadMentionedMessages: store.threadUnreadMentionedMessages.messages,
     threadMessagesPartialFetching: store.threadMessagesPartial.fetching,
     threadGetMessageListByMessageIdFetching: store.threadGetMessageListByMessageId.fetching,
     threadSelectMessageShowing: store.threadSelectMessageShowing,
@@ -171,8 +171,7 @@ export default class MainMessages extends Component {
       bottomButtonShowing: false,
       highLightMessage: null,
       unreadBar: null,
-      newMessageUnreadCount: 0,
-      threadUnreadMentionedMessagesCount: 0
+      newMessageUnreadCount: 0
     };
     this.scroller = React.createRef();
     this.onScrollBottomEnd = this.onScrollBottomEnd.bind(this);
@@ -223,24 +222,13 @@ export default class MainMessages extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {messageNew: oldNewMessage, threadGoToMessageId: oldThreadGoToMessageId, threadMessages, threadUnreadMentionedMessages, dispatch, user} = this.props;
-    const {messageNew, thread, threadGoToMessageId, threadUnreadMentionedMessages: newThreadUnreadMentionedMessages} = nextProps;
+    const {messageNew: oldNewMessage, threadGoToMessageId: oldThreadGoToMessageId, threadMessages, dispatch, user} = this.props;
+    const {messageNew, thread, threadGoToMessageId} = nextProps;
     const {hasNext} = threadMessages;
 
     if (threadGoToMessageId !== oldThreadGoToMessageId) {
       this.goToSpecificMessage(threadGoToMessageId);
       return false;
-    }
-
-    //Unread mentioned message fetched here and we need to update threadUnreadMentionedMessagesCount
-    //update UI is not required
-    if (!newThreadUnreadMentionedMessages.fetching) {
-      if (threadUnreadMentionedMessages.messages.length !== newThreadUnreadMentionedMessages.messages.length) {
-        this.setState({
-          threadUnreadMentionedMessagesCount: newThreadUnreadMentionedMessages.messages.length
-        });
-        return false;
-      }
     }
 
     //Check for allow rendering
@@ -273,7 +261,7 @@ export default class MainMessages extends Component {
         return false;
       }
     } else {
-      if (!window.windowFocused) {
+      if (!this.windowFocused) {
         const {unreadBar} = this.state;
         if (thread.lastSeenMessageTime !== unreadBar) {
           this.setState({unreadBar: thread.lastSeenMessageTime});
@@ -328,7 +316,7 @@ export default class MainMessages extends Component {
     if (!oldThread || oldThread.id !== threadId) {
       if (thread.mentioned) {
         this.fetchUnreadMentionedMessages();
-      } else if (threadUnreadMentionedMessages.messages.length) {
+      } else if (threadUnreadMentionedMessages.length) {
         this.fetchUnreadMentionedMessages(true);
       }
       return this._fetchInitHistory();
@@ -423,13 +411,8 @@ export default class MainMessages extends Component {
 
   onMentionedClicked() {
     const {threadUnreadMentionedMessages, dispatch} = this.props;
-    const {threadUnreadMentionedMessagesCount} = this.state;
-    const {messages} = threadUnreadMentionedMessages;
-    const firstUnreadMessage = messages[0];
-    this.goToSpecificMessage(firstUnreadMessage.time);
-    this.setState({
-      threadUnreadMentionedMessagesCount: threadUnreadMentionedMessagesCount - 1
-    });
+    const firstUnreadMessage = threadUnreadMentionedMessages[0];
+    this.goToSpecificMessage(firstUnreadMessage.time, true);
     dispatch(threadUnreadMentionedMessageRemove(firstUnreadMessage.id));
   }
 
@@ -471,7 +454,7 @@ export default class MainMessages extends Component {
     }
   }
 
-  goToSpecificMessage(messageTime) {
+  goToSpecificMessage(messageTime, force) {
     const {thread, threadMessages} = this.props;
     const {bottomButtonShowing, unreadBar} = this.state;
     if (!this.scroller) {
@@ -504,9 +487,11 @@ export default class MainMessages extends Component {
       this._fetchHistoryFromMiddle(thread.id, messageTime);
       return this.setState({unreadBar: null});
     }
-    if (unreadBar !== messageTime) {
+
+    if (unreadBar !== messageTime || force) {
       setHighlighter();
     }
+
     if (threadMessages.hasNext) {
       if (!bottomButtonShowing) {
         this.setState({
@@ -574,11 +559,12 @@ export default class MainMessages extends Component {
       user,
       thread,
       threadCheckedMessageList,
+      threadUnreadMentionedMessages,
       threadSelectMessageShowing
     } = this.props;
     const {messages, fetching} = threadMessages;
     const {hasPrevious, hasNext} = threadMessages;
-    const {highLightMessage, bottomButtonShowing, threadUnreadMentionedMessagesCount, unreadBar} = this.state;
+    const {highLightMessage, bottomButtonShowing, unreadBar} = this.state;
     const MainMessagesMessageContainerClassNames = message => classnames({
       [style.MainMessages__MessageContainer]: true,
       [style["MainMessages__MessageContainer--left"]]: !isMessageByMe(message, user, thread)
@@ -645,12 +631,12 @@ export default class MainMessages extends Component {
         <ButtonFloating onClick={this.onGotoBottomClicked} size="sm" position={{right: 0, bottom: 0}}>
           <MdExpandMore size={style.iconSizeMd}/>
         </ButtonFloating>}
-        {threadUnreadMentionedMessagesCount > 0 &&
+        {threadUnreadMentionedMessages.length > 0 &&
         <ButtonFloating onClick={this.onMentionedClicked} size="sm"
                         position={{right: 0, bottom: bottomButtonShowing && !this.gotoBottom ? 45 : 0}}>
           <Container className={style.MainMessages__MentionedButtonContainer}>
             <Shape color="accent">
-              <ShapeCircle>{threadUnreadMentionedMessagesCount}</ShapeCircle>
+              <ShapeCircle>{threadUnreadMentionedMessages.length}</ShapeCircle>
             </Shape>
           </Container>
           @

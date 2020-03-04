@@ -201,7 +201,7 @@ export default class ChatSDK {
   getThreadUnreadMentionedMessageList(resolve, reject, threadId, params) {
     this.chatAgent.getUnreadMentionedMessages({threadId, ...params}, result => {
       if (!this._onError(result, reject)) {
-        return resolve({threadId, messages: result.result.history});
+        return resolve({threadId, messages: result.result.history.reverse()});
       }
     });
   }
