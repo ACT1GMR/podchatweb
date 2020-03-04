@@ -6,6 +6,7 @@
   display: flex;
   overflow: hidden;
   flex-direction: column-reverse;
+  overflow-y: auto;
 }
 
 .MainMessages__Messages {
@@ -49,4 +50,13 @@
 .MainMessages__UnreadCountBar {
   background-color: $color-background-light;
   padding: 7px 0;
+}
+
+.MainMessages__MentionedButtonContainer {
+  font-size: $font-size-xsm;
+  position: absolute;
+  left: 8px;
+  top: -13px;
+  box-shadow: 0 2px 4px #845025;
+  border-radius: 50%;
 }

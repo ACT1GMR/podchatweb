@@ -183,6 +183,14 @@ export const messageForward = (threadId, messageId) => {
   }
 };
 
+export const messageInfo = (threadId, messageId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.getMessageById(threadId, messageId)
+  }
+};
+
 export const messageReply = (replyText, id, threadId, repliedMessage) => {
   return (dispatch, getState) => {
     const state = getState();

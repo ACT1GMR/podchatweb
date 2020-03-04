@@ -43,7 +43,15 @@ import {
   THREAD_GET_LIST_PARTIAL,
   CHAT_STOP_TYPING,
   CHAT_IS_TYPING,
-  THREAD_CREATE_ON_THE_FLY, THREAD_ADMIN_LIST, THREAD_ADMIN_LIST_REMOVE, THREAD_ADMIN_LIST_ADD
+  THREAD_CREATE_ON_THE_FLY,
+  THREAD_ADMIN_LIST,
+  THREAD_ADMIN_LIST_REMOVE,
+  THREAD_ADMIN_LIST_ADD,
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST,
+  THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
+  THREAD_MESSAGE_PIN,
+  MESSAGE_NEW,
+  THREAD_DRAFT
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -69,6 +77,37 @@ export const threadCreateReducer = (state = {
     case THREAD_CREATE("CACHE"):
     case THREAD_CREATE_ON_THE_FLY:
       return {...state, ...stateGenerator(SUCCESS, action.payload, "thread")};
+    case THREAD_MESSAGE_PIN: {
+      let updatedThread = updateStore(state.thread, action.payload, {
+        mix: true,
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, updatedThread, "thread")};
+    }
+    case MESSAGE_DELETE:
+    case MESSAGE_EDIT(): {
+      const message = action.payload;
+      const pinMessage = state.thread.pinMessageVO;
+      if (!pinMessage) {
+        return state;
+      }
+      if (message.id === pinMessage.messageId) {
+        let updatedThread = updateStore(state.thread, {
+          id: message.threadId,
+          pinMessageVO: action.type === MESSAGE_EDIT() ? {
+            messageId: pinMessage.messageId,
+            text: action.payload.message
+          } : null
+        }, {
+          mix: true,
+          by: "id",
+          method: listUpdateStrategyMethods.UPDATE
+        });
+        return {...state, ...stateGenerator(SUCCESS, updatedThread, "thread")};
+      }
+      return state;
+    }
     case CHAT_STOP_TYPING:
     case CHAT_IS_TYPING: {
       const {threadId, user} = action.payload;
@@ -225,7 +264,11 @@ export const threadsReducer = (state = {
   fetched: false,
   error: false
 }, action) => {
-  const sortThreads = threads => threads.sort((a, b) => b.time - a.time);
+  const sortThreads = threads => {
+    const pinedThreads = [...threads.filter(e => e.pin)];
+    const unpinedThreads = [...threads.filter(e => !e.pin)].sort((a, b) => b.time - a.time);
+    return pinedThreads.concat(unpinedThreads);
+  };
 
   function removeDuplicateThreads(threads) {
     const checkedIds = [];
@@ -248,7 +291,7 @@ export const threadsReducer = (state = {
       const {threads, hasNext, nextOffset} = action.payload;
       return {
         ...state, ...stateGenerator(SUCCESS, {
-          threads: removeDuplicateThreads(sortThreads(threads)),
+          threads: sortThreads([...removeDuplicateThreads(threads)]),
           hasNext,
           nextOffset
         })
@@ -261,6 +304,14 @@ export const threadsReducer = (state = {
         id: threadId,
         isTyping: {isTyping: action.type === CHAT_IS_TYPING, user}
       }, {
+        mix: true,
+        by: "id",
+        method: listUpdateStrategyMethods.UPDATE
+      });
+      return {...state, ...stateGenerator(SUCCESS, sortThreads(updatedThreads), "threads")};
+    }
+    case THREAD_MESSAGE_PIN: {
+      let updatedThreads = updateStore(state.threads, action.payload, {
         mix: true,
         by: "id",
         method: listUpdateStrategyMethods.UPDATE
@@ -290,6 +341,14 @@ export const threadsReducer = (state = {
       let threads = updateStore(state.threads, action.payload, {
         method: listUpdateStrategyMethods.UPDATE,
         upsert: true,
+        by: "id"
+      });
+      return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
+    }
+    case THREAD_DRAFT: {
+      let threads = updateStore(state.threads, action.payload, {
+        mix: true,
+        method: listUpdateStrategyMethods.UPDATE,
         by: "id"
       });
       return {...state, ...stateGenerator(SUCCESS, sortThreads(threads), "threads")};
@@ -357,16 +416,20 @@ export const threadAdminListReducer = (state = {
     case THREAD_ADMIN_LIST(PENDING):
       return {...state, ...stateGenerator(PENDING)};
     case THREAD_ADMIN_LIST_REMOVE:
-      return {...state, ...stateGenerator(SUCCESS,  updateStore(state.admins, action.payload, {
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.admins, action.payload, {
           method: listUpdateStrategyMethods.REMOVE,
           by: "id"
-        }), "admins")};
+        }), "admins")
+      };
     case THREAD_ADMIN_LIST_ADD:
-      return {...state, ...stateGenerator(SUCCESS,  updateStore(state.admins, action.payload, {
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.admins, action.payload, {
           method: listUpdateStrategyMethods.UPDATE,
           upsert: true,
           by: "id"
-        }), "admins")};
+        }), "admins")
+      };
     case THREAD_ADMIN_LIST(SUCCESS):
       return {...state, ...stateGenerator(SUCCESS, action.payload, "admins")};
     case THREAD_ADMIN_LIST(ERROR):
@@ -429,6 +492,57 @@ export const threadGetMessageListByMessageIdReducer = (state = {
       return {...state, ...stateGenerator(SUCCESS)};
     case THREAD_GET_MESSAGE_LIST_BY_MESSAGE_ID(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const threadUnreadMentionedMessageListReducer = (state = {
+  messages: [],
+  threadId: null,
+  count: 0,
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case THREAD_NEW:
+    case THREAD_CREATE("CACHE"):
+      return {
+        ...state, ...stateGenerator(SUCCESS, action.payload.id, "threadId")
+      };
+    case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(PENDING):
+    case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED):
+      return {
+        ...state, ...stateGenerator(action.type === THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED) ? CANCELED : PENDING, {
+          messages: [],
+          threadId: null,
+          count: 0
+        })
+      };
+    case THREAD_UNREAD_MENTIONED_MESSAGE_LIST(SUCCESS):
+      return {...state, ...stateGenerator(SUCCESS, action.payload)};
+    case MESSAGE_NEW:
+      if (!action.payload.mentioned) {
+        return state;
+      }
+      if (action.payload.threadId !== state.threadId) {
+        return state;
+      }
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload, {
+          method: listUpdateStrategyMethods.UPDATE,
+          upsert: true,
+          by: "id"
+        }), "messages")
+      };
+    case THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE:
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.messages, action.payload, {
+          method: listUpdateStrategyMethods.REMOVE,
+          by: "id"
+        }), "messages")
+      };
     default:
       return state;
   }

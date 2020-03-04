@@ -33,8 +33,16 @@ import {
   THREAD_NOTIFICATION,
   THREAD_REMOVED_FROM,
   THREAD_CREATE_INIT,
-  THREAD_PARTICIPANTS_REMOVED, THREAD_NEW_MESSAGE, THREAD_CREATION_SCENARIO, THREAD_PARTICIPANT_GET_LIST_PARTIAL,
-  THREAD_GET_LIST_PARTIAL, THREAD_CREATE_ON_THE_FLY, THREAD_ADMIN_LIST, THREAD_ADMIN_LIST_REMOVE, THREAD_ADMIN_LIST_ADD
+  THREAD_PARTICIPANTS_REMOVED,
+  THREAD_NEW_MESSAGE,
+  THREAD_CREATION_SCENARIO,
+  THREAD_PARTICIPANT_GET_LIST_PARTIAL,
+  THREAD_GET_LIST_PARTIAL,
+  THREAD_CREATE_ON_THE_FLY,
+  THREAD_ADMIN_LIST,
+  THREAD_ADMIN_LIST_REMOVE,
+  THREAD_ADMIN_LIST_ADD,
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_DRAFT
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
@@ -151,6 +159,32 @@ export const threadMessageGetList = (threadId, count) => {
   }
 };
 
+export const threadUnreadMentionedMessageGetList = (threadId, count) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    if (!threadId) {
+      return dispatch({
+        type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(CANCELED),
+        payload: null
+      });
+    }
+    dispatch({
+      type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(),
+      payload: chatSDK.getThreadUnreadMentionedMessageList(threadId, count)
+    });
+  }
+};
+
+export const threadUnreadMentionedMessageRemove = messageId => {
+  return dispatch => {
+    dispatch({
+      type: THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
+      payload: messageId
+    });
+  }
+};
+
 export const threadMessageGetListPartial = (threadId, msgTime, loadAfter, count, reset) => {
   return (dispatch, getState) => {
     const state = getState();
@@ -250,6 +284,15 @@ export const threadLeave = (threadId, kickedOut) => {
   }
 };
 
+export const threadDraft = (id, draftMessage) => {
+  return dispatch => {
+    dispatch({
+      type: THREAD_DRAFT,
+      payload: {id, draftMessage}
+    });
+  }
+};
+
 export const threadNewMessage = message => {
   return dispatch => {
     dispatch({
@@ -259,10 +302,45 @@ export const threadNewMessage = message => {
   }
 };
 
-export const threadParticipantList = (threadId, offset = 0, count, name) => {
+export const threadPinToTop = (threadId) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.pinThread(threadId);
+  }
+};
+
+export const threadUnpinFromTop = (threadId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.unpinThread(threadId);
+  }
+};
+
+export const threadMessagePinToTop = (messageId, notifyAll) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.pinMessage(messageId, notifyAll);
+  }
+};
+
+export const threadMessageUnpin = (messageId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    chatSDK.unPinMessage(messageId);
+  }
+};
+
+export const threadParticipantList = (threadId, offset = 0, count, name, direct) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    if (direct) {
+      return chatSDK.getThreadParticipantList(threadId, offset, count, name);
+    }
     if (!threadId) {
       return dispatch({
         type: THREAD_PARTICIPANT_GET_LIST(CANCELED)

@@ -137,9 +137,9 @@ export function OnWindowFocusInOut(onFocusedOut, onFocusedIn) {
 }
 
 export function getNow() {
-  if (window._universalTalkTimer) {
+  if (window._universalTalkTimerDiff) {
     const now = Date.now();
-    return new Date(window._universalTalkTimer + (now - _universalLocalTalkTimer)).getTime();
+    return new Date(now - window._universalTalkTimerDiff).getTime();
   } else {
     return Date.now();
   }

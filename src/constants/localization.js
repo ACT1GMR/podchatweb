@@ -9,6 +9,7 @@ let strings = new LocalizedStrings({
     pleaseStartAThreadFirst: "یه نفرو برای چت انتخاب کن!!",
     pleaseWriteHere: "اینجا بنویسید...",
     waitingForChatInstance: "در حالت برقراری ارتباط با سرور چت",
+    messageInfo: "اطلاعات پیام",
     add: "اضافه کردن",
     addContact: "اضافه کردن مخاطب",
     editContact: contact => {
@@ -31,6 +32,7 @@ let strings = new LocalizedStrings({
     thereIsNoChat: "گفتگویی وجود ندارد",
     select: "انتخاب",
     forwardTo: "انتخاب گفتگو برای فرستادن",
+    forward: "ارسال",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
     unknown: "نامشخص",
@@ -40,9 +42,14 @@ let strings = new LocalizedStrings({
     groupNameNotEntered: isChannel => `نام ${isChannel ? "کانال" : "گروه"} وارد نشده است`,
     lastName: "نام خانوادگی",
     replyTo: "پاسخ به",
-    sameUserMobilePhoneisNotPodUser: "کاربر پاد نیست",
+    reply: "پاسخ",
+    isNotPodUser: "کاربر پاد نیست",
+    pinToTop: "چسباندن به بالا",
+    unpinFromTop: "برداشتن از بالا",
     forwardFrom: "ارسال شده از طرف",
     selectContacts: "انتخاب مخاطبها",
+    openThread: "باز کردن گفتگو",
+    download: "دانلود",
     createGroup: isChannel => `ایجاد ${isChannel ? "کانال" : "گروه"}`,
     member: "عضو",
     you: "شما",
@@ -70,6 +77,16 @@ let strings = new LocalizedStrings({
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
     mobilePhoneIsRequired: "شماره موبایل اجباری است",
     youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
+    copyText: "کپی",
+    howDoYouPinThisMessage: "چطور این پیام رو به بالا میچسبونید",
+    pinAndNotifyAll: "چسباندن و با خبر سازی همه",
+    onlyPin: "فقط بچسبه به بالا",
+    batchMessageSentToThread(messagesCount, isGroup, isChannel) {
+      if(isChannel || isGroup) {
+        return `${messagesCount} پیام در ${isGroup ?  "گروه" : "کانال"} ارسال شده`;
+      }
+      return `${messagesCount} پیام  ارسال شده`
+    },
     areYouSureAboutDeletingMessage(messagesCount) {
       if (!messagesCount) {
         return "از حذف این پیغام مطمئنید";
@@ -97,6 +114,7 @@ let strings = new LocalizedStrings({
     areYouSureAboutLeavingGroup(threadName, isChannel) {
       return `میخواهید ${isChannel ? "کانال" : "گروه"} "${threadName}" را ترک کنید`;
     },
+    areYouSureRemovingThread: "از پاک کردن این گفتگو مطمئنید",
     areYouSureAboutRemovingMember(participantName, isChannel) {
       return `میخواهید "${participantName}" از ${isChannel ? "کانال" : "گروه"} حذف کنید`;
     },
@@ -162,8 +180,9 @@ let strings = new LocalizedStrings({
     reportSpam: "اعلام گفتگو هجو",
     areYouSureToDoIt: "از انجام این کار مطمئنید",
     leaveGroup: isChannel => `ترک ${isChannel ? "کانال" : "گروه"}`,
+    removeThread: isChannel => ``,
     chatState: {
-      networkDisconnected: "در انتظار شبکه",
+      networkDisconnected: "عدم برقراری ارتباط",
       reconnecting: "اتصال به شبکه",
       connectingToChat: "در حال اتصال"
     },
@@ -189,6 +208,11 @@ let strings = new LocalizedStrings({
     admins: "مدیران",
     addAdmin: "اضافه کردن مدیر",
     doAdd: "اضافه کن",
+    canceledIDontWant: "ولش کن نمیخواد",
+    draft: "پیشنویس",
+    personPinnedMessage(isChannel){
+      return `پیامی به بالای ${isChannel ? "کانال" : "گروه"} چسبیده شد`
+    },
     areYouSureAboutAddThisPersonToAdminList: "آیا مطمئنید میخوهید این کاربر را به لیست مدیران اضافه کنید",
     howWeShouldDeleteThisMessageForYou: count =>{
       if(count) {
@@ -196,7 +220,8 @@ let strings = new LocalizedStrings({
       }
       return "این پیام رو چطوری دوست داری برات حذف کنیم";
     } ,
-    iCanceled: "منصرف شدم"
+    iCanceled: "منصرف شدم",
+    unreadMessages: "پیامهای خوانده نشده"
   },
   it: {}
 });

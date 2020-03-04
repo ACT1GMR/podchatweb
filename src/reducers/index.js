@@ -9,6 +9,7 @@ import {
 } from "./contactReducer";
 import {
   threadNotificationReducer,
+  threadUnreadMentionedMessageListReducer,
   threadMessageListReducer,
   threadMessageListPartialReducer,
   threadParticipantListReducer,
@@ -36,6 +37,7 @@ import {
 } from "./threadReducer";
 import {
   messageNewReducer,
+  messagePinnedReducer,
   messageEditingReducer
 } from "./messageReducer";
 import {
@@ -76,6 +78,7 @@ const rootReducer = {
   thread: threadCreateReducer,
   threadNotification: threadNotificationReducer,
   threadMessages: threadMessageListReducer,
+  threadUnreadMentionedMessages: threadUnreadMentionedMessageListReducer,
   threadEmojiShowing: threadEmojiShowingReducer,
   threadMessagesPartial: threadMessageListPartialReducer,
   threadModalListShowing: threadModalListShowingReducer,
@@ -99,6 +102,7 @@ const rootReducer = {
   threadCheckedMessageList: threadCheckedMessageListReducer,
   threadAdminList: threadAdminListReducer,
   messageNew: messageNewReducer,
+  messagePinned: messagePinnedReducer,
   messageEditing: messageEditingReducer,
   user: userReducer,
 };

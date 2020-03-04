@@ -1,7 +1,7 @@
 // src/actions/messageActions.js
 import {threadGetList, threadLeave} from "./threadActions";
 import ChatSDK from "../utils/chatSDK";
-import {reconnect} from "../pages/box/AsideHead";
+import {reconnect} from "../app/AsideHead";
 import {stateGeneratorState} from "../utils/storeHelper";
 import {
   CHAT_GET_INSTANCE,
@@ -24,8 +24,9 @@ import {
   CHAT_NOTIFICATION,
   CHAT_NOTIFICATION_CLICK_HOOK,
   CHAT_RETRY_HOOK,
-  CHAT_SIGN_OUT_HOOK
+  CHAT_SIGN_OUT_HOOK, THREAD_MESSAGE_PIN, MESSAGE_PINNED
 } from "../constants/actionTypes";
+import {messageInfo} from "./messageActions";
 
 
 let firstReadyPassed = false;
@@ -76,12 +77,34 @@ export const chatSetInstance = config => {
                       type === THREAD_LEAVE_PARTICIPANT ? {threadId: thread.threadId, id: thread.result.participant.id}
                         : thread
             });
+          case "MESSAGE_UNPIN":
+          case "MESSAGE_PIN": {
+            const {thread: id, pinMessage} = thread.result;
+            const isUnpin = type === "MESSAGE_UNPIN";
+            if(!isUnpin) {
+              if(pinMessage.notifyAll) {
+                dispatch(messageInfo(id, pinMessage.messageId)).then(message =>{
+                  return dispatch({
+                    type: MESSAGE_PINNED,
+                    payload: message
+                  });
+                });
+              }
+            }
+            return dispatch({
+              type: THREAD_MESSAGE_PIN,
+              payload: {id, pinMessageVO: isUnpin ? null : pinMessage}
+            });
+          }
           case THREAD_REMOVED_FROM:
             return dispatch(threadLeave(thread.result.thread, true));
           default:
             thread.changeType = type;
             if (thread.result) {
               if (!thread.result.thread) {
+                return;
+              }
+              if (!thread.result.thread.id) {
                 return;
               }
             }
@@ -133,6 +156,9 @@ export const chatSetInstance = config => {
             payload: {threadId, user}
           });
         }
+        if (type === "SERVER_TIME") {
+          window._universalTalkTimerDiff = Date.now() - result.time;
+        }
       },
       onChatState(e) {
         dispatch({
@@ -144,13 +170,12 @@ export const chatSetInstance = config => {
         if (e && e.code && e.code === 21) {
           const {chatRetryHook, chatInstance} = state();
           if (chatRetryHook) {
-            if (!chatRetryHook()) {
-              return;
-            }
+            chatRetryHook().then(token => {
+              chatInstance.setToken(token);
+              chatInstance.reconnect();
+            });
           }
-          reconnect(chatInstance.chatSDK);
         }
-        console.log(e)
       },
       onChatReady(e) {
         if (firstReadyPassed) {

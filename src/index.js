@@ -3,7 +3,7 @@ import {render} from "react-dom";
 import {Provider} from "react-redux";
 import store from "./store/index";
 import "../styles/main.scss";
-import Box from "./pages/box";
+import Box from "./app";
 import {BrowserRouter} from "react-router-dom";
 
 

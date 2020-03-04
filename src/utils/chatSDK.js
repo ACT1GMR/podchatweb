@@ -2,6 +2,7 @@ import PodChat from "podchat-browser";
 import {promiseDecorator} from "./decorators";
 import React from "react";
 import {getNow} from "./helpers";
+import Cookies from "js-cookie";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -197,6 +198,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  getThreadUnreadMentionedMessageList(resolve, reject, threadId, params) {
+    this.chatAgent.getUnreadMentionedMessages({threadId, ...params}, result => {
+      if (!this._onError(result, reject)) {
+        return resolve({threadId, messages: result.result.history});
+      }
+    });
+  }
+
+  @promiseDecorator
   getThreadInfo(resolve, reject, params) {
     this.getThreads(null, null, null, {...params, cache: false}).then(result => {
       if (!this._onError(result, reject)) {
@@ -222,6 +232,7 @@ export default class ChatSDK {
     this.chatAgent.getThreads(getThreadsParams, (result) => {
       if (!this._onError(result, reject)) {
         const {threads, hasNext, nextOffset} = result.result;
+        threads.forEach(e => e.draftMessage = Cookies.get(e.id));
         return resolve({threads, hasNext, nextOffset});
       }
     });
@@ -269,7 +280,8 @@ export default class ChatSDK {
   removeAdmin(resolve, reject, userId, threadId, params) {
     let setAdminParams = {
       threadId,
-      admins: [{userId, roles: [
+      admins: [{
+        userId, roles: [
           'post_channel_message',
           'edit_message_of_others',
           'delete_message_of_others',
@@ -279,7 +291,8 @@ export default class ChatSDK {
           'add_rule_to_user',
           'remove_role_from_user',
           'edit_thread'
-        ]}, ...{params: params || {}}],
+        ]
+      }, ...{params: params || {}}],
 
     };
     this.chatAgent.removeAdmin(setAdminParams, (result) => {
@@ -293,7 +306,8 @@ export default class ChatSDK {
   sendMessage(resolve, reject, content, threadId, other) {
     let sendChatParams = {
       content,
-      threadId
+      threadId,
+      messageType: "TEXT"
     };
     if (other) {
       sendChatParams = {...sendChatParams, ...other};
@@ -700,6 +714,38 @@ export default class ChatSDK {
         return resolve({threadId, participants, hasNext, nextOffset});
       }
     });
+  }
+
+  @promiseDecorator
+  pinThread(resolve, reject, threadId) {
+    this.chatAgent.pinThread({
+      subjectId: threadId
+    });
+  }
+
+  @promiseDecorator
+  unpinThread(resolve, reject, threadId) {
+    this.chatAgent.unPinThread({
+      subjectId: threadId
+
+    });
+  }
+
+  @promiseDecorator
+  pinMessage(resolve, reject, messageId, notifyAll) {
+    const params = {
+      messageId,
+      notifyAll
+    };
+    this.chatAgent.pinMessage(params);
+  }
+
+  @promiseDecorator
+  unPinMessage(resolve, reject, messageId) {
+    const params = {
+      messageId
+    };
+    this.chatAgent.unPinMessage(params);
   }
 
   @promiseDecorator
