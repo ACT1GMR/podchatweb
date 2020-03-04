@@ -102,7 +102,6 @@ class MainMessagesMessageFile extends Component {
     this.onImageClick = this.onImageClick.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onRetry = this.onRetry.bind(this);
-    this.onClick = this.onClick.bind(this);
   }
 
   onImageClick(e) {
@@ -140,10 +139,6 @@ class MainMessagesMessageFile extends Component {
   onCancel() {
     const {dispatch, message} = this.props;
     dispatch(messageCancelFile(message.uniqueId, message.threadId));
-  }
-
-  onClick(){
-    console.log(arguments)
   }
 
   render() {

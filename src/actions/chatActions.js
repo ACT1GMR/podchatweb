@@ -170,13 +170,12 @@ export const chatSetInstance = config => {
         if (e && e.code && e.code === 21) {
           const {chatRetryHook, chatInstance} = state();
           if (chatRetryHook) {
-            if (!chatRetryHook()) {
-              return;
-            }
+            chatRetryHook().then(token => {
+              chatInstance.setToken(token);
+              chatInstance.reconnect();
+            });
           }
-          reconnect(chatInstance.chatSDK);
         }
-        console.log(e)
       },
       onChatReady(e) {
         if (firstReadyPassed) {

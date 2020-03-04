@@ -121,17 +121,14 @@ export default class Notification extends Component {
       return this._showNotification(foundThread, messageToNotify);
     }
     clearTimeout(foundThread.timeoutId);
-    console.log(foundThread.timeoutId, "Cleared");
     foundThread.pendingMessages.push(messageToNotify);
     foundThread.timeoutId = setTimeout(() => {
       clearTimeout(foundThread.timeoutId);
-      console.log(foundThread.timeoutId, "After Timeout cleared");
       const pendingMessages = foundThread.pendingMessages;
       this._showNotification(foundThread, pendingMessages.length > 1 ? pendingMessages : messageToNotify);
       foundThread.pendingMessages = [];
       foundThread.timeoutId = null;
     }, 1500);
-    console.log(foundThread.timeoutId, `Set - ${messageToNotify.message}`)
   }
 
   _storeThreadObject(thread) {

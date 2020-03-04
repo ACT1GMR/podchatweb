@@ -72,12 +72,12 @@ function prettifyMessageDate(passedTime) {
 }
 
 function getTitle(title) {
-  if (!title) {
+/*  if (!title) {
     return "";
   }
   if (title.length >= 30) {
     return `${title.slice(0, 30)}...`;
-  }
+  }*/
   return title;
 }
 
@@ -88,7 +88,10 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   const isTypingReal = isTyping && isTyping.isTyping;
   const isTypingUserName = isTyping && isTyping.user.user;
 
-  const draftFragment = <Fragment><Text size="sm" inline color="red" light>{strings.draft}:</Text><Text size="sm" inline color="gray" dark isHTML>{clearHtml(draftMessage)}</Text></Fragment>;
+  const draftFragment = <Fragment><Text size="sm" inline color="red" light>{strings.draft}:</Text><Text size="sm" inline
+                                                                                                        color="gray"
+                                                                                                        dark
+                                                                                                        isHTML>{clearHtml(draftMessage)}</Text></Fragment>;
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}
@@ -121,32 +124,29 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
 }
 
 function LastMessageInfoFragment({isGroup, isChannel, time, lastMessageVO, draftMessage, isMessageByMe}) {
-  try {
-    return (
-      <Container>
-        <Container topLeft>
-          {
-            lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
-            <Container inline>
-              {draftMessage ? "" : (
-                lastMessageVO.seen ?
-                  <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
-                  <MdDone size={style.iconSizeSm} color={style.colorAccent}/>
-              )}
-              <Gap x={3}/>
-            </Container>
-          }
+  return (
+    <Container>
+      <Container topLeft>
+        {
+          lastMessageVO && !isGroup && !isChannel && isMessageByMe &&
           <Container inline>
-            <Text size="xs"
-                  color="gray">{prettifyMessageDate(time || lastMessageVO.time)}</Text>
+            {draftMessage ? "" : (
+              lastMessageVO.seen ?
+                <MdDoneAll size={style.iconSizeSm} color={style.colorAccent}/> :
+                <MdDone size={style.iconSizeSm} color={style.colorAccent}/>
+            )}
+            <Gap x={3}/>
           </Container>
-
+        }
+        <Container inline>
+          <Text size="xs"
+                color="gray">{prettifyMessageDate(time || lastMessageVO.time)}</Text>
         </Container>
 
-      </Container>)
-  } catch (e) {
-    console.log(e);
-  }
+      </Container>
+
+    </Container>)
+
 }
 
 export function LastMessageFragment({thread, user}) {
@@ -218,9 +218,8 @@ class AsideThreads extends Component {
     this.onMuteClick = this.onMuteClick.bind(this);
     this.onMenuShow = this.onMenuShow.bind(this);
     this.onMenuHide = this.onMenuHide.bind(this);
-    this.refso = {};
-    window.refoos = this.contextRef = React.createRef();
-    window.refoos2 = this.contextTriggerRef = React.createRef();
+    this.contextMenuRefs = {};
+    this.contextTriggerRef = React.createRef();
     this.state = {activeThread: null};
   }
 
@@ -276,7 +275,7 @@ class AsideThreads extends Component {
         this.setState({
           isMenuShow: thread.id
         });
-        const trigger = this.refso[thread.id];
+        const trigger = this.contextMenuRefs[thread.id];
         trigger.handleContextClick(e);
       }
     }, 700);
@@ -345,7 +344,6 @@ class AsideThreads extends Component {
     let filteredThreads = threads;
     let filteredContacts;
     let isSearchResult;
-
     if (chatSearchResult) {
       isSearchResult = true;
       filteredThreads = chatSearchResult.filteredThreads;
@@ -420,7 +418,7 @@ class AsideThreads extends Component {
           <Fragment>
             <Fragment>
               {isSearchResult &&
-              <Gap y="8" x="5">
+              <Gap y={8} x={5}>
                 <Text bold color="accent">{strings.conversations}</Text>
               </Gap>
               }
@@ -434,7 +432,6 @@ class AsideThreads extends Component {
                     filteredThreads.map(el => (
                       <Fragment>
                         <Context id={el.id} stickyHeader={isMobile} style={isMobile ? {height: "59px"} : null}
-                                 ref={this.contextRef}
                                  onShow={this.onMenuShow} onHide={this.onMenuHide}>
                           {isMobile ?
                             <MobileContextMenu thread={el}/> :
@@ -467,7 +464,7 @@ class AsideThreads extends Component {
                             </Fragment>
                           }
                         </Context>
-                        <ContextTrigger id={el.id} holdToDisplay={-1} contextTriggerRef={e => this.refso[el.id] = e}>
+                        <ContextTrigger id={el.id} holdToDisplay={-1} contextTriggerRef={e => this.contextMenuRefs[el.id] = e}>
 
                           <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                                     active={activeThread === el.id}>
@@ -480,7 +477,7 @@ class AsideThreads extends Component {
                                              text={avatarNameGenerator(el.title).letter}
                                              textBg={avatarNameGenerator(el.title).color}/>
                                 <Container className={style.AsideThreads__ThreadCheck} bottomRight
-                                           style={{zIndex: 1, opacity: isMenuShow === el.id ? 1 : 0}}>
+                                           style={{zIndex: 1, opacity: +isMenuShow === el.id ? 1 : 0}}>
                                   <Shape color="accent">
                                     <ShapeCircle>
                                       <MdCheck size={styleVar.iconSizeSm} color={styleVar.colorWhite}
@@ -534,7 +531,7 @@ class AsideThreads extends Component {
                       </Fragment>
                     )) :
                     <Container relative centerTextAlign>
-                      <Gap y="8" x="5">
+                      <Gap y={8} x={5}>
                         <Text size="sm" color="gray">{strings.noResult}</Text>
                       </Gap>
                     </Container>}
