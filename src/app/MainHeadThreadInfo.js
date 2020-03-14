@@ -18,7 +18,7 @@ import Container from "../../../uikit/src/container";
 //styling
 import style from "../../styles/pages/box/MainHeadThreadInfo.scss";
 import classnames from "classnames";
-import {avatarNameGenerator} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 import Loading from "../../../uikit/src/loading";
 import LoadingBlinkDots from "../../../uikit/src/loading/LoadingBlinkDots";
 
@@ -71,7 +71,7 @@ class BoxHeadThreadInfo extends Component {
       return (
         <Container className={classNames} onClick={this.onShowInfoClick} relative>
           <Avatar>
-            <AvatarImage src={thread.image} text={avatarNameGenerator(thread.title).letter}
+            <AvatarImage src={avatarUrlGenerator(thread.image, avatarUrlGenerator.SIZES.SMALL)} text={avatarNameGenerator(thread.title).letter}
                          textBg={avatarNameGenerator(thread.title).color}/>
             <AvatarName>
               <Container>

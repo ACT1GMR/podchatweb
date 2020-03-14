@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 
 //strings
 import strings from "../constants/localization";
@@ -142,7 +142,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
                                  className={style.ModalThreadInfoGroupSettings__ImageIcon}/>
                   </Container>
                 </Container>
-                <AvatarImage src={image} size="xlg" text={avatarNameGenerator(thread.title).letter}
+                <AvatarImage src={avatarUrlGenerator(image, avatarUrlGenerator.SIZES.MEDIUM)} size="xlg" text={avatarNameGenerator(thread.title).letter}
                              textBg={avatarNameGenerator(thread.title).color}/>
               </Container>
               <AvatarName>

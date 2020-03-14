@@ -187,8 +187,10 @@ export default class MainFooterInput extends Component {
     });
     if (newText) {
       if (newText.trim()) {
-        this._setDraft(thread.id, newText);
-        return dispatch(threadIsSendingMessage(true));
+        if(clearHtml(newText)) {
+          this._setDraft(thread.id, newText);
+          return dispatch(threadIsSendingMessage(true));
+        }
       }
     }
     if (!this.forwardMessageSent && messageEditing) {

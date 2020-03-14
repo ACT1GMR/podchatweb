@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 
 //strings
 import strings from "../constants/localization";
@@ -175,7 +175,7 @@ export default class ModalThreadInfoGroupSettingsAdminAdd extends Component {
     return (
       <Container relative>
         <Avatar>
-          <AvatarImage src={getImage(selectedParticipant)}
+          <AvatarImage src={avatarUrlGenerator(getImage(selectedParticipant), avatarUrlGenerator.SIZES.SMALL)}
                        text={avatarNameGenerator(getName(selectedParticipant)).letter}
                        size="lg"
                        textBg={avatarNameGenerator(getName(selectedParticipant)).color}/>

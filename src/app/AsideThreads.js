@@ -1,7 +1,7 @@
 // src/list/Avatar.scss.js
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator, getNow, mobileCheck} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator, getNow, mobileCheck} from "../utils/helpers";
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
@@ -57,6 +57,7 @@ import Context, {ContextItem, ContextTrigger} from "../../../uikit/src/menu/Cont
 import {chatModalPrompt, chatSearchResult} from "../actions/chatActions";
 import {contactChatting} from "../actions/contactActions";
 import {clearHtml} from "./MainFooterInput";
+import {messageSeen} from "../actions/messageActions";
 
 function sliceMessage(message, to) {
   return decodeEmoji(message);
@@ -72,12 +73,12 @@ function prettifyMessageDate(passedTime) {
 }
 
 function getTitle(title) {
-/*  if (!title) {
-    return "";
-  }
-  if (title.length >= 30) {
-    return `${title.slice(0, 30)}...`;
-  }*/
+  /*  if (!title) {
+      return "";
+    }
+    if (title.length >= 30) {
+      return `${title.slice(0, 30)}...`;
+    }*/
   return title;
 }
 
@@ -264,6 +265,12 @@ class AsideThreads extends Component {
     this.currentScroll = e.currentTarget.scrollTop;
   }
 
+
+  onLastMessageSeen(thread) {
+    const {dispatch} = this.props;
+    dispatch(messageSeen(thread.lastMessageVO));
+  }
+
   onThreadTouchStart(thread, e) {
     e.stopPropagation();
     const touchPosition = this.touchPosition;
@@ -336,6 +343,7 @@ class AsideThreads extends Component {
     const {threads, threadsFetching, threadShowing, chatInstance, chatSearchResult, user, threadsHasNext, threadsPartialFetching} = this.props;
     const {activeThread, isMenuShow} = this.state;
     const isMobile = mobileCheck();
+    const {MEDIUM} = avatarUrlGenerator.SIZES;
     const classNames = classnames({
       [style.AsideThreads]: true,
       [style["AsideThreads--hiddenOverflow"]]: !isMobile ? isMenuShow && true : false,
@@ -461,10 +469,19 @@ class AsideThreads extends Component {
                                 </ContextItem>
 
                               }
+
+                              {
+                                el.unreadCount > 0 &&
+                                <ContextItem onClick={this.onLastMessageSeen.bind(this, el)}>
+                                  {strings.seenLastMessage}
+                                </ContextItem>
+
+                              }
                             </Fragment>
                           }
                         </Context>
-                        <ContextTrigger id={el.id} holdToDisplay={-1} contextTriggerRef={e => this.contextMenuRefs[el.id] = e}>
+                        <ContextTrigger id={el.id} holdToDisplay={-1}
+                                        contextTriggerRef={e => this.contextMenuRefs[el.id] = e}>
 
                           <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
                                     active={activeThread === el.id}>
@@ -473,7 +490,7 @@ class AsideThreads extends Component {
                                        onTouchMove={this.onThreadTouchMove.bind(this, el)}
                                        onTouchEnd={this.onThreadTouchEnd.bind(this, el)}>
                               <Avatar cssClassNames={style.AsideThreads__AvatarContainer}>
-                                <AvatarImage src={el.image} customSize="50px"
+                                <AvatarImage src={avatarUrlGenerator(el.image, MEDIUM)} customSize="50px"
                                              text={avatarNameGenerator(el.title).letter}
                                              textBg={avatarNameGenerator(el.title).color}/>
                                 <Container className={style.AsideThreads__ThreadCheck} bottomRight
@@ -556,7 +573,7 @@ class AsideThreads extends Component {
 
                             <Container maxWidth="calc(100% - 75px)">
                               <Avatar>
-                                <AvatarImage src={el.linkedUser.image}
+                                <AvatarImage src={avatarUrlGenerator(el.linkedUser.image, MEDIUM)}
                                              text={avatarNameGenerator(`${el.firstName} ${el.lastName}`).letter}
                                              textBg={avatarNameGenerator(`${el.firstName} ${el.lastName}`).color}/>
                                 <AvatarName invert>

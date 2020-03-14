@@ -339,7 +339,8 @@ export default class ChatSDK {
         this._onError(result, reject);
       }
     });
-    resolve({
+    const isImage = file.type.startsWith("image/");
+    const commonParams = {
       ...obj, ...{
         message: caption,
         time: getNow() * Math.pow(10, 6),
@@ -348,12 +349,23 @@ export default class ChatSDK {
           file: {
             mimeType: file.type,
             originalName: file.name,
-            link: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
             size: file.size
           }
         }
       }
-    })
+    };
+
+    if (isImage) {
+      const image = new Image();
+      image.src = URL.createObjectURL(file);
+      return image.onload = function (result) {
+        commonParams.metadata.file.link = image.src;
+        commonParams.metadata.file.width = result.target.width;
+        commonParams.metadata.file.height = result.target.height;
+        return resolve(commonParams);
+      };
+    }
+    resolve(commonParams);
   }
 
   @promiseDecorator

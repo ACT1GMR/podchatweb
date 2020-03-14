@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 
 //strings
 import strings from "../constants/localization";
@@ -136,7 +136,7 @@ export default class ModalThreadList extends Component {
                     <Container relative>
 
                       <Avatar>
-                        <AvatarImage src={el.image} text={avatarNameGenerator(el.title).letter}
+                        <AvatarImage src={avatarUrlGenerator(el.image, avatarUrlGenerator.SIZES.SMALL)} text={avatarNameGenerator(el.title).letter}
                                      textBg={avatarNameGenerator(el.title).color}/>
                         <AvatarName>{el.title}</AvatarName>
                       </Avatar>

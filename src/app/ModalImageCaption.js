@@ -39,10 +39,10 @@ export default class ModalImageCaption extends Component {
     this.onClose = this.onClose.bind(this);
   }
 
-  onSend() {
-    const {threadId, dispatch, images, inputNode} = this.props;
+  onSend(imagesArray) {
+    const {threadId, dispatch, inputNode} = this.props;
     const {comment} = this.state;
-    const isBiggerThanOne = images.length > 1;
+    const isBiggerThanOne = imagesArray.length > 1;
     if (isBiggerThanOne) {
       if (comment) {
         if (comment.trim()) {
@@ -50,7 +50,7 @@ export default class ModalImageCaption extends Component {
         }
       }
     }
-    dispatch(threadFilesToUpload(images, true, inputNode, !isBiggerThanOne && comment ? comment : null));
+    dispatch(threadFilesToUpload(imagesArray, true, inputNode, !isBiggerThanOne && comment ? comment : null));
     this.onClose();
   }
 
@@ -70,6 +70,7 @@ export default class ModalImageCaption extends Component {
   render() {
     const {images, isShow, smallVersion} = this.props;
     const {comment} = this.state;
+    const imagesArray = images && Array.from(images);
 
     return (
 
@@ -82,7 +83,7 @@ export default class ModalImageCaption extends Component {
         <ModalBody>
           {images ?
             <List>
-              {Array.from(images).map(el => (
+              {imagesArray.map(el => (
                 <ListItem key={el.id} invert multiple>
                   <Container centerTextAlign>
 
@@ -102,7 +103,7 @@ export default class ModalImageCaption extends Component {
           <InputText onChange={this.captionChange.bind(this)}
                      value={comment}
                      placeholder={strings.imageText}/>
-          <Button text onClick={this.onSend}>{strings.send}</Button>
+          <Button text onClick={this.onSend.bind(this, imagesArray)}>{strings.send}</Button>
           <Button text onClick={this.onClose}>{strings.cancel}</Button>
 
         </ModalFooter>

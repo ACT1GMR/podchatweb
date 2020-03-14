@@ -2,7 +2,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {OnWindowFocusInOut} from "../utils/helpers";
+import {avatarUrlGenerator, OnWindowFocusInOut} from "../utils/helpers";
 
 //strings
 import strings from "../constants/localization";
@@ -237,7 +237,7 @@ class AsideHead extends Component {
                 </Gap>
               </Container>
               <Avatar>
-                <AvatarImage src={user.image} text={avatarNameGenerator(user.name).letter}
+                <AvatarImage src={avatarUrlGenerator(user.image, avatarUrlGenerator.SIZES.MEDIUM)} text={avatarNameGenerator(user.name).letter}
                              textBg={avatarNameGenerator(user.name).color}
                              customSize="50px"/>
                 <Container>

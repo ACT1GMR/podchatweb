@@ -6,7 +6,7 @@ import ModalContactList, {statics as modalContactListStatics} from "./ModalConta
 
 //strings
 import strings from "../constants/localization";
-import {avatarNameGenerator} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 
 //actions
 import {
@@ -321,7 +321,8 @@ class ModalThreadInfoGroupMain extends Component {
 
           <Container>
             <Avatar>
-              <AvatarImage src={thread.image} size="xlg" text={avatarNameGenerator(thread.title).letter}
+              <AvatarImage src={avatarUrlGenerator(thread.image, avatarUrlGenerator.SIZES.LARGE)} size="xlg"
+                           text={avatarNameGenerator(thread.title).letter}
                            textBg={avatarNameGenerator(thread.title).color}>
                 <AvatarModalMediaFragment thread={thread}/>
               </AvatarImage>
@@ -422,6 +423,7 @@ class ModalThreadInfoGroupMain extends Component {
             participants.length ?
               <Container relative>
                 <ContactList invert
+                             avatarSize={avatarUrlGenerator.SIZES.SMALL}
                              selection
                              onSelect={this.onStartChat}
                              contacts={participants} LeftActionFragment={conversationAction}/>

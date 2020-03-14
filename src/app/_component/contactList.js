@@ -1,6 +1,6 @@
 // src/box/_component/contactList
 import React from "react";
-import {avatarNameGenerator} from "../../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../../utils/helpers";
 
 //components
 import List, {ListItem} from "../../../../uikit/src/list"
@@ -39,7 +39,7 @@ export function getImage(contact) {
 }
 
 export function ContactList(props) {
-  const {contacts, activeList, activeRef, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment, AvatarNameFragment, maxAvatarNameWidth} = props;
+  const {contacts, activeList, activeRef, onSelect, onDeselect, activeWithTick, selection, invert, multiple, LeftActionFragment, AvatarTextFragment, AvatarNameFragment, maxAvatarNameWidth, avatarSize} = props;
   let filterContacts = [...contacts];
   return (
     <List>
@@ -52,11 +52,12 @@ export function ContactList(props) {
                   onSelect={onSelect ? () => onSelect(el.id, el) : null}
                   onDeselect={onDeselect ? () => onDeselect(el.id, el) : null}
                   invert={invert}
-                  ref={activeList && activeList.indexOf(el.id) > -1 ? activeRef: null}
+                  ref={activeList && activeList.indexOf(el.id) > -1 ? activeRef : null}
                   active={activeList && activeList.indexOf(el.id) > -1}>
           <Container relative>
             <Avatar>
-              <AvatarImage src={getImage(el)} text={avatarNameGenerator(getName(el)).letter}
+              <AvatarImage src={avatarUrlGenerator(getImage(el), avatarSize || avatarUrlGenerator.SIZES.MEDIUM)}
+                           text={avatarNameGenerator(getName(el)).letter}
                            textBg={avatarNameGenerator(getName(el)).color}/>
               <AvatarName maxWidth={maxAvatarNameWidth || "150px"}>
                 {getName(el)}

@@ -81,9 +81,9 @@ export const chatSetInstance = config => {
           case "MESSAGE_PIN": {
             const {thread: id, pinMessage} = thread.result;
             const isUnpin = type === "MESSAGE_UNPIN";
-            if(!isUnpin) {
-              if(pinMessage.notifyAll) {
-                dispatch(messageInfo(id, pinMessage.messageId)).then(message =>{
+            if (!isUnpin) {
+              if (pinMessage.notifyAll) {
+                dispatch(messageInfo(id, pinMessage.messageId)).then(message => {
                   return dispatch({
                     type: MESSAGE_PINNED,
                     payload: message
@@ -151,6 +151,10 @@ export const chatSetInstance = config => {
               payload: {threadId, user}
             });
           }, 1500);
+          const lastThread = state().threads.threads.find(e => e.id === threadId);
+          if (lastThread.isTyping && lastThread.isTyping.isTyping) {
+            return;
+          }
           return dispatch({
             type: CHAT_IS_TYPING,
             payload: {threadId, user}

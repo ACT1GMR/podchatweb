@@ -160,7 +160,7 @@ export default class Notification extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    if (Push.Permission.request() && this.props.chatNotification) {
+    if (Push.Permission.has() && this.props.chatNotification) {
       const {messageNew, messagePinned} = this.props;
       const {messageNew: oldMessageNew, messagePinned: oldMessagePinned} = oldProps;
       let newPinMessage = true;
@@ -191,7 +191,7 @@ export default class Notification extends Component {
   }
 
   render() {
-    if (!Push.Permission.request() || !this.props.chatNotification) {
+    if (!Push.Permission.has() || !this.props.chatNotification) {
       return null;
     }
     const {count, showLastThread, thread, defaultTitle} = this.state;

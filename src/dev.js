@@ -2,7 +2,6 @@ import React from "react";
 import {BrowserRouter} from "react-router-dom";
 import {render} from "react-dom";
 import {Provider} from "react-redux";
-import {setApplicationTime} from "./utils/helpers";
 import {serverConfig} from "./constants/connection";
 import store from "./store/index";
 import "../styles/main.scss";

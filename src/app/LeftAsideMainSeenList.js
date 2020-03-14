@@ -16,6 +16,7 @@ import Scroller from "../../../uikit/src/scroller";
 import {Text} from "../../../uikit/src/typography";
 import strings from "../constants/localization";
 import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
+import {avatarUrlGenerator} from "../utils/helpers";
 
 //styling
 
@@ -90,6 +91,7 @@ export default class LeftAsideMain extends Component {
         {
           seenList && seenList.length > 1 ?
             <ContactList contacts={seenList}
+                         avatarSize={avatarUrlGenerator.SIZES.SMALL}
                          selection
                          invert/>
             :

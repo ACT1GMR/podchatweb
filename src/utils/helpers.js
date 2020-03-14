@@ -1,4 +1,6 @@
 import {ifvisible} from "ifvisible.js";
+import queryString from "query-string";
+import {serverConfig} from "../constants/connection";
 
 export function humanFileSize(bytes, si) {
   const thresh = si ? 1000 : 1024;
@@ -128,6 +130,46 @@ export function avatarNameGenerator(firstName, lastName) {
 
 }
 
+export function avatarUrlGenerator(url, size) {
+  if (!url) {
+    return url;
+  }
+  const sizes = {
+    SMALL: 48,
+    MEDIUM: 64,
+    LARGE: 128,
+    XLARGE: 256
+  };
+  if (!size in sizes) {
+    return url;
+  }
+  const splittedUrl = url.split("?");
+  const parsedUrl = queryString.parse(splittedUrl[1]);
+  const currentWidth = parsedUrl.width;
+  const currentHeight = parsedUrl.height;
+  if (!currentHeight || !currentWidth) {
+    return url;
+  }
+  let width, height;
+  const widthToHeightRatio = currentHeight / currentWidth;
+  if (currentHeight > currentWidth) {
+    height = sizes[size];
+    width = Math.floor(height / widthToHeightRatio);
+  } else {
+    width = sizes[size];
+    height = Math.floor(width * widthToHeightRatio);
+  }
+
+  return `${splittedUrl[0]}/nzh/image?imageId=${parsedUrl.imageId}&hashCode=${parsedUrl.hashCode}&width=${width}&height=${height}`;
+}
+
+avatarUrlGenerator.SIZES = {
+  SMALL: "SMALL",
+  MEDIUM: "MEDIUM",
+  LARGE: "LARGE",
+  XLARGE: "XLARGE"
+};
+
 
 export function OnWindowFocusInOut(onFocusedOut, onFocusedIn) {
   ifvisible.on("blur", onFocusedOut);
@@ -143,14 +185,4 @@ export function getNow() {
   } else {
     return Date.now();
   }
-}
-
-export function setApplicationTime() {
-  /*  const xhr = new XMLHttpRequest();
-    xhr.onload = e => {
-      window._universalTalkTimer = new Date(JSON.parse(e.target.responseText).utc_datetime).getTime();
-      window._universalLocalTalkTimer = Date.now();
-    };
-    xhr.open("GET", "http://worldtimeapi.org/api/timezone/Asia/Tehran", true);
-    xhr.send()*/
 }

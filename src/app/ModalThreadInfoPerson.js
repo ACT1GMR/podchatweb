@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 
 
 //strings
@@ -147,7 +147,7 @@ export default class ModalThreadInfo extends Component {
     const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, GapFragment, AvatarModalMediaFragment} = this.props;
     const isOnTheFly = thread.onTheFly;
     let participant = isOnTheFly ? thread.participant : getParticipant(participants, user);
-    const participantImage = isOnTheFly ? thread.image : participant.image;
+    const participantImage = avatarUrlGenerator(isOnTheFly ? thread.image : participant.image, avatarUrlGenerator.SIZES.MEDIUM);
     const isMyContact = participant.contactId;
     const contact = this.state.contact || {};
     return (
@@ -163,7 +163,7 @@ export default class ModalThreadInfo extends Component {
 
               <Container>
                 <Avatar>
-                  <AvatarImage src={participantImage} size="xlg"
+                  <AvatarImage src={avatarUrlGenerator(participantImage, avatarUrlGenerator.SIZES.LARGE)} size="xlg"
                                text={avatarNameGenerator(thread.title).letter}
                                textBg={avatarNameGenerator(thread.title).color}>
                     <AvatarModalMediaFragment participant={participant}/>

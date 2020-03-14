@@ -52,17 +52,10 @@ function getImage(metaData, isFromServer, smallVersion, fileObject) {
     return false;
   }
   const maxWidth = smallVersion || window.innerWidth <= 700 ? 190 : ratio >= 2 ? 200 : 300;
+  height = Math.ceil(maxWidth * ratio);
   if (!isFromServer) {
-    if (fileObject && fileObject.type) {
-      if (fileObject.type.startsWith("image/")) {
-        if (!imageLink) {
-          imageLink = URL.createObjectURL(fileObject);
-        }
-      }
-    }
     return {imageLink, width: maxWidth, height};
   }
-  height = Math.ceil(maxWidth * ratio);
   return {
     imageLink: `${imageLink}&width=${maxWidth}&height=${height}`,
     width: maxWidth,

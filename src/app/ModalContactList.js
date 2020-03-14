@@ -27,6 +27,7 @@ import style from "../../styles/pages/box/ModalContactList.scss";
 import styleVar from "../../styles/variables.scss";
 import {ContactList, ContactListSelective} from "./_component/contactList";
 import {ROUTE_ADD_CONTACT} from "../constants/routes";
+import {avatarUrlGenerator} from "../utils/helpers";
 
 
 export const statics = {
@@ -249,11 +250,13 @@ class ModalContactList extends Component {
             <Container relative>
               {selectiveMode ?
                 <ContactListSelective activeWithTick
+                                      avatarSize={avatarUrlGenerator.SIZES.SMALL}
                                       activeList={activeList}
                                       onDeselect={onDeselect}
                                       {...commonArgs}/>
                 :
                 <ContactList selection
+                             avatarSize={avatarUrlGenerator.SIZES.SMALL}
                              {...commonArgs}/>
               }
 

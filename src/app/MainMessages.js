@@ -3,7 +3,7 @@ import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
-import {avatarNameGenerator, OnWindowFocusInOut, mobileCheck} from "../utils/helpers";
+import {avatarNameGenerator, OnWindowFocusInOut, mobileCheck, avatarUrlGenerator} from "../utils/helpers";
 
 //strings
 import strings from "../constants/localization";
@@ -138,7 +138,7 @@ function getAvatar(message, messages, onAvatarClick, thread, user) {
     showAvatar ?
       <Avatar onClick={enableClickCondition ? onAvatarClick.bind(null, message.participant) : null}
               cursor={enableClickCondition ? "pointer" : null}>
-        <AvatarImage src={message.participant.image} text={avatarNameGenerator(message.participant.name).letter}
+        <AvatarImage src={avatarUrlGenerator(message.participant.image, avatarUrlGenerator.SIZES.SMALL)} text={avatarNameGenerator(message.participant.name).letter}
                      textBg={avatarNameGenerator(message.participant.name).color}/>
       </Avatar>
       :
