@@ -14,7 +14,7 @@ import {
   contactRemove,
   contactListShowing, contactSearch
 } from "../actions/contactActions";
-import {threadNotification} from "../actions/threadActions";
+import {threadLeave, threadModalThreadInfoShowing, threadNotification} from "../actions/threadActions";
 import {chatModalPrompt} from "../actions/chatActions";
 
 //UI components
@@ -27,10 +27,11 @@ import Container from "../../../uikit/src/container";
 import List, {ListItem} from "../../../uikit/src/list";
 import date from "../utils/date";
 import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
-import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete} from "react-icons/md";
+import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete, MdDeleteForever} from "react-icons/md";
 
 //styling
 import styleVar from "../../styles/variables.scss";
+import {isChannel, isGroup} from "./Main";
 
 
 function getParticipant(participants, user) {
@@ -57,6 +58,7 @@ export default class ModalThreadInfo extends Component {
 
   constructor(props) {
     super(props);
+    this.onRemoveThread = this.onRemoveThread.bind(this);
     this.state = {
       contact: {}
     };
@@ -141,6 +143,15 @@ export default class ModalThreadInfo extends Component {
       dispatch(contactRemove(participant.contactId, participant.threadId));
       dispatch(chatModalPrompt());
     }, () => dispatch(contactListShowing(true))));
+  }
+
+  onRemoveThread(){
+    const {thread, dispatch} = this.props;
+    dispatch(chatModalPrompt(true, `${strings.areYouSureRemovingThread}؟`, () => {
+      dispatch(threadLeave(thread.id));
+      dispatch(threadModalThreadInfoShowing());
+      dispatch(chatModalPrompt());
+    }, null, strings.remove));
   }
 
   render() {
@@ -234,6 +245,17 @@ export default class ModalThreadInfo extends Component {
                         <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                         <Gap x={20}>
                           <Text>{strings.remove}</Text>
+                        </Gap>
+                      </Container>
+                    </ListItem>
+                  }
+
+                  {
+                    <ListItem selection invert onSelect={this.onRemoveThread.bind(this, participant)}>
+                      <Container relative>
+                        <MdDeleteForever size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text>{strings.removeThread}</Text>
                         </Gap>
                       </Container>
                     </ListItem>

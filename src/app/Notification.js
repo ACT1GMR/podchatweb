@@ -1,5 +1,5 @@
 // src/list/BoxScene.js
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import "moment/locale/fa";
 import Push from "push.js";
@@ -13,6 +13,7 @@ import strings from "../constants/localization";
 import {isFile} from "./MainMessagesMessage";
 import {isOwner} from "./ModalThreadInfoGroupMain";
 import {isChannel, isGroup} from "./Main";
+import notifcationSound from "../constants/notification.mp3"
 
 //components
 
@@ -26,6 +27,7 @@ function isMessageByMe(message, user) {
     }
   }
 }
+
 @connect(store => {
   return {
     chatNotification: store.chatNotification,
@@ -60,6 +62,14 @@ export default class Notification extends Component {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }, false);
+    this.playMusic = this.playMusic.bind(this);
+
+    //create notification audio tag
+    this.notifcationTag = document.createElement("audio");
+    this.notifcationTag.id = "xyz";
+    this.notifcationTag.src = notifcationSound;
+    this.notifcationTag.muted = true;
+    document.body.append(this.notifcationTag);
   }
 
   _showNotification(foundThread, messageToNotify) {
@@ -87,7 +97,7 @@ export default class Notification extends Component {
       }, 1500);
     }
     let notificationMessage;
-    if(messageToNotify instanceof Array) {
+    if (messageToNotify instanceof Array) {
       notificationMessage = strings.batchMessageSentToThread(messageToNotify.length, isGroup(thread), isChannel(thread))
     } else {
       const isMessageFile = isFile(messageToNotify);
@@ -100,8 +110,9 @@ export default class Notification extends Component {
         notificationMessage = strings.personPinnedMessage(isChannel(thread));
       }
     }
-
+    this.playMusic();
     Push.create(thread.title, {
+      silent: true,
       body: notificationMessage,
       icon: thread.image || defaultAvatar,
       timeout: 60000,
@@ -114,6 +125,23 @@ export default class Notification extends Component {
         this.close();
       }
     });
+  }
+
+  playMusic() {
+
+    const audio = this.notifcationTag;
+    var isPlaying = audio.currentTime > 0 && !audio.paused && !audio.ended
+      && audio.readyState > 2;
+    if (!isPlaying) {
+      audio.muted = false;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(e => {
+        }).catch(error => {
+        });
+      }
+    }
+
   }
 
   _coreLogic(foundThread, messageToNotify) {
@@ -132,8 +160,12 @@ export default class Notification extends Component {
   }
 
   _storeThreadObject(thread) {
-    const oldThread =  this.threads[thread.id];
-    this.threads[thread.id] = {pendingMessages: oldThread ? oldThread.pendingMessages : [], timeoutId: oldThread ? oldThread.timeoutId : null , thread};
+    const oldThread = this.threads[thread.id];
+    this.threads[thread.id] = {
+      pendingMessages: oldThread ? oldThread.pendingMessages : [],
+      timeoutId: oldThread ? oldThread.timeoutId : null,
+      thread
+    };
   }
 
   _showNotificationLogic() {
@@ -160,7 +192,7 @@ export default class Notification extends Component {
   }
 
   componentDidUpdate(oldProps) {
-    if (Push.Permission.has() && this.props.chatNotification) {
+    if (/*Push.Permission.has() && */this.props.chatNotification) {
       const {messageNew, messagePinned} = this.props;
       const {messageNew: oldMessageNew, messagePinned: oldMessagePinned} = oldProps;
       let newPinMessage = true;
@@ -191,9 +223,9 @@ export default class Notification extends Component {
   }
 
   render() {
-    if (!Push.Permission.has() || !this.props.chatNotification) {
-      return null;
-    }
+    /*    if (!Push.Permission.has() || !this.props.chatNotification) {
+          return null;
+        }*/
     const {count, showLastThread, thread, defaultTitle} = this.state;
     let newTitle = defaultTitle;
     if (count > 0) {

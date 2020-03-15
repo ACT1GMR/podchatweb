@@ -180,7 +180,6 @@ let strings = new LocalizedStrings({
     reportSpam: "اعلام گفتگو هجو",
     areYouSureToDoIt: "از انجام این کار مطمئنید",
     leaveGroup: isChannel => `ترک ${isChannel ? "کانال" : "گروه"}`,
-    removeThread: isChannel => ``,
     chatState: {
       networkDisconnected: "عدم برقراری ارتباط",
       reconnecting: "اتصال به شبکه",
@@ -222,7 +221,8 @@ let strings = new LocalizedStrings({
     } ,
     iCanceled: "منصرف شدم",
     unreadMessages: "پیامهای خوانده نشده",
-    seenLastMessage: "پیام ها را خواندم"
+    seenLastMessage: "پیام ها را خواندم",
+    removeThread: "حذف گفتگو"
   },
   it: {}
 });

@@ -418,7 +418,11 @@ class AsideThreads extends Component {
         </Fragment>
       };
       return (
-        <Scroller className={classNames} onScroll={this.onScroll}>
+        <Scroller className={classNames}
+                  threshold={5}
+                  onScroll={this.onScroll}
+                  onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching && !isSearchResult}
+                  onScrollBottomThreshold={this.onScrollBottomThreshold}>
           {isMenuShow && <Container className={style.AsideThreads__Overlay} onContextMenu={e => {
             e.stopPropagation();
             e.preventDefault();
@@ -430,11 +434,7 @@ class AsideThreads extends Component {
                 <Text bold color="accent">{strings.conversations}</Text>
               </Gap>
               }
-              <Scroller className={threadsContainerClassNames}
-                        threshold={5}
-                        onScroll={this.onScroll}
-                        onScrollBottomThresholdCondition={threadsHasNext && !threadsPartialFetching}
-                        onScrollBottomThreshold={this.onScrollBottomThreshold}>
+              <Scroller className={threadsContainerClassNames}>
                 <List>
                   {filteredThreads && filteredThreads.length ?
                     filteredThreads.map(el => (

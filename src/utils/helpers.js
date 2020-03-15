@@ -160,7 +160,7 @@ export function avatarUrlGenerator(url, size) {
     height = Math.floor(width * widthToHeightRatio);
   }
 
-  return `${splittedUrl[0]}/nzh/image?imageId=${parsedUrl.imageId}&hashCode=${parsedUrl.hashCode}&width=${width}&height=${height}`;
+  return `${splittedUrl[0]}?imageId=${parsedUrl.imageId}&hashCode=${parsedUrl.hashCode}&width=${width}&height=${height}`;
 }
 
 avatarUrlGenerator.SIZES = {
