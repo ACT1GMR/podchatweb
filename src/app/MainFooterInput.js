@@ -38,7 +38,6 @@ export const constants = {
 function sanitizeRule(isSendingMessage) {
   return {
     allowedTags: isSendingMessage ? ["img"] : ["img", "br", "div"],
-
     allowedAttributes: {
       img: ["src", "style", "class", "alt"]
     },
@@ -56,7 +55,7 @@ function sanitizeRule(isSendingMessage) {
   }
 }
 
-export function clearHtml(html) {
+export function clearHtml(html, clearTags) {
   if (!html) {
     return html;
   }
@@ -64,16 +63,6 @@ export function clearHtml(html) {
   document.innerHTML = html;
   const children = Array.from(document.childNodes);
   const removingIndexes = [];
-  for (let child of children) {
-    if (child.data) {
-      break
-    }
-    if (child.innerText === "\n") {
-      removingIndexes.push(children.indexOf(child));
-      continue;
-    }
-    break;
-  }
   const clonedChildren = [...children].reverse();
   for (let child of clonedChildren) {
     if (child.data) {
@@ -98,8 +87,16 @@ export function clearHtml(html) {
     filterChildren = children;
   }
   const newText = window.document.createElement("div");
-  filterChildren.map(e => newText.appendChild(e));
-  return sanitizeHTML(newText.innerHTML.trim(), sanitizeRule(true)).trim();
+  filterChildren.map(e =>{
+    let node = e;
+    if(clearTags) {
+      if(e.tagName === "BR") {
+        node = window.document.createTextNode("\n");
+      }
+    }
+    newText.appendChild(node)
+  });
+  return sanitizeHTML(newText.innerHTML.trim(), sanitizeRule(clearTags)).trim();
 }
 
 
@@ -282,7 +279,7 @@ export default class MainFooterInput extends Component {
     const {thread, dispatch, messageEditing: msgEditing} = this.props;
     const {messageText} = this.state;
     const {id: threadId} = thread;
-    const clearMessageText = codeEmoji(clearHtml(messageText));
+    const clearMessageText = codeEmoji(clearHtml(messageText, true));
     let isEmptyMessage = false;
     if (!clearMessageText) {
       isEmptyMessage = true;

@@ -92,7 +92,7 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
   const draftFragment = <Fragment><Text size="sm" inline color="red" light>{strings.draft}:</Text><Text size="sm" inline
                                                                                                         color="gray"
                                                                                                         dark
-                                                                                                        isHTML>{clearHtml(draftMessage)}</Text></Fragment>;
+                                                                                                        isHTML>{clearHtml(draftMessage, true)}</Text></Fragment>;
   const sentAFileFragment = <Text size="sm" inline color="gray" dark>{strings.sentAFile}</Text>;
   const lastMessageFragment = <Text isHTML size="sm" inline color="gray"
                                     sanitizeRule={sanitizeRule}
