@@ -3,7 +3,6 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {Route, withRouter} from "react-router-dom";
 import {mobileCheck} from "../utils/helpers";
-import FastClick from "fastclick";
 
 //strings
 import {
@@ -75,7 +74,6 @@ class Main extends Component {
     this.onContactListShow = this.onContactListShow.bind(this);
     this.onAddMember = this.onAddMember.bind(this);
     this.mainMessagesRef = React.createRef();
-    FastClick.attach(document.body);
   }
 
   componentDidUpdate({location: oldLocation}) {

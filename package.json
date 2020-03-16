@@ -1,6 +1,6 @@
 {
   "name": "podchatweb",
-  "version": "1.4.9",
+  "version": "1.4.10",
   "description": "Podchatweb is a web app built by react for handling POD chating use cases",
   "main": "dist/index.js",
   "scripts": {
@@ -56,8 +56,6 @@
     "@babel/polyfill": "^7.2.5",
     "classnames": "^2.2.6",
     "copy-to-clipboard": "^3.2.1",
-    "emoji-regex": "^8.0.0",
-    "fastclick": "^1.0.6",
     "ifvisible.js": "^2.0.10",
     "js-cookie": "latest",
     "moment": "^2.22.2",

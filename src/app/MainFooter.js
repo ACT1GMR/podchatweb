@@ -60,7 +60,7 @@ export default class MainFooter extends Component {
             <MainFooterAttachment sendMessage={this.sendMessage.bind(this)}/>
           </Container>
           <Container className={style.MainFooter__Input}>
-            <MainFooterInput ref={this.mainFooterInputRef}/>
+            <MainFooterInput ref={this.mainFooterInputRef} emojiShowing={emojiShowing}/>
           </Container>
         </Container>
 

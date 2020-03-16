@@ -87,10 +87,10 @@ export function clearHtml(html, clearTags) {
     filterChildren = children;
   }
   const newText = window.document.createElement("div");
-  filterChildren.map(e =>{
+  filterChildren.map(e => {
     let node = e;
-    if(clearTags) {
-      if(e.tagName === "BR") {
+    if (clearTags) {
+      if (e.tagName === "BR") {
         node = window.document.createTextNode("\n");
       }
     }
@@ -144,8 +144,8 @@ function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
 }, null, null, {withRef: true})
 export default class MainFooterInput extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onTextChange = this.onTextChange.bind(this);
     this.setInputText = this.setInputText.bind(this);
     this.onInputFocus = this.onInputFocus.bind(this);
@@ -184,7 +184,7 @@ export default class MainFooterInput extends Component {
     });
     if (newText) {
       if (newText.trim()) {
-        if(clearHtml(newText)) {
+        if (clearHtml(newText)) {
           this._setDraft(thread.id, newText);
           return dispatch(threadIsSendingMessage(true));
         }
@@ -276,7 +276,7 @@ export default class MainFooterInput extends Component {
   }
 
   sendMessage() {
-    const {thread, dispatch, messageEditing: msgEditing} = this.props;
+    const {thread, dispatch, messageEditing: msgEditing, emojiShowing} = this.props;
     const {messageText} = this.state;
     const {id: threadId} = thread;
     const clearMessageText = codeEmoji(clearHtml(messageText, true));
@@ -326,7 +326,13 @@ export default class MainFooterInput extends Component {
     }
     dispatch(threadDraft(threadId));
     dispatch(messageEditing());
-    dispatch(threadEmojiShowing(false));
+    if (mobileCheck()) {
+      if (!emojiShowing) {
+        this.focus();
+      }
+    } else {
+      this.focus();
+    }
     this.resetParticipantSuggestion();
     this.setInputText("");
   }
@@ -426,6 +432,12 @@ export default class MainFooterInput extends Component {
   }
 
   onInputFocus(e) {
+    const {emojiShowing, dispatch} = this.props;
+    if (mobileCheck()) {
+      if (emojiShowing) {
+        dispatch(threadEmojiShowing(false));
+      }
+    }
   }
 
   resetParticipantSuggestion() {
@@ -472,6 +484,7 @@ export default class MainFooterInput extends Component {
                 inputClassName={style.MainFooterInput__Input}
                 sanitizeRule={sanitizeRule()}
                 placeholder={strings.pleaseWriteHere}
+                onFocus={this.onInputFocus}
                 onChange={this.onTextChange}
                 onKeyPress={this.onInputKeyPress}
                 onKeyDown={this.onInputKeyDown}
