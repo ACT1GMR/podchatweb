@@ -87,11 +87,24 @@ export function clearHtml(html, clearTags) {
     filterChildren = children;
   }
   const newText = window.document.createElement("div");
+
   filterChildren.map(e => {
     let node = e;
     if (clearTags) {
       if (e.tagName === "BR") {
         node = window.document.createTextNode("\n");
+      } else if (e.tagName === "DIV") {
+        let countOfN = "";
+        if (e.children.length) {
+          for (const child of e.children) {
+            if (child.tagName === "BR") {
+              countOfN += "\n";
+            }
+          }
+        } else {
+          countOfN = `${e.innerText}\n`
+        }
+        node = window.document.createTextNode(countOfN);
       }
     }
     newText.appendChild(node)

@@ -482,68 +482,71 @@ class AsideThreads extends Component {
                         </Context>
                         <ContextTrigger id={el.id} holdToDisplay={-1}
                                         contextTriggerRef={e => this.contextMenuRefs[el.id] = e}>
+                          <Container relative userSelect="none">
+                            {el.pin && <Container className={style.AsideThreads__PinOverlay}/>}
+                            <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
+                                      active={activeThread === el.id}>
 
-                          <ListItem key={el.id} onSelect={this.onThreadClick.bind(this, el)} selection
-                                    active={activeThread === el.id}>
-                            <Container relative
-                                       onTouchStart={this.onThreadTouchStart.bind(this, el)}
-                                       onTouchMove={this.onThreadTouchMove.bind(this, el)}
-                                       onTouchEnd={this.onThreadTouchEnd.bind(this, el)}>
-                              <Avatar cssClassNames={style.AsideThreads__AvatarContainer}>
-                                <AvatarImage src={avatarUrlGenerator(el.image, MEDIUM)} customSize="50px"
-                                             text={avatarNameGenerator(el.title).letter}
-                                             textBg={avatarNameGenerator(el.title).color}/>
-                                <Container className={style.AsideThreads__ThreadCheck} bottomRight
-                                           style={{zIndex: 1, opacity: +isMenuShow === el.id ? 1 : 0}}>
-                                  <Shape color="accent">
-                                    <ShapeCircle>
-                                      <MdCheck size={styleVar.iconSizeSm} color={styleVar.colorWhite}
-                                               style={{marginTop: "3px"}}/>
-                                    </ShapeCircle>
-                                  </Shape>
-                                </Container>
-                                <AvatarName invert>
-                                  {el.group &&
-                                  <Container inline>
-                                    {el.type === 8 ?
-                                      <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                                      :
-                                      <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
-                                    }
-                                    <Gap x={2}/>
-                                  </Container>
-                                  }
-                                  {getTitle(el.title)}
-                                  <AvatarText>
-                                    <LastMessageFragment thread={el} user={user}/>
-                                  </AvatarText>
-                                </AvatarName>
-                              </Avatar>
-                              {el.unreadCount || el.pin || el.mute ?
-                                <Container absolute centerLeft>
-                                  <Gap y={10} block/>
-                                  {el.mentioned ?
-                                    <Fragment>
-                                      <Shape color="accent">
-                                        <ShapeCircle>@</ShapeCircle>
-                                      </Shape>
-                                      <Gap x={1}/>
-                                    </Fragment> :
-                                    el.mute ?
-                                      <MdNotificationsOff size={styleVar.iconSizeSm} color={styleVar.colorAccent}
-                                                          style={{verticalAlign: "middle"}}/> : ""
-                                  }
-                                  {el.unreadCount ?
+                              <Container relative
+                                         onTouchStart={this.onThreadTouchStart.bind(this, el)}
+                                         onTouchMove={this.onThreadTouchMove.bind(this, el)}
+                                         onTouchEnd={this.onThreadTouchEnd.bind(this, el)}>
+                                <Avatar cssClassNames={style.AsideThreads__AvatarContainer}>
+                                  <AvatarImage src={avatarUrlGenerator(el.image, MEDIUM)} customSize="50px"
+                                               text={avatarNameGenerator(el.title).letter}
+                                               textBg={avatarNameGenerator(el.title).color}/>
+                                  <Container className={style.AsideThreads__ThreadCheck} bottomRight
+                                             style={{zIndex: 1, opacity: +isMenuShow === el.id ? 1 : 0}}>
                                     <Shape color="accent">
-                                      <ShapeCircle>{el.unreadCount}</ShapeCircle>
-                                    </Shape> :
-                                    el.pin ?
-                                      <AiFillPushpin size={styleVar.iconSizeSm} color={styleVar.colorAccent}
-                                                     style={{marginRight: "3px", verticalAlign: "middle"}}/> : ""
-                                  }
-                                </Container> : ""}
-                            </Container>
-                          </ListItem>
+                                      <ShapeCircle>
+                                        <MdCheck size={styleVar.iconSizeSm} color={styleVar.colorWhite}
+                                                 style={{marginTop: "3px"}}/>
+                                      </ShapeCircle>
+                                    </Shape>
+                                  </Container>
+                                  <AvatarName invert>
+                                    {el.group &&
+                                    <Container inline>
+                                      {el.type === 8 ?
+                                        <MdRecordVoiceOver size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                                        :
+                                        <MdGroup size={styleVar.iconSizeSm} color={styleVar.colorGray}/>
+                                      }
+                                      <Gap x={2}/>
+                                    </Container>
+                                    }
+                                    {getTitle(el.title)}
+                                    <AvatarText>
+                                      <LastMessageFragment thread={el} user={user}/>
+                                    </AvatarText>
+                                  </AvatarName>
+                                </Avatar>
+                                {el.unreadCount || el.pin || el.mute ?
+                                  <Container absolute centerLeft>
+                                    <Gap y={10} block/>
+                                    {el.mentioned ?
+                                      <Fragment>
+                                        <Shape color="accent">
+                                          <ShapeCircle>@</ShapeCircle>
+                                        </Shape>
+                                        <Gap x={1}/>
+                                      </Fragment> :
+                                      el.mute ?
+                                        <MdNotificationsOff size={styleVar.iconSizeSm} color={styleVar.colorAccent}
+                                                            style={{verticalAlign: "middle"}}/> : ""
+                                    }
+                                    {el.unreadCount ?
+                                      <Shape color="accent">
+                                        <ShapeCircle>{el.unreadCount}</ShapeCircle>
+                                      </Shape> :
+                                      el.pin ?
+                                        <AiFillPushpin size={styleVar.iconSizeSm} color={styleVar.colorAccent}
+                                                       style={{marginRight: "3px", verticalAlign: "middle"}}/> : ""
+                                    }
+                                  </Container> : ""}
+                              </Container>
+                            </ListItem>
+                          </Container>
                         </ContextTrigger>
                       </Fragment>
                     )) :
