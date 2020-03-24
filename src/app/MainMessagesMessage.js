@@ -632,6 +632,7 @@ export default class MainMessagesMessage extends Component {
                    marginLeft: isGroup ? null : isMessageByMeReal ? null : "5px"
                  }}
                  ref={this.containerRef}
+                 onDoubleClick={this.onReply}
                  onClick={this.onMessageControlShow.bind(this, true)}
                  onTouchStart={this.onThreadTouchStart.bind(this, message)}
                  onTouchMove={this.onThreadTouchMove.bind(this, message)}

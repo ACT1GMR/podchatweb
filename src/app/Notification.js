@@ -13,7 +13,7 @@ import strings from "../constants/localization";
 import {isFile} from "./MainMessagesMessage";
 import {isOwner} from "./ModalThreadInfoGroupMain";
 import {isChannel, isGroup} from "./Main";
-import notifcationSound from "../constants/notification.mp3"
+import notifcationSound from "../constants/notification-sound.mp3"
 
 //components
 

@@ -102,7 +102,7 @@ export function clearHtml(html, clearTags) {
             }
           }
         } else {
-          countOfN = `${e.innerText}\n`
+          countOfN = `\n${e.innerText}`
         }
         node = window.document.createTextNode(countOfN);
       }
@@ -112,6 +112,14 @@ export function clearHtml(html, clearTags) {
   return sanitizeHTML(newText.innerHTML.trim(), sanitizeRule(clearTags)).trim();
 }
 
+function isEmptyTag(text) {
+  if (text.indexOf("img") >= 0) {
+    return true;
+  }
+  const elem = window.document.createElement("div");
+  elem.innerHTML = text;
+  return !(elem.innerText && elem.innerText.trim());
+}
 
 function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
   if (!messageText) {
@@ -208,7 +216,7 @@ export default class MainFooterInput extends Component {
     });
     if (newText) {
       if (newText.trim()) {
-        if (clearHtml(newText)) {
+        if (clearHtml(newText) && !isEmptyTag(newText)) {
           this._setDraft(thread.id, newText);
           return dispatch(threadIsSendingMessage(true));
         }

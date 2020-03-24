@@ -118,7 +118,7 @@ export default class MainMessagesMessageText extends Component {
             }
 
           </ControlFragment>
-          <Container userSelect={mobileCheck() ? "none" : "text"}>
+          <Container userSelect={mobileCheck() ? "none" : "text"} onDoubleClick={e=>e.stopPropagation()}>
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
               {mentionify(emailify(urlify(decodeEmoji(message.message)), this.onUserNameClick))}
             </Text>
