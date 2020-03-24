@@ -338,9 +338,11 @@ export default class MainMessages extends Component {
     }
 
     if (this.lastSeenMessage) {
-      if (this.windowFocused) {
-        dispatch(messageSeen(this.lastSeenMessage));
-        this.lastSeenMessage = null;
+      if (this.lastSeenMessage.threadId === threadId) {
+        if (this.windowFocused) {
+          dispatch(messageSeen(this.lastSeenMessage));
+          this.lastSeenMessage = null;
+        }
       }
     }
 
