@@ -3,7 +3,13 @@ import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
-import {avatarNameGenerator, OnWindowFocusInOut, mobileCheck, avatarUrlGenerator} from "../utils/helpers";
+import {
+  avatarNameGenerator,
+  OnWindowFocusInOut,
+  mobileCheck,
+  avatarUrlGenerator,
+  isIosAndSafari
+} from "../utils/helpers";
 
 //strings
 import strings from "../constants/localization";
@@ -42,6 +48,7 @@ import MainPinMessage from "./MainPinMessage";
 import Shape, {ShapeCircle} from "../../../uikit/src/shape";
 import {ContextTrigger} from "../../../uikit/src/menu/Context";
 import MainMessagesUnreadBar from "./MainMessagesUnreadBar";
+import isElementVisible from "../utils/dom";
 
 const statics = {
   historyFetchCount: 20,
@@ -138,7 +145,8 @@ function getAvatar(message, messages, onAvatarClick, thread, user) {
     showAvatar ?
       <Avatar onClick={enableClickCondition ? onAvatarClick.bind(null, message.participant) : null}
               cursor={enableClickCondition ? "pointer" : null}>
-        <AvatarImage src={avatarUrlGenerator(message.participant.image, avatarUrlGenerator.SIZES.SMALL)} text={avatarNameGenerator(message.participant.name).letter}
+        <AvatarImage src={avatarUrlGenerator(message.participant.image, avatarUrlGenerator.SIZES.SMALL)}
+                     text={avatarNameGenerator(message.participant.name).letter}
                      textBg={avatarNameGenerator(message.participant.name).color}/>
       </Avatar>
       :
@@ -175,6 +183,7 @@ export default class MainMessages extends Component {
     };
     this.scroller = React.createRef();
     this.onScrollBottomEnd = this.onScrollBottomEnd.bind(this);
+    this.onScroll = this.onScroll.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.onRepliedMessageClicked = this.onRepliedMessageClicked.bind(this);
     this.onScrollTopThreshold = this.onScrollTopThreshold.bind(this);
@@ -194,6 +203,7 @@ export default class MainMessages extends Component {
     this.hasPendingMessageToGo = null;
     this.lastSeenMessage = null;
     this.windowFocused = true;
+    this.highLightMentionStack = [];
 
     if (!mobileCheck()) {
       OnWindowFocusInOut(() => this.windowFocused = false, () => {
@@ -408,10 +418,9 @@ export default class MainMessages extends Component {
   }
 
   onMentionedClicked() {
-    const {threadUnreadMentionedMessages, dispatch} = this.props;
+    const {threadUnreadMentionedMessages} = this.props;
     const firstUnreadMessage = threadUnreadMentionedMessages[0];
-    this.goToSpecificMessage(firstUnreadMessage.time, true);
-    dispatch(threadUnreadMentionedMessageRemove(firstUnreadMessage.id));
+    this.goToSpecificMessage(firstUnreadMessage.time);
   }
 
   onScrollTopThreshold() {
@@ -424,6 +433,33 @@ export default class MainMessages extends Component {
     const {thread, threadMessages, dispatch} = this.props;
     const {messages} = threadMessages;
     dispatch(threadMessageGetListPartial(thread.id, messages[messages.length - 1].time + 200, true, statics.historyFetchCount));
+  }
+
+  onScroll() {
+    const {threadUnreadMentionedMessages, dispatch} = this.props;
+    if (threadUnreadMentionedMessages.length) {
+      for (const msg of threadUnreadMentionedMessages) {
+        const id = `message-${msg.time}`;
+        const elem = document.getElementById(id);
+        if (elem && isElementVisible(elem)) {
+          dispatch(threadUnreadMentionedMessageRemove(msg.id));
+          if (this.highLightMentionStack.indexOf(msg.time) < 0) {
+            this.highLightMentionStack.push(msg.time);
+          }
+        }
+      }
+    }
+
+    if (this.highLightMentionStack.length) {
+      clearInterval(this.highLightInterval);
+      this.highlightMessage(this.highLightMentionStack.shift());
+      if(!this.highLightMentionStack.length) {
+        return;
+      }
+      this.highLightInterval = setInterval(() => {
+        this.highlightMessage(this.highLightMentionStack.shift());
+      }, 2000)
+    }
   }
 
   onScrollBottomEnd() {
@@ -452,6 +488,18 @@ export default class MainMessages extends Component {
     }
   }
 
+  highlightMessage(messageTime) {
+    clearTimeout(this.highLighterTimeOut);
+    this.setState({
+      highLightMessage: messageTime
+    });
+    this.highLighterTimeOut = setTimeout(() => {
+      this.setState({
+        highLightMessage: false
+      });
+    }, 2500);
+  }
+
   goToSpecificMessage(messageTime, force) {
     const {thread, threadMessages} = this.props;
     const {bottomButtonShowing, unreadBar} = this.state;
@@ -462,20 +510,8 @@ export default class MainMessages extends Component {
       return;
     }
     const result = this.scroller.current.gotoElement(`message-${messageTime}`);
-    clearTimeout(this.highLighterTimeOut);
-    const setHighlighter = () => {
-      this.setState({
-        highLightMessage: messageTime
-      });
-      this.highLighterTimeOut = setTimeout(() => {
-        this.setState({
-          highLightMessage: false
-        });
-      }, 2500);
-    };
 
     if (!result) {
-
       //If last request was the same message and if this message is not exists in history fetch from init
       if (messageTime === this.hasPendingMessageToGo) {
         return this._fetchInitHistory();
@@ -487,7 +523,7 @@ export default class MainMessages extends Component {
     }
 
     if (unreadBar !== messageTime || force) {
-      setHighlighter();
+      this.highlightMessage(messageTime)
     }
 
     if (threadMessages.hasNext) {
@@ -588,6 +624,7 @@ export default class MainMessages extends Component {
 
     return (
       <Container className={style.MainMessages}
+                 style={isIosAndSafari() ? {zIndex: "auto"} : null}
                  onDragEnter={this.onDragEnter}
                  onDragOver={this.onDragOver}
                  onDrop={this.onFileDrop}>
@@ -599,6 +636,7 @@ export default class MainMessages extends Component {
                   onScrollBottomEnd={this.onScrollBottomEnd}
                   onScrollBottomThreshold={this.onScrollBottomThreshold}
                   onScrollBottomThresholdCondition={hasNext && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}
+                  onScroll={this.onScroll}
                   onScrollTop={this.onScrollTop}
                   onScrollTopThreshold={this.onScrollTopThreshold}
                   onScrollTopThresholdCondition={hasPrevious && !threadMessagesPartialFetching && !threadGetMessageListByMessageIdFetching}>

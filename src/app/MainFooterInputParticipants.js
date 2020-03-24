@@ -27,7 +27,7 @@ import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
 import Gap from "../../../uikit/src/gap";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 
-function isElementVisible(el) {
+export function isElementVisible(el) {
   var rect = el.getBoundingClientRect(),
     vWidth = window.innerWidth || doc.documentElement.clientWidth,
     vHeight = window.innerHeight || doc.documentElement.clientHeight,
@@ -101,9 +101,9 @@ export default class extends Component {
     return true;
   }
 
-  componentDidUpdate(prevProps,{ participantsActiveIndex:oldParticipantsActiveIndex}) {
+  componentDidUpdate(prevProps, {participantsActiveIndex: oldParticipantsActiveIndex}) {
     const {participantsActiveIndex} = this.state;
-    if(oldParticipantsActiveIndex !== participantsActiveIndex){
+    if (oldParticipantsActiveIndex !== participantsActiveIndex) {
       if (this.activeRef.current) {
         const node = ReactDOM.findDOMNode(this.activeRef.current);
         if (!isElementVisible(node)) {
@@ -138,7 +138,8 @@ export default class extends Component {
       this.nextParticipantOffset = nextOffset;
       this.hasNextParticipants = hasNext;
       this.setState({
-        participants: participants.concat(nextParticipants).filter(e=>e.id !== user.id)
+        participantsActiveIndex: nextParticipants.length ? 0 : null,
+        participants: participants.concat(nextParticipants).filter(e => e.id !== user.id)
       });
     });
     this.requesting = true;
@@ -178,9 +179,7 @@ export default class extends Component {
         },
         40: () => setActiveList(true),
         13: () => {
-          if (participantsActiveIndex !== null) {
-            this.onContactSelect(null, participants[participantsActiveIndex]);
-          }
+          this.onContactSelect(null, participants[participantsActiveIndex]);
         },
         9: () => {
           if (participantsActiveIndex !== null) {
@@ -211,8 +210,8 @@ export default class extends Component {
                 onScrollBottomThresholdCondition={this.hasNextParticipants}
                 onScrollBottomThreshold={this.onScrollBottomThreshold}>
         {this.requesting && <Container>
-            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
-          </Container>
+          <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+        </Container>
         }
         <ContactList contacts={participants} onSelect={this.onContactSelect} AvatarNameFragment={leftActionFragment}
                      maxAvatarNameWidth={"auto"}

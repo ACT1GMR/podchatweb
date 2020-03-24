@@ -1,6 +1,5 @@
 // src/list/BoxSceneMessages
 import React, {Component, Fragment} from "react";
-import OutsideClickHandler from 'react-outside-click-handler';
 import {connect} from "react-redux";
 import classnames from "classnames";
 import "moment/locale/fa";
@@ -56,6 +55,7 @@ import {avatarNameGenerator, mobileCheck} from "../utils/helpers";
 import {messageEditing} from "../actions/messageActions";
 import {chatModalPrompt} from "../actions/chatActions";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
+import ReactDOMServer from "react-dom/server";
 
 function datePetrification(time) {
   const correctTime = time / Math.pow(10, 6);
@@ -72,6 +72,48 @@ export function isFile(message) {
     }
   }
 }
+
+
+
+export function urlify(text) {
+  if (!text) {
+    return "";
+  }
+  text = text.replace(/<br\s*[\/]?>/gi, "\n");
+  var urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, function (url) {
+    const urlReal = url.replace(/&amp;/g, "&");
+    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord"
+                                                     title={urlReal}>{urlReal}</Text>)
+  })
+}
+
+export function mentionify(text, onClick) {
+  if (!text) {
+    return "";
+  }
+  text = text.replace(/<br\s*[\/]?>/gi, "\n");
+  var mentionRegex = /(?:^|[^a-zA-Z0-9_＠!@#$%&*])(?:(?:@|＠)(?!\/))([a-zA-Z0-9/._-]{1,15})(?:\b(?!@|＠)|$)/g;
+  return text.replace(mentionRegex, function (username) {
+    const realUserName = username.replace(/&amp;/g, "&");
+    return `<span onClick='window.onUserNameClick(this)'>${ReactDOMServer.renderToStaticMarkup(
+      <Text color="accent" dark bold wordWrap="breakWord" inline title={realUserName}>{realUserName}</Text>)}</span>`;
+  })
+}
+
+export function emailify(text) {
+  if (!text) {
+    return "";
+  }
+  text = text.replace(/<br\s*[\/]?>/gi, "\n");
+  var mailRegex = /(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/g;
+  return text.replace(mailRegex, function (mail) {
+    const urlReal = mail.replace(/&amp;/g, "&");
+    return ReactDOMServer.renderToStaticMarkup(<Text link={`mailto:${urlReal}`} target="_blank" wordWrap="breakWord"
+                                                     title={urlReal}>{urlReal}</Text>)
+  });
+}
+
 
 export function ForwardFragment(message, isMessageByMe) {
   const forwardInfo = message.forwardInfo;

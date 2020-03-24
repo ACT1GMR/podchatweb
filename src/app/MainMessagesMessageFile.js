@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
 import {humanFileSize, mobileCheck} from "../utils/helpers";
+import {urlify, mentionify, emailify} from "./MainMessagesMessage";
 import classnames from "classnames";
 
 //strings
@@ -40,6 +41,7 @@ import style from "../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "../../styles/variables.scss";
 import {ContextItem} from "../../../uikit/src/menu/Context";
 import strings from "../constants/localization";
+import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 
 function getImage(metaData, isFromServer, smallVersion, fileObject) {
@@ -215,8 +217,8 @@ class MainMessagesMessageFile extends Component {
                          style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
                 </BoxModalMediaFragment>
                 <Container>
-                  <Text wordWrap="breakWord" bold>
-                    {message.message}
+                  <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
+                    {mentionify(emailify(urlify(decodeEmoji(message.message))))}
                   </Text>
                 </Container>
 

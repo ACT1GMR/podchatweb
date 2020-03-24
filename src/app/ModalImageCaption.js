@@ -19,6 +19,9 @@ import Image from "../../../uikit/src/image";
 
 //styling
 import style from "../../styles/pages/box/ModalImageCaption.scss";
+import InputTextArea from "../../../uikit/src/input/InputTextArea";
+import {codeEmoji} from "./MainFooterEmojiIcons";
+import {clearHtml} from "./MainFooterInput";
 
 @connect(store => {
   return {
@@ -43,14 +46,22 @@ export default class ModalImageCaption extends Component {
     const {threadId, dispatch, inputNode} = this.props;
     const {comment} = this.state;
     const isBiggerThanOne = imagesArray.length > 1;
-    if (isBiggerThanOne) {
-      if (comment) {
-        if (comment.trim()) {
-          dispatch(messageSend(comment, threadId));
-        }
+    const clearMessageText = codeEmoji(clearHtml(comment, true));
+    let isEmptyMessage = false;
+    if (!clearMessageText) {
+      isEmptyMessage = true;
+    }
+    if (!isEmptyMessage) {
+      if (!clearMessageText.trim()) {
+        isEmptyMessage = true;
       }
     }
-    dispatch(threadFilesToUpload(imagesArray, true, inputNode, !isBiggerThanOne && comment ? comment : null));
+    if (isBiggerThanOne) {
+      if (!isEmptyMessage) {
+        dispatch(messageSend(comment, threadId));
+      }
+    }
+    dispatch(threadFilesToUpload(imagesArray, true, inputNode, !isBiggerThanOne && !isEmptyMessage ? clearMessageText : null));
     this.onClose();
   }
 
@@ -63,7 +74,7 @@ export default class ModalImageCaption extends Component {
 
   captionChange(event) {
     this.setState({
-      comment: event.target.value
+      comment: event
     });
   }
 
@@ -74,7 +85,8 @@ export default class ModalImageCaption extends Component {
 
     return (
 
-      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}  userSelect="none">
+      <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
+             userSelect="none">
 
         <ModalHeader>
           <Heading h3>{strings.sendingImages}</Heading>
@@ -100,9 +112,9 @@ export default class ModalImageCaption extends Component {
 
         <ModalFooter>
 
-          <InputText onChange={this.captionChange.bind(this)}
-                     value={comment}
-                     placeholder={strings.imageText}/>
+          <InputTextArea onChange={this.captionChange.bind(this)}
+                         value={comment}
+                         placeholder={strings.pleaseWriteHere}/>
           <Button text onClick={this.onSend.bind(this, imagesArray)}>{strings.send}</Button>
           <Button text onClick={this.onClose}>{strings.cancel}</Button>
 

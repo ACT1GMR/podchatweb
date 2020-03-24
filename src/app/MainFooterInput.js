@@ -35,7 +35,7 @@ export const constants = {
   forwarding: "FORWARDING"
 };
 
-function sanitizeRule(isSendingMessage) {
+export function sanitizeRule(isSendingMessage) {
   return {
     allowedTags: isSendingMessage ? ["img"] : ["img", "br", "div"],
     allowedAttributes: {
@@ -119,8 +119,16 @@ function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
   }
   const cursorPosition = inputNode.getCaretPosition();
   const sliceMessage = messageText.slice(0, cursorPosition);
+
+  function isBeforeAtSignValid(currentPosition) {
+    let beforeAtSignChar = sliceMessage[currentPosition - 1];
+    if (!beforeAtSignChar || beforeAtSignChar === " " || beforeAtSignChar === "\n") {
+      return true;
+    }
+  }
+
   if (!isSetMode) {
-    if (sliceMessage[sliceMessage.length - 1] === "@") {
+    if (isBeforeAtSignValid(sliceMessage.length - 1) && sliceMessage[sliceMessage.length - 1] === "@") {
       return true;
     }
   }
@@ -141,6 +149,9 @@ function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
   const lastMentionedSliceMessage = sliceMessage.slice(lastMentionIndex, sliceMessage.length);
   const matches = lastMentionedSliceMessage.match(/\s+/g);
   if (matches) {
+    return false;
+  }
+  if (!isBeforeAtSignValid(lastMentionIndex)) {
     return false;
   }
   return mentionMatches[mentionMatches.length - 1].replace("@", "");
@@ -401,6 +412,9 @@ export default class MainFooterInput extends Component {
 
   onParticipantSelect(contact) {
     const {messageText} = this.state;
+    if (!contact) {
+      return this.sendMessage();
+    }
     const newMessageText = getCursorMentionMatch(messageText, this.inputNode.current, true, contact.username);
     this.setInputText(newMessageText);
     setTimeout(() => this.focus(), 100);

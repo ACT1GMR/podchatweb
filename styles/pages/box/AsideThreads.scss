@@ -8,6 +8,10 @@
   z-index: $z-index-1;
 }
 
+.AsideThreads--autoZIndex {
+  z-index: auto;
+}
+
 .AsideThreads--hiddenOverflow {
   overflow: hidden;
 }
@@ -56,7 +60,7 @@
 }
 
 .AsideThreads__PinOverlay {
-  background-color: rgba($color-primary-light, 0.27);
+  background-color: rgba($color-accent, 0.1);
   border-bottom: 1px solid rgba($color-primary-light, 0.18);
   top: 0;
   left: 0;

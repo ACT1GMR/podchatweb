@@ -26,6 +26,13 @@ export function mobileCheck() {
   return check;
 }
 
+export function isIosAndSafari(){
+  var ua = window.navigator.userAgent;
+  var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+  var webkit = !!ua.match(/WebKit/i);
+  return iOS && webkit && !ua.match(/CriOS/i);
+}
+
 export function isNodeDescendant(parent, child) {
   var node = child.parentNode;
   while (node != null) {

@@ -1,7 +1,7 @@
 // src/list/Avatar.scss.js
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
-import {avatarNameGenerator, avatarUrlGenerator, getNow, mobileCheck} from "../utils/helpers";
+import {avatarNameGenerator, avatarUrlGenerator, getNow, isIosAndSafari, mobileCheck} from "../utils/helpers";
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
@@ -346,6 +346,7 @@ class AsideThreads extends Component {
     const {MEDIUM} = avatarUrlGenerator.SIZES;
     const classNames = classnames({
       [style.AsideThreads]: true,
+      [style["AsideThreads--autoZIndex"]]: isIosAndSafari(),
       [style["AsideThreads--hiddenOverflow"]]: !isMobile ? isMenuShow && true : false,
       [style["AsideThreads--isThreadShow"]]: threadShowing
     });

@@ -1,11 +1,10 @@
 // src/list/BoxSceneMessagesText
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
-import ReactDOMServer from "react-dom/server";
 import "moment/locale/fa";
 import {connect} from "react-redux";
 import {mobileCheck} from "../utils/helpers";
 import copyToClipBoard from "copy-to-clipboard";
+import {urlify, mentionify, emailify} from "./MainMessagesMessage";
 
 //strings
 
@@ -31,33 +30,6 @@ import style from "../../styles/pages/box/MainMessagesText.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import strings from "../constants/localization";
 import styleVar from "../../styles/variables.scss";
-
-
-function urlify(text) {
-  if (!text) {
-    return "";
-  }
-  text = text.replace(/<br\s*[\/]?>/gi, "\n");
-  var urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex, function (url) {
-    const urlReal = url.replace(/&amp;/g, "&");
-    return ReactDOMServer.renderToStaticMarkup(<Text link={urlReal} target="_blank" wordWrap="breakWord"
-                                                     title={urlReal}>{urlReal}</Text>)
-  })
-}
-
-function mentionify(text, onClick) {
-  if (!text) {
-    return "";
-  }
-  text = text.replace(/<br\s*[\/]?>/gi, "\n");
-  var mentionRegex = /@[0-9a-z\u0600-\u06FF](\.?[0-9a-z\u0600-\u06FF])*/gm;
-  return text.replace(mentionRegex, function (username) {
-    const realUserName = username.replace(/&amp;/g, "&");
-    return `<span onClick='window.onUserNameClick(this)'>${ReactDOMServer.renderToStaticMarkup(
-      <Text color="accent" dark bold wordWrap="breakWord" inline title={realUserName}>{realUserName}</Text>)}</span>`;
-  })
-}
 
 @connect()
 export default class MainMessagesMessageText extends Component {
@@ -140,14 +112,15 @@ export default class MainMessagesMessageText extends Component {
             }
             {
               <ContextItem onClick={this.onCopy.bind(this, message)}>
-                {mobileCheck() ? <MdContentCopy size={styleVar.iconSizeMd} color={styleVar.colorAccent}/> : strings.copyText}
+                {mobileCheck() ?
+                  <MdContentCopy size={styleVar.iconSizeMd} color={styleVar.colorAccent}/> : strings.copyText}
               </ContextItem>
             }
 
           </ControlFragment>
           <Container userSelect={mobileCheck() ? "none" : "text"}>
             <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
-              {mentionify(urlify(decodeEmoji(message.message)), this.onUserNameClick)}
+              {mentionify(emailify(urlify(decodeEmoji(message.message)), this.onUserNameClick))}
             </Text>
           </Container>
           <PaperFooterFragment message={message}
