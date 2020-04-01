@@ -14,20 +14,28 @@ import {Button} from "../../../uikit/src/button";
 import {Heading} from "../../../uikit/src/typography";
 import List, {ListItem} from "../../../uikit/src/list";
 import {InputText} from "../../../uikit/src/input";
+import {Text} from "../../../uikit/src/typography";
 import Container from "../../../uikit/src/container";
 import Image from "../../../uikit/src/image";
+import Paper from "../../../uikit/src/paper";
+import {
+  MdInsertDriveFile
+} from "react-icons/md";
 
 //styling
 import style from "../../styles/pages/box/ModalImageCaption.scss";
 import InputTextArea from "../../../uikit/src/input/InputTextArea";
 import {codeEmoji} from "./MainFooterEmojiIcons";
 import {clearHtml} from "./MainFooterInput";
+import {humanFileSize} from "../utils/helpers";
+import Shape, {ShapeCircle} from "../../../uikit/src/shape";
+import styleVar from "../../styles/variables.scss";
 
 @connect(store => {
   return {
     isShow: store.threadModalImageCaptionShowing.isShowing,
     inputNode: store.threadModalImageCaptionShowing.inputNode,
-    images: store.threadImagesToCaption,
+    files: store.threadImagesToCaption || [],
     threadId: store.thread.thread.id
   };
 }, null, null, {withRef: true})
@@ -79,23 +87,37 @@ export default class ModalImageCaption extends Component {
   }
 
   render() {
-    const {images, isShow, smallVersion} = this.props;
+    const {files, isShow, smallVersion} = this.props;
     const {comment} = this.state;
-    const imagesArray = images && Array.from(images);
+    let isAllImage = true;
+    let isMultiple = false;
 
+    if (files) {
+      isMultiple = files.length > 1;
+      for (let file of files) {
+        if (!~file.type.indexOf("image")) {
+          isAllImage = false;
+          break;
+        }
+      }
+    } else {
+      isAllImage = false;
+    }
+    const fileArray = files && Array.from(files);
+    const checkForModalBody = !isMultiple || (isMultiple && isAllImage);
     return (
 
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{strings.sendingImages}</Heading>
+          <Heading h3>{strings.sendFiles(fileArray.length, isAllImage)}</Heading>
         </ModalHeader>
-
+        {checkForModalBody &&
         <ModalBody>
-          {images ?
+          {isAllImage ?
             <List>
-              {imagesArray.map(el => (
+              {fileArray.map(el => (
                 <ListItem key={el.id} invert multiple>
                   <Container centerTextAlign>
 
@@ -105,17 +127,47 @@ export default class ModalImageCaption extends Component {
                 </ListItem>
               ))}
             </List>
-            : ""}
+            : !isMultiple ?
+              <Container>
+                <Paper hasShadow style={{borderRadius: "5px", backgroundColor: "#effdde"}}>
+                  <Container display="flex" alignItems="center">
+                    <Container flex="1 1 0">
+                      <Text wordWrap="breakWord" bold>
+                        {fileArray[0].name}
+                      </Text>
+                      <Text size="xs" color="gray" dark>
+                        {humanFileSize(fileArray[0].size, true)}
+                      </Text>
+                    </Container>
+                    <Container flex="none">
+                      <Shape color="accent" size="lg">
+                        <ShapeCircle>
+                          <MdInsertDriveFile size={styleVar.iconSizeSm}/>
+                        </ShapeCircle>
+                      </Shape>
+                    </Container>
+                  </Container>
+                </Paper>
 
-
+              </Container> : ""
+          }
         </ModalBody>
-
+        }
         <ModalFooter>
+          {
+            isMultiple && !isAllImage &&
+            <Container>
 
+              <Text bold>
+                {strings.fileSelected(files.length)}
+              </Text>
+
+            </Container>
+          }
           <InputTextArea onChange={this.captionChange.bind(this)}
                          value={comment}
-                         placeholder={strings.pleaseWriteHere}/>
-          <Button text onClick={this.onSend.bind(this, imagesArray)}>{strings.send}</Button>
+                         placeholder={`${strings.comment}...`}/>
+          <Button text onClick={this.onSend.bind(this, fileArray)}>{strings.send}</Button>
           <Button text onClick={this.onClose}>{strings.cancel}</Button>
 
         </ModalFooter>

@@ -99,6 +99,15 @@ function showNameOrAvatar(message, messages) {
   }
 }
 
+function findLastSeenMessage(messages) {
+  const newMessages = [...messages].reverse();
+  for (const message of newMessages) {
+    if (message.seen) {
+      return message.time;
+    }
+  }
+}
+
 function NoMessageFragment() {
   return (
     <Container className={style.MainMessages}>
@@ -202,6 +211,7 @@ export default class MainMessages extends Component {
     this.gotoBottom = false;
     this.hasPendingMessageToGo = null;
     this.lastSeenMessage = null;
+    this.lastSeenMessageTime = null;
     this.windowFocused = true;
     this.highLightMentionStack = [];
 
@@ -453,7 +463,7 @@ export default class MainMessages extends Component {
     if (this.highLightMentionStack.length) {
       clearInterval(this.highLightInterval);
       this.highlightMessage(this.highLightMentionStack.shift());
-      if(!this.highLightMentionStack.length) {
+      if (!this.highLightMentionStack.length) {
         return;
       }
       this.highLightInterval = setInterval(() => {
@@ -577,7 +587,6 @@ export default class MainMessages extends Component {
     return false;
   }
 
-
   onPaste(e) {
     if (e.clipboardData) {
       e.dataTransfer = e.clipboardData;
@@ -617,11 +626,11 @@ export default class MainMessages extends Component {
       messages,
       user,
       highLightMessage,
+      lastSeenMessageTime: findLastSeenMessage(messages),
       onRepliedMessageClicked: this.onRepliedMessageClicked,
       isMessageByMe,
       showNameOrAvatar
     };
-
     return (
       <Container className={style.MainMessages}
                  style={isIosAndSafari() ? {zIndex: "auto"} : null}

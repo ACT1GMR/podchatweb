@@ -460,16 +460,7 @@ export const threadRemoveParticipant = (threadId, participantIds) => {
 
 export const threadFilesToUpload = (files, upload, inputNode, caption) => {
   if (!upload) {
-    let isAllImage = true;
-    for (let file of files) {
-      if (!~file.type.indexOf("image")) {
-        isAllImage = false;
-        break;
-      }
-    }
-    if (isAllImage) {
-      return threadImagesToCaption(files, inputNode);
-    }
+    return threadImagesToCaption(files, inputNode);
   }
   setTimeout(() => {
     inputNode.value = "";

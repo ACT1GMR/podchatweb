@@ -166,7 +166,7 @@ class MainMessagesMessageFile extends Component {
     let isImage = mimeType.indexOf("image") > -1;
     const isVideo = mimeType.match(/mp4|ogg|3gp|ogv/);
     const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing, message.fileObject) : false;
-    if(!imageSizeLink) {
+    if (!imageSizeLink) {
       isImage = false;
     }
     const mainMessagesFileImageClassNames = classnames({
@@ -203,62 +203,78 @@ class MainMessagesMessageFile extends Component {
             onMessageControlHide={onMessageControlHide}
             onDelete={onDelete} onForward={onForward} onReply={onReply}>
             <ContextItem onClick={this.onDownload.bind(this, metaData)}>
-              {mobileCheck() ? <MdArrowDownward color={styleVar.colorAccent} size={styleVar.iconSizeMd}/> : strings.download}
+              {mobileCheck() ?
+                <MdArrowDownward color={styleVar.colorAccent} size={styleVar.iconSizeMd}/> : strings.download}
             </ContextItem>
           </ControlFragment>
-          <Container relative
-                     className={style.MainMessagesFile__FileContainer}>
-            {isImage ?
-              <Container style={{width: `${imageSizeLink.width}px`}}>
-                <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} caption={message.message}>
-                  <Image className={mainMessagesFileImageClassNames}
-                         onClick={this.onImageClick}
-                         src={imageSizeLink.imageLink}
-                         style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
-                </BoxModalMediaFragment>
-                <Container userSelect={mobileCheck() ? "none" : "text"} onDoubleClick={e=>e.stopPropagation()}>
-                  <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
-                    {mentionify(emailify(urlify(decodeEmoji(message.message))))}
-                  </Text>
-                </Container>
-
-              </Container>
-              :
-              <Container className={style.MainMessagesFile__FileName}>
-                {isVideo ?
-                  <video controls id={`video-${message.id}`} style={{display: "none"}} src={metaData.link}/> : ""
-                }
-                <Text wordWrap="breakWord" bold>
-                  {metaData.originalName}
-                </Text>
-                <Text size="xs" color="gray" dark={isMessageByMe}>
-                  {humanFileSize(metaData.size, true)}
-                </Text>
-              </Container>
-            }
-            <Container className={style.MainMessagesFile__FileControlIcon} topCenter={isImage} style={isImage ? {maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`} : null}>
-              {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
-                <Gap x={isImage ? 0 : 10}>
-                  <Container center={isImage} >
-                    <Shape color="accent" size="lg"
-                           onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
-                      <ShapeCircle>
-                        {isUploading(message) || hasError(message) ?
-                          <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
-                          : isDownloadable(message) ?
-                            isVideo ?
-                              <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
-                                <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
-                              </Text>
-                              :
-                              <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
-                        }
-                      </ShapeCircle>
-                    </Shape>
+          <Container>
+            <Container relative
+                       className={style.MainMessagesFile__FileContainer}>
+              {isImage ?
+                <Container style={{width: `${imageSizeLink.width}px`}}>
+                  <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} caption={message.message}>
+                    <Image className={mainMessagesFileImageClassNames}
+                           onClick={this.onImageClick}
+                           src={imageSizeLink.imageLink}
+                           style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
+                  </BoxModalMediaFragment>
+                  <Container userSelect={mobileCheck() ? "none" : "text"} onDoubleClick={e => e.stopPropagation()}>
+                    <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
+                      {mentionify(emailify(urlify(decodeEmoji(message.message))))}
+                    </Text>
                   </Container>
-                </Gap>
-                : ""}
+
+                </Container>
+                :
+                <Container className={style.MainMessagesFile__FileName}>
+                  {isVideo ?
+                    <video controls id={`video-${message.id}`} style={{display: "none"}} src={metaData.link}/> : ""
+                  }
+                  <Text wordWrap="breakWord" bold>
+                    {metaData.originalName}
+                  </Text>
+                  <Text size="xs" color="gray" dark={isMessageByMe}>
+                    {humanFileSize(metaData.size, true)}
+                  </Text>
+
+                </Container>
+              }
+              <Container className={style.MainMessagesFile__FileControlIcon} topCenter={isImage} style={isImage ? {
+                maxWidth: `${imageSizeLink.width}px`,
+                height: `${imageSizeLink.height}px`
+              } : null}>
+                {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
+                  <Gap x={isImage ? 0 : 10}>
+                    <Container center={isImage}>
+                      <Shape color="accent" size="lg"
+                             onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
+                        <ShapeCircle>
+                          {isUploading(message) || hasError(message) ?
+                            <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
+                            : isDownloadable(message) ?
+                              isVideo ?
+                                <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
+                                  <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
+                                </Text>
+                                :
+                                <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
+                          }
+                        </ShapeCircle>
+                      </Shape>
+                    </Container>
+                  </Gap>
+                  : ""}
+              </Container>
             </Container>
+
+            {!isImage &&
+
+            <Container userSelect={mobileCheck() ? "none" : "text"} onDoubleClick={e => e.stopPropagation()}>
+              <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
+                {mentionify(emailify(urlify(decodeEmoji(message.message))))}
+              </Text>
+            </Container>
+            }
           </Container>
           <PaperFooterFragment message={message} onMessageControlShow={onMessageControlShow}
                                isMessageByMe={isMessageByMe}

@@ -589,7 +589,8 @@ export default class MainMessagesMessage extends Component {
       isMessageByMe,
       participantsFetching,
       participants,
-      threadLeftAsideShowing
+      threadLeftAsideShowing,
+      lastSeenMessageTime
     } = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const isGroup = thread.group && thread.type !== 8;
@@ -608,7 +609,7 @@ export default class MainMessagesMessage extends Component {
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
-      forceSeen: messages && messages.length && messages[messages.length - 1].seen,
+      forceSeen: message.time <= lastSeenMessageTime,
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
       isParticipantBlocked: showBlock({user, thread, participantsFetching, participants}),
