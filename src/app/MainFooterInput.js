@@ -25,10 +25,11 @@ import Container from "../../../uikit/src/container";
 import {InputTextArea} from "../../../uikit/src/input";
 //styling
 import style from "../../styles/pages/box/MainFooterInput.scss";
-import {codeEmoji} from "./MainFooterEmojiIcons";
+import {codeEmoji, emojiRegex} from "./MainFooterEmojiIcons";
 import {startTyping, stopTyping} from "../actions/chatActions";
 import MainFooterInputParticipants from "./MainFooterInputParticipants";
 import OutsideClickHandler from "react-outside-click-handler";
+import {emojiCookieName} from "../constants/emoji";
 
 export const constants = {
   replying: "REPLYING",
@@ -114,7 +115,7 @@ export function clearHtml(html, clearTags) {
 
 function isEmptyTag(text) {
   if (text.indexOf("img") >= 0) {
-    return true;
+    return false;
   }
   const elem = window.document.createElement("div");
   elem.innerHTML = text;
@@ -307,6 +308,34 @@ export default class MainFooterInput extends Component {
     }
   }
 
+  frequentlyEmojiUsed(text) {
+    let emoji = text.match(emojiRegex());
+    if (emoji) {
+      const lastArray = Cookies.get(emojiCookieName);
+      const parsedArray = lastArray ? JSON.parse(lastArray) : [];
+
+      function buildText(count, char) {
+        return `${count}|${char}`;
+      }
+
+      for (let emoj of emoji) {
+        const indexInArray = parsedArray.findIndex(e => e.indexOf(emoj) > -1);
+
+        if (indexInArray > -1) {
+          const countAndChar = parsedArray[indexInArray].split("|");
+          parsedArray[indexInArray] = buildText(++countAndChar[0], countAndChar[1]);
+        } else {
+          if (parsedArray.length > 36) {
+            parsedArray.splice(parsedArray.length - 1, 1);
+          }
+          parsedArray.push(buildText(1, emoj));
+        }
+      }
+      Cookies.set(emojiCookieName, JSON.stringify(parsedArray.sort(((a,b)=> b.split('|')[0]- a.split('|')[0]))), {expires: 9999999999});
+    }
+
+  }
+
   sendMessage() {
     const {thread, dispatch, messageEditing: msgEditing, emojiShowing} = this.props;
     const {messageText} = this.state;
@@ -326,6 +355,7 @@ export default class MainFooterInput extends Component {
       if (clearMessageText.length > 4096) {
         return
       }
+      this.frequentlyEmojiUsed(clearMessageText);
     }
     if (msgEditing) {
       const msgEditingId = msgEditing.message instanceof Array ? msgEditing.message.map(e => e.id) : msgEditing.message.id;

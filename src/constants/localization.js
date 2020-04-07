@@ -226,6 +226,13 @@ let strings = new LocalizedStrings({
       return `${count} فایل برای ارسال داریم نظری در موردشون داری بنویس`
     },
     comment: "نظر",
+    emojiCatNames: {
+      people: "مردم",
+      nature: "طبیعت",
+      things: "اشیا",
+      cityAndTraffic: "شهر و شلوغی",
+      numbersClockAndLang: "اعداد، ساعت و زبان",
+    },
     sendFiles(count, isImages) {
       const fileText = isImages ? "عکس" : "فایل";
       if(count <= 1) {
