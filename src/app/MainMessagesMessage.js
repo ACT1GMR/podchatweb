@@ -10,7 +10,7 @@ import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
 import {MessageDeletePrompt, PinMessagePrompt} from "./_component/prompts";
-import {isOwner} from "./ModalThreadInfoGroupMain";
+import checkForPrivilege from "../utils/privilege";
 
 //strings
 import strings from "../constants/localization";
@@ -56,6 +56,7 @@ import {messageEditing} from "../actions/messageActions";
 import {chatModalPrompt} from "../actions/chatActions";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import ReactDOMServer from "react-dom/server";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 function datePetrification(time) {
   const correctTime = time / Math.pow(10, 6);
@@ -72,7 +73,6 @@ export function isFile(message) {
     }
   }
 }
-
 
 
 export function urlify(text) {
@@ -346,7 +346,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
   const deleteCondition = (!isChannel || (isChannel && isMessageByMe));
   const replyCondition = ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe));
   const pinToTopCondition = isOwner && (isGroup || isChannel);
-  const messageInfoCondition = isMessageByMe && (isGroup || isChannel );
+  const messageInfoCondition = isMessageByMe && (isGroup || isChannel);
   const MobileContextMenu = () => {
     return <Fragment>
       <Container className={style.MainMessagesMessage__MenuActionContainer}>
@@ -437,7 +437,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
 }
 
 export function deleteForAllCondition(message, user, thread) {
-  return message.deletable &&( (isMessageByMe(message, user)) || (thread.group && thread.inviter.id === user.id));
+  return checkForPrivilege(thread, THREAD_ADMIN) || (message.deletable && ((isMessageByMe(message, user))));
 }
 
 @connect(store => {
@@ -560,7 +560,7 @@ export default class MainMessagesMessage extends Component {
         this.setState({
           isMenuShow: message.id
         });
-          this.contextTriggerRef.current.handleContextClick(e);
+        this.contextTriggerRef.current.handleContextClick(e);
       }
     }, 700);
   }
@@ -613,7 +613,7 @@ export default class MainMessagesMessage extends Component {
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
       isParticipantBlocked: showBlock({user, thread, participantsFetching, participants}),
-      isOwner: isOwner(thread, user),
+      isOwner: checkForPrivilege(thread, THREAD_ADMIN),
       user,
       thread,
       message,

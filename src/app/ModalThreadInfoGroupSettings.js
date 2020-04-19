@@ -29,6 +29,8 @@ import {ContactSearchFragment} from "./ModalContactList";
 import {Button} from "../../../uikit/src/button";
 import ModalFooter from "../../../uikit/src/modal/ModalFooter";
 import {isChannel} from "./Main";
+import checkForPrivilege, {isOwner} from "../utils/privilege";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 const statics = {
   ADMIN_MANAGE: "ADMIN_MANGE",
@@ -106,7 +108,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
 
   onSaveSettings() {
     const {groupDesc, image, groupName} = this.state;
-    const {setStep, steps, thread, dispatch, } = this.props;
+    const {setStep, steps, thread, dispatch,} = this.props;
     const baseObject = {
       description: groupDesc, image, title: groupName
     };
@@ -123,8 +125,8 @@ export default class ModalThreadInfoGroupSettings extends Component {
   }
 
   render() {
-    const {groupName, groupDesc, image, mainThreadInfoGroup} = this.state;
-    const {thread, GapFragment} = this.props;
+    const {groupName, groupDesc, image} = this.state;
+    const {thread, GapFragment, user} = this.props;
     return (
       <Container>
         <Container relative>
@@ -142,7 +144,8 @@ export default class ModalThreadInfoGroupSettings extends Component {
                                  className={style.ModalThreadInfoGroupSettings__ImageIcon}/>
                   </Container>
                 </Container>
-                <AvatarImage src={avatarUrlGenerator(image, avatarUrlGenerator.SIZES.MEDIUM)} size="xlg" text={avatarNameGenerator(thread.title).letter}
+                <AvatarImage src={avatarUrlGenerator(image, avatarUrlGenerator.SIZES.MEDIUM)} size="xlg"
+                             text={avatarNameGenerator(thread.title).letter}
                              textBg={avatarNameGenerator(thread.title).color}/>
               </Container>
               <AvatarName>
@@ -157,17 +160,25 @@ export default class ModalThreadInfoGroupSettings extends Component {
                      value={groupDesc}
                      placeholder={strings.groupDescription(isChannel(thread))}/>
         </Container>
-{/*        <GapFragment/>
-        <List>
-          <ListItem selection invert onSelect={this.onSelectAdminList}>
-            <Container relative>
-              <MdVerifiedUser size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-              <Gap x={20}>
-                <Text>{strings.admins}</Text>
-              </Gap>
-            </Container>
-          </ListItem>
-        </List>*/}
+
+
+        {
+          checkForPrivilege(thread, THREAD_ADMIN) &&
+          <Fragment>
+            <GapFragment/>
+            <List>
+              <ListItem selection invert onSelect={this.onSelectAdminList}>
+                <Container relative display="inline-flex">
+                  <MdVerifiedUser size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                  <Gap x={20}>
+                    <Text>{strings.admins}</Text>
+                  </Gap>
+                </Container>
+              </ListItem>
+            </List>
+          </Fragment>
+        }
+
       </Container>
     )
   }

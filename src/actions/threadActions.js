@@ -42,17 +42,23 @@ import {
   THREAD_ADMIN_LIST,
   THREAD_ADMIN_LIST_REMOVE,
   THREAD_ADMIN_LIST_ADD,
-  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_DRAFT
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST,
+  THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
+  THREAD_DRAFT,
+  THREAD_GET_PARTICIPANT_ROLES
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
 const {CANCELED, SUCCESS} = stateGeneratorState;
 
-function createThreadCommon(dispatch) {
+function createThreadCommon(dispatch, isGroup) {
   dispatch(threadShowing(true));
   dispatch(threadSelectMessageShowing(false));
   dispatch(threadCheckedMessageList(null, null, true));
   dispatch(threadEmojiShowing(false));
+  if (isGroup) {
+    dispatch(threadGetParticipantRoles(isGroup));
+  }
 }
 
 export const threadCreateGroupOrChannelWithUsers = (userIds, threadName, isChannel) => {
@@ -64,7 +70,7 @@ export const threadCreateGroupOrChannelWithUsers = (userIds, threadName, isChann
     return dispatch({
       type: THREAD_CREATE(),
       payload: chatSDK.createThread(userIds, null, type, {title: threadName})
-    });
+    }).then(({thread}) => dispatch(threadGetParticipantRoles(thread.id)));
   }
 };
 
@@ -82,6 +88,9 @@ export const threadCreateWithUser = (userId, idType) => {
 
 export const threadCreateWithExistThread = thread => {
   return dispatch => {
+    if (thread.group) {
+      dispatch(threadGetParticipantRoles(thread.id));
+    }
     createThreadCommon(dispatch);
     return dispatch({
       type: THREAD_CREATE("CACHE"),
@@ -172,6 +181,17 @@ export const threadUnreadMentionedMessageGetList = (threadId, count) => {
     dispatch({
       type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(),
       payload: chatSDK.getThreadUnreadMentionedMessageList(threadId, count)
+    });
+  }
+};
+
+export const threadGetParticipantRoles = threadId => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: THREAD_GET_PARTICIPANT_ROLES(),
+      payload: chatSDK.getThreadParticipantRoles(threadId)
     });
   }
 };

@@ -34,6 +34,7 @@ export const CHAT_STOP_TYPING = "CHAT_STOP_TYPING";
 export const CHAT_IS_TYPING = "CHAT_IS_TYPING";
 export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST");
 export const CONTACT_GET_LIST_PARTIAL = buildPromiseMessage.bind(null, "CONTACT_GET_LIST_PARTIAL");
+export const THREAD_GET_PARTICIPANT_ROLES = buildPromiseMessage.bind(null, "THREAD_GET_PARTICIPANT_ROLES");
 export const CONTACTS_LIST_CHANGE = "CONTACTS_LIST_CHANGE";
 export const CONTACT_GET_BLOCK_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_BLOCK_LIST");
 export const CONTACT_ADD = buildPromiseMessage.bind(null, "CONTACT_ADD");

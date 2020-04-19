@@ -3,6 +3,8 @@ import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import {getName} from "./_component/contactList";
 import ModalContactList, {statics as modalContactListStatics} from "./ModalContactList";
+import checkForPrivilege from "../utils/privilege";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 //strings
 import strings from "../constants/localization";
@@ -61,7 +63,7 @@ function ModalContactListFooterFragment(addMembers, onPrevious, onClose) {
 }
 
 export function isOwner(thread, user) {
-  return thread.inviter && user.id === thread.inviter.id
+  return thread.inviter && user.id === thread.inviter.id;
 }
 
 @connect(store => {
@@ -109,7 +111,7 @@ class ModalThreadInfoGroupMain extends Component {
     const FooterFragment = () => {
       return (
         <Fragment>
-          {isGroup && isOwner(thread, user) &&
+          {isGroup && checkForPrivilege(thread, THREAD_ADMIN) &&
           <Button text onClick={this.onAddMemberSelect}>
             {strings.addMember}
           </Button>
@@ -255,9 +257,7 @@ class ModalThreadInfoGroupMain extends Component {
 
   render() {
     const {
-      participants, thread, user,
-      participantsFetching,
-      participantsPartialFetching, notificationPending,
+      participants, thread, user, participantsFetching, participantsPartialFetching, notificationPending,
       GapFragment, AvatarModalMediaFragment
     } = this.props;
     const {removingParticipantIds, partialParticipantLoading, query, addMembers, internalStep} = this.state;
@@ -272,20 +272,20 @@ class ModalThreadInfoGroupMain extends Component {
                                onSelect={this.onSelect}
                                onDeselect={this.onDeselect}/>
     }
-    const isThreadOwner = isOwner(thread, user);
+    const isThreadOwner = checkForPrivilege(thread, THREAD_ADMIN);
     const isChannel = thread.type === 8;
     const iconClasses = `${utilsStyle["u-clickable"]} ${utilsStyle["u-hoverColorAccent"]}`;
-    const hasAllowToSeenParticipant = thread.type !== 8 || thread.inviter.id === user.id;
+    const hasAllowToSeenParticipant = thread.type !== 8 || checkForPrivilege(thread, THREAD_ADMIN);
     const conversationAction = ({contact: participant}) => {
       const participantId = participant.id;
-      const isCreator = participant.coreUserId === thread.inviter.coreUserId;
+      const isAdmin = participant.admin;
       const adminFragment = (
         <Container className={style.ModalThreadInfoGroupMain__AdminTextContainer}>
           <Text size="sm" color="accent">{strings.admin}</Text>
         </Container>
       );
       if (user.id === participantId) {
-        if (isCreator) {
+        if (isAdmin) {
           return adminFragment;
         }
         return "";
@@ -299,12 +299,12 @@ class ModalThreadInfoGroupMain extends Component {
             </Container>
             :
             <Container>
-              {thread.inviter && thread.group && user.id === thread.inviter.id ? (
+              {isThreadOwner && (
                 <Button onClick={this.onRemoveParticipant.bind(this, participant)} text size="sm">
                   {strings.remove}
-                </Button>
-              ) : ""}
-              {isCreator && adminFragment}
+                </Button>)
+              }
+              {isAdmin && adminFragment}
             </Container>
           }
 
@@ -365,7 +365,7 @@ class ModalThreadInfoGroupMain extends Component {
             {
               isThreadOwner ?
                 <ListItem selection invert onSelect={this.onAddMemberSelect}>
-                  <Container relative>
+                  <Container relative display="inline-flex">
                     <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                     <Gap x={20}>
                       <Text>{strings.addMember}</Text>
@@ -374,7 +374,7 @@ class ModalThreadInfoGroupMain extends Component {
                 </ListItem> : ""
             }
             <ListItem selection invert onSelect={this.onLeaveSelect}>
-              <Container relative>
+              <Container relative display="inline-flex">
                 <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                 <Gap x={20}>
                   <Text>{strings.leaveGroup(isChannel)}</Text>
@@ -384,15 +384,17 @@ class ModalThreadInfoGroupMain extends Component {
 
             <ListItem selection invert onSelect={this.onNotificationSelect}>
 
-              <Container relative>
-                <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                <Gap x={20}>
-                  <Text>{strings.notification}</Text>
-                </Gap>
-                <Container centerLeft>
+              <Container relative display="inline-flex" minWidth="100%">
+                <Container display="inline-flex" flex="1 1 0">
+                  <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                  <Gap x={20}>
+                    <Text>{strings.notification}</Text>
+                  </Gap>
+                </Container>
+                <Container flex="none">
                   {notificationPending ?
                     <Container centerTextAlign>
-                      <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                      <Loading><LoadingBlinkDots size="sm"/></Loading>
                     </Container>
                     :
                     <Gap x={5}>

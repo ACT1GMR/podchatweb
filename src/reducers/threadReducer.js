@@ -51,7 +51,7 @@ import {
   THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
   THREAD_MESSAGE_PIN,
   MESSAGE_NEW,
-  THREAD_DRAFT
+  THREAD_DRAFT, THREAD_GET_PARTICIPANT_ROLES
 } from "../constants/actionTypes";
 import {stateGenerator, updateStore, listUpdateStrategyMethods, stateGeneratorState} from "../utils/storeHelper";
 import {getNow} from "../utils/helpers";
@@ -130,13 +130,24 @@ export const threadCreateReducer = (state = {
       };
     case THREAD_CHANGED:
       return {
-        ...state, ...stateGenerator(SUCCESS, updateStore(state.thread, action.payload, {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.thread, {roles: state.thread.roles, ...action.payload}, {
           by: "id",
           method: listUpdateStrategyMethods.UPDATE
         }), "thread")
       };
     case THREAD_CREATE(ERROR):
       return {...state, ...stateGenerator(ERROR, action.payload)};
+    case THREAD_GET_PARTICIPANT_ROLES(SUCCESS):
+      if (action.payload.threadId === state.thread.id) {
+        return {
+          ...state, ...stateGenerator(SUCCESS, updateStore(state.thread, {id: action.payload.threadId, roles: action.payload.roles}, {
+            mix: true,
+            by: "id",
+            method: listUpdateStrategyMethods.UPDATE
+          }), "thread")
+        };
+      }
+      return state;
     default:
       return state;
   }

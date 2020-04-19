@@ -91,7 +91,7 @@ export default class ModalThreadInfoGroupSettingsAdminList extends Component {
   }
 
   render() {
-    const {threadAdminList, thread} = this.props;
+    const {threadAdminList, thread, user} = this.props;
     const {fetching, admins} = threadAdminList;
     if (fetching) {
       return (
@@ -103,7 +103,7 @@ export default class ModalThreadInfoGroupSettingsAdminList extends Component {
     }
     const removeAdminFragment = ({contact: participant}) => {
       const {adminRemoveList} = this.state;
-      if (thread.inviter.id === participant.id) {
+      if (user.id === participant.id) {
         return null;
       }
       if (adminRemoveList.includes(participant.id)) {

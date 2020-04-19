@@ -96,7 +96,7 @@ export default class MainFooterEmojiIconsNav extends Component {
             <Container className={itemClassNames}
                        onClick={this.onNavClick.bind(this, correctEmojiCat.nav)}>
               {correctEmojiCat.icon}
-              {correctEmojiCat.nav === currentActiveTab && <Container className={style.MainFooterEmojiIconsNav__ActiveItem}/>}
+            {/*  {correctEmojiCat.nav === currentActiveTab && <Container className={style.MainFooterEmojiIconsNav__ActiveItem}/>}*/}
             </Container>
           ))
         }

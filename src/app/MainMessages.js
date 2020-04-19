@@ -44,9 +44,7 @@ import {
 import style from "../../styles/pages/box/MainMessages.scss";
 import styleVar from "../../styles/variables.scss";
 import MainMessagesMessage from "./MainMessagesMessage";
-import MainPinMessage from "./MainPinMessage";
 import Shape, {ShapeCircle} from "../../../uikit/src/shape";
-import {ContextTrigger} from "../../../uikit/src/menu/Context";
 import MainMessagesUnreadBar from "./MainMessagesUnreadBar";
 import isElementVisible from "../utils/dom";
 
@@ -302,6 +300,10 @@ export default class MainMessages extends Component {
           });
           return false;
         }
+      } else {
+        dispatch(threadNewMessage(messageNew));
+        this.lastSeenMessage = messageNew;
+        return false;
       }
     }
 
