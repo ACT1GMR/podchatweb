@@ -47,9 +47,10 @@ export default class MainFooterEmojiIconsNav extends Component {
 
   onNavClick(currentActiveTab) {
     document.getElementById(currentActiveTab).scrollIntoView();
+
   }
 
-  onScroll(e) {
+  onScroll(e, target) {
     const {currentActiveTab} = this.state;
     const keys = Object.keys(Strings.emojiCatNames);
     if (haveFrequentlyUsed()) {
@@ -64,6 +65,20 @@ export default class MainFooterEmojiIconsNav extends Component {
           currentActiveTab: key
         });
       }
+    }
+    if (haveFrequentlyUsed()) {
+      setTimeout(() => {
+        if (target) {
+          if (target.scrollTop <= 0) {
+            const {currentActiveTab} = this.state;
+            if (currentActiveTab !== keys[0]) {
+              this.setState({
+                currentActiveTab: keys[0]
+              });
+            }
+          }
+        }
+      }, 30);
     }
   }
 
@@ -96,7 +111,8 @@ export default class MainFooterEmojiIconsNav extends Component {
             <Container className={itemClassNames}
                        onClick={this.onNavClick.bind(this, correctEmojiCat.nav)}>
               {correctEmojiCat.icon}
-            {/*  {correctEmojiCat.nav === currentActiveTab && <Container className={style.MainFooterEmojiIconsNav__ActiveItem}/>}*/}
+              {correctEmojiCat.nav === currentActiveTab &&
+              <Container className={style.MainFooterEmojiIconsNav__ActiveItem}/>}
             </Container>
           ))
         }

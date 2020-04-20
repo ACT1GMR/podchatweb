@@ -61,7 +61,7 @@ module.exports = (e, argv) => {
           ]
         },
         {
-          test: /\.(png|jpg|gif|ttf|eot|woff2|woff|mp3)$/,
+          test: /\.(png|jpg|gif|ttf|eot|woff2|woff|mp3|svg)$/,
           exclude: /oneone\.png/,
           use: [
             {

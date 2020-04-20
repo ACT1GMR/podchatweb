@@ -175,8 +175,8 @@ export default class MainFooterEmojiIcons extends Component {
     return emojiArray;
   }
 
-  onScroll(e) {
-    this.navRef.onScroll(e)
+  onScroll(e, target) {
+    this.navRef.onScroll(e, target)
   }
 
   render() {
