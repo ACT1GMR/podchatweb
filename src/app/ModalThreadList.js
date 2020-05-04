@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 
@@ -6,7 +6,12 @@ import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 import strings from "../constants/localization";
 
 //actions
-import {threadCreateWithExistThread, threadGetList, threadModalListShowing} from "../actions/threadActions";
+import {
+  threadCreateOnTheFly,
+  threadCreateWithExistThread,
+  threadGetList,
+  threadModalListShowing
+} from "../actions/threadActions";
 import {messageEditing} from "../actions/messageActions";
 
 //UI components
@@ -19,6 +24,9 @@ import Avatar, {AvatarImage, AvatarName} from "../../../uikit/src/avatar";
 import {Text} from "../../../uikit/src/typography";
 import Container from "../../../uikit/src/container";
 import {ContactSearchFragment, NoResultFragment, PartialLoadingFragment} from "./ModalContactList";
+import {contactGetList} from "../actions/contactActions";
+import {ContactList} from "./_component/contactList";
+import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
 
 //styling
 
@@ -41,6 +49,7 @@ export default class ModalThreadList extends Component {
 
   constructor(props) {
     super(props);
+    this.onSearchChange = this.onSearchChange.bind(this);
     this.onScrollBottomThreshold = this.onScrollBottomThreshold.bind(this);
     this.state = {
       remainingThreadsNextOffset: 0,
@@ -62,13 +71,6 @@ export default class ModalThreadList extends Component {
     }
   }
 
-  onSend(thread) {
-    const {dispatch, message} = this.props;
-    dispatch(threadCreateWithExistThread(thread));
-    dispatch(messageEditing(message, constants.forwarding, thread.id));
-    this.onClose();
-  }
-
   onClose() {
     this.props.dispatch(threadModalListShowing(false));
     this.setState({
@@ -80,19 +82,12 @@ export default class ModalThreadList extends Component {
     });
   }
 
-  _directThreadListRequest(contactsNextOffset, onSearch, query) {
-    const {dispatch, threads: oldThreads} = this.props;
-    dispatch(threadGetList(contactsNextOffset || 0, constants.count, query, true, {cache: false}))
+  _directThreadListRequest(contactsNextOffset) {
+    const {dispatch} = this.props;
+    dispatch(threadGetList(contactsNextOffset || 0, constants.count, null, true, {cache: false}))
       .then(({threads, nextOffset, hasNext}) => {
         const {remainingThreads} = this.state;
         let realThreads = remainingThreads.concat(threads);
-        if (onSearch) {
-          if (!query || !query.trim()) {
-            realThreads = oldThreads
-          } else {
-            realThreads = threads
-          }
-        }
         this.setState({
           remainingThreadsNextOffset: nextOffset,
           remainingThreadsHasNext: hasNext,
@@ -110,44 +105,135 @@ export default class ModalThreadList extends Component {
     this._directThreadListRequest(remainingThreadsNextOffset, false, this.state.query);
   }
 
+  onSearchChange(query) {
+    if (query) {
+      const {dispatch} = this.props;
+      this.setState({
+        queryThreadsSearching: true,
+        queryContactsSearching: true,
+      });
+      dispatch(threadGetList(0, 3, query, true)).then(result => {
+        this.setState({
+          queryThreads: result.threads,
+          queryThreadsSearching: false
+        })
+      });
+      dispatch(contactGetList(0, 3, query, false, true)).then(result => {
+        this.setState({
+          queryContacts: result.contacts,
+          queryContactsSearching: false
+        })
+      });
+      return;
+    }
+    this._directThreadListRequest(0, true);
+  }
+
+  onSelect(thread, isContact) {
+    const {dispatch, message} = this.props;
+    let targetId;
+    if (isContact && isContact.id) {
+      const user = {
+        id: isContact.id,
+        isMyContact: true,
+        coreUserId: isContact.linkedUser.coreUserId,
+        image: isContact.linkedUser.image,
+        name: `${isContact.firstName}${isContact.lastName ? ` ${isContact.lastName}` : ''}`
+      };
+      dispatch(threadCreateOnTheFly(user.coreUserId, user)).then(thread => {
+          dispatch(messageEditing(message, constants.forwarding, thread ? thread.id : `ON_THE_FLY_${user.id}`));
+      });
+    } else {
+      dispatch(threadCreateWithExistThread(thread));
+      dispatch(messageEditing(message, constants.forwarding, thread.id));
+    }
+    this.onClose();
+  }
+
   render() {
     const {isShow, smallVersion, user} = this.props;
-    const {query, remainingThreadsHasNext, remainingThreadsPartialFetching, remainingThreads} = this.state;
+    const {query, remainingThreadsHasNext, remainingThreadsPartialFetching, remainingThreads, queryThreads, queryContacts, queryThreadsSearching, queryContactsSearching} = this.state;
     const realThreads = remainingThreads.filter(thread => !thread.group || thread.type !== 8 || thread.inviter.id === user.id);
-
+    const isQueriedResult = query;
+    const isThreadQueriedHasResult = isQueriedResult && queryThreads && queryThreads.length;
+    const isContactsQueriedHasResult = isQueriedResult && queryContacts && queryContacts.length;
+    const threadsHasResult = (!isQueriedResult && realThreads.length) || isThreadQueriedHasResult;
+    console.log(isQueriedResult, isThreadQueriedHasResult, threadsHasResult);
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
           <Heading h3>{strings.forwardTo}</Heading>
-          <ContactSearchFragment onSearchInputChange={query => this.setState({query})}
-                                 onSearchChange={query => this._directThreadListRequest(0, true, query)} query={query}/>
+          <Container relative>
+            <ContactSearchFragment
+              onSearchInputChange={query => this.setState({
+                query,
+                queryThreads: null,
+                queryContacts: null,
+                queryThreadsSearching: !!query,
+                queryContactsSearching: !!query
+              })}
+              onSearchChange={this.onSearchChange} query={query}/>
+            {(queryThreadsSearching || queryThreadsSearching) &&
+            <Container centerLeft>
+              <Gap x={35}>
+                <Loading><LoadingBlinkDots size="sm"/></Loading>
+              </Gap>
+            </Container>
+            }
+          </Container>
         </ModalHeader>
 
         <ModalBody threshold={5}
-                   onScrollBottomThresholdCondition={remainingThreadsHasNext && !remainingThreadsPartialFetching}
+                   onScrollBottomThresholdCondition={!query && (remainingThreadsHasNext && !remainingThreadsPartialFetching)}
                    onScrollBottomThreshold={this.onScrollBottomThreshold}>
-          {realThreads.length ?
-            <Container relative>
-              <List>
-                {realThreads.map(el => (
-                  <ListItem key={el.id} selection invert onSelect={this.onSend.bind(this, el)}>
-                    <Container relative>
+          {isQueriedResult &&
+          <Fragment>
+            <Text bold color="accent">{strings.conversations}</Text>
+          </Fragment>
+          }
 
-                      <Avatar>
-                        <AvatarImage src={avatarUrlGenerator(el.image, avatarUrlGenerator.SIZES.SMALL)} text={avatarNameGenerator(el.title).letter}
-                                     textBg={avatarNameGenerator(el.title).color}/>
-                        <AvatarName>{el.title}</AvatarName>
-                      </Avatar>
+          {
+            threadsHasResult ?
+              <Container relative>
+                <List>
+                  {(isQueriedResult ? queryThreads : realThreads).map(el => (
+                    <ListItem key={el.id} selection invert onSelect={this.onSelect.bind(this, el)}>
+                      <Container relative>
 
-                    </Container>
-                  </ListItem>
-                ))}
-              </List>
-              {remainingThreadsPartialFetching && <PartialLoadingFragment/>}
-            </Container>
-            : <NoResultFragment>{ query && query.trim() ? strings.thereIsNoThreadsWithThisKeyword(query) : strings.thereIsNoChat}</NoResultFragment>
+                        <Avatar>
+                          <AvatarImage src={avatarUrlGenerator(el.image, avatarUrlGenerator.SIZES.SMALL)}
+                                       text={avatarNameGenerator(el.title).letter}
+                                       textBg={avatarNameGenerator(el.title).color}/>
+                          <AvatarName>{el.title}</AvatarName>
+                        </Avatar>
+
+                      </Container>
+                    </ListItem>
+                  ))}
+                </List>
+                {remainingThreadsPartialFetching && <PartialLoadingFragment/>}
+              </Container>
+              :
+              <NoResultFragment>{queryThreadsSearching ? `${strings.searchingForThreads}...` : strings.thereIsNoChat}</NoResultFragment>
+          }
+          {isQueriedResult &&
+          <Fragment>
+            <Text bold color="accent">{strings.contacts}</Text>
+          </Fragment>
+          }
+          {
+            isContactsQueriedHasResult ?
+              <Container relative>
+                <ContactList selection
+                             invert
+                             avatarSize={avatarUrlGenerator.SIZES.SMALL}
+                             onSelect={this.onSelect.bind(this)}
+                             contacts={queryContacts}/>
+              </Container>
+              :
+              <NoResultFragment>{queryContactsSearching ? `${strings.searchingForContacts}...` : strings.thereIsNoContactWithThis}</NoResultFragment>
           }
 
         </ModalBody>

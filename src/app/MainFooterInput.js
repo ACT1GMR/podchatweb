@@ -12,7 +12,7 @@ import strings from "../constants/localization";
 import {
   messageEdit,
   messageEditing,
-  messageForward,
+  messageForward, messageForwardOnTheFly,
   messageReply,
   messageSend,
   messageSendOnTheFly
@@ -375,9 +375,19 @@ export default class MainFooterInput extends Component {
         dispatch(messageReply(clearMessageText, msgEditingId, threadId, msgEditing.message));
       } else if (msgEditing.type === constants.forwarding) {
         if (clearMessageText) {
-          dispatch(messageSend(clearMessageText, threadId));
+          if (thread.onTheFly) {
+            dispatch(messageForwardOnTheFly(msgEditingId, clearMessageText));
+          } else {
+            dispatch(messageSend(clearMessageText, threadId));
+            dispatch(messageForward(threadId, msgEditingId));
+          }
+        } else {
+          if (thread.onTheFly) {
+            dispatch(messageForwardOnTheFly(msgEditingId));
+          } else {
+            dispatch(messageForward(threadId, msgEditingId));
+          }
         }
-        dispatch(messageForward(threadId, msgEditingId));
         this.forwardMessageSent = true;
       } else {
         if (isEmptyMessage) {
@@ -390,7 +400,7 @@ export default class MainFooterInput extends Component {
         return;
       }
       if (thread.onTheFly) {
-        dispatch(messageSendOnTheFly(clearMessageText, threadId));
+        dispatch(messageSendOnTheFly(clearMessageText));
       } else {
         dispatch(messageSend(clearMessageText, threadId));
       }

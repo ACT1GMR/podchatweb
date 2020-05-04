@@ -104,7 +104,7 @@ export const threadCreateOnTheFly = (userId, user) => {
     createThreadCommon(dispatch);
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
+    return chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
       const mockThread = {
         id: `ON_THE_FLY_${user.id}`,
         group: false,
@@ -118,10 +118,11 @@ export const threadCreateOnTheFly = (userId, user) => {
         participant: user,
         pendingMessage: []
       };
-      return dispatch({
+      dispatch({
         type: thread ? THREAD_CREATE("CACHE") : THREAD_CREATE_ON_THE_FLY,
         payload: thread ? thread : mockThread
       });
+      return thread;
     })
   }
 };

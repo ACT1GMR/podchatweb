@@ -218,6 +218,8 @@ let strings = new LocalizedStrings({
       }
       return "این پیام رو چطوری دوست داری برات حذف کنیم";
     } ,
+    searchingForContacts: "در حال جستجو مخاطبین",
+    searchingForThreads: "در حال جستجو گفتگوها",
     iCanceled: "منصرف شدم",
     unreadMessages: "پیامهای خوانده نشده",
     seenLastMessage: "پیام ها را خواندم",
