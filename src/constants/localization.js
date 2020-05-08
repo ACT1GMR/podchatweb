@@ -241,7 +241,8 @@ let strings = new LocalizedStrings({
         return `ارسال ${fileText}`;
       }
       return `ارسال ${count} ${fileText}`;
-    }
+    },
+    thereIsNoContact: "مخاطبی وجود ندارد"
   },
   it: {}
 });

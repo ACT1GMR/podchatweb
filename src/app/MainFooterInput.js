@@ -319,25 +319,29 @@ export default class MainFooterInput extends Component {
       }
 
       const newArray = [];
-
+      function increaseCount(array, index) {
+        const countAndChar = array[index].split("|");
+        array[index] = buildText(++countAndChar[0], countAndChar[1]);
+        array = parsedArray.sort(((a, b) => b.split('|')[0] - a.split('|')[0]));
+      }
       for (let emoj of emoji) {
         const indexInArray = parsedArray.findIndex(e => e.indexOf(emoj) > -1);
+        const indexInNewArray = newArray.findIndex(e => e.indexOf(emoj) > -1);
         if (indexInArray > -1) {
-          const countAndChar = parsedArray[indexInArray].split("|");
-          parsedArray[indexInArray] = buildText(++countAndChar[0], countAndChar[1]);
-          parsedArray = parsedArray.sort(((a, b) => b.split('|')[0] - a.split('|')[0]));
+          increaseCount(parsedArray, indexInArray);
         } else {
-          if (parsedArray.length + newArray.length >= 36) {
-            const lastEmoji = parsedArray[parsedArray.length - 1];
-            if (+lastEmoji.split("|")[0] < 2) {
+          if(indexInNewArray > -1) {
+            increaseCount(newArray, indexInNewArray);
+          } else {
+            if (parsedArray.length + newArray.length >= 36) {
+              const lastEmoji = parsedArray[parsedArray.length - 1];
               parsedArray.splice(parsedArray.length - 1, 1);
               newArray.push(buildText(1, emoj));
             } else {
-              break;
+              newArray.push(buildText(1, emoj));
             }
-          } else {
-            newArray.push(buildText(1, emoj));
           }
+
         }
       }
       Cookies.set(emojiCookieName, JSON.stringify(parsedArray.concat(newArray).sort(((a, b) => b.split('|')[0] - a.split('|')[0]))), {expires: 9999999999});

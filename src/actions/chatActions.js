@@ -1,8 +1,14 @@
 // src/actions/messageActions.js
-import {threadGetList, threadLeave} from "./threadActions";
+import {
+  threadGetList,
+  threadGoToMessageId,
+  threadLeave,
+  threadMessageGetList,
+  threadMessageGetListPartial
+} from "./threadActions";
 import ChatSDK from "../utils/chatSDK";
-import {reconnect} from "../app/AsideHead";
 import {stateGeneratorState} from "../utils/storeHelper";
+import {getThreadHistory} from "../utils/listing";
 import {
   CHAT_GET_INSTANCE,
   CHAT_SMALL_VERSION,
@@ -24,9 +30,16 @@ import {
   CHAT_NOTIFICATION,
   CHAT_NOTIFICATION_CLICK_HOOK,
   CHAT_RETRY_HOOK,
-  CHAT_SIGN_OUT_HOOK, THREAD_MESSAGE_PIN, MESSAGE_PINNED
+  CHAT_SIGN_OUT_HOOK,
+  THREAD_MESSAGE_PIN,
+  MESSAGE_PINNED,
+  THREAD_GO_TO_MESSAGE,
+  THREAD_GET_MESSAGE_LIST,
+  THREAD_CREATE,
+  THREAD_GET_MESSAGE_LIST_PARTIAL
 } from "../constants/actionTypes";
 import {messageInfo} from "./messageActions";
+import {statics} from "../app/MainMessages";
 
 
 let firstReadyPassed = false;
@@ -183,12 +196,7 @@ export const chatSetInstance = config => {
       },
       onChatReady(e) {
         if (firstReadyPassed) {
-          dispatch(threadGetList(0, 50, null, true)).then(threads => {
-            dispatch({
-              type: THREAD_GET_LIST(SUCCESS),
-              payload: threads
-            });
-          })
+          dispatch(restoreChatState());
         }
         firstReadyPassed = true;
         window.instance = e;
@@ -206,6 +214,57 @@ export const chatUploadImage = (image, threadId, callBack) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.uploadImage(image, threadId).then(callBack);
+  }
+};
+
+export const restoreChatState = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+
+    const threads = state.threads.threads;
+    dispatch(threadGetList(0, threads.length, null, true)).then(threads => {
+      dispatch({
+        type: THREAD_GET_LIST(SUCCESS),
+        payload: threads
+      });
+    });
+
+    const pastThread = state.thread.thread;
+    if (pastThread.id && !pastThread.onTheFly) {
+      chatSDK.getThreadInfo({threadIds: [pastThread.id]}).then(thread => {
+        const {messages, threadId, hasNext, hasPrevious, fetching, fetched} = state.threadMessages;
+        dispatch({
+          type: THREAD_CREATE("CACHE"),
+          payload: thread
+        });
+        const needToFetchSomethingCondition = (!pastThread.lastMessageVO && thread.lastMessageVO) || (pastThread.lastMessageVO.id !== thread.lastMessageVO.id);
+        if (!needToFetchSomethingCondition) {
+          return;
+        }
+        const lastMassage = messages[messages.length - 1];
+        const firstInitial = !thread.lastMessageVO || (lastMassage && thread.lastMessageVO.time < lastMassage.time);
+        const offsetOrTimeNanos = firstInitial ? undefined : lastMassage.time + 200;
+        getThreadHistory(chatSDK, threadId, statics.historyFetchCount, offsetOrTimeNanos, !firstInitial).then(payload => {
+          const {messages} = payload;
+          if (firstInitial) {
+            dispatch({
+              type: THREAD_GET_MESSAGE_LIST(SUCCESS),
+              payload
+            });
+            threadGoToMessageId(messages[messages.length - 1]);
+          } else {
+            if (!hasNext) {
+              return dispatch({
+                type: THREAD_GET_MESSAGE_LIST_PARTIAL(SUCCESS),
+                payload
+              });
+            }
+          }
+
+        })
+      });
+    }
   }
 };
 

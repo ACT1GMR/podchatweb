@@ -15,7 +15,8 @@ import Container from "../../../uikit/src/container";
 import {Text} from "../../../uikit/src/typography";
 
 //styling
-import {MdClose, MdForward, MdEdit, MdReply} from "react-icons/md";
+import {MdClose, MdEdit, MdReply} from "react-icons/md";
+import {TiArrowForward} from "react-icons/ti";
 import style from "../../styles/pages/box/MainFooterInputEditing.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStlye from "../../styles/utils/utils.scss";
@@ -123,7 +124,7 @@ export default class MainFooterInputEditing extends Component {
           <Container inline className={style.MainFooterInputEditing}>
             <Container>
               {messageEditing.type === constants.forwarding ?
-                <MdForward style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+                <TiArrowForward style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
                 :
                 messageEditing.type === constants.replying ?
                   <MdReply style={{margin: "0 5px"}} size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>

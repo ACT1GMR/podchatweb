@@ -48,7 +48,7 @@ import Shape, {ShapeCircle} from "../../../uikit/src/shape";
 import MainMessagesUnreadBar from "./MainMessagesUnreadBar";
 import isElementVisible from "../utils/dom";
 
-const statics = {
+export const statics = {
   historyFetchCount: 20,
   historyUnseenMentionedFetchCount: 100,
 };
@@ -476,6 +476,10 @@ export default class MainMessages extends Component {
 
   onScrollBottomEnd() {
     const {thread, messageNew} = this.props;
+    if (thread.unreadCount > 0) {
+      this.lastSeenMessage = thread.lastMessageVO;
+    }
+/*
     if (messageNew) {
       if (thread.id === messageNew.threadId) {
         if (thread.unreadCount > 0) {
@@ -483,6 +487,7 @@ export default class MainMessages extends Component {
         }
       }
     }
+    }*/
 
     this.setState({
       bottomButtonShowing: false

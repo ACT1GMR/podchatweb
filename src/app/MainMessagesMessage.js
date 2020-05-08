@@ -148,7 +148,7 @@ export function PersonNameFragment(message, isFirstMessage, isMessageByMe) {
           style={{color: color}}>{isMessageByMe ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
 }
 
-export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
+export function ReplyFragment(isMessageByMe, message, gotoMessageFunc, maxWidth) {
   if (message.replyInfo) {
     const replyInfo = message.replyInfo;
     let meta = "";
@@ -180,6 +180,7 @@ export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
     }
     return (
       <Container
+        maxWidth={maxWidth}
         cursor={replyInfo.deleted ? "default" : "pointer"}
         onClick={gotoMessageFunc.bind(null, replyInfo.repliedToMessageTime, replyInfo.deleted)}>
         <Paper colorBackground
@@ -294,7 +295,7 @@ export function HighLighterFragment({message, highLightMessage}) {
   );
 }
 
-export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, children}) {
+export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, maxReplyFragmentWidth, children}) {
   const style = {
     borderRadius: "5px"
   };
@@ -304,7 +305,7 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
   return (
     <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe} relative>
       {isGroup && PersonNameFragment(message, isFirstMessage, isMessageByMe)}
-      {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked)}
+      {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked, maxReplyFragmentWidth)}
       {ForwardFragment(message, isMessageByMe)}
       {children}
     </Paper>
@@ -621,6 +622,7 @@ export default class MainMessagesMessage extends Component {
       messages,
       highLightMessage
     };
+
     return (
       <Container id={message.uuid}
                  userSelect="none"

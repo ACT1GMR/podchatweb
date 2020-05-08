@@ -14,8 +14,7 @@ import {
   FaCity
 } from "react-icons/fa";
 import {
-  GiFruitTree,
-  GiPineTree
+  GiFruitTree
 } from "react-icons/gi";
 import {
   IoIosBuild
@@ -47,7 +46,6 @@ export default class MainFooterEmojiIconsNav extends Component {
 
   onNavClick(currentActiveTab) {
     document.getElementById(currentActiveTab).scrollIntoView();
-
   }
 
   onScroll(e, target) {

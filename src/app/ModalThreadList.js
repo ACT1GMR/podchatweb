@@ -158,7 +158,6 @@ export default class ModalThreadList extends Component {
     const isThreadQueriedHasResult = isQueriedResult && queryThreads && queryThreads.length;
     const isContactsQueriedHasResult = isQueriedResult && queryContacts && queryContacts.length;
     const threadsHasResult = (!isQueriedResult && realThreads.length) || isThreadQueriedHasResult;
-    console.log(isQueriedResult, isThreadQueriedHasResult, threadsHasResult);
     return (
       <Modal isOpen={isShow} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
@@ -216,7 +215,7 @@ export default class ModalThreadList extends Component {
                 {remainingThreadsPartialFetching && <PartialLoadingFragment/>}
               </Container>
               :
-              <NoResultFragment>{queryThreadsSearching ? `${strings.searchingForThreads}...` : strings.thereIsNoChat}</NoResultFragment>
+              <NoResultFragment>{queryThreadsSearching ? `${strings.searchingForThreads}...` : strings.thereIsNoContactWithThis}</NoResultFragment>
           }
           {isQueriedResult &&
           <Fragment>
@@ -233,7 +232,7 @@ export default class ModalThreadList extends Component {
                              contacts={queryContacts}/>
               </Container>
               :
-              <NoResultFragment>{queryContactsSearching ? `${strings.searchingForContacts}...` : strings.thereIsNoContactWithThis}</NoResultFragment>
+              <NoResultFragment>{queryContactsSearching ? `${strings.searchingForContacts}...` : strings.thereIsNoContact}</NoResultFragment>
           }
 
         </ModalBody>

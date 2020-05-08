@@ -187,6 +187,7 @@ class MainMessagesMessageFile extends Component {
           </Container>
           : ""}
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
+                       maxReplyFragmentWidth={isImage && `${imageSizeLink.width}px`}
                        isChannel={isChannel} isGroup={isGroup}
                        isFirstMessage={isFirstMessage} isMessageByMe={isMessageByMe}>
           <HighLighterFragment message={message} highLightMessage={highLightMessage}/>
