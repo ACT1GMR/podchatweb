@@ -369,9 +369,9 @@ class AsideThreads extends Component {
     let pinedThread = threads.filter(e => e.pin);
     if (threadsFetching || !chatInstance || !user.id) {
       return (
-        <section className={classNames}>
+        <Container className={classNames} centerTextAlign>
           <Loading hasSpace><LoadingBlinkDots invert rtl/></Loading>
-        </section>
+        </Container>
       )
     } else {
       if (!chatSearchResult && !filteredThreads.length) {
