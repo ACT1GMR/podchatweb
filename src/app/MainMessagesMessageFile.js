@@ -151,6 +151,7 @@ class MainMessagesMessageFile extends Component {
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
+      onShare,
       isParticipantBlocked,
       leftAsideShowing,
       smallVersion,
@@ -198,6 +199,7 @@ class MainMessagesMessageFile extends Component {
             onPin={onPin}
             isChannel={isChannel}
             isGroup={isGroup}
+            onShare={onShare}
             messageControlShow={messageControlShow}
             message={message}
             onMessageSeenListClick={onMessageSeenListClick}

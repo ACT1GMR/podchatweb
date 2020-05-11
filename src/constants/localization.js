@@ -242,7 +242,14 @@ let strings = new LocalizedStrings({
       }
       return `ارسال ${count} ${fileText}`;
     },
-    thereIsNoContact: "مخاطبی وجود ندارد"
+    thereIsNoContact: "مخاطبی وجود ندارد",
+    share: "اشتراک گذاری",
+    socialNetworks: {
+      telegram: "تلگرام",
+      whatsapp: "واتساپ",
+      twitter: "توییتر",
+      skype: "اسکایپ"
+    }
   },
   it: {}
 });
