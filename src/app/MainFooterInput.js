@@ -30,6 +30,7 @@ import {startTyping, stopTyping} from "../actions/chatActions";
 import MainFooterInputParticipants from "./MainFooterInputParticipants";
 import OutsideClickHandler from "react-outside-click-handler";
 import {emojiCookieName} from "../constants/emoji";
+import {MESSAGE_SHARE} from "../constants/cookie-keys";
 
 export const constants = {
   replying: "REPLYING",
@@ -247,7 +248,7 @@ export default class MainFooterInput extends Component {
     dispatch(messageEditing());
     let draftMessage;
     if (thread && thread.id) {
-      draftMessage = Cookies.get(thread.id) || null;
+      draftMessage = Cookies.get(MESSAGE_SHARE) || Cookies.get(thread.id) || null;
     }
     this.setInputText(draftMessage);
     dispatch(threadIsSendingMessage(!!draftMessage));
@@ -269,7 +270,7 @@ export default class MainFooterInput extends Component {
       } else {
         dispatch(threadDraft(isThreadHide ? threadId : oldThreadId));
       }
-      const draftMessage = threadId ? Cookies.get(threadId) : null;
+      const draftMessage = Cookies.get(thread.id) || (threadId ? Cookies.get(threadId) : null);
       if (msgEditing) {
         let emptyEditingCondition = msgEditing.type !== constants.forwarding || msgEditing.threadId ? msgEditing.threadId !== threadId : false;
         if (emptyEditingCondition) {
@@ -424,6 +425,7 @@ export default class MainFooterInput extends Component {
 
   _clearDraft(threadId) {
     Cookies.remove(threadId);
+    Cookies.remove(MESSAGE_SHARE);
     this.lastTypingText = null;
   }
 

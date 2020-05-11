@@ -249,7 +249,8 @@ let strings = new LocalizedStrings({
       whatsapp: "واتساپ",
       twitter: "توییتر",
       skype: "اسکایپ"
-    }
+    },
+    areYouSureABoutSendingThisMessage: "از فرستادن این پیام مطئنید"
   },
   it: {}
 });
