@@ -8,7 +8,27 @@
   padding: 0;
 }
 
-.emoji-common-telegram {
-  background-image: url("../images/_common/common-telegram.png");
+.emojisprite-0 {
+  background-image: url("../images/_common/emoji-sprites/emojisprite-0.png");
   background-size: 540px 140px;
+}
+
+.emojisprite-1 {
+  background-image: url("../images/_common/emoji-sprites/emojisprite-1.png");
+  background-size: 580px 80px;
+}
+
+.emojisprite-2 {
+  background-image: url("../images/_common/emoji-sprites/emojisprite-2.png");
+  background-size: 660px 140px;
+}
+
+.emojisprite-3 {
+  background-image: url("../images/_common/emoji-sprites/emojisprite-3.png");
+  background-size: 680px 60px;
+}
+
+.emojisprite-4 {
+  background-image: url("../images/_common/emoji-sprites/emojisprite-4.png");
+  background-size: 680px 140px;
 }

@@ -73,7 +73,6 @@ let strings = new LocalizedStrings({
     contacts: "مخاطبین",
     imageText: "متن تصویر",
     send: "بفرست",
-    sendingImages: "ارسال عکس ( ها )",
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
     mobilePhoneIsRequired: "شماره موبایل اجباری است",
     youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
@@ -219,10 +218,31 @@ let strings = new LocalizedStrings({
       }
       return "این پیام رو چطوری دوست داری برات حذف کنیم";
     } ,
+    searchingForContacts: "در حال جستجو مخاطبین",
+    searchingForThreads: "در حال جستجو گفتگوها",
     iCanceled: "منصرف شدم",
     unreadMessages: "پیامهای خوانده نشده",
     seenLastMessage: "پیام ها را خواندم",
-    removeThread: "حذف گفتگو"
+    removeThread: "حذف گفتگو",
+    fileSelected(count) {
+      return `${count} فایل برای ارسال داریم نظری در موردشون داری بنویس`
+    },
+    comment: "نظر",
+    emojiCatNames: {
+      people: "مردم",
+      nature: "طبیعت",
+      things: "اشیا",
+      cityAndTraffic: "شهر و شلوغی",
+      numbersClockAndLang: "اعداد، ساعت و زبان",
+    },
+    sendFiles(count, isImages) {
+      const fileText = isImages ? "عکس" : "فایل";
+      if(count <= 1) {
+        return `ارسال ${fileText}`;
+      }
+      return `ارسال ${count} ${fileText}`;
+    },
+    thereIsNoContact: "مخاطبی وجود ندارد"
   },
   it: {}
 });

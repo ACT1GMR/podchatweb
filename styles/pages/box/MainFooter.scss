@@ -22,8 +22,7 @@
 
 }
 
-.MainFooter__InputContainer,
-.MainFooter__EmojiIconsContainer {
+.MainFooter__InputContainer {
   display: flex;
   align-items: center;
   position: relative;
@@ -31,7 +30,12 @@
 }
 
 .MainFooter__EmojiIconsContainer {
-  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  overflow: hidden;
+  background-color: $color-gray-light;
+  margin: 10px -10px -10px -10px;
 }
 
 .MainFooter__Input {

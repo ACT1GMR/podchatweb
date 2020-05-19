@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import classnames from "classnames";
+import checkForPrivilege from "../utils/privilege";
 
 //actions
 import {threadMessageUnpin} from "../actions/threadActions";
@@ -23,8 +24,8 @@ import styleVar from "../../styles/variables.scss";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import {messageInfo} from "../actions/messageActions";
 import {getMessageEditingText} from "./MainFooterInputEditing";
-import {isOwner} from "./ModalThreadInfoGroupMain";
 import strings from "../constants/localization";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 
 
@@ -129,7 +130,7 @@ export default class MainPinMessage extends Component {
 
         </Container>
       </Container>
-      {isOwner(thread, user) && <Container className={style.MainPinMessage__CloseIcon} onClick={this.onUnpinClick}>
+      {checkForPrivilege(thread, THREAD_ADMIN) && <Container className={style.MainPinMessage__CloseIcon} onClick={this.onUnpinClick}>
         <MdClose size={styleVar.iconSizeMd} color={styleVar.colorTextLight}/>
       </Container>}
 

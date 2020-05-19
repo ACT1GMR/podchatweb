@@ -10,7 +10,7 @@ import {showBlock} from "./MainFooterSpam";
 import MainMessagesMessageFile from "./MainMessagesMessageFile";
 import MainMessagesMessageText from "./MainMessagesMessageText";
 import {MessageDeletePrompt, PinMessagePrompt} from "./_component/prompts";
-import {isOwner} from "./ModalThreadInfoGroupMain";
+import checkForPrivilege from "../utils/privilege";
 
 //strings
 import strings from "../constants/localization";
@@ -56,6 +56,7 @@ import {messageEditing} from "../actions/messageActions";
 import {chatModalPrompt} from "../actions/chatActions";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import ReactDOMServer from "react-dom/server";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 function datePetrification(time) {
   const correctTime = time / Math.pow(10, 6);
@@ -72,7 +73,6 @@ export function isFile(message) {
     }
   }
 }
-
 
 
 export function urlify(text) {
@@ -148,7 +148,7 @@ export function PersonNameFragment(message, isFirstMessage, isMessageByMe) {
           style={{color: color}}>{isMessageByMe ? messageParticipant.name : messageParticipant.contactName || messageParticipant.name}</Text>
 }
 
-export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
+export function ReplyFragment(isMessageByMe, message, gotoMessageFunc, maxWidth) {
   if (message.replyInfo) {
     const replyInfo = message.replyInfo;
     let meta = "";
@@ -180,6 +180,7 @@ export function ReplyFragment(isMessageByMe, message, gotoMessageFunc) {
     }
     return (
       <Container
+        maxWidth={maxWidth}
         cursor={replyInfo.deleted ? "default" : "pointer"}
         onClick={gotoMessageFunc.bind(null, replyInfo.repliedToMessageTime, replyInfo.deleted)}>
         <Paper colorBackground
@@ -294,7 +295,7 @@ export function HighLighterFragment({message, highLightMessage}) {
   );
 }
 
-export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, children}) {
+export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage, isMessageByMe, isGroup, maxReplyFragmentWidth, children}) {
   const style = {
     borderRadius: "5px"
   };
@@ -304,7 +305,7 @@ export function PaperFragment({message, onRepliedMessageClicked, isFirstMessage,
   return (
     <Paper style={style} hasShadow colorBackgroundLight={!isMessageByMe} relative>
       {isGroup && PersonNameFragment(message, isFirstMessage, isMessageByMe)}
-      {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked)}
+      {ReplyFragment(isMessageByMe, message, onRepliedMessageClicked, maxReplyFragmentWidth)}
       {ForwardFragment(message, isMessageByMe)}
       {children}
     </Paper>
@@ -346,7 +347,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
   const deleteCondition = (!isChannel || (isChannel && isMessageByMe));
   const replyCondition = ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe));
   const pinToTopCondition = isOwner && (isGroup || isChannel);
-  const messageInfoCondition = isMessageByMe && (isGroup || isChannel );
+  const messageInfoCondition = isMessageByMe && (isGroup || isChannel);
   const MobileContextMenu = () => {
     return <Fragment>
       <Container className={style.MainMessagesMessage__MenuActionContainer}>
@@ -437,7 +438,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
 }
 
 export function deleteForAllCondition(message, user, thread) {
-  return message.deletable &&( (isMessageByMe(message, user)) || (thread.group && thread.inviter.id === user.id));
+  return checkForPrivilege(thread, THREAD_ADMIN) || (message.deletable && ((isMessageByMe(message, user))));
 }
 
 @connect(store => {
@@ -560,7 +561,7 @@ export default class MainMessagesMessage extends Component {
         this.setState({
           isMenuShow: message.id
         });
-          this.contextTriggerRef.current.handleContextClick(e);
+        this.contextTriggerRef.current.handleContextClick(e);
       }
     }, 700);
   }
@@ -589,7 +590,8 @@ export default class MainMessagesMessage extends Component {
       isMessageByMe,
       participantsFetching,
       participants,
-      threadLeftAsideShowing
+      threadLeftAsideShowing,
+      lastSeenMessageTime
     } = this.props;
     const {messageControlShow, messageTriggerShow} = this.state;
     const isGroup = thread.group && thread.type !== 8;
@@ -608,11 +610,11 @@ export default class MainMessagesMessage extends Component {
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,
       messageTriggerShow,
-      forceSeen: messages && messages.length && messages[messages.length - 1].seen,
+      forceSeen: message.time <= lastSeenMessageTime,
       isChannel: thread.group && thread.type === 8,
       isMessageByMe: isMessageByMeReal,
       isParticipantBlocked: showBlock({user, thread, participantsFetching, participants}),
-      isOwner: isOwner(thread, user),
+      isOwner: checkForPrivilege(thread, THREAD_ADMIN),
       user,
       thread,
       message,
@@ -620,6 +622,7 @@ export default class MainMessagesMessage extends Component {
       messages,
       highLightMessage
     };
+
     return (
       <Container id={message.uuid}
                  userSelect="none"

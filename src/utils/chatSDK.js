@@ -3,6 +3,7 @@ import {promiseDecorator} from "./decorators";
 import React from "react";
 import {getNow} from "./helpers";
 import Cookies from "js-cookie";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -245,7 +246,7 @@ export default class ChatSDK {
     };
     this.chatAgent.getThreadAdmins(getThreadAdmins, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(result.result.participants);
+        return resolve(result.result.participants.filter(e => e.roles.indexOf(THREAD_ADMIN.toLowerCase()) > -1));
       }
     });
   }
@@ -724,6 +725,16 @@ export default class ChatSDK {
       if (!this._onError(result, reject)) {
         const {participants, hasNext, nextOffset} = result.result;
         return resolve({threadId, participants, hasNext, nextOffset});
+      }
+    });
+  }
+
+
+  @promiseDecorator
+  getThreadParticipantRoles(resolve, reject, threadId) {
+    this.chatAgent.getParticipantRoles({threadId}, (result) => {
+      if (!this._onError(result, reject)) {
+        return resolve({threadId, roles: result.result});
       }
     });
   }

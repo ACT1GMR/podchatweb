@@ -107,12 +107,17 @@ function LastMessageTextFragment({isGroup, isChannel, lastMessageVO, lastMessage
           (
             isGroup && !isChannel ?
               hasLastMessage ?
-                <Container>
-                  <Container inline>
+                <Container display="inline-flex">
+
+                  <Container>
                     <Text size="sm" inline
                           color="accent">{isTypingReal ? isTypingUserName : draftMessage ? "Draft:" : lastMessageVO.participant && (lastMessageVO.participant.contactName || lastMessageVO.participant.name)}:</Text>
                   </Container>
-                  {isFileReal ? sentAFileFragment : lastMessageFragment}
+
+                  <Container>
+                    {isFileReal ? sentAFileFragment : lastMessageFragment}
+                  </Container>
+
                 </Container>
                 :
                 createdAThreadFragment
@@ -364,9 +369,9 @@ class AsideThreads extends Component {
     let pinedThread = threads.filter(e => e.pin);
     if (threadsFetching || !chatInstance || !user.id) {
       return (
-        <section className={classNames}>
+        <Container className={classNames} centerTextAlign>
           <Loading hasSpace><LoadingBlinkDots invert rtl/></Loading>
-        </section>
+        </Container>
       )
     } else {
       if (!chatSearchResult && !filteredThreads.length) {

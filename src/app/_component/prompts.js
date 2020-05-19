@@ -16,7 +16,7 @@ export function MessageDeletePrompt(props) {
   const {message, dispatch, thread, user} = props;
 
   const isBatchMessage = message instanceof Array;
-  let isAbleToRemoveForAll = !isBatchMessage ? deleteForAllCondition(message, user, thread) : true;
+  let isAbleToRemoveForAll = isBatchMessage ? true : deleteForAllCondition(message, user, thread);
   let isThereAnyThatYouCanRemoveForOther = false;
   if (isBatchMessage) {
     for (const msg of message) {

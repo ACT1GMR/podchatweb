@@ -42,17 +42,23 @@ import {
   THREAD_ADMIN_LIST,
   THREAD_ADMIN_LIST_REMOVE,
   THREAD_ADMIN_LIST_ADD,
-  THREAD_UNREAD_MENTIONED_MESSAGE_LIST, THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE, THREAD_DRAFT
+  THREAD_UNREAD_MENTIONED_MESSAGE_LIST,
+  THREAD_UNREAD_MENTIONED_MESSAGE_REMOVE,
+  THREAD_DRAFT,
+  THREAD_GET_PARTICIPANT_ROLES
 } from "../constants/actionTypes";
 import {stateGeneratorState} from "../utils/storeHelper";
 
 const {CANCELED, SUCCESS} = stateGeneratorState;
 
-function createThreadCommon(dispatch) {
+function createThreadCommon(dispatch, isGroup) {
   dispatch(threadShowing(true));
   dispatch(threadSelectMessageShowing(false));
   dispatch(threadCheckedMessageList(null, null, true));
   dispatch(threadEmojiShowing(false));
+  if (isGroup) {
+    dispatch(threadGetParticipantRoles(isGroup));
+  }
 }
 
 export const threadCreateGroupOrChannelWithUsers = (userIds, threadName, isChannel) => {
@@ -64,7 +70,7 @@ export const threadCreateGroupOrChannelWithUsers = (userIds, threadName, isChann
     return dispatch({
       type: THREAD_CREATE(),
       payload: chatSDK.createThread(userIds, null, type, {title: threadName})
-    });
+    }).then(({thread}) => dispatch(threadGetParticipantRoles(thread.id)));
   }
 };
 
@@ -82,6 +88,9 @@ export const threadCreateWithUser = (userId, idType) => {
 
 export const threadCreateWithExistThread = thread => {
   return dispatch => {
+    if (thread.group) {
+      dispatch(threadGetParticipantRoles(thread.id));
+    }
     createThreadCommon(dispatch);
     return dispatch({
       type: THREAD_CREATE("CACHE"),
@@ -95,7 +104,7 @@ export const threadCreateOnTheFly = (userId, user) => {
     createThreadCommon(dispatch);
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
+    return chatSDK.getThreadInfo({partnerCoreUserId: userId}).then(thread => {
       const mockThread = {
         id: `ON_THE_FLY_${user.id}`,
         group: false,
@@ -109,10 +118,11 @@ export const threadCreateOnTheFly = (userId, user) => {
         participant: user,
         pendingMessage: []
       };
-      return dispatch({
+      dispatch({
         type: thread ? THREAD_CREATE("CACHE") : THREAD_CREATE_ON_THE_FLY,
         payload: thread ? thread : mockThread
       });
+      return thread;
     })
   }
 };
@@ -172,6 +182,17 @@ export const threadUnreadMentionedMessageGetList = (threadId, count) => {
     dispatch({
       type: THREAD_UNREAD_MENTIONED_MESSAGE_LIST(),
       payload: chatSDK.getThreadUnreadMentionedMessageList(threadId, count)
+    });
+  }
+};
+
+export const threadGetParticipantRoles = threadId => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    dispatch({
+      type: THREAD_GET_PARTICIPANT_ROLES(),
+      payload: chatSDK.getThreadParticipantRoles(threadId)
     });
   }
 };
@@ -460,16 +481,7 @@ export const threadRemoveParticipant = (threadId, participantIds) => {
 
 export const threadFilesToUpload = (files, upload, inputNode, caption) => {
   if (!upload) {
-    let isAllImage = true;
-    for (let file of files) {
-      if (!~file.type.indexOf("image")) {
-        isAllImage = false;
-        break;
-      }
-    }
-    if (isAllImage) {
-      return threadImagesToCaption(files, inputNode);
-    }
+    return threadImagesToCaption(files, inputNode);
   }
   setTimeout(() => {
     inputNode.value = "";

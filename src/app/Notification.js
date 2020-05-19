@@ -11,9 +11,10 @@ import MetaTags from "react-meta-tags";
 import {threadCreateWithExistThread} from "../actions/threadActions";
 import strings from "../constants/localization";
 import {isFile} from "./MainMessagesMessage";
-import {isOwner} from "./ModalThreadInfoGroupMain";
 import {isChannel, isGroup} from "./Main";
 import notifcationSound from "../constants/notification-sound.mp3"
+import checkForPrivilege from "../utils/privilege";
+import {THREAD_ADMIN} from "../constants/privilege";
 
 //components
 
@@ -76,7 +77,7 @@ export default class Notification extends Component {
     const {user, chatNotificationClickHook, dispatch} = this.props;
     const thread = foundThread.thread;
     if (this.pinNotify) {
-      if (isOwner(thread, user)) {
+      if (checkForPrivilege(thread, THREAD_ADMIN)) {
         return;
       }
     }

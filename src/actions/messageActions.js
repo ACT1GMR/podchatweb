@@ -73,7 +73,7 @@ export const messageSend = (text, threadId, other) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
-    dispatch({
+    return dispatch({
       type: MESSAGE_SEND(),
       payload: chatSDK.sendMessage(text, threadId, other)
     });
@@ -179,6 +179,25 @@ export const messageForward = (threadId, messageId) => {
     dispatch({
       type: MESSAGE_FORWARD(),
       payload: chatSDK.forwardMessage(threadId, messageId)
+    });
+  }
+};
+
+export const messageForwardOnTheFly = (messageId, firstMessage) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    const thread = state.thread.thread;
+    return chatSDK.createThread(thread.partner.userId, thread.participant.isMyContact ? null : "TO_BE_USER_ID").then(thread => {
+      dispatch({
+        type: THREAD_CREATE("CACHE"),
+        payload: thread
+      });
+      if (firstMessage) {
+        dispatch(messageSend(firstMessage, thread.id));
+        return setTimeout(()=>dispatch(messageForward(thread.id, messageId)), 300)
+      }
+      dispatch(messageForward(thread.id, messageId));
     });
   }
 };

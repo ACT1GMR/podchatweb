@@ -12,7 +12,7 @@ import strings from "../constants/localization";
 import {
   messageEdit,
   messageEditing,
-  messageForward,
+  messageForward, messageForwardOnTheFly,
   messageReply,
   messageSend,
   messageSendOnTheFly
@@ -25,10 +25,11 @@ import Container from "../../../uikit/src/container";
 import {InputTextArea} from "../../../uikit/src/input";
 //styling
 import style from "../../styles/pages/box/MainFooterInput.scss";
-import {codeEmoji} from "./MainFooterEmojiIcons";
+import {codeEmoji, emojiRegex} from "./MainFooterEmojiIcons";
 import {startTyping, stopTyping} from "../actions/chatActions";
 import MainFooterInputParticipants from "./MainFooterInputParticipants";
 import OutsideClickHandler from "react-outside-click-handler";
+import {emojiCookieName} from "../constants/emoji";
 
 export const constants = {
   replying: "REPLYING",
@@ -114,7 +115,7 @@ export function clearHtml(html, clearTags) {
 
 function isEmptyTag(text) {
   if (text.indexOf("img") >= 0) {
-    return true;
+    return false;
   }
   const elem = window.document.createElement("div");
   elem.innerHTML = text;
@@ -307,6 +308,47 @@ export default class MainFooterInput extends Component {
     }
   }
 
+  frequentlyEmojiUsed(text) {
+    let emoji = text.match(emojiRegex());
+    if (emoji) {
+      const lastArray = Cookies.get(emojiCookieName);
+      let parsedArray = lastArray ? JSON.parse(lastArray) : [];
+
+      function buildText(count, char) {
+        return `${count}|${char}`;
+      }
+
+      const newArray = [];
+      function increaseCount(array, index) {
+        const countAndChar = array[index].split("|");
+        array[index] = buildText(++countAndChar[0], countAndChar[1]);
+        array = parsedArray.sort(((a, b) => b.split('|')[0] - a.split('|')[0]));
+      }
+      for (let emoj of emoji) {
+        const indexInArray = parsedArray.findIndex(e => e.indexOf(emoj) > -1);
+        const indexInNewArray = newArray.findIndex(e => e.indexOf(emoj) > -1);
+        if (indexInArray > -1) {
+          increaseCount(parsedArray, indexInArray);
+        } else {
+          if(indexInNewArray > -1) {
+            increaseCount(newArray, indexInNewArray);
+          } else {
+            if (parsedArray.length + newArray.length >= 36) {
+              const lastEmoji = parsedArray[parsedArray.length - 1];
+              parsedArray.splice(parsedArray.length - 1, 1);
+              newArray.push(buildText(1, emoj));
+            } else {
+              newArray.push(buildText(1, emoj));
+            }
+          }
+
+        }
+      }
+      Cookies.set(emojiCookieName, JSON.stringify(parsedArray.concat(newArray).sort(((a, b) => b.split('|')[0] - a.split('|')[0]))), {expires: 9999999999});
+    }
+
+  }
+
   sendMessage() {
     const {thread, dispatch, messageEditing: msgEditing, emojiShowing} = this.props;
     const {messageText} = this.state;
@@ -326,6 +368,7 @@ export default class MainFooterInput extends Component {
       if (clearMessageText.length > 4096) {
         return
       }
+      this.frequentlyEmojiUsed(clearMessageText);
     }
     if (msgEditing) {
       const msgEditingId = msgEditing.message instanceof Array ? msgEditing.message.map(e => e.id) : msgEditing.message.id;
@@ -336,9 +379,19 @@ export default class MainFooterInput extends Component {
         dispatch(messageReply(clearMessageText, msgEditingId, threadId, msgEditing.message));
       } else if (msgEditing.type === constants.forwarding) {
         if (clearMessageText) {
-          dispatch(messageSend(clearMessageText, threadId));
+          if (thread.onTheFly) {
+            dispatch(messageForwardOnTheFly(msgEditingId, clearMessageText));
+          } else {
+            dispatch(messageSend(clearMessageText, threadId));
+            dispatch(messageForward(threadId, msgEditingId));
+          }
+        } else {
+          if (thread.onTheFly) {
+            dispatch(messageForwardOnTheFly(msgEditingId));
+          } else {
+            dispatch(messageForward(threadId, msgEditingId));
+          }
         }
-        dispatch(messageForward(threadId, msgEditingId));
         this.forwardMessageSent = true;
       } else {
         if (isEmptyMessage) {
@@ -351,7 +404,7 @@ export default class MainFooterInput extends Component {
         return;
       }
       if (thread.onTheFly) {
-        dispatch(messageSendOnTheFly(clearMessageText, threadId));
+        dispatch(messageSendOnTheFly(clearMessageText));
       } else {
         dispatch(messageSend(clearMessageText, threadId));
       }
