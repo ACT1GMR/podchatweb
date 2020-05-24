@@ -145,7 +145,7 @@ export default class ModalThreadInfo extends Component {
     }, () => dispatch(contactListShowing(true))));
   }
 
-  onRemoveThread(){
+  onRemoveThread() {
     const {thread, dispatch} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureRemovingThread}؟`, () => {
       dispatch(threadLeave(thread.id));
