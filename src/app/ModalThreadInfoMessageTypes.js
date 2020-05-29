@@ -167,7 +167,7 @@ export default class ModalThreadInfoMessageTypes extends Component {
             {type === "file" ?
               <MdArrowDownward style={{cursor: "pointer"}} color={styleVar.colorAccent} size={styleVar.iconSizeSm}/>
               :
-              <Text link={`#video-${id}`} linkClearStyle data-fancybox>
+              <Text link={`#${idMessage}`} linkClearStyle data-fancybox>
                 <MdPlayArrow style={{cursor: "pointer"}} color={styleVar.colorAccent} size={styleVar.iconSizeSm}/>
               </Text>
 
