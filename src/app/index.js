@@ -53,12 +53,13 @@ import {contactGetList} from "../actions/contactActions";
 import ModalShare from "./ModalShare";
 
 export function BoxModalMediaFragment({link, caption, linkClassName, children, options}) {
-  console.log(options)
+  const fixedOptions = options || {};
+
   return <Container className={style.Box__MediaTrigger} inline>
     <Text link={link}
           className={linkClassName}
           linkClearStyle
-          data-options={`{"caption": "${caption || ""}", ${options}}`}>
+          data-options={JSON.stringify(fixedOptions)}>
       {children && children}
     </Text>
 
@@ -179,7 +180,7 @@ class Box extends Component {
     if (onSignOutHook) {
       dispatch(chatSignOutHook(onSignOutHook));
     }
-    window.modalMediaRef= this.modalMediaRef.current;
+    window.modalMediaRef = this.modalMediaRef.current;
   }
 
   setToken(token) {

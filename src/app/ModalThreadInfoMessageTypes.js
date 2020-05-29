@@ -122,6 +122,7 @@ export default class ModalThreadInfoMessageTypes extends Component {
 
   buildComponent(type, message) {
     const {dispatch} = this.props;
+    const idMessage = `${message.id}-message-types-${type}`
     const gotoMessage = () => {
       dispatch(threadModalThreadInfoShowing());
       window.modalMediaRef.close();
@@ -129,17 +130,17 @@ export default class ModalThreadInfoMessageTypes extends Component {
     };
     if (type === "picture") {
       const onFancyBoxClick = e => {
+        //window.modalMediaRef.getFancyBox().open()
         setTimeout(e => {
           document.getElementsByClassName("fancybox-button--goto")[0].addEventListener("click", gotoMessage);
         }, 200)
       };
       return (
-        <Container className={style.ModalThreadInfoMessageTypes__ImageContainer} data-fancybox
+        <Container className={style.ModalThreadInfoMessageTypes__ImageContainer} data-fancybox key={idMessage}
                    onClick={onFancyBoxClick}>
           <BoxModalMediaFragment
-            options={`"buttons": ["goto", "slideShow",  "close"]`}
-            link={"https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg"}
-            caption={message.message}>
+            options={{buttons: ["goto", "slideShow",  "close"], caption: message.message}}
+            link={"https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg"}>
             <Image className={style.ModalThreadInfoMessageTypes__Image}
                    setOnBackground
                    src={"https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg"}/>
@@ -148,9 +149,8 @@ export default class ModalThreadInfoMessageTypes extends Component {
         </Container>
       )
     } else if (type === "file" || type === "sound" || type === "video") {
-      const id = `${message.id}listing${type === "sound" ? "sound" : ""}`;
       return (
-        <Container className={style.ModalThreadInfoMessageTypes__FileContainer} onClick={gotoMessage}>
+        <Container className={style.ModalThreadInfoMessageTypes__FileContainer} onClick={gotoMessage} key={idMessage}>
           <Container>
             <Text wordWrap="breakWord" bold>
               {type === "file" ? "ghablmale.zip" : type === "sound" ? "ghablmale-sound.mp3" : "ghablmale-video.mp4"}
@@ -159,9 +159,9 @@ export default class ModalThreadInfoMessageTypes extends Component {
           </Container>
           <Container centerLeft onClick={e => e.stopPropagation()}>
             {type === "video" ?
-              <video controls id={`video-${id}`} style={{display: "none"}}
+              <video controls id={`video-${idMessage}`} style={{display: "none"}}
                      src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4"/> :
-              type === "sound" ? <audio controls id={`video-${id}`} style={{display: "none"}}
+              type === "sound" ? <audio controls id={idMessage} style={{display: "none"}}
                                         src="https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3"/> : ""
             }
             {type === "file" ?
@@ -222,7 +222,9 @@ export default class ModalThreadInfoMessageTypes extends Component {
                         this.buildComponent(activeTab, message)
                       ))
                       :
-                      <Text size="sm">{strings.noResult}</Text>
+                      <Container center>
+                        <Text size="sm">{strings.noResult}</Text>
+                      </Container>
                   }
 
                 </Container>

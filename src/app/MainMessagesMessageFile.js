@@ -215,7 +215,7 @@ class MainMessagesMessageFile extends Component {
                        className={style.MainMessagesFile__FileContainer}>
               {isImage ?
                 <Container style={{width: `${imageSizeLink.width}px`}}>
-                  <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} caption={message.message}>
+                  <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} options={{caption: message.message}}>
                     <Image className={mainMessagesFileImageClassNames}
                            onClick={this.onImageClick}
                            src={imageSizeLink.imageLink}
