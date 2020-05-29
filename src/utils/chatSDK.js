@@ -4,6 +4,7 @@ import React from "react";
 import {getNow} from "./helpers";
 import Cookies from "js-cookie";
 import {THREAD_ADMIN} from "../constants/privilege";
+import {types} from "../constants/messageTypes";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -332,15 +333,18 @@ export default class ChatSDK {
     if (caption) {
       sendChatParams.content = caption;
     }
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.match(/mp4|ogg|3gp|ogv/);
+    const isAudio = file.type.match(/audio.*/);
+    const typeCode =  isImage ? types.picture : isVideo ? types.video : isAudio ? types.sound : types.file;
     if (other) {
-      sendChatParams = {...sendChatParams, ...other};
+      sendChatParams = {...sendChatParams, ...other, ...{typeCode}};
     }
     const obj = this.chatAgent.sendFileMessage(sendChatParams, {
       onSent: result => {
         this._onError(result, reject);
       }
     });
-    const isImage = file.type.startsWith("image/");
     const commonParams = {
       ...obj, ...{
         message: caption,

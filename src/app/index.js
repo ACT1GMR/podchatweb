@@ -52,12 +52,13 @@ import style from "../../styles/pages/box/index.scss";
 import {contactGetList} from "../actions/contactActions";
 import ModalShare from "./ModalShare";
 
-export function BoxModalMediaFragment({link, caption, linkClassName, children}) {
+export function BoxModalMediaFragment({link, caption, linkClassName, children, options}) {
+  console.log(options)
   return <Container className={style.Box__MediaTrigger} inline>
     <Text link={link}
           className={linkClassName}
           linkClearStyle
-          data-options={`{"caption": "${caption || ""}"}`}>
+          data-options={`{"caption": "${caption || ""}", ${options}}`}>
       {children && children}
     </Text>
 
@@ -178,6 +179,7 @@ class Box extends Component {
     if (onSignOutHook) {
       dispatch(chatSignOutHook(onSignOutHook));
     }
+    window.modalMediaRef= this.modalMediaRef.current;
   }
 
   setToken(token) {

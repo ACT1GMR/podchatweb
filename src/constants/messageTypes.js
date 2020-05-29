@@ -3,10 +3,8 @@ export const MESSAGE_TYPES_SOUND = "MESSAGE_TYPES_SOUND";
 export const MESSAGE_TYPES_VOICE = "MESSAGE_TYPES_VOICE";
 export const MESSAGE_TYPES_FILES = "MESSAGE_TYPES_FILES";
 export const types = {
-  TEXT: "1",
-  VOICE: "2",
-  PICTURE: "3",
-  VIDEO: "4",
-  SOUND: "5",
-  FILE: "6"
+  picture: "3",
+  file: "6",
+  video: "4",
+  sound: "5"
 };

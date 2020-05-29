@@ -38,6 +38,7 @@ import {MdGroupAdd, MdArrowBack, MdSettings, MdBlock, MdNotifications, MdPersonA
 import style from "../../styles/pages/box/ModalThreadInfoGroupMain.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStyle from "../../styles/utils/utils.scss";
+import ModalThreadInfoMessageTypes from "./ModalThreadInfoMessageTypes";
 
 
 const constants = {
@@ -87,7 +88,8 @@ class ModalThreadInfoGroupMain extends Component {
       internalStep: null,
       removingParticipantIds: [],
       partialParticipantLoading: false,
-      query: null
+      query: null,
+      selectedTab: "people"
     };
     this.onSelect = this.onSelect.bind(this);
     this.onDeselect = this.onDeselect.bind(this);
@@ -102,6 +104,8 @@ class ModalThreadInfoGroupMain extends Component {
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onClose = this.onClose.bind(this);
     this.onPrevious = this.onPrevious.bind(this);
+    this.onTabSelect = this.onTabSelect.bind(this);
+    this.setOnScrollBottomThreshold = this.setOnScrollBottomThreshold.bind(this);
   }
 
   componentDidMount() {
@@ -250,15 +254,36 @@ class ModalThreadInfoGroupMain extends Component {
   }
 
   onScrollBottomThreshold() {
+    const {scrollBottomThreshold} = this.state;
+    if (scrollBottomThreshold) {
+      scrollBottomThreshold();
+    }
+    if (this.state.selectedTab !== "people") {
+      return;
+    }
     const {participantsNextOffset, dispatch, thread} = this.props;
     const {query} = this.state;
     dispatch(threadParticipantList(thread.id, participantsNextOffset, constants.count, query));
   }
 
+  onTabSelect(tab) {
+    if (tab === "people") {
+      this.onSearchChange(this.state.query);
+    }
+    this.setState({
+      selectedTab: tab
+    });
+  }
+
+  setOnScrollBottomThreshold(scrollBottomThreshold) {
+    this.setState({scrollBottomThreshold});
+  }
+
   render() {
     const {
       participants, thread, user, participantsFetching, participantsPartialFetching, notificationPending,
-      GapFragment, AvatarModalMediaFragment
+      GapFragment, AvatarModalMediaFragment,
+      setScrollBottomThresholdCondition
     } = this.props;
     const {removingParticipantIds, partialParticipantLoading, query, addMembers, internalStep} = this.state;
     if (internalStep === constants.ON_ADD_MEMBER) {
@@ -407,41 +432,48 @@ class ModalThreadInfoGroupMain extends Component {
             </ListItem>
           </List>
         </Container>
-        {hasAllowToSeenParticipant && <GapFragment/>}
 
-        {hasAllowToSeenParticipant &&
-        <ContactSearchFragment onSearchInputChange={this.onSearchInputChange}
-                               onSearchChange={this.onSearchChange} query={query}
-                               inputClassName={style.ModalThreadInfoGroupMain__SearchInput}/>
-        }
-        {hasAllowToSeenParticipant &&
-        <Container>
-          {participantsFetching && !partialParticipantLoading ?
-            <Container centerTextAlign>
-              <Loading hasSpace><LoadingBlinkDots/></Loading>
-              <Text>{strings.waitingForContact}...</Text>
-            </Container>
-            :
-            participants.length ?
-              <Container relative>
-                <ContactList invert
-                             avatarSize={avatarUrlGenerator.SIZES.SMALL}
-                             selection
-                             onSelect={this.onStartChat}
-                             contacts={participants} LeftActionFragment={conversationAction}/>
-                {participantsPartialFetching && <PartialLoadingFragment/>}
-              </Container> :
-              query && query.trim() &&
-              <Container relative centerTextAlign>
-                <Gap y={5}>
-                  <Container>
-                    <Text>{strings.thereIsNoContactWithThisKeyword(query)}</Text>
-                  </Container>
-                </Gap>
-              </Container>
+        <GapFragment/>
+
+        <ModalThreadInfoMessageTypes thread={thread} defaultTab={hasAllowToSeenParticipant && "people"}
+                                     onTabSelect={this.onTabSelect.bind(this)}
+                                     setScrollBottomThresholdCondition={setScrollBottomThresholdCondition}
+                                     setOnScrollBottomThreshold={this.setOnScrollBottomThreshold}>
+
+          {hasAllowToSeenParticipant &&
+          <ContactSearchFragment onSearchInputChange={this.onSearchInputChange}
+                                 onSearchChange={this.onSearchChange} query={query}
+                                 inputClassName={style.ModalThreadInfoGroupMain__SearchInput}/>
           }
-        </Container>
-        }
+          {hasAllowToSeenParticipant &&
+          <Container>
+            {participantsFetching && !partialParticipantLoading ?
+              <Container centerTextAlign>
+                <Loading><LoadingBlinkDots size="sm"/></Loading>
+              </Container>
+              :
+              participants.length ?
+                <Container relative>
+                  <ContactList invert
+                               avatarSize={avatarUrlGenerator.SIZES.SMALL}
+                               selection
+                               onSelect={this.onStartChat}
+                               contacts={participants} LeftActionFragment={conversationAction}/>
+                  {participantsPartialFetching && <PartialLoadingFragment/>}
+                </Container> :
+                query && query.trim() &&
+                <Container relative centerTextAlign>
+                  <Gap y={5}>
+                    <Container>
+                      <Text>{strings.thereIsNoContactWithThisKeyword(query)}</Text>
+                    </Container>
+                  </Gap>
+                </Container>
+            }
+          </Container>
+          }
+        </ModalThreadInfoMessageTypes>
+
       </Container>
 
     );

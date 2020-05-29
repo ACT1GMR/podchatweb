@@ -250,7 +250,16 @@ let strings = new LocalizedStrings({
       twitter: "توییتر",
       skype: "اسکایپ"
     },
-    areYouSureABoutSendingThisMessage: "از فرستادن این پیام مطئنید"
+    areYouSureABoutSendingThisMessage: "از فرستادن این پیام مطئنید",
+    gotoMessage: "رفتن به پیام",
+    messageTypes: {
+      people: "اعضا",
+      picture: "تصاویر",
+      file: "فایلها",
+      video: "ویدیوها",
+      sound: "صداها",
+      voice: "وویس ها"
+    }
   },
   it: {}
 });
