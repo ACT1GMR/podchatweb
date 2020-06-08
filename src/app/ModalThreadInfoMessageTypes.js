@@ -29,6 +29,8 @@ import {
 } from "react-icons/md";
 import {BoxModalMediaFragment} from "./index";
 import ReactDOMServer from "react-dom/server";
+import {avatarUrlGenerator, humanFileSize} from "../utils/helpers";
+import {getImage} from "./MainMessagesMessageFile";
 
 @connect()
 export default class ModalThreadInfoMessageTypes extends Component {
@@ -63,8 +65,9 @@ export default class ModalThreadInfoMessageTypes extends Component {
 
   initRequest(tab, isJustConstructed) {
     const {thread, dispatch, setScrollBottomThresholdCondition, onTabSelect, defaultTab} = this.props;
+    const initRequestTime = this.initRequestTime = Date.now();
     if (isJustConstructed !== true) {
-      if(this.state.activeTab === tab) {
+      if (this.state.activeTab === tab) {
         return;
       }
       if (onTabSelect) {
@@ -84,6 +87,9 @@ export default class ModalThreadInfoMessageTypes extends Component {
       return
     }
     dispatch(threadMessageGetListByTypes(thread.id, types[tab], 25, 0)).then(result => {
+      if (this.initRequestTime && initRequestTime < this.initRequestTime) {
+        return;
+      }
       setScrollBottomThresholdCondition(result.hasPrevious);
       this.setState({
         loading: false,
@@ -122,12 +128,15 @@ export default class ModalThreadInfoMessageTypes extends Component {
 
   buildComponent(type, message) {
     const {dispatch} = this.props;
-    const idMessage = `${message.id}-message-types-${type}`
+    const idMessage = `${message.id}-message-types-${type}`;
     const gotoMessage = () => {
       dispatch(threadModalThreadInfoShowing());
       window.modalMediaRef.close();
       dispatch(threadGoToMessageId(message.time));
     };
+    let metaData = message.metadata;
+    metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
+    const {link, originalName, size} = metaData;
     if (type === "picture") {
       const onFancyBoxClick = e => {
         //window.modalMediaRef.getFancyBox().open()
@@ -139,11 +148,11 @@ export default class ModalThreadInfoMessageTypes extends Component {
         <Container className={style.ModalThreadInfoMessageTypes__ImageContainer} data-fancybox key={idMessage}
                    onClick={onFancyBoxClick}>
           <BoxModalMediaFragment
-            options={{buttons: ["goto", "slideShow",  "close"], caption: message.message}}
-            link={"https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg"}>
+            options={{buttons: ["goto", "slideShow", "close"], caption: message.message}}
+            link={link}>
             <Image className={style.ModalThreadInfoMessageTypes__Image}
                    setOnBackground
-                   src={"https://file-examples.com/wp-content/uploads/2017/10/file_example_JPG_100kB.jpg"}/>
+                   src={getImage(metaData, true, true).imageLink}/>
           </BoxModalMediaFragment>
 
         </Container>
@@ -151,21 +160,27 @@ export default class ModalThreadInfoMessageTypes extends Component {
     } else if (type === "file" || type === "sound" || type === "video") {
       return (
         <Container className={style.ModalThreadInfoMessageTypes__FileContainer} onClick={gotoMessage} key={idMessage}>
-          <Container>
-            <Text wordWrap="breakWord" bold>
-              {type === "file" ? "ghablmale.zip" : type === "sound" ? "ghablmale-sound.mp3" : "ghablmale-video.mp4"}
-            </Text>
-            <Text size="xs" color="gray">1.5MB</Text>
+          <Container maxWidth="calc(100% - 30px)">
+
+            <Container className={style.ModalThreadInfoMessageTypes__FileNameContainer}>
+              <Text whiteSpace="noWrap" bold>
+                {originalName}
+              </Text>
+            </Container>
+
+            <Text size="xs" color="gray">{humanFileSize(size, true)}</Text>
           </Container>
           <Container centerLeft onClick={e => e.stopPropagation()}>
             {type === "video" ?
-              <video controls id={`video-${idMessage}`} style={{display: "none"}}
-                     src="https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4"/> :
+              <video controls id={idMessage} style={{display: "none"}}
+                     src={link}/> :
               type === "sound" ? <audio controls id={idMessage} style={{display: "none"}}
-                                        src="https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_700KB.mp3"/> : ""
+                                        src={link}/> : ""
             }
             {type === "file" ?
-              <MdArrowDownward style={{cursor: "pointer"}} color={styleVar.colorAccent} size={styleVar.iconSizeSm}/>
+              <Text link={`${link}&downloadable=true`} target="_blank" linkClearStyle>
+                <MdArrowDownward style={{cursor: "pointer"}} color={styleVar.colorAccent} size={styleVar.iconSizeSm}/>
+              </Text>
               :
               <Text link={`#${idMessage}`} linkClearStyle data-fancybox>
                 <MdPlayArrow style={{cursor: "pointer"}} color={styleVar.colorAccent} size={styleVar.iconSizeSm}/>

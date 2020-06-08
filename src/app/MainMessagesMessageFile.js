@@ -44,7 +44,7 @@ import strings from "../constants/localization";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 
-function getImage(metaData, isFromServer, smallVersion, fileObject) {
+export function getImage(metaData, isFromServer, smallVersion) {
   let imageLink = metaData.link;
   let width = metaData.width;
   let height = metaData.height;

@@ -336,11 +336,11 @@ export default class ChatSDK {
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.match(/mp4|ogg|3gp|ogv/);
     const isAudio = file.type.match(/audio.*/);
-    const typeCode =  isImage ? types.picture : isVideo ? types.video : isAudio ? types.sound : types.file;
+    const messageType =  isImage ? types.picture : isVideo ? types.video : isAudio ? types.sound : types.file;
     if (other) {
-      sendChatParams = {...sendChatParams, ...other, ...{typeCode}};
+      sendChatParams = {...sendChatParams, ...other};
     }
-    const obj = this.chatAgent.sendFileMessage(sendChatParams, {
+    const obj = this.chatAgent.sendFileMessage({...sendChatParams, messageType: messageType.toUpperCase()}, {
       onSent: result => {
         this._onError(result, reject);
       }
