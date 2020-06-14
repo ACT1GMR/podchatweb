@@ -78,6 +78,7 @@ export default class MainMessagesMessageText extends Component {
       onMessageSeenListClick,
       onMessageControlHide,
       onPin,
+      onShare,
       isParticipantBlocked,
       contextRef,
       forceSeen,
@@ -102,6 +103,7 @@ export default class MainMessagesMessageText extends Component {
                            message={message}
                            onMessageSeenListClick={onMessageSeenListClick}
                            onMessageControlHide={onMessageControlHide}
+                           onShare={onShare}
                            onDelete={onDelete} onForward={onForward} onReply={onReply}
                            isText={true}>
             {

@@ -30,6 +30,7 @@ import Gap from "../../../uikit/src/gap";
 //styling
 import {
   MdDoneAll,
+  MdShare,
   MdVideocam,
   MdDone,
   MdErrorOutline,
@@ -57,6 +58,7 @@ import {chatModalPrompt} from "../actions/chatActions";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 import ReactDOMServer from "react-dom/server";
 import {THREAD_ADMIN} from "../constants/privilege";
+import MainMessagesMessageShare from "./MainMessagesMessageShare";
 
 function datePetrification(time) {
   const correctTime = time / Math.pow(10, 6);
@@ -342,7 +344,7 @@ export function PaperFooterFragment({message, messageTriggerShow, isMessageByMe,
 /**
  * @return {string}
  */
-export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, onMessageSeenListClick, children, isChannel, isGroup, onPin, isOwner}) {
+export function ControlFragment({isMessageByMe, isParticipantBlocked, message, onDelete, onForward, onReply, onShare, onMessageSeenListClick, children, isChannel, isGroup, onPin, isOwner}) {
   const isMobile = mobileCheck();
   const deleteCondition = (!isChannel || (isChannel && isMessageByMe));
   const replyCondition = ((!isChannel && !isParticipantBlocked) || (isChannel && isMessageByMe));
@@ -385,6 +387,12 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
 
         {
           children
+        }
+
+        {
+          <ContextItem onClick={onShare}>
+            <MdShare size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+          </ContextItem>
         }
       </Container>
 
@@ -432,6 +440,12 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
         {
           children
         }
+
+        {
+          <ContextItem onClick={onShare}>
+            {strings.share}
+          </ContextItem>
+        }
       </Fragment>
     }
   </Context>
@@ -457,6 +471,7 @@ export default class MainMessagesMessage extends Component {
     this.onDelete = this.onDelete.bind(this);
     this.onForward = this.onForward.bind(this);
     this.onReply = this.onReply.bind(this);
+    this.onShare = this.onShare.bind(this);
     this.onPin = this.onPin.bind(this);
     this.onMessageControlHide = this.onMessageControlHide.bind(this);
     this.onMessageControlShow = this.onMessageControlShow.bind(this);
@@ -528,6 +543,13 @@ export default class MainMessagesMessage extends Component {
     dispatch(chatModalPrompt(true,
       null, null, null, null,
       <PinMessagePrompt message={message} dispatch={dispatch}/>));
+  }
+
+  onShare() {
+    const {dispatch, message} = this.props;
+    dispatch(chatModalPrompt(true,
+      null, null, null, null,
+      <MainMessagesMessageShare message={message}/>));
   }
 
   onDelete(e) {
@@ -606,6 +628,7 @@ export default class MainMessagesMessage extends Component {
       onForward: this.onForward,
       onReply: this.onReply,
       onPin: this.onPin,
+      onShare: this.onShare,
       isFirstMessage: showNameOrAvatar(message, messages),
       datePetrification: datePetrification.bind(null, message.time),
       messageControlShow,

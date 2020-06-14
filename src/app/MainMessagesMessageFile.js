@@ -44,7 +44,7 @@ import strings from "../constants/localization";
 import {decodeEmoji} from "./MainFooterEmojiIcons";
 
 
-function getImage(metaData, isFromServer, smallVersion, fileObject) {
+export function getImage(metaData, isFromServer, smallVersion) {
   let imageLink = metaData.link;
   let width = metaData.width;
   let height = metaData.height;
@@ -151,6 +151,7 @@ class MainMessagesMessageFile extends Component {
       onRepliedMessageClicked,
       onMessageSeenListClick,
       onMessageControlHide,
+      onShare,
       isParticipantBlocked,
       leftAsideShowing,
       smallVersion,
@@ -198,6 +199,7 @@ class MainMessagesMessageFile extends Component {
             onPin={onPin}
             isChannel={isChannel}
             isGroup={isGroup}
+            onShare={onShare}
             messageControlShow={messageControlShow}
             message={message}
             onMessageSeenListClick={onMessageSeenListClick}
@@ -213,7 +215,7 @@ class MainMessagesMessageFile extends Component {
                        className={style.MainMessagesFile__FileContainer}>
               {isImage ?
                 <Container style={{width: `${imageSizeLink.width}px`}}>
-                  <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} caption={message.message}>
+                  <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} options={{caption: message.message}}>
                     <Image className={mainMessagesFileImageClassNames}
                            onClick={this.onImageClick}
                            src={imageSizeLink.imageLink}

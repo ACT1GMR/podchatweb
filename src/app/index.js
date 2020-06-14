@@ -10,7 +10,7 @@ import strings from "../constants/localization";
 import {
   ROUTE_ADD_CONTACT,
   ROUTE_CONTACTS, ROUTE_CREATE_CHANNEL,
-  ROUTE_CREATE_GROUP, ROUTE_THREAD,
+  ROUTE_CREATE_GROUP, ROUTE_SHARE, ROUTE_THREAD,
   ROUTE_THREAD_INFO, ROUTE_USERNAME
 } from "../constants/routes";
 
@@ -50,13 +50,16 @@ import ModalPrompt from "./ModalPrompt";
 //styling
 import style from "../../styles/pages/box/index.scss";
 import {contactGetList} from "../actions/contactActions";
+import ModalShare from "./ModalShare";
 
-export function BoxModalMediaFragment({link, caption, linkClassName, children}) {
+export function BoxModalMediaFragment({link, caption, linkClassName, children, options}) {
+  const fixedOptions = options || {};
+
   return <Container className={style.Box__MediaTrigger} inline>
     <Text link={link}
           className={linkClassName}
           linkClearStyle
-          data-options={`{"caption": "${caption || ""}"}`}>
+          data-options={JSON.stringify(fixedOptions)}>
       {children && children}
     </Text>
 
@@ -177,6 +180,7 @@ class Box extends Component {
     if (onSignOutHook) {
       dispatch(chatSignOutHook(onSignOutHook));
     }
+    window.modalMediaRef = this.modalMediaRef.current;
   }
 
   setToken(token) {
@@ -222,6 +226,8 @@ class Box extends Component {
                render={() => <ModalContactListMenu smallVersion={small}/>}/>
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_ADD_CONTACT}
                render={() => <ModalAddContact smallVersion={small}/>}/>
+        <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_SHARE}
+               render={() => <ModalShare smallVersion={small}/>}/>
         <Route exact={!chatRouterLess} path={chatRouterLess ? "" : ROUTE_THREAD_INFO}
                render={() => <ModalThreadInfo smallVersion={small}/>}/>
         <ModalThreadList smallVersion={small} ref={this.modalThreadListRef}/>

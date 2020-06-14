@@ -96,7 +96,7 @@ module.exports = (e, argv) => {
         filename: "[name].css",
         chunkFilename: "[id].css"
       }),
-      new BundleAnalyzerPlugin()
+      //new BundleAnalyzerPlugin()
     ],
     node: {
       fs: "empty",

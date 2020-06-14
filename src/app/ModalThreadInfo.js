@@ -43,7 +43,7 @@ function AvatarModalMediaFragment({participant, thread}) {
     image = thread.image;
     caption = thread.title;
   }
-  return image ? <BoxModalMediaFragment link={image} caption={caption}
+  return image ? <BoxModalMediaFragment link={image} options={{caption}}
                                         linkClassName={style.ModalThreadInfo__ModalMediaLink}/> : null;
 }
 

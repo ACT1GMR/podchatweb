@@ -169,6 +169,14 @@ export const threadMessageGetList = (threadId, count) => {
   }
 };
 
+export const threadMessageGetListByTypes = (threadId, messageType, count, offset) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return getThreadHistory(chatSDK, threadId, count, offset, null, null, false, messageType.toUpperCase())
+  }
+};
+
 export const threadUnreadMentionedMessageGetList = (threadId, count) => {
   return (dispatch, getState) => {
     const state = getState();

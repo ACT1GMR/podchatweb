@@ -32,6 +32,7 @@ import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete, MdDeleteF
 //styling
 import styleVar from "../../styles/variables.scss";
 import {isChannel, isGroup} from "./Main";
+import ModalThreadInfoMessageTypes from "./ModalThreadInfoMessageTypes";
 
 
 function getParticipant(participants, user) {
@@ -59,7 +60,11 @@ export default class ModalThreadInfo extends Component {
   constructor(props) {
     super(props);
     this.onRemoveThread = this.onRemoveThread.bind(this);
+    this.setScrollBottomThresholdCondition = this.setScrollBottomThresholdCondition.bind(this);
+    this.setOnScrollBottomThreshold = this.setOnScrollBottomThreshold.bind(this);
     this.state = {
+      scrollBottomThresholdCondition: false,
+      scrollBottomThreshold: null,
       contact: {}
     };
   }
@@ -145,7 +150,7 @@ export default class ModalThreadInfo extends Component {
     }, () => dispatch(contactListShowing(true))));
   }
 
-  onRemoveThread(){
+  onRemoveThread() {
     const {thread, dispatch} = this.props;
     dispatch(chatModalPrompt(true, `${strings.areYouSureRemovingThread}؟`, () => {
       dispatch(threadLeave(thread.id));
@@ -154,8 +159,17 @@ export default class ModalThreadInfo extends Component {
     }, null, strings.remove));
   }
 
+  setScrollBottomThresholdCondition(scrollBottomThresholdCondition) {
+    this.setState({scrollBottomThresholdCondition});
+  }
+
+  setOnScrollBottomThreshold(scrollBottomThreshold) {
+    this.setState({scrollBottomThreshold});
+  }
+
   render() {
     const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, GapFragment, AvatarModalMediaFragment} = this.props;
+    const {scrollBottomThresholdCondition, scrollBottomThreshold} = this.state;
     const isOnTheFly = thread.onTheFly;
     let participant = isOnTheFly ? thread.participant : getParticipant(participants, user);
     const participantImage = avatarUrlGenerator(isOnTheFly ? thread.image : participant.image, avatarUrlGenerator.SIZES.MEDIUM);
@@ -168,7 +182,9 @@ export default class ModalThreadInfo extends Component {
           <Heading h3>{strings.contactInfo}</Heading>
         </ModalHeader>
 
-        <ModalBody>
+        <ModalBody            threshold={5}
+          onScrollBottomThresholdCondition={scrollBottomThresholdCondition}
+                               onScrollBottomThreshold={scrollBottomThreshold}>
           <Container>
             <Container relative>
 
@@ -307,6 +323,10 @@ export default class ModalThreadInfo extends Component {
                 </List>
 
               </Container>
+              <GapFragment/>
+              <ModalThreadInfoMessageTypes thread={thread}
+                                           setScrollBottomThresholdCondition={this.setScrollBottomThresholdCondition}
+                                           setOnScrollBottomThreshold={this.setOnScrollBottomThreshold}/>
             </Fragment>
             }
 

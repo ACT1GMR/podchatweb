@@ -242,7 +242,24 @@ let strings = new LocalizedStrings({
       }
       return `ارسال ${count} ${fileText}`;
     },
-    thereIsNoContact: "مخاطبی وجود ندارد"
+    thereIsNoContact: "مخاطبی وجود ندارد",
+    share: "اشتراک گذاری",
+    socialNetworks: {
+      telegram: "تلگرام",
+      whatsapp: "واتساپ",
+      twitter: "توییتر",
+      skype: "اسکایپ"
+    },
+    areYouSureABoutSendingThisMessage: "از فرستادن این پیام مطئنید",
+    gotoMessage: "رفتن به پیام",
+    messageTypes: {
+      people: "اعضا",
+      picture: "تصاویر",
+      file: "فایلها",
+      video: "ویدیوها",
+      sound: "صداها",
+      voice: "وویس ها"
+    }
   },
   it: {}
 });
