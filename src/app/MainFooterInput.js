@@ -249,6 +249,9 @@ export default class MainFooterInput extends Component {
     let draftMessage;
     if (thread && thread.id) {
       draftMessage = Cookies.get(MESSAGE_SHARE) || Cookies.get(thread.id) || null;
+      if (draftMessage) {
+        draftMessage = this._analyzeDraft(draftMessage);
+      }
     }
     this.setInputText(draftMessage);
     dispatch(threadIsSendingMessage(!!draftMessage));
@@ -270,7 +273,10 @@ export default class MainFooterInput extends Component {
       } else {
         dispatch(threadDraft(isThreadHide ? threadId : oldThreadId));
       }
-      const draftMessage = Cookies.get(thread.id) || (threadId ? Cookies.get(threadId) : null);
+      let draftMessage = Cookies.get(thread.id) || (threadId ? Cookies.get(threadId) : null);
+      if (draftMessage) {
+        draftMessage = this._analyzeDraft(draftMessage);
+      }
       if (msgEditing) {
         let emptyEditingCondition = msgEditing.type !== constants.forwarding || msgEditing.threadId ? msgEditing.threadId !== threadId : false;
         if (emptyEditingCondition) {
@@ -320,18 +326,20 @@ export default class MainFooterInput extends Component {
       }
 
       const newArray = [];
+
       function increaseCount(array, index) {
         const countAndChar = array[index].split("|");
         array[index] = buildText(++countAndChar[0], countAndChar[1]);
         array = parsedArray.sort(((a, b) => b.split('|')[0] - a.split('|')[0]));
       }
+
       for (let emoj of emoji) {
         const indexInArray = parsedArray.findIndex(e => e.indexOf(emoj) > -1);
         const indexInNewArray = newArray.findIndex(e => e.indexOf(emoj) > -1);
         if (indexInArray > -1) {
           increaseCount(parsedArray, indexInArray);
         } else {
-          if(indexInNewArray > -1) {
+          if (indexInNewArray > -1) {
             increaseCount(newArray, indexInNewArray);
           } else {
             if (parsedArray.length + newArray.length >= 36) {
@@ -429,8 +437,30 @@ export default class MainFooterInput extends Component {
     this.lastTypingText = null;
   }
 
+  _analyzeDraft(text) {
+    const splitedText = text.split("|");
+    if (splitedText.length > 1) {
+      const message = JSON.parse(splitedText[1]);
+      let type = splitedText[2];
+      if (type === "undefined" || type === "null") {
+        type = null;
+        message.draftMode = true;
+      }
+      this.props.dispatch(messageEditing(message, type));
+      return splitedText[0];
+    }
+  }
+
   _setDraft(threadId, text) {
-    Cookies.set(threadId, text);
+    const {messageEditing, thread, user} = this.props;
+    let concatText = "";
+    if (messageEditing) {
+      if (messageEditing.type !== constants.forwarding) {
+        concatText += `|${JSON.stringify(messageEditing.message)}|${messageEditing.type}`;
+      }
+    }
+    const finalText = `${text}${concatText}`;
+    Cookies.set(threadId, finalText);
     this.lastTypingText = text;
   }
 

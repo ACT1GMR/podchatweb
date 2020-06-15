@@ -95,7 +95,9 @@ export default class MainFooterInputEditing extends Component {
       if (messageEditing.type !== constants.replying) {
         if (prevProps.messageEditing !== messageEditing) {
           if (messageEditing.type !== constants.replying && messageEditing.type !== constants.forwarding) {
-            setInputText(decodeEmoji(messageEditing.message.message));
+            if(!messageEditing.message.draftMode) {
+              setInputText(decodeEmoji(messageEditing.message.message));
+            }
           } else {
             dispatch(threadIsSendingMessage(true));
           }
