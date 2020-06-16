@@ -449,6 +449,7 @@ export default class MainFooterInput extends Component {
       this.props.dispatch(messageEditing(message, type));
       return splitedText[0];
     }
+    return splitedText[0];
   }
 
   _setDraft(threadId, text) {
