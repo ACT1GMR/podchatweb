@@ -30,6 +30,7 @@ import style from "../../styles/pages/box/MainHead.scss";
 import styleVar from "../../styles/variables.scss";
 import classnames from "classnames";
 
+
 const statics = {};
 
 @connect(store => {

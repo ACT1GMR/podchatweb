@@ -1,7 +1,8 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Link, withRouter} from "react-router-dom";
+import {withRouter} from "react-router-dom";
+import {socketStatus} from "./AsideHead";
 
 //strings
 import strings from "../constants/localization";
@@ -24,7 +25,7 @@ import LoadingBlinkDots from "../../../uikit/src/loading/LoadingBlinkDots";
 
 export function TypingFragment({isGroup, typing, textProps}) {
   return (
-    <Container style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+    <Container style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
       <Text inline bold {...textProps}>{strings.typing(isGroup ? typing.user.user : null)}</Text>
       <Loading><LoadingBlinkDots size="sm" invert/></Loading>
     </Container>
@@ -34,6 +35,7 @@ export function TypingFragment({isGroup, typing, textProps}) {
 @connect(store => {
   return {
     smallVersion: store.chatSmallVersion,
+    chatState: store.chatState,
     chatRouterLess: store.chatRouterLess,
     thread: store.thread.thread,
     threadShowing: store.threadShowing,
@@ -56,7 +58,8 @@ class BoxHeadThreadInfo extends Component {
   }
 
   render() {
-    const {thread, smallVersion} = this.props;
+    const {thread, smallVersion, chatState} = this.props;
+    const {isDisconnected, timeUntilReconnect, isReconnecting, isConnected} = socketStatus(chatState);
     if (thread.id) {
       const classNames = classnames({
         [style.MainHeadThreadInfo]: true,
@@ -81,12 +84,18 @@ class BoxHeadThreadInfo extends Component {
                     <TypingFragment isGroup={thread.group} typing={thread.isTyping}
                                     textProps={{size: "xs", color: "yellow"}}/> :
                     <Container>
-                      {thread.group ?
-                        <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
-                        :
-                        <Text color={typingText ? "yellow" : null} size="xs" invert
-                              overflow="ellipsis">{strings.you}, {thread.title}</Text>
+
+                      {
+                        isConnected ?
+                          thread.group ?
+                            <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
+                            :
+                            <Text color={typingText ? "yellow" : null} size="xs" invert
+                                  overflow="ellipsis">{strings.you}, {thread.title}</Text>
+                          :
+                          <Text size="xs" invert overflow="ellipsis">{isDisconnected ? `${strings.chatState.networkDisconnected}...` : `${strings.chatState.reconnecting}...`}</Text>
                       }
+
                     </Container>
                 }
               </Container>

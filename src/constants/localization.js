@@ -180,7 +180,7 @@ let strings = new LocalizedStrings({
     areYouSureToDoIt: "از انجام این کار مطمئنید",
     leaveGroup: isChannel => `ترک ${isChannel ? "کانال" : "گروه"}`,
     chatState: {
-      networkDisconnected: "عدم برقراری ارتباط",
+      networkDisconnected: "عدم ارتباط",
       reconnecting: "اتصال به شبکه",
       connectingToChat: "در حال اتصال"
     },
