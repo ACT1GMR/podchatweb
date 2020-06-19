@@ -251,7 +251,7 @@ class AsideHead extends Component {
           </Container>
           {isDisconnected && !reConnecting &&
           <Container inline onClick={this.onRetryClick}>
-            <Text size="xs" color="gray" light linkStyle>{strings.tryAgain} ( {timeUntilReconnectTimer} )</Text>
+            <Text size="xs" color="gray" light linkStyle>{strings.tryAgain}{timeUntilReconnectTimer ? ` ( ${timeUntilReconnectTimer} )` : ""} )</Text>
           </Container>
           }
           {reConnecting &&
