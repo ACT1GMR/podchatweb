@@ -594,11 +594,11 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  addContact(resolve, reject, cellphoneNumber, firstName, lastName) {
+  addContact(resolve, reject, addBy, firstName, lastName) {
     const addContactParams = {
       firstName,
       lastName,
-      cellphoneNumber
+      [isNaN(addBy) ? "username" : "cellphoneNumber"]: addBy
     };
     this.chatAgent.addContacts(addContactParams, (result) => {
       if (!this._onError(result, reject)) {

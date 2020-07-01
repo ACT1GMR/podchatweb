@@ -35,6 +35,7 @@ let strings = new LocalizedStrings({
     forward: "ارسال",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
+    mobilePhoneOrUsername: "شماره موبایل یا یوزرنیم",
     unknown: "نامشخص",
     required: "اجباری",
     firstName: "نام",
@@ -252,6 +253,7 @@ let strings = new LocalizedStrings({
     },
     areYouSureABoutSendingThisMessage: "از فرستادن این پیام مطئنید",
     gotoMessage: "رفتن به پیام",
+    addToContact: "اضافه کردن به مخطابین",
     messageTypes: {
       people: "اعضا",
       picture: "تصاویر",

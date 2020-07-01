@@ -89,6 +89,7 @@ class ModalContactListMenu extends Component {
       id: contact.id,
       isMyContact: true,
       coreUserId: contact.linkedUser.coreUserId,
+      username: contact.linkedUser.username,
       image: contact.linkedUser.image,
       name: `${contact.firstName}${contact.lastName ? ` ${contact.lastName}` : ''}`
     };
