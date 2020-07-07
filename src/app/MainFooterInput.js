@@ -5,9 +5,11 @@ import classnames from "classnames";
 import sanitizeHTML from "sanitize-html";
 import {mobileCheck} from "../utils/helpers";
 import Cookies from "js-cookie";
+import {clearHtml, getCursorMentionMatch} from "./_component/Input"
 
 //strings
 import strings from "../constants/localization";
+
 //actions
 import {
   messageEdit,
@@ -18,16 +20,17 @@ import {
   messageSendOnTheFly
 } from "../actions/messageActions";
 import {threadDraft, threadEmojiShowing, threadIsSendingMessage} from "../actions/threadActions";
+
 //components
-import MainFooterInputEmoji from "./MainFooterInputEmoji";
 import MainFooterInputEditing, {messageEditingCondition} from "./MainFooterInputEditing";
 import Container from "../../../uikit/src/container";
-import {InputTextArea} from "../../../uikit/src/input";
+import Input from "./_component/Input";
+import {codeEmoji, emojiRegex} from "./_component/EmojiIcons.js";
+import {startTyping, stopTyping} from "../actions/chatActions";
+import ParticipantSuggestion from "./_component/ParticipantSuggestion";
+
 //styling
 import style from "../../styles/pages/box/MainFooterInput.scss";
-import {codeEmoji, emojiRegex} from "./MainFooterEmojiIcons";
-import {startTyping, stopTyping} from "../actions/chatActions";
-import MainFooterInputParticipants from "./MainFooterInputParticipants";
 import OutsideClickHandler from "react-outside-click-handler";
 import {emojiCookieName} from "../constants/emoji";
 import {MESSAGE_SHARE} from "../constants/cookie-keys";
@@ -36,136 +39,6 @@ export const constants = {
   replying: "REPLYING",
   forwarding: "FORWARDING"
 };
-
-export function sanitizeRule(isSendingMessage) {
-  return {
-    allowedTags: isSendingMessage ? ["img"] : ["img", "br", "div"],
-    allowedAttributes: {
-      img: ["src", "style", "class", "alt"]
-    },
-    allowedSchemes: ["data"],
-    exclusiveFilter: function (frame) {
-      if (frame.tag === "img") {
-        if (!frame.attribs.class) {
-          return true
-        }
-        if (!~frame.attribs.class.indexOf("emoji")) {
-          return true;
-        }
-      }
-    }
-  }
-}
-
-export function clearHtml(html, clearTags) {
-  if (!html) {
-    return html;
-  }
-  const document = window.document.createElement("div");
-  document.innerHTML = html;
-  const children = Array.from(document.childNodes);
-  const removingIndexes = [];
-  const clonedChildren = [...children].reverse();
-  for (let child of clonedChildren) {
-    if (child.data) {
-      break;
-    }
-    if (child.innerText === "\n") {
-      removingIndexes.push(children.indexOf(child));
-      continue;
-    }
-    break;
-  }
-  let filterChildren = [];
-  if (removingIndexes.length) {
-    let index = 0;
-    for (const child of children) {
-      if (removingIndexes.indexOf(index) === -1) {
-        filterChildren.push(child);
-      }
-      index++;
-    }
-  } else {
-    filterChildren = children;
-  }
-  const newText = window.document.createElement("div");
-
-  filterChildren.map(e => {
-    let node = e;
-    if (clearTags) {
-      if (e.tagName === "BR") {
-        node = window.document.createTextNode("\n");
-      } else if (e.tagName === "DIV") {
-        let countOfN = "";
-        if (e.children.length) {
-          for (const child of e.children) {
-            if (child.tagName === "BR") {
-              countOfN += "\n";
-            }
-          }
-        } else {
-          countOfN = `\n${e.innerText}`
-        }
-        node = window.document.createTextNode(countOfN);
-      }
-    }
-    newText.appendChild(node)
-  });
-  return sanitizeHTML(newText.innerHTML.trim(), sanitizeRule(clearTags)).trim();
-}
-
-function isEmptyTag(text) {
-  if (text.indexOf("img") >= 0) {
-    return false;
-  }
-  const elem = window.document.createElement("div");
-  elem.innerHTML = text;
-  return !(elem.innerText && elem.innerText.trim());
-}
-
-function getCursorMentionMatch(messageText, inputNode, isSetMode, replaceText) {
-  if (!messageText) {
-    return false;
-  }
-  const cursorPosition = inputNode.getCaretPosition();
-  const sliceMessage = messageText.slice(0, cursorPosition);
-
-  function isBeforeAtSignValid(currentPosition) {
-    let beforeAtSignChar = sliceMessage[currentPosition - 1];
-    if (!beforeAtSignChar || beforeAtSignChar === " " || beforeAtSignChar === "\n") {
-      return true;
-    }
-  }
-
-  if (!isSetMode) {
-    if (isBeforeAtSignValid(sliceMessage.length - 1) && sliceMessage[sliceMessage.length - 1] === "@") {
-      return true;
-    }
-  }
-  const mentionMatches = sliceMessage.match(/@[0-9a-z\u0600-\u06FF](\.?[0-9a-z\u0600-\u06FF])*/gm);
-  if (!isSetMode) {
-    if (!mentionMatches) {
-      return false;
-    }
-  }
-  const lastMentionIndex = sliceMessage.lastIndexOf("@");
-  if (isSetMode) {
-    let modifiedReplaceText = `@${replaceText}`;
-    if (!messageText[cursorPosition + 1] || messageText[cursorPosition] !== " ") {
-      modifiedReplaceText += " ";
-    }
-    return `${sliceMessage.substr(0, lastMentionIndex)}${modifiedReplaceText}${messageText.substr(cursorPosition)}`;
-  }
-  const lastMentionedSliceMessage = sliceMessage.slice(lastMentionIndex, sliceMessage.length);
-  const matches = lastMentionedSliceMessage.match(/\s+/g);
-  if (matches) {
-    return false;
-  }
-  if (!isBeforeAtSignValid(lastMentionIndex)) {
-    return false;
-  }
-  return mentionMatches[mentionMatches.length - 1].replace("@", "");
-}
 
 @connect(store => {
   return {
@@ -180,20 +53,23 @@ export default class MainFooterInput extends Component {
 
   constructor(props) {
     super(props);
-    this.onTextChange = this.onTextChange.bind(this);
     this.setInputText = this.setInputText.bind(this);
+    this.onStartTyping = this.onStartTyping.bind(this);
+    this.onText = this.onText.bind(this);
+    this.onNonEmptyText = this.onNonEmptyText.bind(this);
+    this.onEmptyText = this.onEmptyText.bind(this);
     this.onInputFocus = this.onInputFocus.bind(this);
     this.onInputKeyPress = this.onInputKeyPress.bind(this);
     this.onInputKeyDown = this.onInputKeyDown.bind(this);
-    this.onInputKeyUp = this.onInputKeyUp.bind(this);
-    this.onPaste = this.onPaste.bind(this);
+    this.onShowParticipant = this.onShowParticipant.bind(this);
     this.onParticipantSelect = this.onParticipantSelect.bind(this);
+    this.onEmojiShowing = this.onEmojiShowing.bind(this);
     this.resetParticipantSuggestion = this.resetParticipantSuggestion.bind(this);
-    this.mainFooterInputParticipantsRef = React.createRef();
-    this.typingTimeOut = null;
+    this.participantSuggestionsRef = React.createRef();
     this.typingSet = false;
     this.forwardMessageSent = false;
     this.inputNode = React.createRef();
+    this.inputClassNode = React.createRef();
     this.lastTypingText = null;
     this.state = {
       showParticipant: false,
@@ -201,46 +77,19 @@ export default class MainFooterInput extends Component {
     };
   }
 
-  setInputText(text, append) {
-    const {dispatch, messageEditing, thread} = this.props;
-    const {messageText} = this.state;
-    let newText = text;
-    if (append) {
-      if (messageText) {
-        const caretPosition = this.inputNode.current.getLastCaretPosition();
-        const div = document.createElement("div");
-        div.innerHTML = messageText;
-        newText = div.innerHTML.slice(0, caretPosition) + newText + div.innerHTML.slice(caretPosition);
-      }
-    }
-    this.setState({
-      messageText: newText
-    });
-    if (newText) {
-      if (newText.trim()) {
-        if (clearHtml(newText) && !isEmptyTag(newText)) {
-          this._setDraft(thread.id, newText);
-          return dispatch(threadIsSendingMessage(true));
-        }
-      }
-    }
-    if (!this.forwardMessageSent && messageEditing) {
-      if (messageEditing.type === constants.forwarding) {
-        return;
-      }
-    }
-    if (this.forwardMessageSent) {
-      this.forwardMessageSent = false;
-    }
-    this._clearDraft(thread.id);
-    dispatch(threadIsSendingMessage(false));
+  onEmojiShowing(showing) {
+    this.props.dispatch(threadEmojiShowing(showing));
   }
 
   focus() {
-    const current = this.inputNode.current;
+    const current = this.inputClassNode.current;
     if (current) {
       current.focus();
     }
+  }
+
+  setInputText() {
+    this.inputClassNode.current && this.inputClassNode.current.setInputText.apply(null, arguments);
   }
 
   componentDidMount() {
@@ -453,55 +302,21 @@ export default class MainFooterInput extends Component {
   }
 
   _setDraft(threadId, text) {
-    const {messageEditing, thread, user} = this.props;
-    let concatText = "";
-    if (messageEditing) {
-      if (messageEditing.type !== constants.forwarding) {
-        concatText += `|${JSON.stringify(messageEditing.message)}|${messageEditing.type}`;
-      }
-    }
-    const finalText = `${text}${concatText}`;
-    Cookies.set(threadId, finalText);
-    this.lastTypingText = text;
-  }
-
-  onTextChange(event, isOnBlur) {
-    const {thread, dispatch} = this.props;
-    const threadId = thread.id;
-    if (!isOnBlur) {
-      if (!thread.onTheFly) {
-        clearTimeout(this.typingTimeOut);
-        if (!this.typingSet) {
-          this.typingSet = true;
-          dispatch(startTyping(threadId));
+    setTimeout(() => {
+      const {messageEditing, thread} = this.props;
+      let concatText = "";
+      if (messageEditing) {
+        if (messageEditing.type !== constants.forwarding) {
+          if (messageEditing.message.threadId === thread.id) {
+            concatText += `|${JSON.stringify(messageEditing.message)}|${messageEditing.type}`;
+          }
         }
-        this.typingTimeOut = setTimeout(e => {
-          this.typingSet = false;
-          dispatch(stopTyping());
-        }, 1500);
       }
-      if (thread.group) {
-        this.showParticipant(event);
-      }
-      this.setInputText(event);
-    }
-  }
+      const finalText = `${text}${concatText}`;
+      Cookies.set(threadId, finalText);
+      this.lastTypingText = text;
+    }, 200)
 
-  showParticipant(messageText) {
-    const {showParticipant} = this.state;
-    const lastMentionedMan = getCursorMentionMatch(messageText, this.inputNode.current);
-    if (!lastMentionedMan) {
-      if (showParticipant) {
-        return this.setState({
-          showParticipant: false
-        });
-      }
-      return;
-    }
-    this.setState({
-      showParticipant: true,
-      filterString: lastMentionedMan === true ? null : lastMentionedMan
-    });
   }
 
   onParticipantSelect(contact) {
@@ -523,9 +338,7 @@ export default class MainFooterInput extends Component {
   onInputKeyPress(evt) {
     if (!mobileCheck()) {
       if (evt.which === 13 && !evt.shiftKey) {
-        this.props.dispatch(stopTyping());
         this.sendMessage();
-        evt.preventDefault();
       }
     }
   }
@@ -538,18 +351,9 @@ export default class MainFooterInput extends Component {
         if (keyCode === 27) {
           this.resetParticipantSuggestion();
         }
-        this.mainFooterInputParticipantsRef.current.getWrappedInstance().keyDownSignal(evt);
+        this.participantSuggestionsRef.current.getWrappedInstance().keyDownSignal(evt);
       }
     }
-  }
-
-  onInputKeyUp(evt) {
-    this.onTextChange(evt.target.innerHTML);
-  }
-
-  onPaste(e) {
-    e.stopPropagation();
-    e.preventDefault();
   }
 
   onInputFocus(e) {
@@ -568,10 +372,60 @@ export default class MainFooterInput extends Component {
     });
   }
 
+  onStartTyping(isTyping) {
+    const {thread, dispatch} = this.props;
+    const threadId = thread.id;
+    if (isTyping) {
+      dispatch(startTyping(threadId));
+    }
+    dispatch(stopTyping());
+  }
+
+  onShowParticipant(showParticipant, filterString) {
+    if (this.props.thread.group) {
+      if (showParticipant) {
+        return this.setState({
+          showParticipant: true,
+          filterString: filterString
+        });
+      }
+      this.setState({
+        showParticipant: false,
+        filterString: null
+      });
+    }
+  }
+
+  onText(newText) {
+    this.setState({
+      messageText: newText
+    });
+  }
+
+  onNonEmptyText(newText) {
+    const {dispatch, thread} = this.props;
+    this._setDraft(thread.id, newText);
+    dispatch(threadIsSendingMessage(true));
+  }
+
+  onEmptyText() {
+    const {dispatch, messageEditing, thread} = this.props;
+    if (!this.forwardMessageSent && messageEditing) {
+      if (messageEditing.type === constants.forwarding) {
+        return;
+      }
+    }
+    if (this.forwardMessageSent) {
+      this.forwardMessageSent = false;
+    }
+    this._clearDraft(thread.id);
+    dispatch(threadIsSendingMessage(false));
+  }
+
   render() {
-    const {messageEditing, thread, user} = this.props;
+    const {messageEditing, thread, user, emojiShowing} = this.props;
     const {messageText, showParticipant, filterString} = this.state;
-    const editBotClassNames = classnames({
+    const editBoxClassNames = classnames({
       [style.MainFooterInput__EditBox]: true,
       [style["MainFooterInput__EditBox--halfBorder"]]: messageEditingCondition(messageEditing)
     });
@@ -587,9 +441,9 @@ export default class MainFooterInput extends Component {
 
           <Container className={style.MainFooterInput__ParticipantContainer}>
             <Container className={participantsPositionContainerClassNames}>
-              <MainFooterInputParticipants filterString={filterString} onSelect={this.onParticipantSelect} user={user}
-                                           ref={this.mainFooterInputParticipantsRef}
-                                           thread={thread}/>
+              <ParticipantSuggestion filterString={filterString} onSelect={this.onParticipantSelect} user={user}
+                                     ref={this.participantSuggestionsRef}
+                                     thread={thread}/>
             </Container>
           </Container>
 
@@ -597,25 +451,26 @@ export default class MainFooterInput extends Component {
           <Container className={style.MainFooterInput__EditingBox}>
             <MainFooterInputEditing messageEditing={messageEditing} setInputText={this.setInputText}/>
           </Container>
-          <Container relative className={editBotClassNames}>
-            <Container className={style.MainFooterInput__EditBoxInputContainer} onPaste={this.onPaste}>
-              <InputTextArea
-                ref={this.inputNode}
-                className={style.MainFooterInput__InputContainer}
-                inputClassName={style.MainFooterInput__Input}
-                sanitizeRule={sanitizeRule()}
-                placeholder={strings.pleaseWriteHere}
-                onFocus={this.onInputFocus}
-                onChange={this.onTextChange}
-                onKeyPress={this.onInputKeyPress}
-                onKeyDown={this.onInputKeyDown}
-                onKeyUp={this.onInputKeyUp}
-                value={messageText}/>
-            </Container>
-            <Container centerLeft>
-              <MainFooterInputEmoji inputNode={this.inputNode}/>
-            </Container>
-          </Container>
+          <Input
+            ref={this.inputClassNode}
+            inputNode={this.inputNode}
+            containerClassName={editBoxClassNames}
+            editBoxClassName={style.MainFooterInput__EditBoxInputContainer}
+            inputContainerClassName={style.MainFooterInput__InputContainer}
+            inputClassName={style.MainFooterInput__Input}
+            showParticipant={showParticipant}
+            onShowParticipant={this.onShowParticipant}
+            placeholder={strings.pleaseWriteHere}
+            emojiShowing={emojiShowing}
+            onStartTyping={this.onStartTyping}
+            onText={this.onText}
+            onNonEmptyText={this.onNonEmptyText}
+            onEmptyText={this.onEmptyText}
+            onEmojiShowing={this.onEmojiShowing}
+            onFocus={this.onInputFocus}
+            onKeyPress={this.onInputKeyPress}
+            onKeyDown={this.onInputKeyDown}
+            value={messageText}/>
         </OutsideClickHandler>
       </Container>
     );

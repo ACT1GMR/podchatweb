@@ -20,7 +20,7 @@ import {TiArrowForward} from "react-icons/ti";
 import style from "../../styles/pages/box/MainFooterInputEditing.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStlye from "../../styles/utils/utils.scss";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 
 const constants = {
   replying: "REPLYING",

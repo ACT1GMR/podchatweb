@@ -41,7 +41,7 @@ import style from "../../styles/pages/box/MainMessagesFile.scss";
 import styleVar from "../../styles/variables.scss";
 import {ContextItem} from "../../../uikit/src/menu/Context";
 import strings from "../constants/localization";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 
 
 export function getImage(metaData, isFromServer, smallVersion) {

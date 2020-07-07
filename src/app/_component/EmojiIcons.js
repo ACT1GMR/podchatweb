@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import ReactDOMServer from "react-dom/server";
 import classnames from "classnames";
-import Strings from "../constants/localization";
+import Strings from "../../constants/localization";
 
 export function emojiRegex() {
   return new RegExp('\\u0023\\u20E3|\\u00a9|\\u00ae|\\u203c|\\u2049|\\u2139|[\\u2194-\\u2199]|\\u21a9|\\u21aa|\\u231a|\\u231b|\\u23e9|[\\u23ea-\\u23ec]|\\u23f0|\\u24c2|\\u25aa|\\u25ab|\\u25b6|\\u2611|\\u2614|\\u26fd|\\u2705|\\u2709|[\\u2795-\\u2797]|\\u27a1|\\u27b0|\\u27bf|\\u2934|\\u2935|[\\u2b05-\\u2b07]|\\u2b1b|\\u2b1c|\\u2b50|\\u2b55|\\u3030|\\u303d|\\u3297|\\u3299|[\\uE000-\\uF8FF\\u270A-\\u2764\\u2122\\u25C0\\u25FB-\\u25FE\\u2615\\u263a\\u2648-\\u2653\\u2660-\\u2668\\u267B\\u267F\\u2693\\u261d\\u26A0-\\u26FA\\u2708\\u2702\\u2601\\u260E]|[\\u2600\\u26C4\\u26BE\\u23F3\\u2764]|\\uD83D[\\uDC00-\\uDFFF]|\\uD83C[\\uDDE8-\\uDDFA\uDDEC]\\uD83C[\\uDDEA-\\uDDFA\uDDE7]|[0-9]\\u20e3|\\uD83C[\\uDC00-\\uDFFF]', "ig")
@@ -15,14 +15,14 @@ export function emojiRegex() {
 //actions
 
 //components
-import Scroller from "../../../uikit/src/Scroller";
-import Container from "../../../uikit/src/container";
+import Scroller from "../../../../uikit/src/Scroller";
+import Container from "../../../../uikit/src/container";
 
 //styling
-import emojiStyle from "../../styles/utils/emoji.scss";
-import style from "../../styles/pages/box/MainFooterEmojiIcons.scss";
-import oneoneImage from "../../styles/images/_common/oneone.png";
-import {mobileCheck} from "../utils/helpers";
+import emojiStyle from "../../../styles/utils/emoji.scss";
+import style from "../../../styles/modules/EmojiIcons.scss";
+import oneoneImage from "../../../styles/images/_common/oneone.png";
+import {mobileCheck} from "../../utils/helpers";
 import {
   emoji,
   emojiCategories,
@@ -31,11 +31,10 @@ import {
   emojiSpriteDimensions,
   emojiCatName,
   emojiCookieName
-} from "../constants/emoji";
-import Heading from "../../../uikit/src/typography/Heading";
-import Text from "../../../uikit/src/typography/Text";
-import Gap from "../../../uikit/src/gap";
-import MainFooterEmojiIconsNav from "./MainFooterEmojiIconsNav";
+} from "../../constants/emoji";
+import Text from "../../../../uikit/src/typography/Text";
+import Gap from "../../../../uikit/src/gap";
+import EmojiIconsNav from "./EmojiIconsNav";
 import Cookies from "js-cookie";
 
 function emojiUnicode(emojie) {
@@ -112,7 +111,7 @@ export function decodeEmoji(string) {
 }
 
 @connect()
-export default class MainFooterEmojiIcons extends Component {
+export default class EmojiIcons extends Component {
 
   constructor(props) {
     super(props);
@@ -183,12 +182,12 @@ export default class MainFooterEmojiIcons extends Component {
     const emojiCats = this.calculations();
     const classNames = classnames({
       [emojiStyle.emoji]: true,
-      [style.MainFooterEmojiIcons__Button]: true
+      [style.EmojiIcons__Button]: true
     });
     return (
-      <Container className={style.MainFooterEmojiIcons}>
-        <MainFooterEmojiIconsNav ref={e => this.navRef = e}/>
-        <Scroller onScroll={this.onScroll} className={style.MainFooterEmojiIcons__IconsContainer}>
+      <Container className={style.EmojiIcons}>
+        <EmojiIconsNav ref={e => this.navRef = e}/>
+        <Scroller onScroll={this.onScroll} className={style.EmojiIcons__IconsContainer}>
 
           {emojiCats.map(emojiCat => (
             <Container id={emojiCat.id}>
@@ -204,10 +203,10 @@ export default class MainFooterEmojiIcons extends Component {
               }
 
 
-              <Container className={style.MainFooterEmojiIcons__Icons} relative>
+              <Container className={style.EmojiIcons__Icons} relative>
 
                 {emojiCat.emojiCatArray.map(emoji => (
-                  <Container key={emoji.emoji} className={style.MainFooterEmojiIcons__Icon}
+                  <Container key={emoji.emoji} className={style.EmojiIcons__Icon}
                              onClick={this.onEmojiClick.bind(this, emoji, emoji.cat)}>
                     <Container
                       className={`${emoji.className} ${classNames}`}

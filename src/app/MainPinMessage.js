@@ -21,7 +21,7 @@ import {
 } from "react-icons/md";
 import style from "../../styles/pages/box/MainPinMessage.scss";
 import styleVar from "../../styles/variables.scss";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 import {messageInfo} from "../actions/messageActions";
 import {getMessageEditingText} from "./MainFooterInputEditing";
 import strings from "../constants/localization";

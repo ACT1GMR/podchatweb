@@ -5,7 +5,7 @@ import {avatarNameGenerator, avatarUrlGenerator, getNow, isIosAndSafari, mobileC
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
-import {codeEmoji, decodeEmoji} from "./MainFooterEmojiIcons";
+import {codeEmoji, decodeEmoji} from "./_component/EmojiIcons.js";
 import {isGroup, isChannel} from "./Main";
 
 //strings
@@ -56,7 +56,7 @@ import styleVar from "../../styles/variables.scss";
 import Context, {ContextItem, ContextTrigger} from "../../../uikit/src/menu/Context";
 import {chatModalPrompt, chatSearchResult} from "../actions/chatActions";
 import {contactChatting} from "../actions/contactActions";
-import {clearHtml} from "./MainFooterInput";
+import {clearHtml} from "./_component/Input";
 import {messageSeen} from "../actions/messageActions";
 
 function sliceMessage(message, to) {

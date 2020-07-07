@@ -55,7 +55,7 @@ import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../constants/actionTypes";
 import {avatarNameGenerator, mobileCheck} from "../utils/helpers";
 import {messageEditing} from "../actions/messageActions";
 import {chatModalPrompt} from "../actions/chatActions";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 import ReactDOMServer from "react-dom/server";
 import {THREAD_ADMIN} from "../constants/privilege";
 import MainMessagesMessageShare from "./MainMessagesMessageShare";
