@@ -114,6 +114,9 @@ export default class MainFooterInput extends Component {
     const isThreadHide = oldThreadShowing && !threadShowing;
     const storeDraftCondition = oldThreadId !== threadId || isThreadHide;
     if (msgEditing !== prevProps.messageEditing) {
+      if(this.state.messageText){
+        this._setDraft(threadId, this.state.messageText);
+      }
       this.focus();
     }
     if (storeDraftCondition) {
@@ -288,35 +291,33 @@ export default class MainFooterInput extends Component {
 
   _analyzeDraft(text) {
     const splitedText = text.split("|");
-    if (splitedText.length > 1) {
-      const message = JSON.parse(splitedText[1]);
-      let type = splitedText[2];
-      if (type === "undefined" || type === "null") {
-        type = null;
-        message.draftMode = true;
+    setTimeout(() => {
+      if (splitedText.length > 1) {
+        const message = JSON.parse(splitedText[1]);
+        let type = splitedText[2];
+        if (type === "undefined" || type === "null") {
+          type = null;
+          message.draftMode = true;
+        }
+        this.props.dispatch(messageEditing(message, type));
       }
-      this.props.dispatch(messageEditing(message, type));
-      return splitedText[0];
-    }
+    }, 200);
     return splitedText[0];
   }
 
   _setDraft(threadId, text) {
-    setTimeout(() => {
-      const {messageEditing, thread} = this.props;
-      let concatText = "";
-      if (messageEditing) {
-        if (messageEditing.type !== constants.forwarding) {
-          if (messageEditing.message.threadId === thread.id) {
-            concatText += `|${JSON.stringify(messageEditing.message)}|${messageEditing.type}`;
-          }
+    const {messageEditing, thread} = this.props;
+    let concatText = "";
+    if (messageEditing) {
+      if (messageEditing.type !== constants.forwarding) {
+        if (messageEditing.message.threadId === thread.id) {
+          concatText += `|${JSON.stringify(messageEditing.message)}|${messageEditing.type}`;
         }
       }
-      const finalText = `${text}${concatText}`;
-      Cookies.set(threadId, finalText);
-      this.lastTypingText = text;
-    }, 200)
-
+    }
+    const finalText = `${text}${concatText}`;
+    Cookies.set(threadId, finalText);
+    this.lastTypingText = text;
   }
 
   onParticipantSelect(contact) {

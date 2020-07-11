@@ -33,7 +33,7 @@ import {chatRouterLess} from "../actions/chatActions";
     contactEdit: store.contactAdding.contactEdit,
     contactAdd: store.contactAdd.contact,
     contactAddPending: store.contactAdd.fetching,
-    contactAddError: store.contactAdd.fetching,
+    contactAddError: store.contactAdd.error,
     chatRouterLess: store.chatRouterLess,
     user: store.user.user
   };
@@ -160,9 +160,9 @@ class ModalAddContact extends Component {
   }
 
   render() {
-    const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
+    const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit, contactAddError} = this.props;
     const {addBy, firstName, lastName, notEnteredFirstOrFamilyName, notEnteredMobilePhone, sameUserMobilePhone} = this.state;
-    const somethingWrong = (contactAdd && !contactAdd.linkedUser) || (notEnteredFirstOrFamilyName || notEnteredMobilePhone || sameUserMobilePhone);
+    const somethingWrong = contactAddError || (contactAdd && !contactAdd.linkedUser) || (notEnteredFirstOrFamilyName || notEnteredMobilePhone || sameUserMobilePhone);
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
@@ -174,7 +174,7 @@ class ModalAddContact extends Component {
         <ModalBody>
           <form onSubmit={this.onSubmit}>
             {!contactEdit &&
-            <InputText max={11} onChange={this.onFieldChange.bind(this, "addBy")}
+            <InputText max={40} onChange={this.onFieldChange.bind(this, "addBy")}
                        value={addBy}
                        placeholder={`${strings.mobilePhoneOrUsername} ( ${strings.required} )`}/>
             }
@@ -196,7 +196,7 @@ class ModalAddContact extends Component {
 
           <Container inline>
             <Message warn>
-              {notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : notEnteredMobilePhone ? strings.mobilePhoneIsRequired : sameUserMobilePhone ? strings.youCannotAddYourself : strings.isNotPodUser}
+              {(notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : notEnteredMobilePhone ? strings.mobilePhoneIsRequired : sameUserMobilePhone ? strings.youCannotAddYourself : contactAddError ? contactAddError : strings.isNotPodUser)}
             </Message>
           </Container>
 

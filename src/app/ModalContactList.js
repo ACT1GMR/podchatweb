@@ -132,7 +132,8 @@ function filterContactList(contacts, userType) {
     contactsFetching: store.contactGetList.fetching,
     contactsPartialFetching: store.contactGetListPartial.fetching,
     chatInstance: store.chatInstance.chatSDK,
-    chatRouterLess: store.chatRouterLess
+    chatRouterLess: store.chatRouterLess,
+    smallVersion: store.chatSmallVersion
   };
 }, null, null, {withRef: true})
 class ModalContactList extends Component {

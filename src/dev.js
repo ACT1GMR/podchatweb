@@ -17,7 +17,7 @@ auth({
     render(
       <Provider store={store}>
         <BrowserRouter>
-          <Box token={token} {...serverConfig} onRetryHook={e => {
+          <Box token={token} routerLess small {...serverConfig} onRetryHook={e => {
             return retry();
           }}/>
         </BrowserRouter>

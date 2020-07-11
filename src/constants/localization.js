@@ -75,7 +75,7 @@ let strings = new LocalizedStrings({
     imageText: "متن تصویر",
     send: "بفرست",
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
-    mobilePhoneIsRequired: "شماره موبایل اجباری است",
+    mobilePhoneIsRequired: "شماره موبایل یا نام کاربری اجباری است",
     youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
     copyText: "کپی",
     howDoYouPinThisMessage: "چطور این پیام رو به بالا میچسبونید",
