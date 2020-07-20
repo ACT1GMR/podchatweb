@@ -142,6 +142,10 @@ export default class ChatSDK {
     this.chatAgent.reconnect();
   }
 
+  logout() {
+    this.chatAgent.logout();
+  }
+
   @promiseDecorator
   createThread(resolve, reject, id, idType, type, other) {
     let invitees = [{"id": id, "idType": idType || "TO_BE_USER_CONTACT_ID"}];

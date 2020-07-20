@@ -16,7 +16,7 @@ import {
 
 //actions
 import {
-  chatClearCache,
+  chatClearCache, chatDestroy,
   chatNotification,
   chatNotificationClickHook, chatRetryHook,
   chatRouterLess,
@@ -181,6 +181,12 @@ class Box extends Component {
       dispatch(chatSignOutHook(onSignOutHook));
     }
     window.modalMediaRef = this.modalMediaRef.current;
+  }
+
+  componentWillUnmount() {
+    const {dispatch, chatInstance} = this.props;
+    dispatch(chatDestroy());
+    chatInstance.logout();
   }
 
   setToken(token) {

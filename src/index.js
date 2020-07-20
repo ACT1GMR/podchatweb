@@ -1,5 +1,5 @@
 import React from "react";
-import {render} from "react-dom";
+import ReactDOM, {render} from "react-dom";
 import {Provider} from "react-redux";
 import store from "./store/index";
 import "../styles/main.scss";
@@ -30,6 +30,11 @@ function Podchat(props, elementId) {
   return instance.getWrappedInstance();
 }
 
+function DestroyPodchat(elementId) {
+  ReactDOM.unmountComponentAtNode(document.getElementById(elementId));
+}
+
 export {PodchatJSX, Podchat};
 
 window.Podchat = Podchat;
+window.DestroyPodchat = DestroyPodchat;

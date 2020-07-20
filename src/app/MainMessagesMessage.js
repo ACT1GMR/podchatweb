@@ -41,7 +41,7 @@ import {
   MdReply,
   MdArrowBack,
   MdDelete,
-  MdInfo
+  MdInfoOutline
 } from "react-icons/md";
 import {
   TiArrowForward
@@ -381,7 +381,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
         {
           messageInfoCondition &&
           <ContextItem onClick={onMessageSeenListClick}>
-            <MdInfo size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+            <MdInfoOutline size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
           </ContextItem>
         }
 
