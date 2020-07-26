@@ -13,7 +13,7 @@ import LeftAsideMainSearch from "./LeftAsideMainSearch";
 import LeftAsideMainSeenList from "./LeftAsideMainSeenList";
 
 //styling
-import style from "../../styles/pages/box/LeftAsideMain.scss";
+import style from "../../styles/app/LeftAsideMain.scss";
 import classnames from "classnames";
 import Container from "../../../uikit/src/container";
 import Scroller from "../../../uikit/src/scroller";

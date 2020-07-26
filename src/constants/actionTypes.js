@@ -32,6 +32,7 @@ export const CHAT_SEARCH_RESULT = "CHAT_SEARCH_RESULT";
 export const CHAT_SEARCH_SHOW = "CHAT_SEARCH_SHOW";
 export const CHAT_STOP_TYPING = "CHAT_STOP_TYPING";
 export const CHAT_IS_TYPING = "CHAT_IS_TYPING";
+export const CHAT_DESTROY = "CHAT_DESTROY";
 export const CONTACT_GET_LIST = buildPromiseMessage.bind(null, "CONTACT_GET_LIST");
 export const CONTACT_GET_LIST_PARTIAL = buildPromiseMessage.bind(null, "CONTACT_GET_LIST_PARTIAL");
 export const THREAD_GET_PARTICIPANT_ROLES = buildPromiseMessage.bind(null, "THREAD_GET_PARTICIPANT_ROLES");

@@ -23,7 +23,7 @@ import {InputText} from "../../../uikit/src/input";
 import {MdSearch, MdClose} from "react-icons/md";
 
 //styling
-import style from "../../styles/pages/box/ModalContactList.scss";
+import style from "../../styles/app/ModalContactList.scss";
 import styleVar from "../../styles/variables.scss";
 import {ContactList, ContactListSelective} from "./_component/contactList";
 import {ROUTE_ADD_CONTACT} from "../constants/routes";
@@ -132,7 +132,8 @@ function filterContactList(contacts, userType) {
     contactsFetching: store.contactGetList.fetching,
     contactsPartialFetching: store.contactGetListPartial.fetching,
     chatInstance: store.chatInstance.chatSDK,
-    chatRouterLess: store.chatRouterLess
+    chatRouterLess: store.chatRouterLess,
+    smallVersion: store.chatSmallVersion
   };
 }, null, null, {withRef: true})
 class ModalContactList extends Component {

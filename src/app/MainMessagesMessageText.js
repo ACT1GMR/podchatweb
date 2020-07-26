@@ -26,8 +26,8 @@ import {
 import {MdEdit, MdContentCopy} from "react-icons/md";
 
 //styling
-import style from "../../styles/pages/box/MainMessagesText.scss";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import style from "../../styles/app/MainMessagesText.scss";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 import strings from "../constants/localization";
 import styleVar from "../../styles/variables.scss";
 

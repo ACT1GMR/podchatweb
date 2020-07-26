@@ -1,7 +1,8 @@
 // src/list/Avatar.scss.js
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Link, withRouter} from "react-router-dom";
+import {withRouter} from "react-router-dom";
+import {socketStatus} from "./AsideHead";
 
 //strings
 import strings from "../constants/localization";
@@ -16,15 +17,17 @@ import Avatar, {AvatarImage, AvatarName} from "../../../uikit/src/avatar";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/MainHeadThreadInfo.scss";
+import style from "../../styles/app/MainHeadThreadInfo.scss";
 import classnames from "classnames";
 import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 import Loading from "../../../uikit/src/loading";
 import LoadingBlinkDots from "../../../uikit/src/loading/LoadingBlinkDots";
+import {getParticipant} from "./ModalThreadInfoPerson";
+import date from "../utils/date";
 
 export function TypingFragment({isGroup, typing, textProps}) {
   return (
-    <Container style={{display: "flex", flexDirection:"row", alignItems: "center"}}>
+    <Container style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
       <Text inline bold {...textProps}>{strings.typing(isGroup ? typing.user.user : null)}</Text>
       <Loading><LoadingBlinkDots size="sm" invert/></Loading>
     </Container>
@@ -34,10 +37,12 @@ export function TypingFragment({isGroup, typing, textProps}) {
 @connect(store => {
   return {
     smallVersion: store.chatSmallVersion,
+    chatState: store.chatState,
     chatRouterLess: store.chatRouterLess,
     thread: store.thread.thread,
     threadShowing: store.threadShowing,
-    participantsFetching: store.threadParticipantList.fetching
+    participants: store.threadParticipantList.participants,
+    user: store.user.user
   };
 })
 class BoxHeadThreadInfo extends Component {
@@ -56,7 +61,9 @@ class BoxHeadThreadInfo extends Component {
   }
 
   render() {
-    const {thread, smallVersion} = this.props;
+    const {thread, smallVersion, chatState, participants, user} = this.props;
+    const {isDisconnected, timeUntilReconnect, isReconnecting, isConnected} = socketStatus(chatState);
+    const participant = getParticipant(participants, user)
     if (thread.id) {
       const classNames = classnames({
         [style.MainHeadThreadInfo]: true,
@@ -81,12 +88,18 @@ class BoxHeadThreadInfo extends Component {
                     <TypingFragment isGroup={thread.group} typing={thread.isTyping}
                                     textProps={{size: "xs", color: "yellow"}}/> :
                     <Container>
-                      {thread.group ?
-                        <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
-                        :
-                        <Text color={typingText ? "yellow" : null} size="xs" invert
-                              overflow="ellipsis">{strings.you}, {thread.title}</Text>
+
+                      {
+                        isConnected ?
+                          thread.group ?
+                            <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
+                            :
+                            <Text color={typingText ? "yellow" : null} size="xs" invert
+                                  overflow="ellipsis">{strings.lastSeen(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
+                          :
+                          <Text size="xs" invert overflow="ellipsis">{isDisconnected ? `${strings.chatState.networkDisconnected}...` : `${strings.chatState.reconnecting}...`}</Text>
                       }
+
                     </Container>
                 }
               </Container>

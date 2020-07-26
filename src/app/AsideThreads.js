@@ -5,7 +5,7 @@ import {avatarNameGenerator, avatarUrlGenerator, getNow, isIosAndSafari, mobileC
 import {withRouter} from "react-router-dom";
 import {isFile} from "./MainMessagesMessage";
 import {isMessageByMe} from "./MainMessages";
-import {codeEmoji, decodeEmoji} from "./MainFooterEmojiIcons";
+import {codeEmoji, decodeEmoji} from "./_component/EmojiIcons.js";
 import {isGroup, isChannel} from "./Main";
 
 //strings
@@ -49,14 +49,14 @@ import Gap from "../../../uikit/src/gap";
 import date from "../utils/date";
 
 //styling
-import style from "../../styles/pages/box/AsideThreads.scss";
+import style from "../../styles/app/AsideThreads.scss";
 import Message from "../../../uikit/src/message";
 import classnames from "classnames";
 import styleVar from "../../styles/variables.scss";
 import Context, {ContextItem, ContextTrigger} from "../../../uikit/src/menu/Context";
 import {chatModalPrompt, chatSearchResult} from "../actions/chatActions";
 import {contactChatting} from "../actions/contactActions";
-import {clearHtml} from "./MainFooterInput";
+import {clearHtml} from "./_component/Input";
 import {messageSeen} from "../actions/messageActions";
 
 function sliceMessage(message, to) {
@@ -66,10 +66,16 @@ function sliceMessage(message, to) {
 function prettifyMessageDate(passedTime) {
   const diff = getNow() - passedTime;
   const isToday = date.isToday(passedTime);
+  const isYesterday = date.isYesterday(passedTime);
+  const isWithinAWeek = date.isWithinAWeek(passedTime);
   if (isToday) {
     return date.format(passedTime, "HH:mm", "en")
+  } else if (isYesterday) {
+    return strings.yesterday;
+  } else if(isWithinAWeek){
+    return date.format(passedTime, "dddd");
   }
-  return date.prettifySince(diff);
+  return date.format(passedTime, "YYYY-MM-DD");
 }
 
 function getTitle(title) {

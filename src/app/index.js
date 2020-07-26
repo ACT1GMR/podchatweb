@@ -16,7 +16,7 @@ import {
 
 //actions
 import {
-  chatClearCache,
+  chatClearCache, chatDestroy,
   chatNotification,
   chatNotificationClickHook, chatRetryHook,
   chatRouterLess,
@@ -48,7 +48,7 @@ import ModalImageCaption from "./ModalImageCaption";
 import ModalPrompt from "./ModalPrompt";
 
 //styling
-import style from "../../styles/pages/box/index.scss";
+import style from "../../styles/app/index.scss";
 import {contactGetList} from "../actions/contactActions";
 import ModalShare from "./ModalShare";
 
@@ -181,6 +181,12 @@ class Box extends Component {
       dispatch(chatSignOutHook(onSignOutHook));
     }
     window.modalMediaRef = this.modalMediaRef.current;
+  }
+
+  componentWillUnmount() {
+    const {dispatch, chatInstance} = this.props;
+    dispatch(chatDestroy());
+    chatInstance.logout();
   }
 
   setToken(token) {

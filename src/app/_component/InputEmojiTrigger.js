@@ -7,41 +7,40 @@ import {connect} from "react-redux";
 //actions
 import {
   threadEmojiShowing
-} from "../actions/threadActions";
+} from "../../actions/threadActions";
 
 //components
-import Container from "../../../uikit/src/container";
+import Container from "../../../../uikit/src/container";
 
 //styling
 import {MdSentimentVerySatisfied, MdClose} from "react-icons/md";
-import style from "../../styles/app/MainFooterInputEmoji.scss";
-import styleVar from "../../styles/variables.scss";
+import style from "../../../styles/modules/InputEmojiTrigger.scss";
+import styleVar from "../../../styles/variables.scss";
 
 @connect(store => {
   return {
-    emojiShowing: store.threadEmojiShowing,
     threadFilesToUpload: store.threadFilesToUpload,
     threadId: store.thread.thread.id,
     isSendingText: store.threadIsSendingMessage
   };
 })
-export default class MainFooterAttachment extends Component {
+export default class InputEmojiTrigger extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onClick = this.onClick.bind(this);
   }
 
   onClick() {
-    const {dispatch, emojiShowing} = this.props;
+    const {emojiShowing, onEmojiShowing} = this.props;
     const showing = !emojiShowing;
-    dispatch(threadEmojiShowing(showing));
+    onEmojiShowing && onEmojiShowing(showing);
   }
 
   render() {
     const {emojiShowing} = this.props;
     return (
-      <Container inline className={style.MainFooterInputEmoji} relative onClick={this.onClick}>
+      <Container inline className={style.InputEmojiTrigger} relative onClick={this.onClick}>
         {emojiShowing ?
           <MdClose size={styleVar.iconSizeMd}
                                     color={styleVar.colorAccentDark}

@@ -13,7 +13,7 @@ import AsideThreads from "./AsideThreads";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/Aside.scss";
+import style from "../../styles/app/Aside.scss";
 
 @connect()
 export default class Aside extends Component {

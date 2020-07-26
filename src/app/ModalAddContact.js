@@ -33,7 +33,7 @@ import {chatRouterLess} from "../actions/chatActions";
     contactEdit: store.contactAdding.contactEdit,
     contactAdd: store.contactAdd.contact,
     contactAddPending: store.contactAdd.fetching,
-    contactAddError: store.contactAdd.fetching,
+    contactAddError: store.contactAdd.error,
     chatRouterLess: store.chatRouterLess,
     user: store.user.user
   };
@@ -47,7 +47,7 @@ class ModalAddContact extends Component {
       sameUserMobilePhone: false,
       notEnteredFirstOrFamilyName: false,
       notEnteredMobilePhone: false,
-      mobilePhone: "",
+      addBy: "",
       firstName: "",
       lastName: ""
     }
@@ -62,7 +62,7 @@ class ModalAddContact extends Component {
     }
     if (contactEdit) {
       this.setState({
-        mobilePhone: contactEdit.mobilePhone,
+        addBy: contactEdit.addBy,
         firstName: contactEdit.firstName,
         lastName: contactEdit.lastName
       });
@@ -74,7 +74,7 @@ class ModalAddContact extends Component {
     if (contactEdit) {
       if (contactEdit !== oldProps.contactEdit) {
         this.setState({
-          mobilePhone: contactEdit.mobilePhone,
+          addBy: contactEdit.addBy,
           firstName: contactEdit.firstName,
           lastName: contactEdit.lastName
         });
@@ -103,8 +103,8 @@ class ModalAddContact extends Component {
     if(e) {
       e.preventDefault();
     }
-    const {mobilePhone, firstName, lastName} = this.state;
-    if (!mobilePhone) {
+    const {addBy, firstName, lastName} = this.state;
+    if (!addBy) {
       return this.setState({
         notEnteredMobilePhone: true
       });
@@ -117,12 +117,12 @@ class ModalAddContact extends Component {
       }
     }
     const {contactEdit, dispatch, user} = this.props;
-    if (mobilePhone === user.cellphoneNumber) {
+    if (addBy === user.cellphoneNumber) {
       return this.setState({
         sameUserMobilePhone: true
       });
     }
-    dispatch(contactAdd(mobilePhone, firstName, lastName, contactEdit));
+    dispatch(contactAdd(addBy, firstName, lastName, contactEdit));
     this.setState({
       notEnteredFirstOrFamilyName: false,
       notEnteredMobilePhone: false,
@@ -136,7 +136,7 @@ class ModalAddContact extends Component {
     dispatch(contactAdding(false));
     dispatch(contactAdd(null, null, null, false, true));
     this.setState({
-      mobilePhone: "",
+      addBy: "",
       firstName: "",
       lastName: ""
     });
@@ -148,7 +148,7 @@ class ModalAddContact extends Component {
   }
 
   onFieldChange(field, event) {
-    if(field === "mobilePhone") {
+    if(field === "addBy") {
       this.setState({
         sameUserMobilePhone: false
       });
@@ -160,23 +160,23 @@ class ModalAddContact extends Component {
   }
 
   render() {
-    const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit} = this.props;
-    const {mobilePhone, firstName, lastName, notEnteredFirstOrFamilyName, notEnteredMobilePhone, sameUserMobilePhone} = this.state;
-    const somethingWrong = (contactAdd && !contactAdd.linkedUser) || (notEnteredFirstOrFamilyName || notEnteredMobilePhone || sameUserMobilePhone);
+    const {isShowing, contactAdd, contactAddPending, smallVersion, contactEdit, contactAddError} = this.props;
+    const {addBy, firstName, lastName, notEnteredFirstOrFamilyName, notEnteredMobilePhone, sameUserMobilePhone} = this.state;
+    const somethingWrong = contactAddError || (contactAdd && !contactAdd.linkedUser) || (notEnteredFirstOrFamilyName || notEnteredMobilePhone || sameUserMobilePhone);
     return (
       <Modal isOpen={isShowing} onClose={this.onClose.bind(this)} inContainer={smallVersion} fullScreen={smallVersion}
              userSelect="none">
 
         <ModalHeader>
-          <Heading h3>{contactEdit ? strings.editContact(contactEdit) : strings.addContact}</Heading>
+          <Heading h3>{contactEdit && !contactEdit.isAdd ? strings.editContact(contactEdit) : strings.addContact}</Heading>
         </ModalHeader>
 
         <ModalBody>
           <form onSubmit={this.onSubmit}>
             {!contactEdit &&
-            <InputText phone max={11} onChange={this.onFieldChange.bind(this, "mobilePhone")}
-                       value={mobilePhone}
-                       placeholder={`${strings.mobilePhone} ( ${strings.required} )`}/>
+            <InputText max={40} onChange={this.onFieldChange.bind(this, "addBy")}
+                       value={addBy}
+                       placeholder={`${strings.mobilePhoneOrUsername} ( ${strings.required} )`}/>
             }
             <InputText max={15} onChange={this.onFieldChange.bind(this, "firstName")}
                        placeholder={`${strings.firstName} ( ${strings.required} )`}
@@ -190,13 +190,13 @@ class ModalAddContact extends Component {
 
         <ModalFooter>
           <Button text loading={contactAddPending}
-                  onClick={this.onSubmit}>{contactEdit ? strings.edit : strings.add}</Button>
+                  onClick={this.onSubmit}>{contactEdit && !contactEdit.isAdd ? strings.edit : strings.add}</Button>
           <Button text onClick={this.onClose.bind(this)}>{strings.cancel}</Button>
           {somethingWrong &&
 
           <Container inline>
             <Message warn>
-              {notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : notEnteredMobilePhone ? strings.mobilePhoneIsRequired : sameUserMobilePhone ? strings.youCannotAddYourself : strings.isNotPodUser}
+              {(notEnteredFirstOrFamilyName ? strings.firstOrFamilyNameIsRequired : notEnteredMobilePhone ? strings.mobilePhoneIsRequired : sameUserMobilePhone ? strings.youCannotAddYourself : contactAddError ? contactAddError : strings.isNotPodUser)}
             </Message>
           </Container>
 

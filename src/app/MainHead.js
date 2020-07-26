@@ -26,9 +26,10 @@ import {Text} from "../../../uikit/src/typography";
 import Gap from "../../../uikit/src/gap";
 
 //styling
-import style from "../../styles/pages/box/MainHead.scss";
+import style from "../../styles/app/MainHead.scss";
 import styleVar from "../../styles/variables.scss";
 import classnames from "classnames";
+
 
 const statics = {};
 

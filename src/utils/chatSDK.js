@@ -142,6 +142,10 @@ export default class ChatSDK {
     this.chatAgent.reconnect();
   }
 
+  logout() {
+    this.chatAgent && this.chatAgent.logout();
+  }
+
   @promiseDecorator
   createThread(resolve, reject, id, idType, type, other) {
     let invitees = [{"id": id, "idType": idType || "TO_BE_USER_CONTACT_ID"}];
@@ -594,11 +598,11 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  addContact(resolve, reject, cellphoneNumber, firstName, lastName) {
+  addContact(resolve, reject, addBy, firstName, lastName) {
     const addContactParams = {
       firstName,
       lastName,
-      cellphoneNumber
+      [isNaN(addBy) ? "username" : "cellphoneNumber"]: addBy
     };
     this.chatAgent.addContacts(addContactParams, (result) => {
       if (!this._onError(result, reject)) {

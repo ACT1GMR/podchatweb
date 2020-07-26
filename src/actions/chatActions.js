@@ -36,7 +36,7 @@ import {
   THREAD_GO_TO_MESSAGE,
   THREAD_GET_MESSAGE_LIST,
   THREAD_CREATE,
-  THREAD_GET_MESSAGE_LIST_PARTIAL
+  THREAD_GET_MESSAGE_LIST_PARTIAL, MESSAGE_SEND, CHAT_DESTROY
 } from "../constants/actionTypes";
 import {messageInfo} from "./messageActions";
 import {statics} from "../app/MainMessages";
@@ -214,6 +214,16 @@ export const chatUploadImage = (image, threadId, callBack) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     chatSDK.uploadImage(image, threadId).then(callBack);
+  }
+};
+
+export const chatDestroy = () => {
+  return (dispatch) => {
+    firstReadyPassed = false;
+    dispatch({
+      type: CHAT_DESTROY,
+      payload: null
+    });
   }
 };
 

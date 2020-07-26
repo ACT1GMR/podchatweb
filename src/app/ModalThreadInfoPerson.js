@@ -12,7 +12,7 @@ import {
   contactBlock,
   contactAdding,
   contactRemove,
-  contactListShowing, contactSearch
+  contactListShowing, contactSearch, contactAdd
 } from "../actions/contactActions";
 import {threadLeave, threadModalThreadInfoShowing, threadNotification} from "../actions/threadActions";
 import {chatModalPrompt} from "../actions/chatActions";
@@ -27,7 +27,16 @@ import Container from "../../../uikit/src/container";
 import List, {ListItem} from "../../../uikit/src/list";
 import date from "../utils/date";
 import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
-import {MdPerson, MdPhone, MdBlock, MdNotifications, MdEdit, MdDelete, MdDeleteForever} from "react-icons/md";
+import {
+  MdPersonAdd,
+  MdPerson,
+  MdPhone,
+  MdBlock,
+  MdNotifications,
+  MdEdit,
+  MdDelete,
+  MdDeleteForever
+} from "react-icons/md";
 
 //styling
 import styleVar from "../../styles/variables.scss";
@@ -35,7 +44,7 @@ import {isChannel, isGroup} from "./Main";
 import ModalThreadInfoMessageTypes from "./ModalThreadInfoMessageTypes";
 
 
-function getParticipant(participants, user) {
+export function getParticipant(participants, user) {
   let participant;
   if (participants) {
     participant = participants.filter(e => e.id !== user.id)[0];
@@ -128,12 +137,13 @@ export default class ModalThreadInfo extends Component {
     dispatch(threadNotification(thread.id, !thread.mute));
   }
 
-  onEdit(participant, contact) {
+  onEdit(participant = {}, contact, extraPayload = {}) {
     const {dispatch, history, chatRouterLess, onClose} = this.props;
     dispatch(contactAdding(true, {
       firstName: contact.firstName,
       lastName: contact.lastName,
-      mobilePhone: contact.cellphoneNumber
+      addBy: contact.cellphoneNumber || (participant && participant.username) || contact.linkedUser.username,
+      ...extraPayload
     }));
     if (!chatRouterLess) {
       history.push(ROUTE_ADD_CONTACT);
@@ -167,13 +177,23 @@ export default class ModalThreadInfo extends Component {
     this.setState({scrollBottomThreshold});
   }
 
+  onAddContact(participant) {
+    this.onEdit(null, {
+      firstName: participant.firstName,
+      lastName: participant.lastName,
+      linkedUser: {
+        username: participant.username
+      }
+    }, {isAdd: true});
+  }
+
   render() {
     const {participants, thread, user, onClose, isShow, smallVersion, contactBlocking, notificationPending, GapFragment, AvatarModalMediaFragment} = this.props;
     const {scrollBottomThresholdCondition, scrollBottomThreshold} = this.state;
     const isOnTheFly = thread.onTheFly;
     let participant = isOnTheFly ? thread.participant : getParticipant(participants, user);
     const participantImage = avatarUrlGenerator(isOnTheFly ? thread.image : participant.image, avatarUrlGenerator.SIZES.MEDIUM);
-    const isMyContact = participant.contactId;
+    const isMyContact = participant.isMyContact || participant.contactId;
     const contact = this.state.contact || {};
     return (
       <Modal isOpen={isShow} onClose={onClose} inContainer={smallVersion} fullScreen={smallVersion} userSelect="none">
@@ -182,9 +202,9 @@ export default class ModalThreadInfo extends Component {
           <Heading h3>{strings.contactInfo}</Heading>
         </ModalHeader>
 
-        <ModalBody            threshold={5}
-          onScrollBottomThresholdCondition={scrollBottomThresholdCondition}
-                               onScrollBottomThreshold={scrollBottomThreshold}>
+        <ModalBody threshold={5}
+                   onScrollBottomThresholdCondition={scrollBottomThresholdCondition}
+                   onScrollBottomThreshold={scrollBottomThreshold}>
           <Container>
             <Container relative>
 
@@ -197,7 +217,7 @@ export default class ModalThreadInfo extends Component {
                   </AvatarImage>
                   <AvatarName>
                     <Heading h1>{thread.title}</Heading>
-                    <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
+                    <Text>{strings.lastSeen(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
                   </AvatarName>
                 </Avatar>
               </Container>
@@ -207,43 +227,39 @@ export default class ModalThreadInfo extends Component {
               </Container>
 
             </Container>
-            {!isOnTheFly &&
             <Fragment>
               <GapFragment/>
-              {isMyContact ?
-                <List>
+              <List>
+                {isMyContact ?
 
-                  <ListItem invert>
+                  <Fragment>
+
                     {contact.cellphoneNumber &&
-                    <Container>
-                      <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                      <Gap x={20}>
-                        <Text inline>{contact.cellphoneNumber}</Text>
-                      </Gap>
-                    </Container>
-                    }
-                  </ListItem>
+                    <ListItem invert>
 
-                  <ListItem invert>
-                    {contact.linkedUser && contact.linkedUser.username &&
-                    <Container>
-                      <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                      <Gap x={20}>
-                        <Text inline>{contact.linkedUser.username}</Text>
-                      </Gap>
-                    </Container>
-                    }
-                  </ListItem>
-                </List> : ""}
-              <Container>
-                {
-                  isMyContact &&
-                  <GapFragment/>
-                }
-                <List>
+                      <Container>
+                        <MdPhone size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text inline>{contact.cellphoneNumber}</Text>
+                        </Gap>
+                      </Container>
 
-                  {
-                    isMyContact &&
+                    </ListItem>
+                    }
+                    {(participant.username || (contact.linkedUser && contact.linkedUser.username)) &&
+                    <ListItem invert>
+
+                      <Container>
+                        <MdPerson size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text inline>{participant.username || contact.linkedUser.username}</Text>
+                        </Gap>
+                      </Container>
+
+                    </ListItem>
+                    }
+
+                    {
                     <ListItem selection invert onSelect={this.onEdit.bind(this, participant, contact)}>
                       <Container relative>
                         <MdEdit size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
@@ -252,10 +268,9 @@ export default class ModalThreadInfo extends Component {
                         </Gap>
                       </Container>
                     </ListItem>
-                  }
+                    }
 
-                  {
-                    isMyContact &&
+                    {
                     <ListItem selection invert onSelect={this.onRemove.bind(this, participant)}>
                       <Container relative>
                         <MdDelete size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
@@ -264,71 +279,93 @@ export default class ModalThreadInfo extends Component {
                         </Gap>
                       </Container>
                     </ListItem>
-                  }
+                    }
 
+                  </Fragment>
+                  :
+                  <ListItem selection invert onSelect={this.onAddContact.bind(this, participant)}>
+                    <Container relative>
+                      <MdPersonAdd size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                      <Gap x={20}>
+                        <Text>{strings.addToContact}</Text>
+                      </Gap>
+                    </Container>
+                  </ListItem>
+                }
+              </List>
+              {!isOnTheFly &&
+              <Fragment>
+                <Container>
                   {
-                    <ListItem selection invert onSelect={this.onRemoveThread.bind(this, participant)}>
+                    isMyContact &&
+                    <GapFragment/>
+                  }
+                  <List>
+
+                    {
+                      <ListItem selection invert onSelect={this.onRemoveThread.bind(this, participant)}>
+                        <Container relative>
+                          <MdDeleteForever size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                          <Gap x={20}>
+                            <Text>{strings.removeThread}</Text>
+                          </Gap>
+                        </Container>
+                      </ListItem>
+                    }
+
+                    <ListItem selection invert onSelect={this.onBlockSelect.bind(this, thread.id, participant.blocked)}>
                       <Container relative>
-                        <MdDeleteForever size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
                         <Gap x={20}>
-                          <Text>{strings.removeThread}</Text>
+                          <Text>{strings.block}</Text>
                         </Gap>
+                        <Container centerLeft>
+                          {contactBlocking ?
+                            <Container centerTextAlign>
+                              <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                            </Container>
+                            :
+                            <Gap x={5}>
+                              <Text size="sm"
+                                    color={participant.blocked ? "red" : "green"}>{participant.blocked ? strings.blocked : ""}</Text>
+                            </Gap>
+                          }
+                        </Container>
                       </Container>
                     </ListItem>
-                  }
 
-                  <ListItem selection invert onSelect={this.onBlockSelect.bind(this, thread.id, participant.blocked)}>
-                    <Container relative>
-                      <MdBlock size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                      <Gap x={20}>
-                        <Text>{strings.block}</Text>
-                      </Gap>
-                      <Container centerLeft>
-                        {contactBlocking ?
-                          <Container centerTextAlign>
-                            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
-                          </Container>
-                          :
-                          <Gap x={5}>
-                            <Text size="sm"
-                                  color={participant.blocked ? "red" : "green"}>{participant.blocked ? strings.blocked : ""}</Text>
-                          </Gap>
-                        }
+                    <ListItem selection invert onSelect={this.onNotificationSelect.bind(this, thread)}>
+
+                      <Container relative>
+                        <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
+                        <Gap x={20}>
+                          <Text>{strings.notification}</Text>
+                        </Gap>
+                        <Container centerLeft>
+                          {notificationPending ?
+                            <Container centerTextAlign>
+                              <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
+                            </Container>
+                            :
+                            <Gap x={5}>
+                              <Text size="sm"
+                                    color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
+                            </Gap>
+                          }
+
+                        </Container>
                       </Container>
-                    </Container>
-                  </ListItem>
+                    </ListItem>
+                  </List>
 
-                  <ListItem selection invert onSelect={this.onNotificationSelect.bind(this, thread)}>
-
-                    <Container relative>
-                      <MdNotifications size={styleVar.iconSizeMd} color={styleVar.colorGray}/>
-                      <Gap x={20}>
-                        <Text>{strings.notification}</Text>
-                      </Gap>
-                      <Container centerLeft>
-                        {notificationPending ?
-                          <Container centerTextAlign>
-                            <Loading hasSpace><LoadingBlinkDots size="sm"/></Loading>
-                          </Container>
-                          :
-                          <Gap x={5}>
-                            <Text size="sm"
-                                  color={thread.mute ? "red" : "green"}>{thread.mute ? strings.inActive : strings.active}</Text>
-                          </Gap>
-                        }
-
-                      </Container>
-                    </Container>
-                  </ListItem>
-                </List>
-
-              </Container>
-              <GapFragment/>
-              <ModalThreadInfoMessageTypes thread={thread}
-                                           setScrollBottomThresholdCondition={this.setScrollBottomThresholdCondition}
-                                           setOnScrollBottomThreshold={this.setOnScrollBottomThreshold}/>
+                </Container>
+                <GapFragment/>
+                <ModalThreadInfoMessageTypes thread={thread}
+                                             setScrollBottomThresholdCondition={this.setScrollBottomThresholdCondition}
+                                             setOnScrollBottomThreshold={this.setOnScrollBottomThreshold}/>
+              </Fragment>
+              }
             </Fragment>
-            }
 
           </Container>
 

@@ -62,8 +62,8 @@ class ModalCreateGroup extends Component {
   }
 
   componentDidMount() {
-    const {isShow, dispatch, match} = this.props;
-    if (!isShow) {
+    const {contactModalCreateGroup, dispatch, match} = this.props;
+    if (!contactModalCreateGroup.isShowing) {
       if (match.path === ROUTE_CREATE_GROUP) {
         dispatch(contactModalCreateGroupShowing(true));
       }
@@ -140,7 +140,7 @@ class ModalCreateGroup extends Component {
     const {contactModalCreateGroup, smallVersion} = this.props;
     const {threadContacts, step, groupName, nameNotEntered} = this.state;
     const {isShowing, isChannel} = contactModalCreateGroup;
-    if (step === constants.SELECT_CONTACT) {
+    if (step === constants.SELECT_CONTACT && isShowing) {
       return <ModalContactList isShow
                                headingTitle={strings.selectContacts}
                                selectiveMode

@@ -10,13 +10,12 @@ import {mobileCheck} from "../utils/helpers";
 //components
 import MainFooterInput from "./MainFooterInput";
 import MainFooterAttachment from "./MainFooterAttachment";
-import MainFooterEmojiIcons from "./MainFooterEmojiIcons";
+import EmojiIcons from "./_component/EmojiIcons";
 import MainFooterSpam from "./MainFooterSpam";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/MainFooter.scss";
-import MainFooterInputParticipants from "./MainFooterInputParticipants";
+import style from "../../styles/app/MainFooter.scss";
 
 @connect(store => {
   return {
@@ -66,7 +65,7 @@ export default class MainFooter extends Component {
 
         {emojiShowing &&
           <Container className={style.MainFooter__EmojiIconsContainer}>
-            <MainFooterEmojiIcons setInputText={this.setInputText.bind(this)} focusInputNode={this.focusInputNode.bind(this)}/>
+            <EmojiIcons setInputText={this.setInputText.bind(this)} focusInputNode={this.focusInputNode.bind(this)}/>
           </Container>
         }
       </Container>

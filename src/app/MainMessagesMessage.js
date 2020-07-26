@@ -41,7 +41,7 @@ import {
   MdReply,
   MdArrowBack,
   MdDelete,
-  MdInfo
+  MdInfoOutline
 } from "react-icons/md";
 import {
   TiArrowForward
@@ -49,13 +49,13 @@ import {
 import {
   AiFillPushpin
 } from "react-icons/ai";
-import style from "../../styles/pages/box/MainMessagesMessage.scss";
+import style from "../../styles/app/MainMessagesMessage.scss";
 import styleVar from "../../styles/variables.scss";
 import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../constants/actionTypes";
 import {avatarNameGenerator, mobileCheck} from "../utils/helpers";
 import {messageEditing} from "../actions/messageActions";
 import {chatModalPrompt} from "../actions/chatActions";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 import ReactDOMServer from "react-dom/server";
 import {THREAD_ADMIN} from "../constants/privilege";
 import MainMessagesMessageShare from "./MainMessagesMessageShare";
@@ -381,7 +381,7 @@ export function ControlFragment({isMessageByMe, isParticipantBlocked, message, o
         {
           messageInfoCondition &&
           <ContextItem onClick={onMessageSeenListClick}>
-            <MdInfo size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
+            <MdInfoOutline size={styleVar.iconSizeMd} color={styleVar.colorAccent}/>
           </ContextItem>
         }
 

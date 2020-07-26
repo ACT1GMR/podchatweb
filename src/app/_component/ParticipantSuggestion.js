@@ -2,30 +2,22 @@
 import React, {Component} from "react";
 import ReactDOM from "react-dom";
 import {connect} from "react-redux";
-import classnames from "classnames";
-import sanitizeHTML from "sanitize-html";
-import {mobileCheck} from "../utils/helpers";
-
-//strings
-import strings from "../constants/localization";
-
 //actions
 import {
   threadParticipantList
-} from "../actions/threadActions";
+} from "../../actions/threadActions";
 
 //components
-import Container from "../../../uikit/src/container";
-import Scroller from "../../../uikit/src/scroller";
-import {Text} from "../../../uikit/src/typography";
+import Container from "../../../../uikit/src/container";
+import Scroller from "../../../../uikit/src/scroller";
+import {Text} from "../../../../uikit/src/typography";
+import {ContactList} from "./contactList";
+import Loading, {LoadingBlinkDots} from "../../../../uikit/src/loading";
+import Gap from "../../../../uikit/src/gap";
 
 //styling
-import style from "../../styles/pages/box/MainFooterInputParticipants.scss";
-import {ContactList} from "./_component/contactList";
-import ModalBody from "../../../uikit/src/modal/ModalBody";
-import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
-import Gap from "../../../uikit/src/gap";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import style from "../../../styles/modules/ParticipantSuggestion.scss";
+
 
 export function isElementVisible(el) {
   var rect = el.getBoundingClientRect(),
@@ -86,7 +78,7 @@ export default class extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    const {filterString: newFilterString, thread} = nextProps;
+    const {filterString: newFilterString} = nextProps;
     const {filterString} = this.props;
     if (newFilterString !== filterString) {
       this._reset();
@@ -205,7 +197,7 @@ export default class extends Component {
       </Container>;
 
     return (
-      <Scroller className={style.MainFooterInputParticipants}
+      <Scroller className={style.ParticipantSuggestion}
                 threshold={5}
                 onScrollBottomThresholdCondition={this.hasNextParticipants}
                 onScrollBottomThreshold={this.onScrollBottomThreshold}>

@@ -35,6 +35,7 @@ let strings = new LocalizedStrings({
     forward: "ارسال",
     thereIsNoMessageToShow: "هیچ پیامی برای نمایش وجود ندارد",
     mobilePhone: "شماره موبایل",
+    mobilePhoneOrUsername: "شماره موبایل یا یوزرنیم",
     unknown: "نامشخص",
     required: "اجباری",
     firstName: "نام",
@@ -64,6 +65,16 @@ let strings = new LocalizedStrings({
     minutes: "دقیقه",
     seconds: "ثانیه",
     yesterday: "دیروز",
+    todayHour: "امروز ساعت",
+    withinAWeek: "در همین هفته",
+    isWithinAMonth: "در همین ماه",
+    longTimeAgo: "خیلی وقت پیش",
+    lastSeen(string) {
+      if (string === strings.unknown) {
+        return string;
+      }
+      return `آخرین بازدید ${string}`;
+    },
     recently: "چند لحظه پیش",
     sentAFile: "فایلی فرستاده شد",
     sentAMessage: "پیغامی فرستاده شد",
@@ -74,15 +85,15 @@ let strings = new LocalizedStrings({
     imageText: "متن تصویر",
     send: "بفرست",
     firstOrFamilyNameIsRequired: "نام یا نام خانوادگی اجباری است",
-    mobilePhoneIsRequired: "شماره موبایل اجباری است",
+    mobilePhoneIsRequired: "شماره موبایل یا نام کاربری اجباری است",
     youCannotAddYourself: "شما نمیتوانید شماره موبایل خودتان را وارد نمایید",
     copyText: "کپی",
     howDoYouPinThisMessage: "چطور این پیام رو به بالا میچسبونید",
     pinAndNotifyAll: "چسباندن و با خبر سازی همه",
     onlyPin: "فقط بچسبه به بالا",
     batchMessageSentToThread(messagesCount, isGroup, isChannel) {
-      if(isChannel || isGroup) {
-        return `${messagesCount} پیام در ${isGroup ?  "گروه" : "کانال"} ارسال شده`;
+      if (isChannel || isGroup) {
+        return `${messagesCount} پیام در ${isGroup ? "گروه" : "کانال"} ارسال شده`;
       }
       return `${messagesCount} پیام  ارسال شده`
     },
@@ -99,7 +110,7 @@ let strings = new LocalizedStrings({
       return `از حذف این مخاطب مطمئنید`
     },
     typing(name) {
-      if(!name) {
+      if (!name) {
         return "در حال نوشتن"
       }
       return `${name} در حال نوشتن `
@@ -143,18 +154,6 @@ let strings = new LocalizedStrings({
       }
       return `گفتگوی تحت عنوان "${keyword}" وجود ندارد `;
     },
-    prettifyDateString(string) {
-      if (string === strings.unknown) {
-        return string;
-      }
-      if (string === "دیروز") {
-        return string;
-      }
-      if (~string.indexOf("پیش")) {
-        return string;
-      }
-      return `${string} پیش`;
-    },
     createdAThread(person, isGroup, isChannel) {
       if (isChannel) {
         return `${person} کانالی ساخت`
@@ -180,7 +179,7 @@ let strings = new LocalizedStrings({
     areYouSureToDoIt: "از انجام این کار مطمئنید",
     leaveGroup: isChannel => `ترک ${isChannel ? "کانال" : "گروه"}`,
     chatState: {
-      networkDisconnected: "عدم برقراری ارتباط",
+      networkDisconnected: "عدم ارتباط",
       reconnecting: "اتصال به شبکه",
       connectingToChat: "در حال اتصال"
     },
@@ -208,16 +207,16 @@ let strings = new LocalizedStrings({
     doAdd: "اضافه کن",
     canceledIDontWant: "ولش کن نمیخواد",
     draft: "پیشنویس",
-    personPinnedMessage(isChannel){
+    personPinnedMessage(isChannel) {
       return `پیامی به بالای ${isChannel ? "کانال" : "گروه"} چسبیده شد`
     },
     areYouSureAboutAddThisPersonToAdminList: "آیا مطمئنید میخوهید این کاربر را به لیست مدیران اضافه کنید",
-    howWeShouldDeleteThisMessageForYou: count =>{
-      if(count) {
+    howWeShouldDeleteThisMessageForYou: count => {
+      if (count) {
         return `این ${count} تا پیام رو چطوری دوست داری برات حذف کنیم`
       }
       return "این پیام رو چطوری دوست داری برات حذف کنیم";
-    } ,
+    },
     searchingForContacts: "در حال جستجو مخاطبین",
     searchingForThreads: "در حال جستجو گفتگوها",
     iCanceled: "منصرف شدم",
@@ -237,7 +236,7 @@ let strings = new LocalizedStrings({
     },
     sendFiles(count, isImages) {
       const fileText = isImages ? "عکس" : "فایل";
-      if(count <= 1) {
+      if (count <= 1) {
         return `ارسال ${fileText}`;
       }
       return `ارسال ${count} ${fileText}`;
@@ -252,6 +251,7 @@ let strings = new LocalizedStrings({
     },
     areYouSureABoutSendingThisMessage: "از فرستادن این پیام مطئنید",
     gotoMessage: "رفتن به پیام",
+    addToContact: "اضافه کردن به مخطابین",
     messageTypes: {
       people: "اعضا",
       picture: "تصاویر",

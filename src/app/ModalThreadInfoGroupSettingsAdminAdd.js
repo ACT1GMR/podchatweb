@@ -30,7 +30,7 @@ import AvatarText from "../../../uikit/src/avatar/AvatarText";
 //styling
 import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/md";
 import styleVar from "../../styles/variables.scss";
-import style from "../../styles/pages/box/ModalThreadInfoGroupSettingsAdminAdd.scss";
+import style from "../../styles/app/ModalThreadInfoGroupSettingsAdminAdd.scss";
 import {LastMessageFragment} from "./AsideThreads";
 import date from "../utils/date";
 
@@ -182,7 +182,7 @@ export default class ModalThreadInfoGroupSettingsAdminAdd extends Component {
           <AvatarName maxWidth="150px">
             {getName(selectedParticipant)}
             <AvatarText>
-              <Text size="sm" color="gray" dark>{strings.prettifyDateString(date.prettifySince(selectedParticipant ? selectedParticipant.notSeenDuration : ""))}</Text>
+              <Text size="sm" color="gray" dark>{strings.lastSeen(date.prettifySince(selectedParticipant ? selectedParticipant.notSeenDuration : ""))}</Text>
             </AvatarText>
           </AvatarName>
         </Avatar>

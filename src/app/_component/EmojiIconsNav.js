@@ -1,13 +1,17 @@
 // src/list/BoxScene.jss
 import React, {Component} from "react";
 import classnames from "classnames";
+import Strings from "../../constants/localization";
+import isElementVisible from "../../utils/dom";
+import Cookies from "js-cookie";
+import {emojiCookieName} from "../../constants/emoji";
 
 //strings
 
 //actions
 
 //components
-import Container from "../../../uikit/src/container";
+import Container from "../../../../uikit/src/container";
 import {
   FaRegSmileBeam,
   FaRegClock,
@@ -24,18 +28,15 @@ import {
 } from "react-icons/fi";
 
 //styling
-import style from "../../styles/pages/box/MainFooterEmojiIconsNav.scss";
-import styleVar from "../../styles/variables.scss";
-import Strings from "../constants/localization";
-import isElementVisible from "../utils/dom";
-import Cookies from "js-cookie";
-import {emojiCookieName} from "../constants/emoji";
+import style from "../../../styles/modules/EmojiIconsNav.scss";
+import styleVar from "../../../styles/variables.scss";
+
 
 function haveFrequentlyUsed() {
   return !!Cookies.get(emojiCookieName);
 }
 
-export default class MainFooterEmojiIconsNav extends Component {
+export default class EmojiIconsNav extends Component {
 
   constructor(props) {
     super(props);
@@ -83,10 +84,10 @@ export default class MainFooterEmojiIconsNav extends Component {
   render() {
     const {currentActiveTab} = this.state;
     const classNames = classnames({
-      [style.MainFooterEmojiIconsNav]: true
+      [style.EmojiIconsNav]: true
     });
     const itemClassNames = classnames({
-      [style.MainFooterEmojiIconsNav__Item]: true
+      [style.EmojiIconsNav__Item]: true
     });
     const iconsConfig = (nav) => ({
       size: styleVar.iconSizeMd,

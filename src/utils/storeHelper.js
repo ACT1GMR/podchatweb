@@ -2,7 +2,7 @@ export function stateGenerator(state, response, payloadKey) {
   let object;
   if (state === "PENDING") {
     object = {fetching: true, fetched: false, error: false};
-  } else if (state === "REJECTED") {
+  } else if (state === "REJECTED" || state === "ERROR") {
     object = {fetching: false, fetched: false, error: response};
   } else if (state === "CANCELED") {
     object = {fetching: false, fetched: false, error: false};

@@ -18,10 +18,10 @@ import List, {ListItem} from "../../../uikit/src/list";
 import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";
 import Message from "../../../uikit/src/message";
 import {sanitizeRule, sliceMessage} from "./AsideThreads";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 
 //styling
-import style from "../../styles/pages/box/LeftAsideMainSearch.scss";
+import style from "../../styles/app/LeftAsideMainSearch.scss";
 
 function datePetrification(time) {
   const correctTime = time / Math.pow(10, 6);

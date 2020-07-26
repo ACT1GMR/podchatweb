@@ -24,7 +24,7 @@ import {Text} from "../../../uikit/src/typography";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/AsidHead.scss";
+import style from "../../styles/app/AsidHead.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStlye from "../../styles/utils/utils.scss";
 import classnames from "classnames";
@@ -42,6 +42,13 @@ function routeChange(history, route, chatRouterLess) {
   if (!chatRouterLess) {
     history.push(route);
   }
+}
+
+export function socketStatus(chatState) {
+  const isReconnecting = chatState.socketState == 1 && !chatState.deviceRegister;
+  const isConnected = chatState.socketState == 1 && chatState.deviceRegister;
+  const isDisconnected = chatState.socketState == 3;
+  return {isReconnecting, isConnected, isDisconnected, timeUntilReconnect: chatState.timeUntilReconnect};
 }
 
 @connect(store => {
@@ -88,7 +95,8 @@ class AsideHead extends Component {
     super(props);
     this.state = {
       isOpen: false,
-      reConnecting: false
+      reConnecting: false,
+      timeUntilReconnectTimer: null,
     };
     this.container = React.createRef();
     this.onCloseMenu = this.onCloseMenu.bind(this);
@@ -96,9 +104,9 @@ class AsideHead extends Component {
     this.onRetryClick = this.onRetryClick.bind(this);
     this.onChatSearchToggle = this.onChatSearchToggle.bind(this);
     OnWindowFocusInOut(null, e => {
-      const {isDisconnected} = this.socketStatus();
-      if(isDisconnected) {
-        if(!this.state.reConnecting) {
+      const {isDisconnected} = socketStatus(this.props.chatState);
+      if (isDisconnected) {
+        if (!this.state.reConnecting) {
           this.onRetryClick();
         }
       }
@@ -106,13 +114,48 @@ class AsideHead extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {reConnecting} = this.state;
+    const {reConnecting, timeUntilReconnectTimer} = this.state;
+    const {chatState} = this.props;
     if (reConnecting) {
-      const {isConnected} = this.socketStatus();
+      const {isConnected} = socketStatus(chatState);
       if (isConnected) {
         this.setState({
           reConnecting: false
         });
+      }
+    }
+    if (chatState) {
+      const {isDisconnected, timeUntilReconnect, isReconnecting} = socketStatus(chatState);
+      const {isDisconnected: oldIsDisconnected, timeUntilReconnect: oldTimeUntilReconnect} = socketStatus(prevProps.chatState);
+
+      if (isReconnecting) {
+        clearInterval(this.timeRemainingToConnectIntervalId);
+        if (timeUntilReconnectTimer) {
+          this.setState({
+            timeUntilReconnectTimer: null
+          });
+        }
+
+      } else {
+        if ((isDisconnected && !oldIsDisconnected) || (timeUntilReconnect !== oldTimeUntilReconnect)) {
+          clearInterval(this.timeRemainingToConnectIntervalId);
+          this.setState({
+            timeUntilReconnectTimer: timeUntilReconnect / 1000
+          });
+          this.timeRemainingToConnectIntervalId = setInterval(() => {
+            const {timeUntilReconnectTimer} = this.state;
+            if (timeUntilReconnectTimer > 0) {
+              this.setState({
+                timeUntilReconnectTimer: timeUntilReconnectTimer - 1
+              });
+            } else {
+              this.setState({
+                timeUntilReconnectTimer: null
+              });
+              clearInterval(this.timeRemainingToConnectIntervalId);
+            }
+          }, 1000);
+        }
       }
     }
   }
@@ -163,7 +206,7 @@ class AsideHead extends Component {
     });
     clearTimeout(this.timeOutForTryButton);
     this.timeOutForTryButton = setTimeout(e => {
-      const {isDisconnected} = this.socketStatus();
+      const {isDisconnected} = socketStatus(this.props.chatState);
       if (isDisconnected) {
         this.setState({
           reConnecting: false
@@ -184,18 +227,10 @@ class AsideHead extends Component {
     dispatch(chatSearchShow(!chatSearchShowing));
   }
 
-  socketStatus(defineProps) {
-    const {chatState} = defineProps || this.props;
-    const isReconnecting = chatState.socketState == 1 && !chatState.deviceRegister;
-    const isConnected = chatState.socketState == 1 && chatState.deviceRegister;
-    const isDisconnected = chatState.socketState == 3;
-    return {isReconnecting, isConnected, isDisconnected, timeUntilReconnect: chatState.timeUntilReconnect};
-  }
-
   render() {
     const {menuItems, chatState, chatInstance, smallVersion, chatSearchShowing, user} = this.props;
-    const {isOpen, reConnecting} = this.state;
-    const {isReconnecting, isConnected, isDisconnected} = this.socketStatus();
+    const {isOpen, reConnecting, timeUntilReconnectTimer} = this.state;
+    const {isReconnecting, isConnected, isDisconnected} = socketStatus(chatState);
     const iconSize = styleVar.iconSizeLg.replace("px", "");
     const iconMargin = `${(statics.headMenuSize - iconSize) / 2}px`;
     const firstInit = !chatInstance;
@@ -216,7 +251,8 @@ class AsideHead extends Component {
           </Container>
           {isDisconnected && !reConnecting &&
           <Container inline onClick={this.onRetryClick}>
-            <Text size="xs" color="gray" light linkStyle>{strings.tryAgain}</Text>
+            <Text size="xs" color="gray" light linkStyle inline>{strings.tryAgain}</Text>
+            {timeUntilReconnectTimer ? <Text size="xs" color="gray" light inline> ( {timeUntilReconnectTimer} )</Text> : ""}
           </Container>
           }
           {reConnecting &&
@@ -237,7 +273,8 @@ class AsideHead extends Component {
                 </Gap>
               </Container>
               <Avatar>
-                <AvatarImage src={avatarUrlGenerator(user.image, avatarUrlGenerator.SIZES.MEDIUM)} text={avatarNameGenerator(user.name).letter}
+                <AvatarImage src={avatarUrlGenerator(user.image, avatarUrlGenerator.SIZES.MEDIUM)}
+                             text={avatarNameGenerator(user.name).letter}
                              textBg={avatarNameGenerator(user.name).color}
                              customSize="50px"/>
                 <Container>

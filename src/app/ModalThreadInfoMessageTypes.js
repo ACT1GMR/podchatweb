@@ -15,7 +15,7 @@ import Container from "../../../uikit/src/container";
 //UI components
 
 //styling
-import style from "../../styles/pages/box/ModalThreadInfoMessageTypes.scss";
+import style from "../../styles/app/ModalThreadInfoMessageTypes.scss";
 import Text from "../../../uikit/src/typography/Text";
 import strings from "../constants/localization";
 import Loading, {LoadingBlinkDots} from "../../../uikit/src/loading";

@@ -1,25 +1,25 @@
 import moment from "moment";
 import PersianDate from "persian-date";
 import strings from "../constants/localization";
+import {getNow} from "./helpers";
 
 function getMomentDate(date) {
-  return moment(date)
+  return moment(new Date(date || getNow()))
 }
 
 const date =
   {
     isToday(date) {
-      const momentDate = getMomentDate(date);
-      const today = getMomentDate().startOf("day");
-      return momentDate.isSame(today, "d");
+      return moment(new Date(date)).isSame(getMomentDate().clone().startOf('day'), 'd');
     },
     isYesterday(date) {
-      const yesterday = getMomentDate().subtract(1, "days").startOf("day");
-      return getMomentDate(date).isSame(yesterday, "d");
+      return moment(new Date(date)).isSame(getMomentDate().clone().subtract(1, 'days').startOf('day'));
     },
     isWithinAWeek(date) {
-      const A_WEEK_OLD = getMomentDate().subtract(7, "days").startOf("day");
-      return getMomentDate(date).isAfter(A_WEEK_OLD);
+      return moment(new Date(date)).isAfter(getMomentDate().clone().subtract(7, 'days').startOf('day'));
+    },
+    isWithinAMonth(date) {
+      return moment(new Date(date)).isAfter(getMomentDate().clone().subtract(30, 'days').startOf('day'));
     },
     isTwoWeeksOrMore(date) {
       return getMomentDate(date).isAfter(A_WEEK_OLD);
@@ -33,37 +33,29 @@ const date =
       }
     },
     prettifySince(date) {
-      if(!date) {
+      if (date === undefined || date === null || isNaN(date)) {
         return strings.unknown;
       }
-      const seconds = Math.floor(date / 1000);
-      let interval = Math.floor(seconds / 31536000);
-      if (interval > 1) {
-        return `${interval} ${strings.years}`;
-      }
-      interval = Math.floor(seconds / 2592000);
-      if (interval > 1) {
-        return `${interval} ${strings.months}`;
-      }
-      interval = Math.floor(seconds / 86400);
-      if (interval >= 1) {
-        if (interval === 1) {
-          return strings.yesterday;
+      const prettyDate = getNow() - date;
+      const isToday = this.isToday(prettyDate);
+      const isYesterday = this.isYesterday(prettyDate);
+      const isWithinAWeek = this.isWithinAWeek(prettyDate);
+      const isWithinAMonth = this.isWithinAMonth(prettyDate);
+      if (isToday) {
+        const seconds = Math.floor(date / 1000);
+        let interval = Math.floor(seconds / (2 * 60));
+        if (interval <= 1) {
+          return strings.recently;
         }
-        return `${interval} ${strings.days}`;
+        return `${strings.todayHour} ${this.format(prettyDate, "HH:mm")}`
+      } else if (isYesterday) {
+        return strings.yesterday;
+      } else if (isWithinAWeek) {
+        return strings.withinAWeek;
+      } else if (isWithinAMonth) {
+        return strings.isWithinAMonth;
       }
-      interval = Math.floor(seconds / 3600);
-      if (interval > 1) {
-        return `${interval} ${strings.hours}`;
-      }
-      interval = Math.floor(seconds / 60);
-      if (interval > 1) {
-        return `${interval} ${strings.minutes}`;
-      }
-      if (interval > 1) {
-        return `${interval} ${strings.seconds}`;
-      }
-      return strings.recently;
+      return strings.longTimeAgo;
     }
   };
 export default date;

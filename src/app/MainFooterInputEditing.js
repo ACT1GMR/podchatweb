@@ -17,10 +17,10 @@ import {Text} from "../../../uikit/src/typography";
 //styling
 import {MdClose, MdEdit, MdReply} from "react-icons/md";
 import {TiArrowForward} from "react-icons/ti";
-import style from "../../styles/pages/box/MainFooterInputEditing.scss";
+import style from "../../styles/app/MainFooterInputEditing.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStlye from "../../styles/utils/utils.scss";
-import {decodeEmoji} from "./MainFooterEmojiIcons";
+import {decodeEmoji} from "./_component/EmojiIcons.js";
 
 const constants = {
   replying: "REPLYING",
@@ -95,7 +95,9 @@ export default class MainFooterInputEditing extends Component {
       if (messageEditing.type !== constants.replying) {
         if (prevProps.messageEditing !== messageEditing) {
           if (messageEditing.type !== constants.replying && messageEditing.type !== constants.forwarding) {
-            setInputText(decodeEmoji(messageEditing.message.message));
+            if(!messageEditing.message.draftMode) {
+              setInputText(decodeEmoji(messageEditing.message.message));
+            }
           } else {
             dispatch(threadIsSendingMessage(true));
           }

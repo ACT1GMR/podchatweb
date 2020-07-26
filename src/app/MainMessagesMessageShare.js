@@ -32,7 +32,7 @@ import {
 import {Button} from "../../../uikit/src/button";
 import ListItem from "../../../uikit/src/list/ListItem";
 import List from "../../../uikit/src/list";
-import style from "../../styles/pages/box/MainMessagesMessageShare.scss";
+import style from "../../styles/app/MainMessagesMessageShare.scss";
 import styleVar from "../../styles/variables.scss";
 import Text from "../../../uikit/src/typography/Text";
 import Gap from "../../../uikit/src/gap";
