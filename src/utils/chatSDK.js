@@ -143,7 +143,7 @@ export default class ChatSDK {
   }
 
   logout() {
-    this.chatAgent.logout();
+    this.chatAgent && this.chatAgent.logout();
   }
 
   @promiseDecorator

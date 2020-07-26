@@ -49,7 +49,7 @@ import {
 import {
   AiFillPushpin
 } from "react-icons/ai";
-import style from "../../styles/pages/box/MainMessagesMessage.scss";
+import style from "../../styles/app/MainMessagesMessage.scss";
 import styleVar from "../../styles/variables.scss";
 import {THREAD_LEFT_ASIDE_SEEN_LIST} from "../constants/actionTypes";
 import {avatarNameGenerator, mobileCheck} from "../utils/helpers";

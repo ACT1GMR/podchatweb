@@ -17,11 +17,13 @@ import Avatar, {AvatarImage, AvatarName} from "../../../uikit/src/avatar";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/MainHeadThreadInfo.scss";
+import style from "../../styles/app/MainHeadThreadInfo.scss";
 import classnames from "classnames";
 import {avatarNameGenerator, avatarUrlGenerator} from "../utils/helpers";
 import Loading from "../../../uikit/src/loading";
 import LoadingBlinkDots from "../../../uikit/src/loading/LoadingBlinkDots";
+import {getParticipant} from "./ModalThreadInfoPerson";
+import date from "../utils/date";
 
 export function TypingFragment({isGroup, typing, textProps}) {
   return (
@@ -39,7 +41,8 @@ export function TypingFragment({isGroup, typing, textProps}) {
     chatRouterLess: store.chatRouterLess,
     thread: store.thread.thread,
     threadShowing: store.threadShowing,
-    participantsFetching: store.threadParticipantList.fetching
+    participants: store.threadParticipantList.participants,
+    user: store.user.user
   };
 })
 class BoxHeadThreadInfo extends Component {
@@ -58,8 +61,9 @@ class BoxHeadThreadInfo extends Component {
   }
 
   render() {
-    const {thread, smallVersion, chatState} = this.props;
+    const {thread, smallVersion, chatState, participants, user} = this.props;
     const {isDisconnected, timeUntilReconnect, isReconnecting, isConnected} = socketStatus(chatState);
+    const participant = getParticipant(participants, user)
     if (thread.id) {
       const classNames = classnames({
         [style.MainHeadThreadInfo]: true,
@@ -91,7 +95,7 @@ class BoxHeadThreadInfo extends Component {
                             <Text size="xs" invert overflow="ellipsis">{thread.participantCount} {strings.member}</Text>
                             :
                             <Text color={typingText ? "yellow" : null} size="xs" invert
-                                  overflow="ellipsis">{strings.you}, {thread.title}</Text>
+                                  overflow="ellipsis">{strings.lastSeen(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
                           :
                           <Text size="xs" invert overflow="ellipsis">{isDisconnected ? `${strings.chatState.networkDisconnected}...` : `${strings.chatState.reconnecting}...`}</Text>
                       }

@@ -28,7 +28,7 @@ import {
 import {
   MdExpandMore,
 } from "react-icons/md";
-import style from "../../styles/pages/box/MainMessagesUnreadBar.scss";
+import style from "../../styles/app/MainMessagesUnreadBar.scss";
 import styleVar from "../../styles/variables.scss";
 import Container from "../../../uikit/src/container";
 import Gap from "../../../uikit/src/gap";

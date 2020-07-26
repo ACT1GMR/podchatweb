@@ -30,7 +30,7 @@ import {startTyping, stopTyping} from "../actions/chatActions";
 import ParticipantSuggestion from "./_component/ParticipantSuggestion";
 
 //styling
-import style from "../../styles/pages/box/MainFooterInput.scss";
+import style from "../../styles/app/MainFooterInput.scss";
 import OutsideClickHandler from "react-outside-click-handler";
 import {emojiCookieName} from "../constants/emoji";
 import {MESSAGE_SHARE} from "../constants/cookie-keys";

@@ -22,7 +22,7 @@ import ModalThreadInfoGroup from "./ModalThreadInfoGroup";
 import ModalThreadInfoPerson from "./ModalThreadInfoPerson";
 
 //styling
-import style from "../../styles/pages/box/ModalThreadInfo.scss";
+import style from "../../styles/app/ModalThreadInfo.scss";
 
 function GapFragment() {
   return (

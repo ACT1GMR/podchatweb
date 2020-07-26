@@ -65,6 +65,16 @@ let strings = new LocalizedStrings({
     minutes: "دقیقه",
     seconds: "ثانیه",
     yesterday: "دیروز",
+    todayHour: "امروز ساعت",
+    withinAWeek: "در همین هفته",
+    isWithinAMonth: "در همین ماه",
+    longTimeAgo: "خیلی وقت پیش",
+    lastSeen(string) {
+      if (string === strings.unknown) {
+        return string;
+      }
+      return `آخرین بازدید ${string}`;
+    },
     recently: "چند لحظه پیش",
     sentAFile: "فایلی فرستاده شد",
     sentAMessage: "پیغامی فرستاده شد",
@@ -82,8 +92,8 @@ let strings = new LocalizedStrings({
     pinAndNotifyAll: "چسباندن و با خبر سازی همه",
     onlyPin: "فقط بچسبه به بالا",
     batchMessageSentToThread(messagesCount, isGroup, isChannel) {
-      if(isChannel || isGroup) {
-        return `${messagesCount} پیام در ${isGroup ?  "گروه" : "کانال"} ارسال شده`;
+      if (isChannel || isGroup) {
+        return `${messagesCount} پیام در ${isGroup ? "گروه" : "کانال"} ارسال شده`;
       }
       return `${messagesCount} پیام  ارسال شده`
     },
@@ -100,7 +110,7 @@ let strings = new LocalizedStrings({
       return `از حذف این مخاطب مطمئنید`
     },
     typing(name) {
-      if(!name) {
+      if (!name) {
         return "در حال نوشتن"
       }
       return `${name} در حال نوشتن `
@@ -143,18 +153,6 @@ let strings = new LocalizedStrings({
         return 'گفتگویی تحت این عنوان یافت نشد...'
       }
       return `گفتگوی تحت عنوان "${keyword}" وجود ندارد `;
-    },
-    prettifyDateString(string) {
-      if (string === strings.unknown) {
-        return string;
-      }
-      if (string === "دیروز") {
-        return string;
-      }
-      if (~string.indexOf("پیش")) {
-        return string;
-      }
-      return `${string} پیش`;
     },
     createdAThread(person, isGroup, isChannel) {
       if (isChannel) {
@@ -209,16 +207,16 @@ let strings = new LocalizedStrings({
     doAdd: "اضافه کن",
     canceledIDontWant: "ولش کن نمیخواد",
     draft: "پیشنویس",
-    personPinnedMessage(isChannel){
+    personPinnedMessage(isChannel) {
       return `پیامی به بالای ${isChannel ? "کانال" : "گروه"} چسبیده شد`
     },
     areYouSureAboutAddThisPersonToAdminList: "آیا مطمئنید میخوهید این کاربر را به لیست مدیران اضافه کنید",
-    howWeShouldDeleteThisMessageForYou: count =>{
-      if(count) {
+    howWeShouldDeleteThisMessageForYou: count => {
+      if (count) {
         return `این ${count} تا پیام رو چطوری دوست داری برات حذف کنیم`
       }
       return "این پیام رو چطوری دوست داری برات حذف کنیم";
-    } ,
+    },
     searchingForContacts: "در حال جستجو مخاطبین",
     searchingForThreads: "در حال جستجو گفتگوها",
     iCanceled: "منصرف شدم",
@@ -238,7 +236,7 @@ let strings = new LocalizedStrings({
     },
     sendFiles(count, isImages) {
       const fileText = isImages ? "عکس" : "فایل";
-      if(count <= 1) {
+      if (count <= 1) {
         return `ارسال ${fileText}`;
       }
       return `ارسال ${count} ${fileText}`;

@@ -28,7 +28,7 @@ import Container from "../../../uikit/src/container";
 import MainPinMessage from "./MainPinMessage";
 
 //styling
-import style from "../../styles/pages/box/Main.scss";
+import style from "../../styles/app/Main.scss";
 import styleVar from "../../styles/variables.scss";
 
 

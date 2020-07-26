@@ -44,7 +44,7 @@ import {isChannel, isGroup} from "./Main";
 import ModalThreadInfoMessageTypes from "./ModalThreadInfoMessageTypes";
 
 
-function getParticipant(participants, user) {
+export function getParticipant(participants, user) {
   let participant;
   if (participants) {
     participant = participants.filter(e => e.id !== user.id)[0];
@@ -137,12 +137,12 @@ export default class ModalThreadInfo extends Component {
     dispatch(threadNotification(thread.id, !thread.mute));
   }
 
-  onEdit(participant, contact, extraPayload = {}) {
+  onEdit(participant = {}, contact, extraPayload = {}) {
     const {dispatch, history, chatRouterLess, onClose} = this.props;
     dispatch(contactAdding(true, {
       firstName: contact.firstName,
       lastName: contact.lastName,
-      addBy: contact.cellphoneNumber || participant.username || contact.linkedUser.username,
+      addBy: contact.cellphoneNumber || (participant && participant.username) || contact.linkedUser.username,
       ...extraPayload
     }));
     if (!chatRouterLess) {
@@ -217,7 +217,7 @@ export default class ModalThreadInfo extends Component {
                   </AvatarImage>
                   <AvatarName>
                     <Heading h1>{thread.title}</Heading>
-                    <Text>{strings.prettifyDateString(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
+                    <Text>{strings.lastSeen(date.prettifySince(participant ? participant.notSeenDuration : ""))}</Text>
                   </AvatarName>
                 </Avatar>
               </Container>

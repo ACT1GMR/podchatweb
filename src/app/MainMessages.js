@@ -41,7 +41,7 @@ import {
   MdChatBubbleOutline,
   MdExpandMore,
 } from "react-icons/md";
-import style from "../../styles/pages/box/MainMessages.scss";
+import style from "../../styles/app/MainMessages.scss";
 import styleVar from "../../styles/variables.scss";
 import MainMessagesMessage from "./MainMessagesMessage";
 import Shape, {ShapeCircle} from "../../../uikit/src/shape";

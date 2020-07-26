@@ -24,7 +24,7 @@ import {Text} from "../../../uikit/src/typography";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/AsidHead.scss";
+import style from "../../styles/app/AsidHead.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStlye from "../../styles/utils/utils.scss";
 import classnames from "classnames";

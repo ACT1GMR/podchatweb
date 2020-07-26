@@ -16,7 +16,7 @@ import Container from "../../../uikit/src/container";
 import Text from "../../../uikit/src/typography/Text";
 
 //styling
-import style from "../../styles/pages/box/MainFooterSpam.scss";
+import style from "../../styles/app/MainFooterSpam.scss";
 import Gap from "../../../uikit/src/gap";
 
 

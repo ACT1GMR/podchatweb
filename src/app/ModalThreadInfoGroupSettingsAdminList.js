@@ -21,7 +21,7 @@ import {PartialLoadingFragment} from "./ModalContactList";
 //styling
 import {MdArrowBack, MdBlock, MdCameraAlt, MdVerifiedUser} from "react-icons/md";
 import styleVar from "../../styles/variables.scss";
-import style from "../../styles/pages/box/ModalThreadInfoGroupSettings.scss";
+import style from "../../styles/app/ModalThreadInfoGroupSettings.scss";
 import List, {ListItem} from "../../../uikit/src/list";
 import Gap from "../../../uikit/src/gap";
 import {Text} from "../../../uikit/src/typography";

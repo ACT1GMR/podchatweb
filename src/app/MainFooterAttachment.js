@@ -19,7 +19,7 @@ import Container from "../../../uikit/src/container";
 import {MdAttachFile, MdChevronRight} from "react-icons/md";
 
 //styling
-import style from "../../styles/pages/box/MainFooterAttachment.scss";
+import style from "../../styles/app/MainFooterAttachment.scss";
 import styleVar from "../../styles/variables.scss";
 import {stopTyping} from "../actions/chatActions";
 

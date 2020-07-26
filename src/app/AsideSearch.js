@@ -16,7 +16,7 @@ import Container from "../../../uikit/src/container";
 import {InputText} from "../../../uikit/src/input";
 
 //styling
-import style from "../../styles/pages/box/AsidSearch.scss";
+import style from "../../styles/app/AsidSearch.scss";
 import styleVar from "../../styles/variables.scss";
 import utilsStlye from "../../styles/utils/utils.scss";
 import {chatSearchResult} from "../actions/chatActions";

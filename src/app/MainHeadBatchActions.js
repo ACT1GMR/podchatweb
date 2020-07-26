@@ -24,7 +24,7 @@ import {MdDelete} from "react-icons/md";
 import {TiArrowForward} from "react-icons/ti";
 
 //styling
-import style from "../../styles/pages/box/MainHeadBatchActions.scss";
+import style from "../../styles/app/MainHeadBatchActions.scss";
 import styleVar from "../../styles/variables.scss";
 import {MessageDeletePrompt} from "./_component/prompts";
 

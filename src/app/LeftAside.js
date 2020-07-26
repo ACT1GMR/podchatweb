@@ -12,7 +12,7 @@ import LeftAsideMain from "./LeftAsideMain";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/LeftAside.scss";
+import style from "../../styles/app/LeftAside.scss";
 
 @connect()
 export default class Aside extends Component {

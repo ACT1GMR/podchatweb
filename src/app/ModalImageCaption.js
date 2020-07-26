@@ -24,7 +24,7 @@ import {
 } from "react-icons/md";
 
 //styling
-import style from "../../styles/pages/box/ModalImageCaption.scss";
+import style from "../../styles/app/ModalImageCaption.scss";
 import {codeEmoji} from "./_component/EmojiIcons.js";
 import {clearHtml} from "./_component/Input";
 import {humanFileSize, mobileCheck} from "../utils/helpers";

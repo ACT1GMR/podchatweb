@@ -15,7 +15,7 @@ import MainFooterSpam from "./MainFooterSpam";
 import Container from "../../../uikit/src/container";
 
 //styling
-import style from "../../styles/pages/box/MainFooter.scss";
+import style from "../../styles/app/MainFooter.scss";
 
 @connect(store => {
   return {

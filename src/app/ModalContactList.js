@@ -23,7 +23,7 @@ import {InputText} from "../../../uikit/src/input";
 import {MdSearch, MdClose} from "react-icons/md";
 
 //styling
-import style from "../../styles/pages/box/ModalContactList.scss";
+import style from "../../styles/app/ModalContactList.scss";
 import styleVar from "../../styles/variables.scss";
 import {ContactList, ContactListSelective} from "./_component/contactList";
 import {ROUTE_ADD_CONTACT} from "../constants/routes";
