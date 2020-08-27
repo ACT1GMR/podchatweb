@@ -126,9 +126,9 @@ class MainMessagesMessageFile extends Component {
   }
 
   onRetry() {
-    const {dispatch, message} = this.props;
+    const {dispatch, message, thread} = this.props;
     this.onCancel(message);
-    dispatch(messageSendFile(message.fileObject, message.threadId, message.message));
+    dispatch(messageSendFile(message.fileObject, thread, message.message));
   }
 
   onCancel() {

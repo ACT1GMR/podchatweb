@@ -1,6 +1,6 @@
 export const types = {
-  picture: "picture",
-  file: "file",
-  video: "video",
-  sound: "sound"
+  picture: "POD_SPACE_PICTURE",
+  video: "POD_SPACE_VIDEO",
+  sound: "POD_SPACE_SOUND",
+  file: "POD_SPACE_FILE"
 };

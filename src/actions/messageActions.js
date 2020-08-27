@@ -54,7 +54,7 @@ function commonOnTheFlySendMessage(text, file, dispatch, getState) {
           const other = {uniqueId: `${message.uniqueId}`};
           const messageText = message.message;
           if (message.fileObject) {
-            dispatch(messageSendFile(message.fileObject, threadId, messageText, other));
+            dispatch(messageSendFile(message.fileObject, thread, messageText, other));
           } else {
             dispatch(messageSend(messageText, thread.id, other));
           }
@@ -88,24 +88,24 @@ export const messageSendFileOnTheFly = (file, message) => {
   return commonOnTheFlySendMessage.bind(null, message, file);
 };
 
-export const messageSendFile = (file, threadId, message, other) => {
+export const messageSendFile = (file, thread, message, other) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.sendFileMessage(file, threadId, message, other)
+      payload: chatSDK.sendFileMessage(file, thread, message, other)
     });
   }
 };
 
-export const messageFileReply = (file, threadId, repliedTo, message, repliedMessage) => {
+export const messageFileReply = (file, thread, repliedTo, message, repliedMessage) => {
   return (dispatch, getState) => {
     const state = getState();
     const chatSDK = state.chatInstance.chatSDK;
     dispatch({
       type: MESSAGE_SEND(),
-      payload: chatSDK.replyFileMessage(file, threadId, repliedTo, message, repliedMessage)
+      payload: chatSDK.replyFileMessage(file, thread, repliedTo, message, repliedMessage)
     });
   }
 };

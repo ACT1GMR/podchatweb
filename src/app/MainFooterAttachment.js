@@ -60,7 +60,7 @@ export default class MainFooterAttachment extends Component {
   }
 
   sendFiles(filesObject) {
-    const {threadId, dispatch, messageEditing: msgEditing, thread} = this.props;
+    const {dispatch, messageEditing: msgEditing, thread} = this.props;
     const files = filesObject.files;
     const caption = filesObject.caption;
     let isReply = false;
@@ -72,13 +72,13 @@ export default class MainFooterAttachment extends Component {
     }
     for (const file of files) {
       if (isReply) {
-        dispatch(messageFileReply(file, threadId, isReply.id, caption, isReply));
+        dispatch(messageFileReply(file, thread, isReply.id, caption, isReply));
         continue;
       }
       if (thread.onTheFly) {
         dispatch(messageSendFileOnTheFly(file, caption));
       } else {
-        dispatch(messageSendFile(file, threadId, caption));
+        dispatch(messageSendFile(file, thread, caption));
       }
     }
   }

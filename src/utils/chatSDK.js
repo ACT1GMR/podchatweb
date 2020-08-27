@@ -222,14 +222,14 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getThreads(resolve, reject, offset, count, name, params) {
+  getThreads(resolve, reject, offset, count, threadName, params) {
     let getThreadsParams = {
       count,
       offset
     };
-    if (typeof name === "string") {
-      if (name.trim()) {
-        getThreadsParams.name = name;
+    if (typeof threadName === "string") {
+      if (threadName.trim()) {
+        getThreadsParams.threadName = threadName;
       }
     }
     if (params) {
@@ -309,9 +309,9 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  sendMessage(resolve, reject, content, threadId, other) {
+  sendMessage(resolve, reject, textMessage, threadId, other) {
     let sendChatParams = {
-      content,
+      textMessage,
       threadId,
       messageType: "TEXT"
     };
@@ -323,15 +323,16 @@ export default class ChatSDK {
       ...obj, ...{
         participant: this.user,
         time: getNow() * Math.pow(10, 6),
-        message: content,
+        message: textMessage,
       }
     })
   }
 
   @promiseDecorator
-  sendFileMessage(resolve, reject, file, threadId, caption, other) {
+  sendFileMessage(resolve, reject, file, thread, caption, other) {
     let sendChatParams = {
-      threadId,
+      threadId: thread.id,
+      userGroupHash: thread.userGroupHash,
       file
     };
     if (caption) {
@@ -439,7 +440,7 @@ export default class ChatSDK {
   @promiseDecorator
   muteThread(resolve, reject, threadId, mute) {
     const params = {
-      subjectId: threadId
+      threadId
     };
     this.chatAgent[mute ? "muteThread" : "unMuteThread"](params, result => {
       if (!this._onError(result, reject)) {
@@ -480,10 +481,10 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  forwardMessage(resolve, reject, threadId, messageId) {
+  forwardMessage(resolve, reject, threadId, messageIds) {
     const sendChatParams = {
-      subjectId: threadId,
-      content: JSON.stringify(messageId instanceof Array ? messageId : [messageId])
+      threadId,
+      messageIds: JSON.stringify(messageIds instanceof Array ? messageIds : [messageIds])
     };
     this.chatAgent.forwardMessage(sendChatParams, {
       onSent() {
@@ -493,17 +494,17 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  replyMessage(resolve, reject, content, repliedTo, threadId, repliedMessage) {
+  replyMessage(resolve, reject, textMessage, repliedTo, threadId, repliedMessage) {
     const sendChatParams = {
       threadId,
       repliedTo,
-      content
+      textMessage
     };
-    const obj = this.chatAgent.replyMessage(sendChatParams, (result) => {
+    const obj = this.chatAgent.replyTextMessage(sendChatParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({
           result, ...{
-            message: content, participant: {}
+            message: textMessage, participant: {}
           }
         });
       }
@@ -520,15 +521,16 @@ export default class ChatSDK {
           messageType: 0,
         },
         time: getNow() * Math.pow(10, 6),
-        message: content,
+        message: textMessage
       }
     });
   }
 
   @promiseDecorator
-  replyFileMessage(resolve, reject, file, threadId, repliedTo, content, repliedMessage) {
+  replyFileMessage(resolve, reject, file, thread, repliedTo, content, repliedMessage) {
     const sendChatParams = {
-      threadId,
+      threadId: thread.id,
+      userGroupHash: thread.userGroupHash,
       repliedTo,
       file,
       content
@@ -651,7 +653,7 @@ export default class ChatSDK {
       count: 50,
       offset: 0
     };
-    this.chatAgent.getBlocked(getContactsParams, (result) => {
+    this.chatAgent.getBlockedList(getContactsParams, (result) => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.blockedUsers);
       }
@@ -691,7 +693,7 @@ export default class ChatSDK {
   @promiseDecorator
   spamPvThread(resolve, reject, threadId) {
     const reportSpamPv = {threadId};
-    this.chatAgent.spamPvThread(reportSpamPv, result => {
+    this.chatAgent.spamPrivateThread(reportSpamPv, result => {
       if (!this._onError(result, reject)) {
         return resolve(result.result);
       }
@@ -740,7 +742,7 @@ export default class ChatSDK {
 
   @promiseDecorator
   getThreadParticipantRoles(resolve, reject, threadId) {
-    this.chatAgent.getParticipantRoles({threadId}, (result) => {
+    this.chatAgent.getCurrentUserRoles({threadId}, (result) => {
       if (!this._onError(result, reject)) {
         return resolve({threadId, roles: result.result});
       }
@@ -750,14 +752,14 @@ export default class ChatSDK {
   @promiseDecorator
   pinThread(resolve, reject, threadId) {
     this.chatAgent.pinThread({
-      subjectId: threadId
+      threadId
     });
   }
 
   @promiseDecorator
   unpinThread(resolve, reject, threadId) {
     this.chatAgent.unPinThread({
-      subjectId: threadId
+      threadId
 
     });
   }
@@ -793,10 +795,10 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  addParticipants(resolve, reject, threadId, contacts) {
+  addParticipants(resolve, reject, threadId, contactIds) {
     const addParticipantParams = {
       threadId,
-      contacts
+      contactIds
     };
 
     this.chatAgent.addParticipants(addParticipantParams, (result) => {
@@ -807,15 +809,15 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  removeParticipants(resolve, reject, threadId, participants) {
+  removeParticipants(resolve, reject, threadId, participantIds) {
     const removeParticipantParams = {
       threadId,
-      participants
+      participantIds
     };
 
     this.chatAgent.removeParticipants(removeParticipantParams, (result) => {
       if (!this._onError(result, reject)) {
-        return resolve(participants);
+        return resolve(participantIds);
       }
     });
   }
