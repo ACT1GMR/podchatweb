@@ -341,7 +341,7 @@ export default class ChatSDK {
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.match(/mp4|ogg|3gp|ogv/);
     const isAudio = file.type.match(/audio.*/);
-    const messageType =  isImage ? types.picture : isVideo ? types.video : isAudio ? types.sound : types.file;
+    const messageType = isImage ? types.picture : isVideo ? types.video : isAudio ? types.sound : types.file;
     if (other) {
       sendChatParams = {...sendChatParams, ...other};
     }
@@ -484,7 +484,7 @@ export default class ChatSDK {
   forwardMessage(resolve, reject, threadId, messageIds) {
     const sendChatParams = {
       threadId,
-      messageIds: JSON.stringify(messageIds instanceof Array ? messageIds : [messageIds])
+      messageIds: messageIds instanceof Array ? messageIds : [messageIds]
     };
     this.chatAgent.forwardMessage(sendChatParams, {
       onSent() {
