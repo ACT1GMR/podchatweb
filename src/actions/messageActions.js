@@ -99,6 +99,14 @@ export const messageSendFile = (file, threadId, message, other) => {
   }
 };
 
+export const messageGetFile = (hashCode, callBack) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.getFileFromPodspace(hashCode, callBack);
+  }
+};
+
 export const messageFileReply = (file, threadId, repliedTo, message, repliedMessage) => {
   return (dispatch, getState) => {
     const state = getState();
@@ -118,6 +126,14 @@ export const messageCancelFile = (fileUniqueId, threadId) => {
       type: MESSAGE_FILE_UPLOAD_CANCEL(),
       payload: chatSDK.cancelFileUpload(fileUniqueId, threadId)
     });
+  }
+};
+
+export const messageCancelFileDownload = (uniqueId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.cancelFileDownload(uniqueId)
   }
 };
 
@@ -195,7 +211,7 @@ export const messageForwardOnTheFly = (messageId, firstMessage) => {
       });
       if (firstMessage) {
         dispatch(messageSend(firstMessage, thread.id));
-        return setTimeout(()=>dispatch(messageForward(thread.id, messageId)), 300)
+        return setTimeout(() => dispatch(messageForward(thread.id, messageId)), 300)
       }
       dispatch(messageForward(thread.id, messageId));
     });

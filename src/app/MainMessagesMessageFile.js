@@ -1,5 +1,5 @@
 // src/list/BoxSceneMessagesText
-import React, {Component} from "react";
+import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
@@ -13,7 +13,7 @@ import classnames from "classnames";
 import {
   messageSendingError,
   messageCancelFile,
-  messageSendFile,
+  messageSendFile, messageGetFile, messageCancelFileDownload,
 } from "../actions/messageActions";
 
 //components
@@ -94,9 +94,17 @@ class MainMessagesMessageFile extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      downloading: false
+    };
+    this.onCancelDownload = this.onCancelDownload.bind(this);
     this.onImageClick = this.onImageClick.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onRetry = this.onRetry.bind(this);
+    this.videoRef = React.createRef();
+    this.downloadTriggerRef = React.createRef();
+    this.playVideoRef = React.createRef();
+    this.downloadingUniqueId = null;
   }
 
   onImageClick(e) {
@@ -116,13 +124,54 @@ class MainMessagesMessageFile extends Component {
     }
   }
 
+  onCancelDownload() {
+    if (this.state.downloading) {
+      this.setState({
+        downloading: false
+      });
+    }
+    if (this.downloadingUniqueId) {
+      const {dispatch} = this.props;
+      dispatch(messageCancelFileDownload(this.downloadingUniqueId));
+      this.downloadingUniqueId = null;
+    }
+  }
+
   onDownload(metaData, isVideo, e) {
     (e || isVideo).stopPropagation && (e || isVideo).stopPropagation();
+    const {dispatch, message} = this.props;
+    const videoCurrent = this.videoRef.current;
+    const downloadRef = this.downloadTriggerRef.current;
+    const playVideoRef = this.playVideoRef.current;
     if (isVideo === true) {
-      return;
+      if (videoCurrent.src) {
+        return playVideoRef.click();
+      }
     }
-    window.location.href = `${metaData.link}&downloadable=true`;
-    this.props.onMessageControlHide();
+    if (downloadRef.href) {
+      if (isVideo !== true) {
+        return downloadRef.click();
+      }
+    }
+    this.setState({
+      downloading: true
+    });
+    dispatch(messageGetFile(metaData.hashCode, result => {
+      this.setState({
+        downloading: false
+      });
+      this.downloadingUniqueId = null;
+      const fileUrl = URL.createObjectURL(result);
+      downloadRef.href = fileUrl;
+      downloadRef.download = metaData.originalName;
+      if (isVideo === true) {
+        videoCurrent.src = fileUrl;
+        return playVideoRef.click();
+      }
+      downloadRef.click();
+    })).then(downloadingUniqueId => {
+      this.downloadingUniqueId = downloadingUniqueId;
+    });
   }
 
   onRetry() {
@@ -161,6 +210,9 @@ class MainMessagesMessageFile extends Component {
       isGroup,
       onPin
     } = this.props;
+    const {
+      downloading
+    } = this.state;
     let metaData = message.metadata;
     metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
     const mimeType = metaData.mimeType;
@@ -174,17 +226,35 @@ class MainMessagesMessageFile extends Component {
       [style.MainMessagesFile__Image]: true,
       [style["MainMessagesFile__Image--smallVersion"]]: smallVersion
     });
-
+    const progressContainer = classnames({
+      [style.MainMessagesFile__ProgressContainer]: true,
+      [style["MainMessagesFile__ProgressContainer--downloading"]]: downloading
+    });
     return (
       <Container className={style.MainMessagesFile} key={message.uuid}>
+        <Container display="none">
+          <a ref={this.downloadTriggerRef}/>
+          <a ref={this.playVideoRef} href={`#video-${message.id}`} data-fancybox/>
+        </Container>
+        {isUploading(message) || true ?
+          <Container className={progressContainer}>
+            {downloading ?
+              <Fragment>
+                <Container className={style.MainMessagesFile__ProgressLine}/>
+                <Container className={`${style.MainMessagesFile__ProgressSubLine} ${style["MainMessagesFile__ProgressSubLine--inc"]}`}/>
+                <Container className={`${style.MainMessagesFile__ProgressSubLine} ${style["MainMessagesFile__ProgressSubLine--dec"]}`}/>
+              </Fragment>
+              :
+              <Fragment>
+                <Container className={style.MainMessagesFile__Progress}
+                           absolute
+                           bottomLeft
+                           style={{width: `${message.progress ? message.progress : 0}%`}}
+                           title={`${message.progress && message.progress}`}/>
+              </Fragment>
+            }
 
-        {isUploading(message) ?
-          <Container className={style.MainMessagesFile__ProgressContainer}>
-            <Container className={style.MainMessagesFile__Progress}
-                       absolute
-                       bottomLeft
-                       style={{width: `${message.progress ? message.progress : 0}%`}}
-                       title={`${message.progress && message.progress}`}/>
+
           </Container>
           : ""}
         <PaperFragment message={message} onRepliedMessageClicked={onRepliedMessageClicked}
@@ -231,7 +301,7 @@ class MainMessagesMessageFile extends Component {
                 :
                 <Container className={style.MainMessagesFile__FileName}>
                   {isVideo ?
-                    <video controls id={`video-${message.id}`} style={{display: "none"}} src={metaData.link}/> : ""
+                    <video controls id={`video-${message.id}`} style={{display: "none"}} ref={this.videoRef}/> : ""
                   }
                   <Text wordWrap="breakWord" bold>
                     {metaData.originalName}
@@ -250,17 +320,18 @@ class MainMessagesMessageFile extends Component {
                   <Gap x={isImage ? 0 : 10}>
                     <Container center={isImage}>
                       <Shape color="accent" size="lg"
-                             onClick={isDownloadable(message) ? this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
+                             onClick={isDownloadable(message) ? downloading ? this.onCancelDownload : this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
                         <ShapeCircle>
                           {isUploading(message) || hasError(message) ?
                             <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
                             : isDownloadable(message) ?
-                              isVideo ?
-                                <Text link={`#video-${message.id}`} linkClearStyle data-fancybox>
-                                  <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
-                                </Text>
+                              downloading ?
+                                <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
                                 :
-                                <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
+                                isVideo ?
+                                  <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
+                                  :
+                                  <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
                           }
                         </ShapeCircle>
                       </Shape>

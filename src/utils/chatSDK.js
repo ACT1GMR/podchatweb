@@ -171,8 +171,8 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  getMessageById(resolve, reject, threadId, id) {
-    this.chatAgent.getHistory({threadId, id}, result => {
+  getMessageById(resolve, reject, threadId, messageId) {
+    this.chatAgent.getHistory({threadId, messageId}, result => {
       if (!this._onError(result, reject)) {
         return resolve(result.result.history[0]);
       }
@@ -389,6 +389,14 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
+  cancelFileDownload(resolve, reject, uniqueId) {
+    resolve(uniqueId);
+    this.chatAgent.cancelFileDownload({
+      uniqueId
+    });
+  }
+
+  @promiseDecorator
   cancelMessage(resolve, reject, uniqueId) {
     const cancelMessageParams = {
       uniqueId
@@ -409,6 +417,18 @@ export default class ChatSDK {
         resolve(`${this.params.fileServer}/nzh/image?imageId=${image.id}&hashCode=${image.hashCode}`);
       }
     });
+  }
+
+  @promiseDecorator
+  getFileFromPodspace(resolve, reject, hashCode, callBack) {
+    const {uniqueId} = chatAgent.getFileFromPodspace({
+      hashCode,
+    }, result => {
+      if (!this._onError(result, reject)) {
+        return callBack(result.result);
+      }
+    });
+    resolve(uniqueId);
   }
 
   @promiseDecorator
