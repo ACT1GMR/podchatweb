@@ -107,6 +107,14 @@ export const messageGetFile = (hashCode, callBack) => {
   }
 };
 
+export const messageGetImage = (hashCode, size, quality, crop) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.getImageFromPodspace(hashCode, size, quality, crop);
+  }
+};
+
 export const messageFileReply = (file, threadId, repliedTo, message, repliedMessage) => {
   return (dispatch, getState) => {
     const state = getState();

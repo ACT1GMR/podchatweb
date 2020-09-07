@@ -4,7 +4,7 @@ import React from "react";
 import {getNow} from "./helpers";
 import Cookies from "js-cookie";
 import {THREAD_ADMIN} from "../constants/privilege";
-import {types} from "../constants/messageTypes";
+import {types, typesCode} from "../constants/messageTypes";
 
 const errorCodes = {
   CLIENT_NOT_AUTH: 21,
@@ -355,6 +355,7 @@ export default class ChatSDK {
         message: caption,
         time: getNow() * Math.pow(10, 6),
         fileObject: file,
+        messageType: typesCode[messageType],
         metadata: {
           file: {
             mimeType: file.type,
@@ -429,6 +430,20 @@ export default class ChatSDK {
       }
     });
     resolve(uniqueId);
+  }
+
+  @promiseDecorator
+  getImageFromPodspace(resolve, reject, hashCode, size = 3, quality = 1, crop = false) {
+    this.chatAgent.getImageFromPodspace({
+      hashCode,
+      size, // 1: 100×75 , 2: 200×150, 3: 400×300
+      quality, // [0.0, 1.0] Float number
+      crop // Based on crop data from upload
+    }, result => {
+      if (!this._onError(result, reject)) {
+        return resolve(result.result)
+      }
+    });
   }
 
   @promiseDecorator

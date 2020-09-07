@@ -13,7 +13,7 @@ import classnames from "classnames";
 import {
   messageSendingError,
   messageCancelFile,
-  messageSendFile, messageGetFile, messageCancelFileDownload,
+  messageSendFile, messageGetFile, messageCancelFileDownload, messageGetImage,
 } from "../actions/messageActions";
 
 //components
@@ -42,12 +42,25 @@ import styleVar from "../../styles/variables.scss";
 import {ContextItem} from "../../../uikit/src/menu/Context";
 import strings from "../constants/localization";
 import {decodeEmoji} from "./_component/EmojiIcons.js";
+import {typesCode} from "../constants/messageTypes";
+import oneoneImage from "../../styles/images/_common/oneone.png";
 
+export function isImage({messageType}) {
+  if (messageType) {
+    return messageType === typesCode.POD_SPACE_PICTURE;
+  }
+}
 
-export function getImage(metaData, isFromServer, smallVersion) {
-  let imageLink = metaData.link;
-  let width = metaData.width;
-  let height = metaData.height;
+export function isVideo({messageType}) {
+  if (messageType) {
+    return messageType === typesCode.POD_SPACE_VIDEO;
+  }
+}
+
+export function getImage({link, file}, isFromServer, smallVersion) {
+  let imageLink = file.link;
+  let width = file.actualWidth;
+  let height = file.actualHeight;
 
   const ratio = height / width;
   if (ratio < 0.25 || ratio > 5) {
@@ -59,10 +72,8 @@ export function getImage(metaData, isFromServer, smallVersion) {
     return {imageLink, width: maxWidth, height};
   }
   return {
-    imageLink: `${imageLink}&width=${maxWidth}&height=${height}`,
     width: maxWidth,
-    height,
-    imageLinkOrig: imageLink
+    height
   };
 }
 
@@ -71,11 +82,7 @@ function isDownloadable(message) {
 }
 
 function isUploading(message) {
-  if (message.progress) {
-    if (message.state === "UPLOADING") {
-      return true;
-    }
-  }
+  return !message.id;
 }
 
 function hasError(message) {
@@ -94,8 +101,19 @@ class MainMessagesMessageFile extends Component {
 
   constructor(props) {
     super(props);
+    const {leftAsideShowing, smallVersion, message} = props;
+    const metaData = typeof message.metadata === "string" ? JSON.parse(message.metadata) : message.metadata;
     this.state = {
-      downloading: false
+      isImage: isImage(message),
+      isVideo: isVideo(message),
+      IsFile: !isVideo(message) && !isImage(message),
+      metaData,
+      imageIsSuitableSize: isImage(message) && getImage(metaData, message.id, smallVersion || leftAsideShowing),
+      isUploading: isUploading(message),
+      downloading: false,
+      imageThumb: null,
+      imageModalPreview: null,
+      imageThumbLowQuality: null
     };
     this.onCancelDownload = this.onCancelDownload.bind(this);
     this.onImageClick = this.onImageClick.bind(this);
@@ -109,6 +127,28 @@ class MainMessagesMessageFile extends Component {
 
   onImageClick(e) {
     e.stopPropagation();
+  }
+
+  componentDidMount() {
+    const {dispatch} = this.props;
+    const {metaData, isImage, imageIsSuitableSize} = this.state;
+    if (isImage && imageIsSuitableSize) {
+      dispatch(messageGetImage(metaData.fileHash, 1, 0.01)).then(result =>
+        this.setState({
+          imageThumbLowQuality: URL.createObjectURL(result)
+        })
+      );
+      dispatch(messageGetImage(metaData.fileHash, 3)).then(result =>
+        this.setState({
+          imageThumb: URL.createObjectURL(result)
+        })
+      );
+      dispatch(messageGetImage(metaData.fileHash, null, .5)).then(result =>
+        this.setState({
+          imageModalPreview: URL.createObjectURL(result)
+        })
+      )
+    }
   }
 
   componentDidUpdate() {
@@ -139,7 +179,7 @@ class MainMessagesMessageFile extends Component {
 
   onDownload(metaData, isVideo, e) {
     (e || isVideo).stopPropagation && (e || isVideo).stopPropagation();
-    const {dispatch, message} = this.props;
+    const {dispatch} = this.props;
     const videoCurrent = this.videoRef.current;
     const downloadRef = this.downloadTriggerRef.current;
     const playVideoRef = this.playVideoRef.current;
@@ -156,14 +196,14 @@ class MainMessagesMessageFile extends Component {
     this.setState({
       downloading: true
     });
-    dispatch(messageGetFile(metaData.hashCode, result => {
+    dispatch(messageGetFile(metaData.file.hashCode, result => {
       this.setState({
         downloading: false
       });
       this.downloadingUniqueId = null;
       const fileUrl = URL.createObjectURL(result);
       downloadRef.href = fileUrl;
-      downloadRef.download = metaData.originalName;
+      downloadRef.download = metaData.name;
       if (isVideo === true) {
         videoCurrent.src = fileUrl;
         return playVideoRef.click();
@@ -210,15 +250,19 @@ class MainMessagesMessageFile extends Component {
       isGroup,
       onPin
     } = this.props;
-    const {
-      downloading
+    let {
+      downloading,
+      imageThumb,
+      imageModalPreview,
+      imageThumbLowQuality,
+      isImage,
+      isVideo,
+      metaData
     } = this.state;
-    let metaData = message.metadata;
-    metaData = typeof metaData === "string" ? JSON.parse(metaData).file : metaData.file;
-    const mimeType = metaData.mimeType;
-    let isImage = mimeType.indexOf("image") > -1;
-    const isVideo = mimeType.match(/mp4|ogg|3gp|ogv/);
-    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing, message.fileObject) : false;
+    const isUploadingBool = isUploading(message);
+    const isBlurry = imageThumbLowQuality && !imageThumb && !isUploadingBool;
+    const gettingImageThumb = !imageThumbLowQuality && !imageThumb && isImage && !isUploadingBool;
+    const imageSizeLink = isImage ? getImage(metaData, message.id, smallVersion || leftAsideShowing) : false;
     if (!imageSizeLink) {
       isImage = false;
     }
@@ -228,7 +272,7 @@ class MainMessagesMessageFile extends Component {
     });
     const progressContainer = classnames({
       [style.MainMessagesFile__ProgressContainer]: true,
-      [style["MainMessagesFile__ProgressContainer--downloading"]]: downloading
+      [style["MainMessagesFile__ProgressContainer--downloading"]]: downloading || gettingImageThumb
     });
     return (
       <Container className={style.MainMessagesFile} key={message.uuid}>
@@ -236,13 +280,15 @@ class MainMessagesMessageFile extends Component {
           <a ref={this.downloadTriggerRef}/>
           <a ref={this.playVideoRef} href={`#video-${message.id}`} data-fancybox/>
         </Container>
-        {isUploading(message) || true ?
+        {isUploadingBool || downloading || gettingImageThumb ?
           <Container className={progressContainer}>
-            {downloading ?
+            {downloading || gettingImageThumb ?
               <Fragment>
                 <Container className={style.MainMessagesFile__ProgressLine}/>
-                <Container className={`${style.MainMessagesFile__ProgressSubLine} ${style["MainMessagesFile__ProgressSubLine--inc"]}`}/>
-                <Container className={`${style.MainMessagesFile__ProgressSubLine} ${style["MainMessagesFile__ProgressSubLine--dec"]}`}/>
+                <Container
+                  className={`${style.MainMessagesFile__ProgressSubLine} ${style["MainMessagesFile__ProgressSubLine--inc"]}`}/>
+                <Container
+                  className={`${style.MainMessagesFile__ProgressSubLine} ${style["MainMessagesFile__ProgressSubLine--dec"]}`}/>
               </Fragment>
               :
               <Fragment>
@@ -285,11 +331,17 @@ class MainMessagesMessageFile extends Component {
                        className={style.MainMessagesFile__FileContainer}>
               {isImage ?
                 <Container style={{width: `${imageSizeLink.width}px`}}>
-                  <BoxModalMediaFragment link={imageSizeLink.imageLinkOrig} options={{caption: message.message}}>
+                  <BoxModalMediaFragment link={imageModalPreview} options={{caption: message.message}}>
                     <Image className={mainMessagesFileImageClassNames}
                            onClick={this.onImageClick}
-                           src={imageSizeLink.imageLink}
-                           style={{maxWidth: `${imageSizeLink.width}px`, height: `${imageSizeLink.height}px`}}/>
+                           src={message.id ? isBlurry ? imageThumbLowQuality : imageThumb : imageSizeLink.imageLink}
+                           style={{
+                             backgroundColor: gettingImageThumb ? "#fff" : "none",
+                             maxWidth: `${imageSizeLink.width}px`,
+                             width: `${imageSizeLink.width}px`,
+                             height: `${imageSizeLink.height}px`,
+                             filter: isBlurry || gettingImageThumb ? "blur(8px)" : "none"
+                           }}/>
                   </BoxModalMediaFragment>
                   <Container userSelect={mobileCheck() ? "none" : "text"} onDoubleClick={e => e.stopPropagation()}>
                     <Text isHTML wordWrap="breakWord" whiteSpace="preWrap" color="text" dark>
@@ -304,39 +356,39 @@ class MainMessagesMessageFile extends Component {
                     <video controls id={`video-${message.id}`} style={{display: "none"}} ref={this.videoRef}/> : ""
                   }
                   <Text wordWrap="breakWord" bold>
-                    {metaData.originalName}
+                    {metaData.name}
                   </Text>
                   <Text size="xs" color="gray" dark={isMessageByMe}>
-                    {humanFileSize(metaData.size, true)}
+                    {humanFileSize(metaData.file.size, true)}
                   </Text>
 
                 </Container>
               }
-              <Container className={style.MainMessagesFile__FileControlIcon} topCenter={isImage} style={isImage ? {
-                maxWidth: `${imageSizeLink.width}px`,
-                height: `${imageSizeLink.height}px`
-              } : null}>
-                {(isDownloadable(message) && !isImage) || isUploading(message) || hasError(message) ?
-                  <Gap x={isImage ? 0 : 10}>
-                    <Container center={isImage}>
-                      <Shape color="accent" size="lg"
-                             onClick={isDownloadable(message) ? downloading ? this.onCancelDownload : this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
-                        <ShapeCircle>
-                          {isUploading(message) || hasError(message) ?
-                            <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
-                            : isDownloadable(message) ?
-                              downloading ?
-                                <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
+              <Container className={style.MainMessagesFile__FileControlIcon}
+                         style={isImage ? {
+                           maxWidth: `${imageSizeLink.width}px`,
+                           height: `${imageSizeLink.height}px`
+                         } : null}>
+                {(isDownloadable(message) && !isImage) || downloading || isUploadingBool || hasError(message) ?
+
+                  <Container center={isImage}>
+                    <Shape color="accent" size="lg"
+                           onClick={isDownloadable(message) ? downloading ? this.onCancelDownload : this.onDownload.bind(this, metaData, !!isVideo) : this.onCancel.bind(this, message)}>
+                      <ShapeCircle>
+                        {isUploadingBool || hasError(message) ?
+                          <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
+                          : isDownloadable(message) ?
+                            downloading ?
+                              <MdClose style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
+                              :
+                              isVideo ?
+                                <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
                                 :
-                                isVideo ?
-                                  <MdPlayArrow style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/>
-                                  :
-                                  <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
-                          }
-                        </ShapeCircle>
-                      </Shape>
-                    </Container>
-                  </Gap>
+                                <MdArrowDownward style={{marginTop: "8px"}} size={styleVar.iconSizeSm}/> : ""
+                        }
+                      </ShapeCircle>
+                    </Shape>
+                  </Container>
                   : ""}
               </Container>
             </Container>
