@@ -36,7 +36,7 @@ import {
   THREAD_GO_TO_MESSAGE,
   THREAD_GET_MESSAGE_LIST,
   THREAD_CREATE,
-  THREAD_GET_MESSAGE_LIST_PARTIAL, MESSAGE_SEND, CHAT_DESTROY
+  THREAD_GET_MESSAGE_LIST_PARTIAL, MESSAGE_SEND, CHAT_DESTROY, THREAD_THUMBNAIL_UPDATE, CHAT_IMAGE_HASH_CODE_UPDATE
 } from "../constants/actionTypes";
 import {messageInfo} from "./messageActions";
 import {statics} from "../app/MainMessages";
@@ -205,6 +205,23 @@ export const chatSetInstance = config => {
           payload: e
         })
       }
+    });
+  }
+};
+
+export const chatGetImage = (hashCode, size, quality, crop) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const chatSDK = state.chatInstance.chatSDK;
+    return chatSDK.getImageFromPodspace(hashCode, size, quality, crop);
+  }
+};
+
+export const chatImageHashCodeUpdate = payload => {
+  return (dispatch) => {
+    dispatch({
+      type: CHAT_IMAGE_HASH_CODE_UPDATE,
+      payload
     });
   }
 };

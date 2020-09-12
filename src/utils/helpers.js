@@ -1,6 +1,9 @@
 import {ifvisible} from "ifvisible.js";
 import queryString from "query-string";
 import {serverConfig} from "../constants/connection";
+import {messageGetImage} from "../actions/messageActions";
+import {threadThumbnailUpdate} from "../actions/threadActions";
+import {chatGetImage, chatImageHashCodeUpdate} from "../actions/chatActions";
 
 export function humanFileSize(bytes, si) {
   const thresh = si ? 1000 : 1024;
@@ -26,7 +29,7 @@ export function mobileCheck() {
   return check;
 }
 
-export function isIosAndSafari(){
+export function isIosAndSafari() {
   var ua = window.navigator.userAgent;
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
   var webkit = !!ua.match(/WebKit/i);
@@ -137,7 +140,43 @@ export function avatarNameGenerator(firstName, lastName) {
 
 }
 
-export function avatarUrlGenerator(url, size) {
+export function getImageFromHashMap(hashCode, size, quality) {
+  const id = `${hashCode}-${size}-${quality}`;
+  const {dispatch, chatImageHashCodeMap} = this.props;
+  let result = chatImageHashCodeMap.find(e => e.id === id);
+  if (result) {
+    const {result: status} = result;
+    if (status.indexOf("blob") > -1) {
+      return status;
+    } else {
+      if (status === "LOADING") {
+        return true;
+      }
+    }
+  }
+
+  dispatch(chatImageHashCodeUpdate({id, result: "LOADING"}));
+  return dispatch(chatGetImage(hashCode, size, quality)).then(result => {
+    dispatch(chatImageHashCodeUpdate({id, result: URL.createObjectURL(result)}));
+  });
+}
+
+export function avatarUrlGenerator(url, size, metadata) {
+  if (metadata) {
+    const sizes = {
+      SMALL: 1,
+      MEDIUM: 2,
+      LARGE: 3,
+      XLARGE: 3
+    };
+    if (metadata) {
+      metadata = JSON.parse(metadata);
+      const {fileHash} = metadata;
+      if (fileHash) {
+        return getImageFromHashMap.apply(this, [fileHash, sizes[size], 1]);
+      }
+    }
+  }
   if (!url) {
     return url;
   }
@@ -192,4 +231,20 @@ export function getNow() {
   } else {
     return Date.now();
   }
+}
+
+export function isImageFile(file) {
+  return file.type.match(/image\/jpeg|image\/png|image\/gif/gm);
+}
+
+export function isVideoFile(file) {
+  return file.type.match(/mp4|ogg|3gp|ogv/);
+}
+
+export function isAudioFile(file) {
+  return file.type.match(/audio.*/);
+}
+
+export function isFile(file) {
+  return !isVideoFile(file) && !isImageFile(file);
 }

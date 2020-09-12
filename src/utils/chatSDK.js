@@ -1,7 +1,7 @@
 import PodChat from "podchat-browser";
 import {promiseDecorator} from "./decorators";
 import React from "react";
-import {getNow} from "./helpers";
+import {getNow, isAudioFile, isImageFile, isVideoFile} from "./helpers";
 import Cookies from "js-cookie";
 import {THREAD_ADMIN} from "../constants/privilege";
 import {types, typesCode} from "../constants/messageTypes";
@@ -338,9 +338,9 @@ export default class ChatSDK {
     if (caption) {
       sendChatParams.content = caption;
     }
-    const isImage = file.type.startsWith("image/");
-    const isVideo = file.type.match(/mp4|ogg|3gp|ogv/);
-    const isAudio = file.type.match(/audio.*/);
+    const isImage = isImageFile(file);
+    const isVideo = isVideoFile(file);
+    const isAudio = isAudioFile(file);
     const messageType = isImage ? types.picture : isVideo ? types.video : isAudio ? types.sound : types.file;
     if (other) {
       sendChatParams = {...sendChatParams, ...other};
@@ -357,9 +357,9 @@ export default class ChatSDK {
         fileObject: file,
         messageType: typesCode[messageType],
         metadata: {
+          name: file.name,
           file: {
             mimeType: file.type,
-            originalName: file.name,
             size: file.size
           }
         }
@@ -447,10 +447,10 @@ export default class ChatSDK {
   }
 
   @promiseDecorator
-  updateThreadInfo(resolve, reject, customparams, threadId) {
+  updateThreadInfo(resolve, reject, customParams, threadId) {
     const params = {
       threadId,
-      ...customparams
+      ...customParams
     };
     this.chatAgent.updateThreadInfo(params, result => {
       if (!this._onError(result, reject)) {

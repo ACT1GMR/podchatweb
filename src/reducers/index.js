@@ -51,7 +51,8 @@ import {
   chatSearchResultReducer,
   chatSearchShowReducer,
   chatRetryHookReducer,
-  chatSignOutHookReducer
+  chatSignOutHookReducer,
+  chatImageHashCodeUpdateReducer
 } from "./chatReducer";
 import userReducer from "./userReducer";
 
@@ -67,6 +68,7 @@ const rootReducer = {
   chatNotificationClickHook: chatNotificationClickHookReducer,
   chatRetryHook: chatRetryHookReducer,
   chatSignOutHook: chatSignOutHookReducer,
+  chatImageHashCodeUpdate: chatImageHashCodeUpdateReducer,
   contactGetList: contactGetListReducer,
   contactGetListPartial: contactGetListPartialReducer,
   contactListShowing: contactListShowingReducer,

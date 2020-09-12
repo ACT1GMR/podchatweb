@@ -47,9 +47,13 @@ export default class ModalThreadInfoGroupSettings extends Component {
     this.groupNameChange = this.groupNameChange.bind(this);
     this.onSaveSettings = this.onSaveSettings.bind(this);
     this.onPrevious = this.onPrevious.bind(this);
+    const {thread} = props;
+
     this.state = {
       state: statics.MAIN,
-      groupName: ""
+      groupName: thread.title,
+      groupDesc: thread.description,
+      image: thread.image
     };
   }
 
@@ -87,11 +91,9 @@ export default class ModalThreadInfoGroupSettings extends Component {
   }
 
   onGroupImageChange(evt) {
-    this.props.dispatch(chatUploadImage(evt.target.files[0], this.props.thread.id, image =>
-      this.setState({
-        image
-      })
-    ));
+    this.setState({
+      image: evt.target.files[0]
+    });
   }
 
   groupNameChange(event) {
@@ -108,7 +110,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
 
   onSaveSettings() {
     const {groupDesc, image, groupName} = this.state;
-    const {setStep, steps, thread, dispatch,} = this.props;
+    const {setStep, steps, thread, dispatch} = this.props;
     const baseObject = {
       description: groupDesc, image, title: groupName
     };
@@ -144,7 +146,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
                                  className={style.ModalThreadInfoGroupSettings__ImageIcon}/>
                   </Container>
                 </Container>
-                <AvatarImage src={avatarUrlGenerator(image, avatarUrlGenerator.SIZES.MEDIUM)} size="xlg"
+                <AvatarImage src={typeof image === "string" ? avatarUrlGenerator(image, avatarUrlGenerator.SIZES.MEDIUM) :  URL.createObjectURL(image)} size="xlg"
                              text={avatarNameGenerator(thread.title).letter}
                              textBg={avatarNameGenerator(thread.title).color}/>
               </Container>

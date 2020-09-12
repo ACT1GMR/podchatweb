@@ -7,9 +7,13 @@ import {
   CHAT_SEARCH_RESULT,
   CHAT_SEARCH_SHOW,
   CHAT_NOTIFICATION,
-  CHAT_NOTIFICATION_CLICK_HOOK, CHAT_RETRY_HOOK, CHAT_SIGN_OUT_HOOK
+  CHAT_NOTIFICATION_CLICK_HOOK,
+  CHAT_RETRY_HOOK,
+  CHAT_SIGN_OUT_HOOK,
+  CHAT_IMAGE_HASH_CODE_UPDATE
 } from "../constants/actionTypes";
-import {stateGenerator} from "../utils/storeHelper";
+import {listUpdateStrategyMethods, stateGenerator, stateGeneratorState, updateStore} from "../utils/storeHelper";
+const {SUCCESS} = stateGeneratorState;
 
 export const chatInstanceReducer = (state = {
   chatSDK: null,
@@ -24,6 +28,26 @@ export const chatInstanceReducer = (state = {
       return {...state, ...stateGenerator("SUCCESS", action.payload, "chatSDK")};
     case CHAT_GET_INSTANCE("ERROR"):
       return {...state, ...stateGenerator("ERROR", action.payload)};
+    default:
+      return state;
+  }
+};
+
+export const chatImageHashCodeUpdateReducer = (state = {
+  hashCodeMap: [],
+  fetching: false,
+  fetched: false,
+  error: false
+}, action) => {
+  switch (action.type) {
+    case CHAT_IMAGE_HASH_CODE_UPDATE:
+      return {
+        ...state, ...stateGenerator(SUCCESS, updateStore(state.hashCodeMap, action.payload, {
+          method: listUpdateStrategyMethods.UPDATE,
+          upsert: true,
+          by: "id"
+        }), "hashCodeMap")
+      };
     default:
       return state;
   }

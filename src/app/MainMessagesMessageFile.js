@@ -3,7 +3,7 @@ import React, {Component, Fragment} from "react";
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import "moment/locale/fa";
-import {humanFileSize, mobileCheck} from "../utils/helpers";
+import {getImageFromHashMap, humanFileSize, mobileCheck} from "../utils/helpers";
 import {urlify, mentionify, emailify} from "./MainMessagesMessage";
 import classnames from "classnames";
 
@@ -44,6 +44,7 @@ import strings from "../constants/localization";
 import {decodeEmoji} from "./_component/EmojiIcons.js";
 import {typesCode} from "../constants/messageTypes";
 import oneoneImage from "../../styles/images/_common/oneone.png";
+import {chatGetImage} from "../actions/chatActions";
 
 export function isImage({messageType}) {
   if (messageType) {
@@ -133,17 +134,17 @@ class MainMessagesMessageFile extends Component {
     const {dispatch} = this.props;
     const {metaData, isImage, imageIsSuitableSize} = this.state;
     if (isImage && imageIsSuitableSize) {
-      dispatch(messageGetImage(metaData.fileHash, 1, 0.01)).then(result =>
+      dispatch(chatGetImage(metaData.fileHash, 1, 0.01)).then(result =>
         this.setState({
           imageThumbLowQuality: URL.createObjectURL(result)
         })
       );
-      dispatch(messageGetImage(metaData.fileHash, 3)).then(result =>
+      dispatch(chatGetImage(metaData.fileHash, 3)).then(result =>
         this.setState({
           imageThumb: URL.createObjectURL(result)
         })
       );
-      dispatch(messageGetImage(metaData.fileHash, null, .5)).then(result =>
+      dispatch(chatGetImage(metaData.fileHash, null, .5)).then(result =>
         this.setState({
           imageModalPreview: URL.createObjectURL(result)
         })
