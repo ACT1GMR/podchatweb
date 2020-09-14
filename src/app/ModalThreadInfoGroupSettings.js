@@ -37,7 +37,11 @@ const statics = {
   MAIN: "MAIN"
 };
 
-@connect(null, null, null, {withRef: true})
+@connect(store => {
+  return {
+    chatImageHashCodeMap: store.chatImageHashCodeUpdate.hashCodeMap
+  };
+}, null, null, {withRef: true})
 export default class ModalThreadInfoGroupSettings extends Component {
 
   constructor(props) {
@@ -48,12 +52,13 @@ export default class ModalThreadInfoGroupSettings extends Component {
     this.onSaveSettings = this.onSaveSettings.bind(this);
     this.onPrevious = this.onPrevious.bind(this);
     const {thread} = props;
-
+    const {metadata}  = thread;
+    this.previewImage = null;
     this.state = {
       state: statics.MAIN,
       groupName: thread.title,
       groupDesc: thread.description,
-      image: thread.image
+      image: metadata && JSON.parse(metadata).fileHash ? JSON.parse(metadata).fileHash : thread.image
     };
   }
 
@@ -78,11 +83,6 @@ export default class ModalThreadInfoGroupSettings extends Component {
     };
 
     setHeaderFooterComponent(HeaderComponent, FooterComponent);
-    this.setState({
-      groupName: thread.title,
-      groupDesc: thread.description,
-      image: thread.image
-    });
   }
 
   onPrevious() {
@@ -91,9 +91,11 @@ export default class ModalThreadInfoGroupSettings extends Component {
   }
 
   onGroupImageChange(evt) {
+    const image = evt.target.files[0];
     this.setState({
-      image: evt.target.files[0]
+      image
     });
+    this.previewImage = URL.createObjectURL(image);
   }
 
   groupNameChange(event) {
@@ -128,7 +130,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
 
   render() {
     const {groupName, groupDesc, image} = this.state;
-    const {thread, GapFragment, user} = this.props;
+    const {thread, GapFragment} = this.props;
     return (
       <Container>
         <Container relative>
@@ -146,7 +148,7 @@ export default class ModalThreadInfoGroupSettings extends Component {
                                  className={style.ModalThreadInfoGroupSettings__ImageIcon}/>
                   </Container>
                 </Container>
-                <AvatarImage src={typeof image === "string" ? avatarUrlGenerator(image, avatarUrlGenerator.SIZES.MEDIUM) :  URL.createObjectURL(image)} size="xlg"
+                <AvatarImage src={typeof image === "string" ? avatarUrlGenerator.apply(this, [image, avatarUrlGenerator.SIZES.MEDIUM, thread.metadata]) : this.previewImage} size="xlg"
                              text={avatarNameGenerator(thread.title).letter}
                              textBg={avatarNameGenerator(thread.title).color}/>
               </Container>
